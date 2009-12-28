@@ -21,7 +21,6 @@
 #ifndef PROFILEMANAGER_H
 #define PROFILEMANAGER_H
 
-
 #include <QDBusAbstractAdaptor>
 #include <QtDBus>
 
@@ -44,21 +43,13 @@ class ProfileManagerAdaptor : public QDBusAbstractAdaptor
      "    <method name=\"currentProfile\">\n"
      "      <arg type=\"s\" direction=\"out\"/>\n"
      "    </method>\n"
-     "    <signal name=\"dbusButtonStatusChanged\">\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
-     "    </signal>\n"
-     "    <signal name=\"dbusWiimoteStatusChanged\">\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
-     "    </signal>\n"
      "  </interface>\n"
      "")
 public:
     ProfileManagerAdaptor(QObject *parent);
     virtual ~ProfileManagerAdaptor(){};
 
-public Q_SLOTS:
+public slots:
     void loadProfile(QString file);
     void unloadProfile();
     QString currentProfile();
@@ -102,6 +93,7 @@ public slots:
     bool unloadProfile();
     QString currentProfile(){ return profileName; }
 
+
     void buttonStatusChanged(void *object, quint64 value);
     void wiimoteStatusChanged(void *object, quint8 status);
 
@@ -109,9 +101,6 @@ public slots:
 
 signals:
     void sendKeyEvents(QList <quint16>*, quint8);
-
-    void dbusButtonStatusChanged(quint32, quint64);
-    void dbusWiimoteStatusChanged(quint32, quint64);
 };
 
 #endif // PROFILEMANAGER_H

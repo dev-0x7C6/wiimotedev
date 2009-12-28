@@ -36,7 +36,7 @@
 // 6 - advenced developer informations
 // 7 - everything
 
-int verboseLevel = 1;
+int verboseLevel = 7;
 
 QString filePathWiimotedev = "/etc/wiimotedev/wiimotedev.conf";
 QString filePathScancode = "/etc/wiimotedev/scancode.conf";

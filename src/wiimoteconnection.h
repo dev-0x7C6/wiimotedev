@@ -60,7 +60,7 @@ private slots:
     void getBatteryStatus();
 
 public:
-    WiimoteConnection();
+    WiimoteConnection(QObject *parent = 0);
    ~WiimoteConnection();
 
     bool connectAny();
@@ -82,11 +82,17 @@ signals:
    void registerConnection(void*);
    void unregisterConnection(void*);
 
-
    void wiimoteStatusChanged(void*, quint8);
    void batteryLifeChanged(void*, quint8);
    void buttonStatusChanged(void*, quint64);
    void infraredTableChanged(void*, struct cwiid_ir_mesg);
+
+signals:
+   void dbusBatteryLifeChanged(quint32, quint8);
+   void dbusButtonStatusChanged(quint32, quint64);
+   void dbusInfraredTableChanged(quint32, struct cwiid_ir_mesg ir);
+   void dbusWiimoteStatusChanged(quint32, quint8);
+
 };
 
 #endif // WIIMOTECONNECTION_H

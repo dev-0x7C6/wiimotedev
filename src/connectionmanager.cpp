@@ -28,6 +28,12 @@ extern DataLogger dataLogger;
 
 const QString sequenceGroup("sequence");
 
+ConnectionManagerAdaptor::ConnectionManagerAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent)
+{
+    setAutoRelaySignals(true);
+}
+
+
 ConnectionManager::ConnectionManager(ProfileManager *manager)
 {
     QSettings settings(filePathWiimotedev, QSettings::IniFormat);
@@ -37,6 +43,12 @@ ConnectionManager::ConnectionManager(ProfileManager *manager)
         wiiremoteSequence.insert(settings.allKeys().at(i), settings.value(settings.allKeys().at(i), 0).toInt());
 
     settings.endGroup();
+
+    new ConnectionManagerAdaptor(this);
+
+    QDBusConnection connection = QDBusConnection::sessionBus();
+    connection.registerObject("/ConnectionManager", this);
+    connection.registerService("org.wiimotedev.ConnectionManager");
 
     managerObject = manager;
     terminateReq = false;
@@ -81,7 +93,13 @@ void ConnectionManager::registerConnection(void *object)
     if (connection->getWiimoteSequence())
         connection->setLedStatus(connection->getWiimoteSequence());
 
-    connect(connection, SIGNAL(unregisterConnection(void*)), this, SLOT(unregisterConnection(void*)), Qt::DirectConnection);
+
+    connect(connection, SIGNAL(dbusBatteryLifeChanged(quint32,quint8)), this, SIGNAL(dbusBatteryLifeChanged(quint32,quint8)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusButtonStatusChanged(quint32,quint64)), this, SIGNAL(dbusButtonStatusChanged(quint32,quint64)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusInfraredTableChanged(quint32,cwiid_ir_mesg)), this, SIGNAL(dbusInfraredTableChanged(quint32,cwiid_ir_mesg)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteStatusChanged(quint32,quint8)), this, SIGNAL(dbusWiimoteStatusChanged(quint32,quint8)), Qt::DirectConnection);
+
+    connect(connection, SIGNAL(unregisterConnection(void*)), this, SLOT(unregisterConnection(void*)), Qt::QueuedConnection);
     connect(connection, SIGNAL(wiimoteStatusChanged(void*,quint8)), managerObject, SLOT(wiimoteStatusChanged(void*,quint8)), Qt::DirectConnection);
     connect(connection, SIGNAL(buttonStatusChanged(void*,quint64)), managerObject, SLOT(buttonStatusChanged(void*, quint64)), Qt::DirectConnection);
     connection->start();
@@ -95,7 +113,8 @@ void ConnectionManager::unregisterConnection(void *object)
     if (verboseLevel >= 4)
         qDebug(QString("Wiimotedev: connection closed: %1").arg(connection->getWiimoteSAddr()).toAscii());
 
-    while(connection->isRunning());
+
+    connection->wait();
     delete connection;
 
     for (register int i = 0; i < objectList.count(); ++i) if(objectList.at(i) == object)

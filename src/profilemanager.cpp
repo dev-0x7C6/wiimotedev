@@ -337,7 +337,6 @@ void ProfileManager::buttonStatusChanged(void *object, quint64 value)
     qDebug(QString("device[%1] flags = %2").arg(QString::number(id), QString::number(x, 2).mid(1, 63)).toAscii());
 #endif
 
-    emit dbusButtonStatusChanged(id, value);
     buttons.insert(id, value);
 
     bool matched;
@@ -365,8 +364,6 @@ void ProfileManager::buttonStatusChanged(void *object, quint64 value)
 
 void ProfileManager::wiimoteStatusChanged(void *object, quint8 status)
 {
-    quint32 id = static_cast< WiimoteConnection*>( object)->getWiimoteSequence();
-    emit dbusWiimoteStatusChanged(id, status);
 }
 
 void ProfileManager::recvIRMesg(struct cwiid_ir_mesg ir)

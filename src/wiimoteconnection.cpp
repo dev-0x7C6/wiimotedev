@@ -36,7 +36,7 @@ extern quint64 classicButtonFilter;
 extern quint64 classicLStickFilter;
 extern quint64 classicRStickFilter;
 
-WiimoteConnection::WiimoteConnection()
+WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
 {
     qRegisterMetaType< struct cwiid_ir_mesg>("struct cwiid_ir_mesg");
     deviceStatus = device_wiimote_connected;
@@ -44,6 +44,7 @@ WiimoteConnection::WiimoteConnection()
     memset(&nunchuk_calibration, 0, sizeof(struct acc_cal));
     connected = false;
     id = 0;
+    setTerminationEnabled(true);
 }
 
 WiimoteConnection::~WiimoteConnection()
@@ -97,7 +98,8 @@ void WiimoteConnection::run()
                 newBatteryLife = static_cast< quint8>(100.0 * (mesg[i].status_mesg.battery / double(CWIID_BATTERY_MAX)));
                 if (batteryLife != newBatteryLife) {
                     batteryLife = newBatteryLife;
-                    emit batteryLifeChanged(this, batteryLife);
+                    emit batteryLifeChanged(static_cast< void*>( this), batteryLife);
+                    emit dbusBatteryLifeChanged(getWiimoteSequence(), batteryLife);
                 }
 
                 switch (mesg[i].status_mesg.ext_type)
@@ -108,6 +110,7 @@ void WiimoteConnection::run()
                             buttons &= ~(wiimoteButtonFilter & wiimoteShiftFilter & wiimoteTiltFilter);
                             deviceStatus = device_wiimote_connected;
                             emit wiimoteStatusChanged(static_cast< void*>( this), deviceStatus);
+                            emit dbusWiimoteStatusChanged(getWiimoteSequence(), deviceStatus);
                         break;
                     case CWIID_EXT_NUNCHUK:
                         if (!(deviceStatus & device_nunchuk_connected))
@@ -115,6 +118,7 @@ void WiimoteConnection::run()
                             cwiid_get_acc_cal(device, CWIID_EXT_NUNCHUK, &nunchuk_calibration);
                             deviceStatus |= device_nunchuk_connected;
                             emit wiimoteStatusChanged(static_cast< void*>( this), deviceStatus);
+                            emit dbusWiimoteStatusChanged(getWiimoteSequence(), deviceStatus);
                         }
                         break;
                     case CWIID_EXT_CLASSIC:
@@ -122,6 +126,7 @@ void WiimoteConnection::run()
                         {
                             deviceStatus |= device_classic_connected;
                             emit wiimoteStatusChanged(static_cast< void*>( this), deviceStatus);
+                            emit dbusWiimoteStatusChanged(getWiimoteSequence(), deviceStatus);
                         }
                         break;
                 }
@@ -129,6 +134,7 @@ void WiimoteConnection::run()
 
             case CWIID_MESG_IR:
                 emit infraredTableChanged(static_cast< void*>( this), mesg[i].ir_mesg);
+                emit dbusInfraredTableChanged(getWiimoteSequence(), mesg[i].ir_mesg);
                 break;
 
             case CWIID_MESG_BTN:
@@ -273,14 +279,23 @@ void WiimoteConnection::run()
         {
             lastbtn = buttons;
             emit buttonStatusChanged(static_cast< void*>( this), buttons);
+            emit dbusButtonStatusChanged(getWiimoteSequence(), buttons);
         }
+        delete mesg;
         if(!connected) break;
     }
+
+    cwiid_close(device);
 
     if (verboseLevel >= 4)
         qDebug(QString("Wiimotedev: is going down 0x%1").arg(QString::number(currentThreadId(), 0x10)).toAscii());
 
+    timer->stop();
+    disconnect(timer, 0, 0, 0);
+    delete timer;
+
     emit unregisterConnection(static_cast< void*>( this));   
+    return;
 }
 
 bool WiimoteConnection::connectAny()

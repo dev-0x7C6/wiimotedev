@@ -21,15 +21,63 @@
 #ifndef CONNECTIONMANAGER_H
 #define CONNECTIONMANAGER_H
 
+#include <QDBusAbstractAdaptor>
+#include <QtDBus>
+
 #include <QObject>
 #include <QThread>
 #include <QList>
 #include <QTimer>
 #include <QTime>
 
-
 #include "wiimoteconnection.h"
 #include "profilemanager.h"
+
+
+class ConnectionManagerAdaptor : public QDBusAbstractAdaptor
+{
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.ConnectionManager")
+    Q_CLASSINFO("D-Bus Introspection", ""
+     "  <interface name=\"org.wiimotedev.ConnectionManager\">\n"
+     "    <method name=\"reloadConfiguration\">\n"
+     "      <arg type=\"s\" direction=\"out\"/>\n"
+     "    </method>\n"
+     "    <method name=\"authorizedWiiremoteList\">\n"
+     "      <arg type=\"s\" direction=\"out\"/>\n"
+     "    </method>\n"
+     "    <method name=\"unauthorizedWiiremoteList\">\n"
+     "      <arg type=\"s\" direction=\"out\"/>\n"
+     "    </method>\n"
+     "    <signal name=\"dbusBatteryLifeChanged\">\n"
+     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "    </signal>\n"
+     "    <signal name=\"dbusButtonStatusChanged\">\n"
+     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "    </signal>\n"
+     "    <signal name=\"dbusInfraredTableChanged\">\n"
+     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "    </signal>\n"
+     "    <signal name=\"dbusWiimoteStatusChanged\">\n"
+     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "    </signal>\n"
+     "  </interface>\n"
+     "")
+public:
+    ConnectionManagerAdaptor(QObject *parent);
+    virtual ~ConnectionManagerAdaptor(){};
+
+signals:
+    void dbusBatteryLifeChanged(quint32, quint8);
+    void dbusButtonStatusChanged(quint32, quint64);
+    void dbusInfraredTableChanged(quint32, struct cwiid_ir_mesg ir);
+    void dbusWiimoteStatusChanged(quint32, quint8);
+
+};
 
 
 class ConnectionManager : public QThread
@@ -43,6 +91,7 @@ private:
     bdaddr_t bdaddr_any;
     bool terminateReq;
 
+    ConnectionManagerAdaptor *adaptor;
     WiimoteConnection *connectionObject;
     ProfileManager *managerObject;
 
@@ -59,6 +108,12 @@ private slots:
 
 signals:
     void sendIRMesg(struct cwiid_ir_mesg ir);
+
+signals:
+    void dbusBatteryLifeChanged(quint32, quint8);
+    void dbusButtonStatusChanged(quint32, quint64);
+    void dbusInfraredTableChanged(quint32, struct cwiid_ir_mesg ir);
+    void dbusWiimoteStatusChanged(quint32, quint8);
 
 };
 
