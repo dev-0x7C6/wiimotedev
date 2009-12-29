@@ -1,0 +1,20 @@
+#!/sbin/runscript
+# Distributed under the terms of the GNU General Public License, v2 or later
+
+
+depend() {
+	need dbus
+}
+
+start() {
+	ebegin "Starting Wiimotedev Server daemon"
+
+        start-stop-daemon --start -q --exec /usr/sbin/wiimotedev
+	eend $?
+}
+
+stop() {
+	ebegin "Stopping Wiimotedev Server daemon"
+	start-stop-daemon --stop -q --pidfile /var/run/wiimotedev.pid
+	eend $?
+}

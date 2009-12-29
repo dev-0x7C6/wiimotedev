@@ -18,6 +18,16 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+#include <syslog.h>
+#include <string.h>
+
 #include <QCoreApplication>
 #include <QFile>
 #include <QTextStream>
@@ -46,7 +56,33 @@ DataLogger dataLogger;
 
 int main(int argc, char *argv[])
 {
+    pid_t pid, sid;
+
+    pid = fork();
+    if (pid < 0) exit(EXIT_FAILURE);
+    if (pid > 0) exit(EXIT_SUCCESS);
+
+    sid = setsid();
+    if (sid < 0) exit(EXIT_FAILURE);
+    if (chdir("/") < 0) exit(EXIT_FAILURE);
+
+    close(STDIN_FILENO);
+    close(STDOUT_FILENO);
+    close(STDERR_FILENO);
+
+    QFile file(QString::fromUtf8("/var/run/wiimotedev.pid"));
+    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        QTextStream out(&file);
+        out << qint64(sid);
+        file.close();
+    } else
+        exit(EXIT_FAILURE);
+
     QCoreApplication application(argc, argv);
+    application.setApplicationName("wiimotedev daemon");
+    application.setApplicationVersion("0.10");
+
 
     dataLogger.openLog(filePathLogfile);
     dataLogger.setVerboseLevel(4);
