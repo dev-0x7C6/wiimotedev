@@ -83,7 +83,6 @@ void WiimoteConnection::run()
     memset(&nunchuk_mesg, 0, sizeof(struct cwiid_nunchuk_mesg));
     memset(&classic_mesg, 0, sizeof(struct cwiid_classic_mesg));
     memset(&ir_mesg, 0, sizeof(struct cwiid_ir_mesg));
-    struct acc_table wacc_table;
 
     batteryLife = 0;
 
