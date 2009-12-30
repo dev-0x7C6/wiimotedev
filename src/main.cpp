@@ -49,7 +49,7 @@
 int verboseLevel = 7;
 
 QString filePathWiimotedev = "/etc/wiimotedev/wiimotedev.conf";
-QString filePathScancode = "/etc/wiimotedev/scancode.conf";
+QString filePathScancode = "/etc/wiimotedev/scancode.ini";
 QString filePathLogfile = "/var/log/wiimotedev.log";
 
 DataLogger dataLogger;

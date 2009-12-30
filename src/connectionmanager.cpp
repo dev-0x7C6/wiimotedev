@@ -46,7 +46,7 @@ ConnectionManager::ConnectionManager(ProfileManager *manager)
 
     new ConnectionManagerAdaptor(this);
 
-    QDBusConnection connection = QDBusConnection::sessionBus();
+    QDBusConnection connection = QDBusConnection::systemBus();
     connection.registerObject("/ConnectionManager", this);
     connection.registerService("org.wiimotedev.ConnectionManager");
 

@@ -79,7 +79,7 @@ ProfileManager::ProfileManager()
   // DBUS adaptor
     new ProfileManagerAdaptor(this);
 
-    QDBusConnection connection = QDBusConnection::sessionBus();
+    QDBusConnection connection = QDBusConnection::systemBus();
     connection.registerObject("/ProfileManager", this);
     connection.registerService("org.wiimotedev.ProfileManager");
 
@@ -347,7 +347,6 @@ void ProfileManager::buttonStatusChanged(void *object, quint64 value)
         while (event.hasNext())
         {
             event.next();
-            qDebug() << buttons.value(event.key()) << event.value();
             matched = matched && (buttons.value(event.key()) & event.value());
         }
         if (!events.at(i)->getStatus() && matched) {
@@ -368,5 +367,4 @@ void ProfileManager::wiimoteStatusChanged(void *object, quint8 status)
 
 void ProfileManager::recvIRMesg(struct cwiid_ir_mesg ir)
 {
-    //qDebug() << ir.src[0].pos[0] << "x" << ir.src[0].pos[1];
 }

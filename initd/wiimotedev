@@ -3,18 +3,18 @@
 
 
 depend() {
-	need dbus
+	need dbus bluetooth
 }
 
 start() {
-	ebegin "Starting Wiimotedev Server daemon"
+	ebegin "Starting Wiimotedev daemon"
 
         start-stop-daemon --start -q --exec /usr/sbin/wiimotedev
 	eend $?
 }
 
 stop() {
-	ebegin "Stopping Wiimotedev Server daemon"
+	ebegin "Stopping Wiimotedev daemon"
 	start-stop-daemon --stop -q --pidfile /var/run/wiimotedev.pid
 	eend $?
 }
