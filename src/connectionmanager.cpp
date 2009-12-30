@@ -98,6 +98,7 @@ void ConnectionManager::registerConnection(void *object)
     connect(connection, SIGNAL(dbusButtonStatusChanged(quint32,quint64)), this, SIGNAL(dbusButtonStatusChanged(quint32,quint64)), Qt::DirectConnection);
     connect(connection, SIGNAL(dbusInfraredTableChanged(quint32,cwiid_ir_mesg)), this, SIGNAL(dbusInfraredTableChanged(quint32,cwiid_ir_mesg)), Qt::DirectConnection);
     connect(connection, SIGNAL(dbusWiimoteStatusChanged(quint32,quint8)), this, SIGNAL(dbusWiimoteStatusChanged(quint32,quint8)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteAccTableChanged(quint32,quint8,quint8,quint8,qreal,qreal)), this, SIGNAL(dbusWiimoteAccTableChanged(quint32,quint8,quint8,quint8,qreal,qreal)), Qt::DirectConnection);
 
     connect(connection, SIGNAL(unregisterConnection(void*)), this, SLOT(unregisterConnection(void*)), Qt::QueuedConnection);
     connect(connection, SIGNAL(wiimoteStatusChanged(void*,quint8)), managerObject, SLOT(wiimoteStatusChanged(void*,quint8)), Qt::DirectConnection);

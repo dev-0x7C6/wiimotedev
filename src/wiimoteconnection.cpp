@@ -83,6 +83,7 @@ void WiimoteConnection::run()
     memset(&nunchuk_mesg, 0, sizeof(struct cwiid_nunchuk_mesg));
     memset(&classic_mesg, 0, sizeof(struct cwiid_classic_mesg));
     memset(&ir_mesg, 0, sizeof(struct cwiid_ir_mesg));
+    struct acc_table wacc_table;
 
     batteryLife = 0;
 
@@ -167,7 +168,10 @@ void WiimoteConnection::run()
                 if (z <= 0.0)
                    roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
                 roll *= -1;
-                pitch = atan(y / z * cos(roll));
+                if (z)
+                    pitch = atan(y / z * cos(roll));
+
+                emit dbusWiimoteAccTableChanged(getWiimoteSequence(), mesg[i].acc_mesg.acc[0], mesg[i].acc_mesg.acc[1], mesg[i].acc_mesg.acc[2], pitch, roll);
 
                 buttons = buttons & wiimoteTiltFilter;
 

@@ -92,6 +92,7 @@ signals:
    void dbusButtonStatusChanged(quint32, quint64);
    void dbusInfraredTableChanged(quint32, struct cwiid_ir_mesg ir);
    void dbusWiimoteStatusChanged(quint32, quint8);
+   void dbusWiimoteAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
 
 };
 

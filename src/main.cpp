@@ -79,6 +79,7 @@ int main(int argc, char *argv[])
     } else
         exit(EXIT_FAILURE);
 
+
     QCoreApplication application(argc, argv);
     application.setApplicationName("wiimotedev daemon");
     application.setApplicationVersion("0.10");

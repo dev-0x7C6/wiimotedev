@@ -50,20 +50,28 @@ class ConnectionManagerAdaptor : public QDBusAbstractAdaptor
      "      <arg type=\"s\" direction=\"out\"/>\n"
      "    </method>\n"
      "    <signal name=\"dbusBatteryLifeChanged\">\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "      <arg type=\"u\" direction=\"in\"/>\n"
+     "      <arg type=\"y\" direction=\"in\"/>\n"
      "    </signal>\n"
      "    <signal name=\"dbusButtonStatusChanged\">\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "      <arg type=\"u\" direction=\"in\"/>\n"
+     "      <arg type=\"t\" direction=\"in\"/>\n"
      "    </signal>\n"
      "    <signal name=\"dbusInfraredTableChanged\">\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "      <arg type=\"u\" direction=\"in\"/>\n"
+     "      <arg type=\"r\" direction=\"in\"/>\n"
+     "    </signal>\n"
+     "    <signal name=\"dbusWiimoteAccTableChanged\">\n"
+     "      <arg type=\"u\" direction=\"in\"/>\n"
+     "      <arg type=\"y\" direction=\"in\"/>\n"
+     "      <arg type=\"y\" direction=\"in\"/>\n"
+     "      <arg type=\"y\" direction=\"in\"/>\n"
+     "      <arg type=\"d\" direction=\"in\"/>\n"
+     "      <arg type=\"d\" direction=\"in\"/>\n"
      "    </signal>\n"
      "    <signal name=\"dbusWiimoteStatusChanged\">\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
-     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "      <arg type=\"u\" direction=\"in\"/>\n"
+     "      <arg type=\"y\" direction=\"in\"/>\n"
      "    </signal>\n"
      "  </interface>\n"
      "")
@@ -74,7 +82,8 @@ public:
 signals:
     void dbusBatteryLifeChanged(quint32, quint8);
     void dbusButtonStatusChanged(quint32, quint64);
-    void dbusInfraredTableChanged(quint32, struct cwiid_ir_mesg ir);
+    void dbusInfraredTableChanged(quint32, struct cwiid_ir_mesg);
+    void dbusWiimoteAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
     void dbusWiimoteStatusChanged(quint32, quint8);
 
 };
@@ -113,6 +122,7 @@ signals:
     void dbusBatteryLifeChanged(quint32, quint8);
     void dbusButtonStatusChanged(quint32, quint64);
     void dbusInfraredTableChanged(quint32, struct cwiid_ir_mesg ir);
+    void dbusWiimoteAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
     void dbusWiimoteStatusChanged(quint32, quint8);
 
 };
