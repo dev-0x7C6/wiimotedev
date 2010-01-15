@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-//#define __daemon
+#define __daemon
 
 #ifdef __daemon
     #include <sys/types.h>
