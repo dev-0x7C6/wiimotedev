@@ -38,7 +38,6 @@ extern quint64 classicRStickFilter;
 
 WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
 {
-    qRegisterMetaType< struct cwiid_ir_mesg>("struct cwiid_ir_mesg");
     deviceStatus = device_wiimote_connected;
     memset(&wiimote_calibration, 0, sizeof(struct acc_cal));
     memset(&nunchuk_calibration, 0, sizeof(struct acc_cal));
@@ -134,7 +133,17 @@ void WiimoteConnection::run()
 
             case CWIID_MESG_IR:
                 emit infraredTableChanged(static_cast< void*>( this), mesg[i].ir_mesg);
-                emit dbusInfraredTableChanged(getWiimoteSequence(), mesg[i].ir_mesg);
+                {
+                    QStringList table;
+                    for (register int j = 0; j < 4; ++j)
+                    {
+                        table << QString::number(mesg[i].ir_mesg.src[j].valid ? mesg[i].ir_mesg.src[j].size : -1);
+                        table << QString::number(mesg[i].ir_mesg.src[j].pos[0]);
+                        table << QString::number(mesg[i].ir_mesg.src[j].pos[1]);
+                    }
+                    emit dbusInfraredTableChanged(getWiimoteSequence(), table);
+                }
+
                 break;
 
             case CWIID_MESG_BTN:
@@ -168,9 +177,13 @@ void WiimoteConnection::run()
                    roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
                 roll *= -1;
                 if (z)
-                    pitch = atan(y / z * cos(roll));
+                    pitch = atan(y / z * cos(roll)); else pitch = 0.0;
 
-                emit dbusWiimoteAccTableChanged(getWiimoteSequence(), mesg[i].acc_mesg.acc[0], mesg[i].acc_mesg.acc[1], mesg[i].acc_mesg.acc[2], pitch, roll);
+                emit dbusWiimoteAccTableChanged(getWiimoteSequence(),
+                                                mesg[i].acc_mesg.acc[0],
+                                                mesg[i].acc_mesg.acc[1],
+                                                mesg[i].acc_mesg.acc[2],
+                                                pitch, roll);
 
                 buttons = buttons & wiimoteTiltFilter;
 
@@ -194,7 +207,14 @@ void WiimoteConnection::run()
                 if (z <= 0.0)
                    roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
                 roll *= -1;
-                pitch = atan(y / z * cos(roll));
+                if (z)
+                   pitch = atan(y / z * cos(roll)); else pitch = 0.0;
+
+                emit dbusNunchukAccTableChanged(getWiimoteSequence(),
+                                                mesg[i].nunchuk_mesg.acc[0],
+                                                mesg[i].nunchuk_mesg.acc[1],
+                                                mesg[i].nunchuk_mesg.acc[2],
+                                                pitch, roll);
 
                 buttons = buttons & nunchukTiltFilter;
 

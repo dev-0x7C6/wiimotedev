@@ -24,9 +24,9 @@
 #include <QObject>
 #include <QThread>
 #include <QMap>
-#include <QMetaType>
 #include <QTime>
 #include <QTimer>
+#include <QStringList>
 #include "cwiid.h"
 
 const quint8 device_disconnected = 0x00;
@@ -85,13 +85,14 @@ signals:
    void wiimoteStatusChanged(void*, quint8);
    void batteryLifeChanged(void*, quint8);
    void buttonStatusChanged(void*, quint64);
-   void infraredTableChanged(void*, struct cwiid_ir_mesg);
+   void infraredTableChanged(void*, cwiid_ir_mesg);
 
 signals:
    void dbusBatteryLifeChanged(quint32, quint8);
    void dbusButtonStatusChanged(quint32, quint64);
-   void dbusInfraredTableChanged(quint32, struct cwiid_ir_mesg ir);
+   void dbusInfraredTableChanged(quint32, QStringList);
    void dbusWiimoteStatusChanged(quint32, quint8);
+   void dbusNunchukAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
    void dbusWiimoteAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
 
 };

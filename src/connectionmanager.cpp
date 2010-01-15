@@ -33,8 +33,15 @@ ConnectionManagerAdaptor::ConnectionManagerAdaptor(QObject *parent) : QDBusAbstr
     setAutoRelaySignals(true);
 }
 
+QStringList ConnectionManagerAdaptor::dbusGetWiimoteList()
+{
+    QStringList value;
+    QMetaObject::invokeMethod(parent(), "dbusGetWiimoteList", Q_RETURN_ARG(QStringList, value));
+    return value;
+}
 
-ConnectionManager::ConnectionManager(ProfileManager *manager)
+
+ConnectionManager::ConnectionManager()
 {
     QSettings settings(filePathWiimotedev, QSettings::IniFormat);
     settings.beginGroup(sequenceGroup);
@@ -48,9 +55,8 @@ ConnectionManager::ConnectionManager(ProfileManager *manager)
 
     QDBusConnection connection = QDBusConnection::systemBus();
     connection.registerObject("/ConnectionManager", this);
-    connection.registerService("org.wiimotedev.ConnectionManager");
+    connection.registerService("org.wiimotedev.daemon.ConnectionManager");
 
-    managerObject = manager;
     terminateReq = false;
     bdaddr_any = *BDADDR_ANY;
 
@@ -93,16 +99,16 @@ void ConnectionManager::registerConnection(void *object)
     if (connection->getWiimoteSequence())
         connection->setLedStatus(connection->getWiimoteSequence());
 
-
+  // dbus interface
     connect(connection, SIGNAL(dbusBatteryLifeChanged(quint32,quint8)), this, SIGNAL(dbusBatteryLifeChanged(quint32,quint8)), Qt::DirectConnection);
     connect(connection, SIGNAL(dbusButtonStatusChanged(quint32,quint64)), this, SIGNAL(dbusButtonStatusChanged(quint32,quint64)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusInfraredTableChanged(quint32,cwiid_ir_mesg)), this, SIGNAL(dbusInfraredTableChanged(quint32,cwiid_ir_mesg)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusInfraredTableChanged(quint32,QStringList)), this, SIGNAL(dbusInfraredTableChanged(quint32,QStringList)), Qt::DirectConnection);
     connect(connection, SIGNAL(dbusWiimoteStatusChanged(quint32,quint8)), this, SIGNAL(dbusWiimoteStatusChanged(quint32,quint8)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukAccTableChanged(quint32,quint8,quint8,quint8,qreal,qreal)), this, SIGNAL(dbusNunchukAccTableChanged(quint32,quint8,quint8,quint8,qreal,qreal)), Qt::DirectConnection);
     connect(connection, SIGNAL(dbusWiimoteAccTableChanged(quint32,quint8,quint8,quint8,qreal,qreal)), this, SIGNAL(dbusWiimoteAccTableChanged(quint32,quint8,quint8,quint8,qreal,qreal)), Qt::DirectConnection);
 
+  // profile interface
     connect(connection, SIGNAL(unregisterConnection(void*)), this, SLOT(unregisterConnection(void*)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(wiimoteStatusChanged(void*,quint8)), managerObject, SLOT(wiimoteStatusChanged(void*,quint8)), Qt::DirectConnection);
-    connect(connection, SIGNAL(buttonStatusChanged(void*,quint64)), managerObject, SLOT(buttonStatusChanged(void*, quint64)), Qt::DirectConnection);
     connection->start();
 }
 

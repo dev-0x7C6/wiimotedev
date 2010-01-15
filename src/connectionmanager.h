@@ -31,22 +31,14 @@
 #include <QTime>
 
 #include "wiimoteconnection.h"
-#include "profilemanager.h"
-
 
 class ConnectionManagerAdaptor : public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.ConnectionManager")
+    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.daemon.ConnectionManager")
     Q_CLASSINFO("D-Bus Introspection", ""
-     "  <interface name=\"org.wiimotedev.ConnectionManager\">\n"
-     "    <method name=\"reloadConfiguration\">\n"
-     "      <arg type=\"s\" direction=\"out\"/>\n"
-     "    </method>\n"
-     "    <method name=\"authorizedWiiremoteList\">\n"
-     "      <arg type=\"s\" direction=\"out\"/>\n"
-     "    </method>\n"
-     "    <method name=\"unauthorizedWiiremoteList\">\n"
+     "  <interface name=\"org.wiimotedev.daemon.ConnectionManager\">\n"
+     "    <method name=\"dbusGetWiimoteList\">\n"
      "      <arg type=\"s\" direction=\"out\"/>\n"
      "    </method>\n"
      "    <signal name=\"dbusBatteryLifeChanged\">\n"
@@ -59,7 +51,15 @@ class ConnectionManagerAdaptor : public QDBusAbstractAdaptor
      "    </signal>\n"
      "    <signal name=\"dbusInfraredTableChanged\">\n"
      "      <arg type=\"u\" direction=\"in\"/>\n"
-     "      <arg type=\"r\" direction=\"in\"/>\n"
+     "      <arg type=\"s\" direction=\"in\"/>\n"
+     "    </signal>\n"
+     "    <signal name=\"dbusNunchukAccTableChanged\">\n"
+     "      <arg type=\"u\" direction=\"in\"/>\n"
+     "      <arg type=\"y\" direction=\"in\"/>\n"
+     "      <arg type=\"y\" direction=\"in\"/>\n"
+     "      <arg type=\"y\" direction=\"in\"/>\n"
+     "      <arg type=\"d\" direction=\"in\"/>\n"
+     "      <arg type=\"d\" direction=\"in\"/>\n"
      "    </signal>\n"
      "    <signal name=\"dbusWiimoteAccTableChanged\">\n"
      "      <arg type=\"u\" direction=\"in\"/>\n"
@@ -79,11 +79,16 @@ public:
     ConnectionManagerAdaptor(QObject *parent);
     virtual ~ConnectionManagerAdaptor(){};
 
+    QStringList dbusGetWiimoteList();
+
 signals:
     void dbusBatteryLifeChanged(quint32, quint8);
     void dbusButtonStatusChanged(quint32, quint64);
-    void dbusInfraredTableChanged(quint32, struct cwiid_ir_mesg);
+    void dbusInfraredTableChanged(quint32, QStringList);
+    void dbusNunchukAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
     void dbusWiimoteAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
+    void dbusWiimoteConnected(quint32);
+    void dbusWiimoteDisconnected(quint32);
     void dbusWiimoteStatusChanged(quint32, quint8);
 
 };
@@ -102,10 +107,9 @@ private:
 
     ConnectionManagerAdaptor *adaptor;
     WiimoteConnection *connectionObject;
-    ProfileManager *managerObject;
 
 public:
-    ConnectionManager(ProfileManager *manager = 0);
+    ConnectionManager();
    ~ConnectionManager();
 
 protected:
@@ -121,8 +125,11 @@ signals:
 signals:
     void dbusBatteryLifeChanged(quint32, quint8);
     void dbusButtonStatusChanged(quint32, quint64);
-    void dbusInfraredTableChanged(quint32, struct cwiid_ir_mesg ir);
+    void dbusInfraredTableChanged(quint32, QStringList);
+    void dbusNunchukAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
     void dbusWiimoteAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
+    void dbusWiimoteConnected(quint32);
+    void dbusWiimoteDisconnected(quint32);
     void dbusWiimoteStatusChanged(quint32, quint8);
 
 };

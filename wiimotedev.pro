@@ -15,15 +15,11 @@ OBJECTS_DIR = cache
 
 SOURCES += src/main.cpp \
     src/wiimoteconnection.cpp \
-    src/profilemanager.cpp \
     src/connectionmanager.cpp \
-    src/uinput.cpp \
     src/datalogger.cpp
 
 HEADERS += src/wiimoteconnection.h \
-    src/profilemanager.h \
     src/connectionmanager.h \
-    src/uinput.h \
     src/datalogger.h
 
 unix {
