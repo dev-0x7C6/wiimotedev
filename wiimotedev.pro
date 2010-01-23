@@ -12,31 +12,24 @@ UI_DIR = cache
 MOC_DIR = cache
 RCC_DIR = cache
 OBJECTS_DIR = cache
-
 SOURCES += src/main.cpp \
     src/wiimoteconnection.cpp \
-    src/connectionmanager.cpp \
-    src/datalogger.cpp
-
+    src/connectionmanager.cpp
 HEADERS += src/wiimoteconnection.h \
-    src/connectionmanager.h \
-    src/datalogger.h
-
-unix {
+    src/connectionmanager.h
+unix { 
     INSTALL_PREFIX = /usr/sbin/
     CONFIG_PREFIX = /etc/wiimotedev/
     INITD_PREFIX = /etc/init.d/
     DBUS_PREFIX = /etc/dbus-1/system.d/
-
     target.path = $${INSTALL_PREFIX}
     config.path = $${CONFIG_PREFIX}
     config.files = default/scancode.ini \
-                   default/wiimotedev.conf
+        default/wiimotedev.conf
     initd.path = $${INITD_PREFIX}
     initd.files = initd/wiimotedev
     dbus.path = $${DBUS_PREFIX}
     dbus.files = dbus-1/org.wiimotedev.conf
-
     INSTALLS = target \
         config \
         initd \

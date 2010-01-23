@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#define __daemon
+//#define __daemon
 
 #ifdef __daemon
     #include <sys/types.h>
@@ -28,8 +28,10 @@
     #include <fcntl.h>
     #include <errno.h>
     #include <unistd.h>
-    #include <syslog.h>
     #include <string.h>
+#else
+    #include <syslog.h>
+    #include <signal.h>
 #endif
 
 #include <QCoreApplication>
@@ -37,21 +39,17 @@
 #include <QTextStream>
 #include "src/connectionmanager.h"
 
-#include "datalogger.h"
 
 const QString confFile("/etc/wiimotedev/wiimotedev.conf");
 const QString scancodeFile("/etc/wiimotedev/scancode.ini");
 
 const QString pidFile("/var/run/wiimotedev.pid");
-const QString logFile("/var/log/wiimotedev.log");
 
 int verboseLevel = 7;
 
 QString filePathWiimotedev = "/etc/wiimotedev/wiimotedev.conf";
 QString filePathScancode = "/etc/wiimotedev/scancode.ini";
 QString filePathLogfile = "/var/log/wiimotedev.log";
-
-DataLogger logfile;
 
 QMap < QString, quint64> devicebuttons;
 QMap < QString, quint16> scancodes;
@@ -73,6 +71,24 @@ QMap < QString, quint16> scancodes;
     quint64 classicLStickFilter = 0;
     quint64 classicRStickFilter = 0;
     quint64 classicTiltFilter = 0;
+
+QCoreApplication *application = 0;
+
+void signal_handler(int sig) {
+    switch(sig) {
+        case SIGHUP:
+            application->quit();
+            syslog(LOG_WARNING, "Received SIGHUP signal.");
+            break;
+        case SIGTERM:
+            application->quit();
+            syslog(LOG_WARNING, "Received SIGTERM signal.");
+            break;
+        default:
+            syslog(LOG_WARNING, "Unhandled signal (%d) %s", strsignal(sig));
+            break;
+        }
+}
 
 int main(int argc, char *argv[])
 {    
@@ -101,15 +117,20 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
 #endif
 
+    application = new QCoreApplication(argc, argv);
+    application->setApplicationName("Wiimotedev daemon");
+    application->setApplicationVersion("0.10");
 
-    QCoreApplication application(argc, argv);
-    application.setApplicationName("Wiimotedev daemon");
-    application.setApplicationVersion("0.10");
+    setlogmask(LOG_UPTO(LOG_INFO));
+    openlog("Wiimotedev daemon", LOG_CONS, LOG_USER);
 
-    logfile.openLog(logFile);
-    logfile.setVerboseLevel(4);
-    logfile.addLine("");
-    logfile.addInfoLine("wiimotedev logging started");
+    syslog(LOG_INFO, "Wiimotedev daemon started");
+
+    signal(SIGHUP, signal_handler);
+    signal(SIGTERM, signal_handler);
+    signal(SIGINT, signal_handler);
+    signal(SIGQUIT, signal_handler);
+
 
     devicebuttons.insert("wiimote.1", static_cast< quint64>(  true) << devicebuttons.count());
     devicebuttons.insert("wiimote.2", static_cast< quint64>( true) << devicebuttons.count());
@@ -260,9 +281,10 @@ int main(int argc, char *argv[])
     ConnectionManager manager;
     manager.start();
 
+    application->exec();
+    delete application;
 
-    return application.exec();
+    syslog(LOG_INFO, "Wiimotedev daemon closed");
 
-    logfile.addInfoLine("wiimotedev logging finished");
-    logfile.closeLog();
+    exit(EXIT_SUCCESS);
 }
