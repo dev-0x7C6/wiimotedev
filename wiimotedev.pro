@@ -3,6 +3,9 @@
 # -------------------------------------------------
 QT += dbus
 QT -= gui
+
+DEFINES += __syslog
+
 LIBS += -lcwiid
 TARGET = wiimotedev
 CONFIG += console

@@ -34,8 +34,6 @@ const quint8 device_wiimote_connected = 0x01;
 const quint8 device_nunchuk_connected = 0x02;
 const quint8 device_classic_connected = 0x04;
 
-extern int verboseLevel;
-
 class WiimoteConnection : public QThread
 {
     Q_OBJECT

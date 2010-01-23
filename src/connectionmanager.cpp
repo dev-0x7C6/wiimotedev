@@ -90,8 +90,9 @@ void ConnectionManager::registerConnection(void *object)
 {
     WiimoteConnection *connection = static_cast< WiimoteConnection*>( object);
 
-    if (verboseLevel >= 4)
-        qDebug(QString("Wiimotedev: connection established: %1").arg(connection->getWiimoteSAddr()).toAscii());
+#ifdef __syslog
+    syslog(LOG_NOTICE, "Connection established with %s", connection->getWiimoteSAddr().toAscii().data());
+#endif
 
     connection->setWiimoteSequence(wiiremoteSequence.value(connection->getWiimoteSAddr(), 0));
     if (connection->getWiimoteSequence())
@@ -115,9 +116,9 @@ void ConnectionManager::unregisterConnection(void *object)
     WiimoteConnection *connection = static_cast< WiimoteConnection*>( object);
     disconnect(connection, 0, 0, 0);
 
-    if (verboseLevel >= 4)
-        qDebug(QString("Wiimotedev: connection closed: %1").arg(connection->getWiimoteSAddr()).toAscii());
-
+#ifdef __syslog
+    syslog(LOG_NOTICE, "Connection closed %s", connection->getWiimoteSAddr().toAscii().data());
+#endif
 
     connection->wait();
     delete connection;

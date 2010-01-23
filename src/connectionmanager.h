@@ -21,6 +21,10 @@
 #ifndef CONNECTIONMANAGER_H
 #define CONNECTIONMANAGER_H
 
+#ifdef __syslog
+    #include <syslog.h>
+#endif
+
 #include <QDBusAbstractAdaptor>
 #include <QtDBus>
 

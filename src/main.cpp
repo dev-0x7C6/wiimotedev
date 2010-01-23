@@ -31,13 +31,13 @@
     #include <errno.h>
     #include <unistd.h>
     #include <string.h>
-
-    #include <syslog.h>
-    #include <signal.h>
-#else
-    #include <syslog.h>
-    #include <signal.h>
 #endif
+
+#ifdef __syslog
+    #include <syslog.h>
+#endif
+
+#include <signal.h>
 
 #include <QCoreApplication>
 #include <QFile>
@@ -47,10 +47,7 @@
 
 const QString confFile("/etc/wiimotedev/wiimotedev.conf");
 const QString scancodeFile("/etc/wiimotedev/scancode.ini");
-
 const QString pidFile("/var/run/wiimotedev.pid");
-
-int verboseLevel = 7;
 
 QString filePathWiimotedev = "/etc/wiimotedev/wiimotedev.conf";
 QString filePathScancode = "/etc/wiimotedev/scancode.ini";
@@ -83,14 +80,25 @@ void signal_handler(int sig) {
     switch(sig) {
         case SIGHUP:
             application->quit();
+#ifdef __syslog
             syslog(LOG_WARNING, "Received SIGHUP signal.");
+#endif
             break;
         case SIGTERM:
             application->quit();
+#ifdef __syslog
             syslog(LOG_WARNING, "Received SIGTERM signal.");
+#endif
             break;
+        case SIGKILL:
+            application->quit();
+#ifdef __syslog
+            syslog(LOG_WARNING, "Received SIGKILL signal.");
+#endif
         default:
-            syslog(LOG_WARNING, "Unhandled signal (%d) %s", strsignal(sig));
+#ifdef __syslog
+            syslog(LOG_WARNING, "Unhandled signal %s", strsignal(sig));
+#endif
             break;
         }
 }
@@ -128,10 +136,11 @@ int main(int argc, char *argv[])
     application->setApplicationName("Wiimotedev daemon");
     application->setApplicationVersion("0.10");
 
+#ifdef __syslog
     setlogmask(LOG_UPTO(LOG_INFO));
     openlog("Wiimotedev daemon", LOG_CONS, LOG_USER);
-
     syslog(LOG_INFO, "Wiimotedev daemon started");
+#endif
 
     signal(SIGHUP, signal_handler);
     signal(SIGTERM, signal_handler);
@@ -291,7 +300,9 @@ int main(int argc, char *argv[])
     application->exec();
     delete application;
 
+#ifdef __syslog
     syslog(LOG_INFO, "Wiimotedev daemon closed");
+#endif
 
     exit(EXIT_SUCCESS);
 }

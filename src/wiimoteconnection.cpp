@@ -54,10 +54,6 @@ void WiimoteConnection::run()
 {
     if (!device) return;
 
-    if (verboseLevel >= 4)
-        qDebug(QString("Wiimotedev: starting thread 0x%1").arg(QString::number(currentThreadId(), 0x10)).toAscii());
-
-
     timer = new QTimer();
     connect(timer, SIGNAL(timeout()), this, SLOT(getBatteryStatus()), Qt::DirectConnection);
     timer->setInterval(60000);
@@ -70,10 +66,8 @@ void WiimoteConnection::run()
     struct timespec time;
 
     quint16 wiimotebtn = 0;
-    quint16 nunchukbtn = 0;
-    quint16 classicbtn = 0;
 
-    double x, y, z, acc, roll, pitch;
+    double x, y, z, roll, pitch;
       
     struct cwiid_nunchuk_mesg nunchuk_mesg;
     struct cwiid_classic_mesg classic_mesg;
@@ -127,6 +121,8 @@ void WiimoteConnection::run()
                             emit wiimoteStatusChanged(static_cast< void*>( this), deviceStatus);
                             emit dbusWiimoteStatusChanged(getWiimoteSequence(), deviceStatus);
                         }
+                        break;
+                    default:
                         break;
                 }
                 break;
@@ -295,6 +291,9 @@ void WiimoteConnection::run()
                     if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_RIGHT) buttons |= devicebuttons.value("classic.right");
                 }
                 break;
+
+            default:
+                break;
         }
 
 
@@ -309,9 +308,6 @@ void WiimoteConnection::run()
     }
 
     cwiid_close(device);
-
-    if (verboseLevel >= 4)
-        qDebug(QString("Wiimotedev: is going down 0x%1").arg(QString::number(currentThreadId(), 0x10)).toAscii());
 
     timer->stop();
     disconnect(timer, 0, 0, 0);
