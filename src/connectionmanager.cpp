@@ -21,10 +21,8 @@
 #include <QSettings>
 
 #include "connectionmanager.h"
-#include "datalogger.h"
 
 extern QString filePathWiimotedev;
-extern DataLogger dataLogger;
 
 const QString sequenceGroup("sequence");
 

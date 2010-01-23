@@ -18,7 +18,9 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-//#define __daemon
+#ifdef QT_NO_DEBUG
+    #define __daemon
+#endif
 
 #ifdef __daemon
     #include <sys/types.h>
@@ -29,6 +31,9 @@
     #include <errno.h>
     #include <unistd.h>
     #include <string.h>
+
+    #include <syslog.h>
+    #include <signal.h>
 #else
     #include <syslog.h>
     #include <signal.h>
@@ -115,6 +120,8 @@ int main(int argc, char *argv[])
         file.close();
     } else
         exit(EXIT_FAILURE);
+#else
+    qDebug("In debug mode daemon functions will be disabled");
 #endif
 
     application = new QCoreApplication(argc, argv);
