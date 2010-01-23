@@ -22,6 +22,9 @@
     #define __daemon
 #endif
 
+#define DAEMON_NAME "Wiimotedev"
+#define PID_FILE "/var/run/wiimotedev.pid"
+
 #ifdef __daemon
     #include <sys/types.h>
     #include <sys/stat.h>
@@ -47,7 +50,6 @@
 
 const QString confFile("/etc/wiimotedev/wiimotedev.conf");
 const QString scancodeFile("/etc/wiimotedev/scancode.ini");
-const QString pidFile("/var/run/wiimotedev.pid");
 
 QString filePathWiimotedev = "/etc/wiimotedev/wiimotedev.conf";
 QString filePathScancode = "/etc/wiimotedev/scancode.ini";
@@ -79,28 +81,12 @@ QCoreApplication *application = 0;
 void signal_handler(int sig) {
     switch(sig) {
         case SIGHUP:
-            application->quit();
-#ifdef __syslog
-            syslog(LOG_WARNING, "Received SIGHUP signal.");
-#endif
-            break;
         case SIGTERM:
+        case SIGINT:
+        case SIGQUIT:
             application->quit();
-#ifdef __syslog
-            syslog(LOG_WARNING, "Received SIGTERM signal.");
-#endif
             break;
-        case SIGKILL:
-            application->quit();
-#ifdef __syslog
-            syslog(LOG_WARNING, "Received SIGKILL signal.");
-#endif
-        default:
-#ifdef __syslog
-            syslog(LOG_WARNING, "Unhandled signal %s", strsignal(sig));
-#endif
-            break;
-        }
+    }
 }
 
 int main(int argc, char *argv[])
@@ -120,7 +106,7 @@ int main(int argc, char *argv[])
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
 
-    QFile file(pidFile);
+    QFile file(PID_FILE);
     if (file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
         QTextStream out(&file);
@@ -133,13 +119,13 @@ int main(int argc, char *argv[])
 #endif
 
     application = new QCoreApplication(argc, argv);
-    application->setApplicationName("Wiimotedev daemon");
+    application->setApplicationName(DAEMON_NAME);
     application->setApplicationVersion("0.10");
 
 #ifdef __syslog
     setlogmask(LOG_UPTO(LOG_INFO));
-    openlog("Wiimotedev daemon", LOG_CONS, LOG_USER);
-    syslog(LOG_INFO, "Wiimotedev daemon started");
+    openlog(DAEMON_NAME, LOG_CONS, LOG_USER);
+    syslog(LOG_INFO, "daemon started");
 #endif
 
     signal(SIGHUP, signal_handler);
@@ -301,7 +287,7 @@ int main(int argc, char *argv[])
     delete application;
 
 #ifdef __syslog
-    syslog(LOG_INFO, "Wiimotedev daemon closed");
+    syslog(LOG_INFO, "daemon closed");
 #endif
 
     exit(EXIT_SUCCESS);
