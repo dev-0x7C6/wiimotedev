@@ -4,6 +4,10 @@
 QT += dbus
 QT -= gui
 
+OTHER_FILES += dbus-1/org.wiimotedev.conf \
+    initd/wiimotedev \
+    default/wiimotedev.conf
+
 DEFINES += __syslog
 
 LIBS += -lcwiid
