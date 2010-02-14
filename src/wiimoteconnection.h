@@ -23,16 +23,12 @@
 
 #include <QObject>
 #include <QThread>
+#include <QMetaType>
 #include <QMap>
 #include <QTime>
 #include <QTimer>
-#include <QStringList>
-#include "cwiid.h"
-
-const quint8 device_disconnected = 0x00;
-const quint8 device_wiimote_connected = 0x01;
-const quint8 device_nunchuk_connected = 0x02;
-const quint8 device_classic_connected = 0x04;
+#include <cwiid.h>
+#include "wiimotedev.h"
 
 class WiimoteConnection : public QThread
 {
@@ -41,18 +37,11 @@ class WiimoteConnection : public QThread
 private:
     QTimer *timer;
     cwiid_wiimote_t *device;
-    quint8 batteryLife;
-    quint8 newBatteryLife;
-
-    quint8 deviceStatus;
 
     bool connected;
     bdaddr_t wiimotebdaddr;
     int id;
     int sequence;
-
-    struct acc_cal wiimote_calibration;
-    struct acc_cal nunchuk_calibration;
 
 private slots:
     void getBatteryStatus();
@@ -80,19 +69,28 @@ signals:
    void registerConnection(void*);
    void unregisterConnection(void*);
 
-   void wiimoteStatusChanged(void*, quint8);
-   void batteryLifeChanged(void*, quint8);
-   void buttonStatusChanged(void*, quint64);
-   void infraredTableChanged(void*, cwiid_ir_mesg);
-
 signals:
-   void dbusBatteryLifeChanged(quint32, quint8);
-   void dbusButtonStatusChanged(quint32, quint64);
-   void dbusInfraredTableChanged(quint32, QStringList);
-   void dbusWiimoteStatusChanged(quint32, quint8);
-   void dbusNunchukAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
-   void dbusWiimoteAccTableChanged(quint32, quint8, quint8, quint8, qreal, qreal);
+   void dbusWiimoteGeneralButtons(quint32, quint64);
 
+   void dbusWiimoteConnected(quint32);
+   void dbusWiimoteDisconnected(quint32);
+   void dbusWiimoteBatteryLife(quint32, quint8);
+   void dbusWiimoteButtons(quint32, quint64);
+   void dbusWiimoteStatus(quint32, quint8);
+   void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
+   void dbusWiimoteAcc(quint32, struct accdata);
+
+   void dbusNunchukPlugged(quint32);
+   void dbusNunchukUnplugged(quint32);
+   void dbusNunchukButtons(quint32, quint64);
+   void dbusNunchukStick(quint32, struct stickdata);
+   void dbusNunchukAcc(quint32, struct accdata);
+
+   void dbusClassicControllerPlugged(quint32);
+   void dbusClassicControllerUnplugged(quint32);
+   void dbusClassicControllerButtons(quint32, quint64);
+   void dbusClassicControllerLStick(quint32, struct stickdata);
+   void dbusClassicControllerRStick(quint32, struct stickdata);
 };
 
 #endif // WIIMOTECONNECTION_H

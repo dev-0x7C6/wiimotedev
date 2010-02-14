@@ -19,28 +19,12 @@
  ***************************************************************************/
 
 #include "wiimoteconnection.h"
+
 #include <QtDebug>
 #include <math.h>
 
-extern QMap< QString, quint64> devicebuttons;
-extern quint64 wiimoteButtonFilter;
-extern quint64 wiimoteShiftFilter;
-extern quint64 wiimoteTiltFilter;
-
-extern quint64 nunchukButtonFilter;
-extern quint64 nunchukShiftFilter;
-extern quint64 nunchukStickFilter;
-extern quint64 nunchukTiltFilter;
-
-extern quint64 classicButtonFilter;
-extern quint64 classicLStickFilter;
-extern quint64 classicRStickFilter;
-
 WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
 {
-    deviceStatus = device_wiimote_connected;
-    memset(&wiimote_calibration, 0, sizeof(struct acc_cal));
-    memset(&nunchuk_calibration, 0, sizeof(struct acc_cal));
     connected = false;
     id = 0;
     setTerminationEnabled(true);
@@ -53,31 +37,61 @@ WiimoteConnection::~WiimoteConnection()
 void WiimoteConnection::run()
 {
     if (!device) return;
+    emit dbusWiimoteConnected(sequence);
 
     timer = new QTimer();
     connect(timer, SIGNAL(timeout()), this, SLOT(getBatteryStatus()), Qt::DirectConnection);
     timer->setInterval(60000);
     timer->start();
 
-    quint64 buttons = 0;
-    quint64 lastbtn = 0;
     int count;
     union cwiid_mesg *mesg;
     struct timespec time;
 
-    quint16 wiimotebtn = 0;
-
     double x, y, z, roll, pitch;
       
-    struct cwiid_nunchuk_mesg nunchuk_mesg;
-    struct cwiid_classic_mesg classic_mesg;
-    struct cwiid_ir_mesg ir_mesg;
 
-    memset(&nunchuk_mesg, 0, sizeof(struct cwiid_nunchuk_mesg));
-    memset(&classic_mesg, 0, sizeof(struct cwiid_classic_mesg));
+    struct cwiid_ir_mesg ir_mesg;
     memset(&ir_mesg, 0, sizeof(struct cwiid_ir_mesg));
 
-    batteryLife = 0;
+
+
+    bool ButtonRequest = false;
+    unsigned char BatteryLife, NewBatteryLife;
+
+    unsigned int WiimoteStatus = STATUS_WIIMOTE_CONNECTED;
+    unsigned long long WiimoteButtons = 0x00;
+    unsigned long long WiimoteButtonsTmp = 0x00;
+
+    unsigned char ClassicLStickX = 0x00;
+    unsigned char ClassicLStickY = 0x00;
+    unsigned char ClassicRStickX = 0x00;
+    unsigned char ClassicRStickY = 0x00;
+    unsigned char NunchukStickX = 0x00;
+    unsigned char NunchukStickY = 0x00;
+
+    unsigned short int LastClassicButtons = 0x00;
+
+    struct acc_cal wiimote_calibration;
+    struct acc_cal nunchuk_calibration;
+    memset(&wiimote_calibration, 0, sizeof(struct acc_cal));
+    memset(&nunchuk_calibration, 0, sizeof(struct acc_cal));
+
+    double LastWiimoteAccX = 0.0;
+    double LastWiimoteAccY = 0.0;
+    double LastWiimoteAccZ = 0.0;
+
+    double LastNunchukAccX = 0.0;
+    double LastNunchukAccY = 0.0;
+    double LastNunchukAccZ = 0.0;
+
+    struct accdata acc;
+    struct stickdata stick;
+
+    cwiid_get_acc_cal(device, CWIID_EXT_NONE, &wiimote_calibration);
+
+    QList< irpoint> table;
+    struct irpoint point;
 
     while (!cwiid_get_mesg(device, &count, &mesg, &time))
     {
@@ -85,79 +99,167 @@ void WiimoteConnection::run()
         {
             case CWIID_MESG_ERROR:
                 connected = false;
-                buttons = 0;
+                WiimoteButtons = 0;
+
+                acc.x = 0xFF / 2;
+                acc.y = 0xFF / 2;
+                acc.z = 0xFF / 2;
+
+                acc.pitch = 0;
+                acc.roll = 0;
+
+                if (WiimoteStatus & STATUS_WIIMOTE_CLASSIC_CONNECTED)
+                {
+                    stick.x = CLASSIC_LSTICK_X_MAX / 2;
+                    stick.y = CLASSIC_LSTICK_Y_MAX / 2;
+
+                    emit dbusClassicControllerLStick(sequence, stick);
+
+                    stick.x = CLASSIC_RSTICK_X_MAX / 2;
+                    stick.y = CLASSIC_RSTICK_Y_MAX / 2;
+
+                    emit dbusClassicControllerRStick(sequence, stick);
+                    emit dbusClassicControllerButtons(sequence, WiimoteButtons);
+                    emit dbusClassicControllerUnplugged(sequence);
+                }
+
+                if (WiimoteStatus & STATUS_WIIMOTE_NUNCHUK_CONNECTED)
+                {
+                    stick.x = NUNCHUK_STICK_X_MAX / 2;
+                    stick.y = NUNCHUK_STICK_Y_MAX / 2;
+
+                    emit dbusNunchukStick(sequence, stick);
+                    emit dbusNunchukAcc(sequence, acc);
+                    emit dbusNunchukButtons(sequence, WiimoteButtons);
+                    emit dbusNunchukUnplugged(sequence);
+                }
+
+                point.size = -1;
+                point.x = 0;
+                point.y = 0;
+                table << point << point << point << point;
+
+                // emit dbusWiimoteBatteryLife(sequence, 0); don't send this sig
+                // emit dbusWiimoteStatus(sequence, 0); same here
+
+                emit dbusWiimoteAcc(sequence, acc);
+                emit dbusWiimoteInfrared(sequence, table);
+                emit dbusWiimoteButtons(sequence, WiimoteButtons);
+
+                ButtonRequest = true;
                 break;
+
             case CWIID_MESG_STATUS:
-                newBatteryLife = static_cast< quint8>(100.0 * (mesg[i].status_mesg.battery / double(CWIID_BATTERY_MAX)));
-                if (batteryLife != newBatteryLife) {
-                    batteryLife = newBatteryLife;
-                    emit batteryLifeChanged(static_cast< void*>( this), batteryLife);
-                    emit dbusBatteryLifeChanged(getWiimoteSequence(), batteryLife);
+                NewBatteryLife = static_cast< unsigned char>(100.0 * (mesg[i].status_mesg.battery / static_cast< double>(CWIID_BATTERY_MAX)));
+                if (BatteryLife != NewBatteryLife) {
+                    BatteryLife = NewBatteryLife;
+                    emit dbusWiimoteBatteryLife(sequence, BatteryLife);
                 }
 
                 switch (mesg[i].status_mesg.ext_type)
                 {
-                    case CWIID_EXT_NONE:
-                        if ((deviceStatus & device_nunchuk_connected) ||
-                            (deviceStatus & device_classic_connected))
-                            buttons &= ~(wiimoteButtonFilter & wiimoteShiftFilter & wiimoteTiltFilter);
-                            deviceStatus = device_wiimote_connected;
-                            emit wiimoteStatusChanged(static_cast< void*>( this), deviceStatus);
-                            emit dbusWiimoteStatusChanged(getWiimoteSequence(), deviceStatus);
+                    case CWIID_EXT_NONE:    
+                        if (WiimoteStatus & STATUS_WIIMOTE_CLASSIC_CONNECTED)
+                        {
+                            WiimoteButtons &= CLASSIC_BUTTON_NOTMASK;
+                            WiimoteButtons &= CLASSIC_LSTICK_NOTMASK;
+                            WiimoteButtons &= CLASSIC_RSTICK_NOTMASK;
+
+                            stick.x = CLASSIC_LSTICK_X_MAX / 2;
+                            stick.y = CLASSIC_LSTICK_Y_MAX / 2;
+
+                            emit dbusClassicControllerLStick(sequence, stick);
+
+                            stick.x = CLASSIC_RSTICK_X_MAX / 2;
+                            stick.y = CLASSIC_RSTICK_Y_MAX / 2;
+
+                            emit dbusClassicControllerRStick(sequence, stick);
+                            emit dbusClassicControllerButtons(sequence, WiimoteButtons);
+                            emit dbusClassicControllerUnplugged(sequence);
+                            ButtonRequest = true;
+                        }
+
+                        if (WiimoteStatus & STATUS_WIIMOTE_NUNCHUK_CONNECTED)
+                        {
+                            WiimoteButtons &= NUNCHUK_BUTTON_NOTMASK;
+                            WiimoteButtons &= NUNCHUK_STICK_NOTMASK;
+                            WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
+                            WiimoteButtons &= NUNCHUK_TILT_NOTMASK;
+
+                            stick.x = NUNCHUK_STICK_X_MAX / 2;
+                            stick.y = NUNCHUK_STICK_Y_MAX / 2;
+
+                            emit dbusNunchukStick(sequence, stick);
+
+                            acc.x = 0xFF / 2;
+                            acc.y = 0xFF / 2;
+                            acc.z = 0xFF / 2;
+
+                            acc.pitch = 0;
+                            acc.roll = 0;
+
+                            emit dbusNunchukAcc(sequence, acc);
+
+                            emit dbusNunchukButtons(sequence, WiimoteButtons);
+                            emit dbusNunchukUnplugged(sequence);
+                            ButtonRequest = true;
+                        }
+                        WiimoteStatus = STATUS_WIIMOTE_CONNECTED;
+                        emit dbusWiimoteStatus(sequence, WiimoteStatus);
                         break;
+                        
                     case CWIID_EXT_NUNCHUK:
-                        if (!(deviceStatus & device_nunchuk_connected))
-                        {
-                            cwiid_get_acc_cal(device, CWIID_EXT_NUNCHUK, &nunchuk_calibration);
-                            deviceStatus |= device_nunchuk_connected;
-                            emit wiimoteStatusChanged(static_cast< void*>( this), deviceStatus);
-                            emit dbusWiimoteStatusChanged(getWiimoteSequence(), deviceStatus);
-                        }
+                        if (!(WiimoteStatus & STATUS_WIIMOTE_NUNCHUK_CONNECTED))
+                            emit dbusNunchukPlugged(sequence);
+                        cwiid_get_acc_cal(device, CWIID_EXT_NUNCHUK, &nunchuk_calibration);
+                        WiimoteStatus |= STATUS_WIIMOTE_NUNCHUK_CONNECTED;
+                        emit dbusWiimoteStatus(sequence, WiimoteStatus);
                         break;
+                        
                     case CWIID_EXT_CLASSIC:
-                        if (!(deviceStatus & device_classic_connected))
-                        {
-                            deviceStatus |= device_classic_connected;
-                            emit wiimoteStatusChanged(static_cast< void*>( this), deviceStatus);
-                            emit dbusWiimoteStatusChanged(getWiimoteSequence(), deviceStatus);
-                        }
+                        if (!(WiimoteStatus & STATUS_WIIMOTE_CLASSIC_CONNECTED))
+                            emit dbusClassicControllerPlugged(sequence);
+                        WiimoteStatus |= STATUS_WIIMOTE_CLASSIC_CONNECTED;
+                        emit dbusWiimoteStatus(sequence, WiimoteStatus);
                         break;
+
                     default:
                         break;
                 }
                 break;
 
             case CWIID_MESG_IR:
-                emit infraredTableChanged(static_cast< void*>( this), mesg[i].ir_mesg);
                 {
-                    QStringList table;
+                    QList< irpoint> table;
+                    irpoint point;
                     for (register int j = 0; j < 4; ++j)
                     {
-                        table << QString::number(mesg[i].ir_mesg.src[j].valid ? mesg[i].ir_mesg.src[j].size : -1);
-                        table << QString::number(mesg[i].ir_mesg.src[j].pos[0]);
-                        table << QString::number(mesg[i].ir_mesg.src[j].pos[1]);
+                        point.size = mesg[i].ir_mesg.src[j].valid ? mesg[i].ir_mesg.src[j].size : -1;
+                        point.x = mesg[i].ir_mesg.src[j].pos[0];
+                        point.y = mesg[i].ir_mesg.src[j].pos[1];
+                        table << point;
                     }
-                    emit dbusInfraredTableChanged(getWiimoteSequence(), table);
+                    emit dbusWiimoteInfrared(sequence, table);
                 }
-
                 break;
 
             case CWIID_MESG_BTN:
-                if (wiimotebtn != mesg[i].btn_mesg.buttons)
-                    wiimotebtn = mesg[i].btn_mesg.buttons; else break;
+                WiimoteButtons &= WIIMOTE_BUTTON_NOTMASK;
+                ButtonRequest = true;
 
-                buttons &= wiimoteButtonFilter;
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_1) buttons |= devicebuttons.value("wiimote.1");
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_2) buttons |= devicebuttons.value("wiimote.2");
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_A) buttons |= devicebuttons.value("wiimote.a");
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_B) buttons |= devicebuttons.value("wiimote.b");
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_MINUS) buttons |= devicebuttons.value("wiimote.minus");
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_PLUS) buttons |= devicebuttons.value("wiimote.plus");
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_HOME) buttons |= devicebuttons.value("wiimote.home");
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_UP) buttons |= devicebuttons.value("wiimote.up");
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_DOWN) buttons |= devicebuttons.value("wiimote.down");
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_LEFT) buttons |= devicebuttons.value("wiimote.left");
-                if (mesg[i].btn_mesg.buttons & CWIID_BTN_RIGHT) buttons |= devicebuttons.value("wiimote.right");
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_1) WiimoteButtons |= WIIMOTE_BTN_1;
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_2) WiimoteButtons |= WIIMOTE_BTN_2;
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_A) WiimoteButtons |= WIIMOTE_BTN_A;
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_B) WiimoteButtons |= WIIMOTE_BTN_B;
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_MINUS) WiimoteButtons |= WIIMOTE_BTN_MINUS;
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_PLUS)  WiimoteButtons |= WIIMOTE_BTN_PLUS;
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_HOME)  WiimoteButtons |= WIIMOTE_BTN_HOME;
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_RIGHT) WiimoteButtons |= WIIMOTE_BTN_RIGHT;
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_LEFT)  WiimoteButtons |= WIIMOTE_BTN_LEFT;
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_DOWN)  WiimoteButtons |= WIIMOTE_BTN_DOWN;
+                if (mesg[i].btn_mesg.buttons & CWIID_BTN_UP)    WiimoteButtons |= WIIMOTE_BTN_UP;
+
+                emit dbusWiimoteButtons(sequence, WiimoteButtons);
                 break;
 
             case CWIID_MESG_ACC:
@@ -168,29 +270,47 @@ void WiimoteConnection::run()
                 z =  static_cast< double>((mesg[i].acc_mesg.acc[2] - wiimote_calibration.zero[2])) /
                      (wiimote_calibration.one[2] - wiimote_calibration.zero[2]);
 
-                roll = atan(x / z);
-                if (z <= 0.0)
-                   roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
-                roll *= -1;
-                if (z)
-                    pitch = atan(y / z * cos(roll)); else pitch = 0.0;
+                if ((LastWiimoteAccX != x) || (LastWiimoteAccY != y) || (LastWiimoteAccZ != z))
+                {
+                    LastWiimoteAccX = x;
+                    LastWiimoteAccY = y;
+                    LastWiimoteAccZ = z;
 
-                emit dbusWiimoteAccTableChanged(getWiimoteSequence(),
-                                                mesg[i].acc_mesg.acc[0],
-                                                mesg[i].acc_mesg.acc[1],
-                                                mesg[i].acc_mesg.acc[2],
-                                                pitch, roll);
+                    roll = atan(x / z);
+                    if (z <= 0.0)
+                       roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
+                    roll *= -1;
+                    if (z)
+                        pitch = atan(y / z * cos(roll)); else pitch = 0.0;
 
-                buttons = buttons & wiimoteTiltFilter;
+                    acc.x = mesg[i].acc_mesg.acc[0];
+                    acc.y = mesg[i].acc_mesg.acc[1];
+                    acc.z = mesg[i].acc_mesg.acc[2];
+                    acc.pitch = pitch;
+                    acc.roll = roll;
 
-                if (pitch < -0.30) buttons |= devicebuttons.value("wiimote.tilt.back"); else
-                if (pitch > 0.30)  buttons |= devicebuttons.value("wiimote.tilt.front");
-                if (roll < -0.45)  buttons |= devicebuttons.value("wiimote.tilt.right"); else
-                if (roll > 0.45)   buttons |= devicebuttons.value("wiimote.tilt.left");
+                    emit dbusWiimoteAcc(sequence, acc);
 
+                    WiimoteButtonsTmp = WiimoteButtons;
+                    WiimoteButtons &= WIIMOTE_TILT_NOTMASK;
+
+                    if (pitch > 0.30) WiimoteButtons |= WIIMOTE_BTN_TILT_FRONT; else
+                    if (pitch < -0.30) WiimoteButtons |= WIIMOTE_BTN_TILT_BACK;
+                    if (roll < -0.45) WiimoteButtons |= WIIMOTE_BTN_TILT_RIGHT; else
+                    if (roll > 0.45) WiimoteButtons |= WIIMOTE_BTN_TILT_LEFT;
+
+                    if (WiimoteButtonsTmp != WiimoteButtons)
+                    {
+                        ButtonRequest = true;
+                        emit dbusWiimoteButtons(sequence, WiimoteButtons);
+                    }
+                }
                 break;
 
-            case CWIID_MESG_NUNCHUK:
+            case CWIID_MESG_NUNCHUK:             
+                WiimoteButtonsTmp = WiimoteButtons;
+                WiimoteButtons &= NUNCHUK_BUTTON_NOTMASK;
+                WiimoteButtons &= NUNCHUK_STICK_NOTMASK;
 
                 x =  static_cast< double>((mesg[i].nunchuk_mesg.acc[0] - nunchuk_calibration.zero[0])) /
                      (nunchuk_calibration.one[0] - nunchuk_calibration.zero[0]);
@@ -199,97 +319,123 @@ void WiimoteConnection::run()
                 z =  static_cast< double>((mesg[i].nunchuk_mesg.acc[2] - nunchuk_calibration.zero[2])) /
                      (nunchuk_calibration.one[2] - nunchuk_calibration.zero[2]);
 
-                roll = atan(x / z);
-                if (z <= 0.0)
-                   roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
-                roll *= -1;
-                if (z)
-                   pitch = atan(y / z * cos(roll)); else pitch = 0.0;
-
-                emit dbusNunchukAccTableChanged(getWiimoteSequence(),
-                                                mesg[i].nunchuk_mesg.acc[0],
-                                                mesg[i].nunchuk_mesg.acc[1],
-                                                mesg[i].nunchuk_mesg.acc[2],
-                                                pitch, roll);
-
-                buttons = buttons & nunchukTiltFilter;
-
-                if (pitch < -0.30) buttons |= devicebuttons.value("nunchuk.tilt.back"); else
-                if (pitch > 0.30)  buttons |= devicebuttons.value("nunchuk.tilt.front");
-                if (roll < -0.45)  buttons |= devicebuttons.value("nunchuk.tilt.right"); else
-                if (roll > 0.45)   buttons |= devicebuttons.value("nunchuk.tilt.left");
-
-
-                if ((nunchuk_mesg.stick[0] != mesg[i].nunchuk_mesg.stick[0]) ||
-                    (nunchuk_mesg.stick[1] != mesg[i].nunchuk_mesg.stick[1]))
+                if ((LastNunchukAccX != x) || (LastNunchukAccY != y) || (LastNunchukAccZ != z))
                 {
-                    nunchuk_mesg.stick[0] = mesg[i].nunchuk_mesg.stick[0];
-                    nunchuk_mesg.stick[1] = mesg[i].nunchuk_mesg.stick[1];
-                    buttons &= nunchukStickFilter;
+                    LastNunchukAccX = x;
+                    LastNunchukAccY = y;
+                    LastNunchukAccZ = z;
 
-                    if (nunchuk_mesg.stick[0] > 178) buttons |= devicebuttons.value("nunchuk.stick.right"); else
-                    if (nunchuk_mesg.stick[0] < 78) buttons |= devicebuttons.value("nunchuk.stick.left");
-                    if (nunchuk_mesg.stick[1] > 178) buttons |= devicebuttons.value("nunchuk.stick.up"); else
-                    if (nunchuk_mesg.stick[1] < 78) buttons |= devicebuttons.value("nunchuk.stick.down");
+                    roll = atan(x / z);
+                    if (z <= 0.0)
+                       roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
+                    roll *= -1;
+                    if (z)
+                       pitch = atan(y / z * cos(roll)); else pitch = 0.0;
+
+                    acc.x = mesg[i].nunchuk_mesg.acc[0];
+                    acc.y = mesg[i].nunchuk_mesg.acc[1];
+                    acc.z = mesg[i].nunchuk_mesg.acc[2];
+                    acc.pitch = pitch;
+                    acc.roll = roll;
+
+                    emit dbusNunchukAcc(sequence, acc);
+
+                    WiimoteButtons &= NUNCHUK_TILT_NOTMASK;
+
+                    if (pitch > 0.30) WiimoteButtons  |= NUNCHUK_BTN_TILT_FRONT; else
+                    if (pitch < -0.30) WiimoteButtons |= NUNCHUK_BTN_TILT_BACK;
+                    if (roll < -0.45) WiimoteButtons  |= NUNCHUK_BTN_TILT_RIGHT; else
+                    if (roll > 0.45) WiimoteButtons   |= NUNCHUK_BTN_TILT_LEFT;
                 }
-                
-                if (nunchuk_mesg.buttons != mesg[i].nunchuk_mesg.buttons){
-                    nunchuk_mesg.buttons = mesg[i].nunchuk_mesg.buttons;
-                    buttons &= nunchukButtonFilter;
-                    if (mesg[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_C) buttons |= devicebuttons.value("nunchuk.c");
-                    if (mesg[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_Z) buttons |= devicebuttons.value("nunchuk.z");
+
+                if (mesg[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_C) WiimoteButtons |= NUNCHUK_BTN_C;
+                if (mesg[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_Z) WiimoteButtons |= NUNCHUK_BTN_Z;
+
+
+                if ((NunchukStickX != mesg[i].nunchuk_mesg.stick[0]) ||
+                    (NunchukStickY != mesg[i].nunchuk_mesg.stick[1]))
+                {
+                    NunchukStickX = mesg[i].nunchuk_mesg.stick[0];
+                    NunchukStickY = mesg[i].nunchuk_mesg.stick[1];
+                    stick.x = NunchukStickX;
+                    stick.y = NunchukStickY;
+                    emit dbusNunchukStick(sequence, stick);
                 }
+
+                if (NunchukStickX > 178) WiimoteButtons |= NUNCHUK_BTN_STICK_RIGHT; else
+                if (NunchukStickX < 78)  WiimoteButtons |= NUNCHUK_BTN_STICK_LEFT;
+                if (NunchukStickY > 178) WiimoteButtons |= NUNCHUK_BTN_STICK_UP; else
+                if (NunchukStickY < 78)  WiimoteButtons |= NUNCHUK_BTN_STICK_DOWN;
+
+                if (WiimoteButtonsTmp != WiimoteButtons) {
+                    ButtonRequest = true;
+                    emit dbusNunchukButtons(sequence, WiimoteButtons);
+                }
+
                 break;
 
             case CWIID_MESG_CLASSIC:
-                if ((classic_mesg.l_stick[0] != mesg[i].classic_mesg.l_stick[0]) ||
-                    (classic_mesg.l_stick[0] != mesg[i].classic_mesg.l_stick[1]))
-                {
-                    classic_mesg.l_stick[0] = mesg[i].classic_mesg.l_stick[0];
-                    classic_mesg.l_stick[1] = mesg[i].classic_mesg.l_stick[1];
-                    buttons &= classicLStickFilter;
+                WiimoteButtonsTmp = WiimoteButtons;
+                WiimoteButtons &= CLASSIC_LSTICK_NOTMASK;
+                WiimoteButtons &= CLASSIC_RSTICK_NOTMASK;
 
-                    if (classic_mesg.l_stick[0] > 42) buttons |= devicebuttons.value("classic.lstick.right"); else
-                    if (classic_mesg.l_stick[0] < 22) buttons |= devicebuttons.value("classic.lstick.left");
-                    if (classic_mesg.l_stick[1] > 42) buttons |= devicebuttons.value("classic.lstick.up"); else
-                    if (classic_mesg.l_stick[1] < 22) buttons |= devicebuttons.value("classic.lstick.down");
+                if ((ClassicLStickX != mesg[i].classic_mesg.l_stick[0]) ||
+                    (ClassicLStickY != mesg[i].classic_mesg.l_stick[1]))
+                {
+                    ClassicLStickX = mesg[i].classic_mesg.l_stick[0];
+                    ClassicLStickY = mesg[i].classic_mesg.l_stick[1];
+                    stick.x = ClassicLStickX;
+                    stick.y = ClassicLStickY;
+                    emit dbusClassicControllerLStick(sequence, stick);
                 }
 
-                if ((classic_mesg.r_stick[0] != mesg[i].classic_mesg.r_stick[0]) ||
-                    (classic_mesg.r_stick[0] != mesg[i].classic_mesg.r_stick[1]))
+                if ((ClassicRStickX != mesg[i].classic_mesg.r_stick[0]) ||
+                    (ClassicRStickY != mesg[i].classic_mesg.r_stick[1]))
                 {
-                    classic_mesg.r_stick[0] = mesg[i].classic_mesg.r_stick[0];
-                    classic_mesg.r_stick[1] = mesg[i].classic_mesg.r_stick[1];
-                    buttons &= classicRStickFilter;
-
-                    if (classic_mesg.r_stick[0] > 21) buttons |= devicebuttons.value("classic.rstick.right"); else
-                    if (classic_mesg.r_stick[0] < 11) buttons |= devicebuttons.value("classic.rstick.left");
-                    if (classic_mesg.r_stick[1] > 21) buttons |= devicebuttons.value("classic.rstick.up"); else
-                    if (classic_mesg.r_stick[1] < 11) buttons |= devicebuttons.value("classic.rstick.down");
+                    ClassicRStickX = mesg[i].classic_mesg.r_stick[0];
+                    ClassicRStickY = mesg[i].classic_mesg.r_stick[1];
+                    stick.x = ClassicRStickX;
+                    stick.y = ClassicRStickY;
+                    emit dbusClassicControllerRStick(sequence, stick);
                 }
 
+                if (ClassicLStickX > 42) WiimoteButtons |= CLASSIC_BTN_LSTICK_RIGHT; else
+                if (ClassicLStickX < 22) WiimoteButtons |= CLASSIC_BTN_LSTICK_LEFT;
+                if (ClassicLStickY > 42) WiimoteButtons |= CLASSIC_BTN_LSTICK_UP; else
+                if (ClassicLStickY < 22) WiimoteButtons |= CLASSIC_BTN_LSTICK_DOWN;
 
-                if (classic_mesg.buttons != mesg[i].classic_mesg.buttons)
-                {
-                    classic_mesg.buttons = mesg[i].classic_mesg.buttons;
-                    buttons &= classicButtonFilter;
+                if (ClassicRStickX > 21) WiimoteButtons |= CLASSIC_BTN_RSTICK_RIGHT; else
+                if (ClassicRStickX < 11) WiimoteButtons |= CLASSIC_BTN_RSTICK_LEFT;
+                if (ClassicRStickY > 21) WiimoteButtons |= CLASSIC_BTN_RSTICK_UP; else
+                if (ClassicRStickY < 11) WiimoteButtons |= CLASSIC_BTN_LSTICK_DOWN;
 
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_A) buttons |= devicebuttons.value("classic.a");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_B) buttons |= devicebuttons.value("classic.b");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_X) buttons |= devicebuttons.value("classic.x");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_Y) buttons |= devicebuttons.value("classic.y");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_MINUS) buttons |= devicebuttons.value("classic.minus");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_PLUS) buttons |= devicebuttons.value("classic.plus");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_HOME) buttons |= devicebuttons.value("classic.home");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_L) buttons |= devicebuttons.value("classic.l");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_R) buttons |= devicebuttons.value("classic.r");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_ZL) buttons |= devicebuttons.value("classic.zl");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_ZR) buttons |= devicebuttons.value("classic.zr");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_UP) buttons |= devicebuttons.value("classic.up");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_DOWN) buttons |= devicebuttons.value("classic.down");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_LEFT) buttons |= devicebuttons.value("classic.left");
-                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_RIGHT) buttons |= devicebuttons.value("classic.right");
+                if (LastClassicButtons != mesg[i].classic_mesg.buttons)
+                {               
+                    LastClassicButtons = mesg[i].classic_mesg.buttons;
+                    WiimoteButtons &= CLASSIC_BUTTON_NOTMASK;
+
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_A) WiimoteButtons |= CLASSIC_BTN_A;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_B) WiimoteButtons |= CLASSIC_BTN_B;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_X) WiimoteButtons |= CLASSIC_BTN_X;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_Y) WiimoteButtons |= CLASSIC_BTN_Y;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_MINUS) WiimoteButtons |= CLASSIC_BTN_MINUS;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_PLUS) WiimoteButtons |= CLASSIC_BTN_PLUS;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_HOME) WiimoteButtons |= CLASSIC_BTN_HOME;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_L) WiimoteButtons |= CLASSIC_BTN_L;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_R) WiimoteButtons |= CLASSIC_BTN_R;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_ZL) WiimoteButtons |= CLASSIC_BTN_ZL;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_ZR) WiimoteButtons |= CLASSIC_BTN_ZR;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_UP) WiimoteButtons |= CLASSIC_BTN_UP;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_DOWN) WiimoteButtons |= CLASSIC_BTN_DOWN;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_LEFT) WiimoteButtons |= CLASSIC_BTN_LEFT;
+                    if (mesg[i].classic_mesg.buttons & CWIID_CLASSIC_BTN_RIGHT) WiimoteButtons |= CLASSIC_BTN_RIGHT;
                 }
+
+                if (WiimoteButtonsTmp != WiimoteButtons) {
+                    ButtonRequest = true;
+                    emit dbusClassicControllerButtons(sequence, WiimoteButtons);
+                }
+
                 break;
 
             default:
@@ -297,17 +443,20 @@ void WiimoteConnection::run()
         }
 
 
-        if (buttons != lastbtn)
+        if (ButtonRequest)
         {
-            lastbtn = buttons;
-            emit buttonStatusChanged(static_cast< void*>( this), buttons);
-            emit dbusButtonStatusChanged(getWiimoteSequence(), buttons);
+            ButtonRequest = false;
+            emit dbusWiimoteGeneralButtons(sequence, WiimoteButtons);
+            qDebug() << WiimoteButtons;
         }
+
         delete mesg;
         if(!connected) break;
     }
 
     cwiid_close(device);
+
+    emit dbusWiimoteDisconnected(sequence);
 
     timer->stop();
     disconnect(timer, 0, 0, 0);
@@ -328,8 +477,6 @@ bool WiimoteConnection::connectAny()
     {
         memcpy(&wiimotebdaddr, &bdaddr, sizeof(bdaddr_t));
         id = cwiid_get_id(device);
-
-        cwiid_get_acc_cal(device, CWIID_EXT_NONE, &wiimote_calibration);
 
         cwiid_set_rpt_mode(device, CWIID_RPT_STATUS | CWIID_RPT_BTN | CWIID_RPT_IR | CWIID_RPT_NUNCHUK | CWIID_RPT_CLASSIC | CWIID_RPT_ACC);
 
