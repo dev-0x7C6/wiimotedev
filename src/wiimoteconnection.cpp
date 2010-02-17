@@ -447,7 +447,6 @@ void WiimoteConnection::run()
         {
             ButtonRequest = false;
             emit dbusWiimoteGeneralButtons(sequence, WiimoteButtons);
-            qDebug() << WiimoteButtons;
         }
 
         delete mesg;

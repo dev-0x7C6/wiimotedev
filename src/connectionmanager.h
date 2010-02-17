@@ -41,10 +41,12 @@
 Q_DECLARE_METATYPE(irpoint)
 Q_DECLARE_METATYPE(accdata)
 Q_DECLARE_METATYPE(stickdata)
+Q_DECLARE_METATYPE(deviceinfo)
 
 Q_DECLARE_METATYPE(QList < irpoint>)
 Q_DECLARE_METATYPE(QList < accdata>)
 Q_DECLARE_METATYPE(QList < stickdata>)
+Q_DECLARE_METATYPE(QList < deviceinfo>)
 
 extern QString filePathWiimotedev;
 
@@ -56,6 +58,9 @@ class DeviceEventsClass : public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.deviceEvents")
     Q_CLASSINFO("D-Bus Introspection", ""
     " <interface name=\"org.wiimotedev.deviceEvents\">\n"
+    "    <method name=\"dbusGetDeviceList\">\n"
+    "      <arg type=\"a(usyyy)\" direction=\"out\"/>\n"
+    "    </method>\n"
     "    <signal name=\"dbusWiimoteGeneralButtons\">\n"
     "     <arg type=\"u\" direction=\"out\"/>\n"
     "      <arg type=\"t\" direction=\"out\"/>\n"
@@ -127,7 +132,8 @@ public:
     DeviceEventsClass(QObject *parent);
     virtual ~DeviceEventsClass(){};
 
-    QStringList dbusGetWiimoteList();
+public slots:
+    QList < struct deviceinfo> dbusGetDeviceList();
 
 signals:
     void dbusWiimoteGeneralButtons(quint32, quint64);
@@ -158,7 +164,8 @@ class ConnectionManager : public QThread
 {
     Q_OBJECT
 
-private:
+private:   
+    QMap< void*, struct deviceinfo> deviceList;
     QMap< QString, quint16> wiiremoteSequence;
     QList< void*> objectList;
     bdaddr_t bdaddr_any;
@@ -171,11 +178,19 @@ public:
    ~ConnectionManager();
 
 protected:
-    void run();
+    void run();  
 
 private slots:
     void registerConnection(void *object);
     void unregisterConnection(void *object);
+
+    void slotDBusNunchukPlugged(quint32);
+    void slotDBusNunchukUnplugged(quint32);
+    void slotDBusClassicControllerPlugged(quint32);
+    void slotDBusClassicControllerUnplugged(quint32);
+
+public slots:
+    QList < struct deviceinfo> dbusGetDeviceList();
 
 signals:
     void dbusWiimoteGeneralButtons(quint32, quint64);

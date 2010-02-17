@@ -21,6 +21,8 @@
 #ifndef WIIMOTEDEV_H
 #define WIIMOTEDEV_H
 
+#include <iostream>
+
 #define WIIMOTEDEV_DBUS_OBJECT_NAME "/deviceEvents"
 #define WIIMOTEDEV_DBUS_SERVICE_NAME "org.wiimotedev.deviceEvents"
 
@@ -38,6 +40,15 @@ const unsigned int CLASSIC_LSTICK_Y_MAX = 0x3F;
 
 const unsigned int CLASSIC_RSTICK_X_MAX = 0x1F;
 const unsigned int CLASSIC_RSTICK_Y_MAX = 0x1F;
+
+struct deviceinfo
+{
+    unsigned int id;
+    std::string addr;
+    bool registred;
+    bool nunchuk;
+    bool classic;
+};
 
 struct irpoint
 {

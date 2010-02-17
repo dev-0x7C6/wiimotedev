@@ -18,6 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
+#include <QMapIterator>
 #include <QSettings>
 
 #include "connectionmanager.h"
@@ -70,15 +71,34 @@ const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick)
     return argument;
 }
 
+QDBusArgument& operator<<(QDBusArgument& argument, const deviceinfo& info)
+{
+    argument.beginStructure();
+    argument << info.id << QString().fromStdString(info.addr) << info.registred << info.nunchuk << info.classic;
+    argument.endStructure();
+    return argument;
+}
+
+const QDBusArgument& operator>>(const QDBusArgument& argument, deviceinfo& info)
+{
+    QString data;
+    argument.beginStructure();
+    argument >> info.id >> data;
+    info.addr = data.toStdString();
+    argument >> info.registred >> info.nunchuk >> info.classic;
+    argument.endStructure();
+    return argument;
+}
+
 DeviceEventsClass::DeviceEventsClass(QObject *parent) : QDBusAbstractAdaptor(parent)
 {
     setAutoRelaySignals(true);
 }
 
-QStringList DeviceEventsClass::dbusGetWiimoteList()
+QList < struct deviceinfo> DeviceEventsClass::dbusGetDeviceList()
 {
-    QStringList value;
-    QMetaObject::invokeMethod(parent(), "dbusGetWiimoteList", Q_RETURN_ARG(QStringList, value));
+    QList < struct deviceinfo> value;
+    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Q_RETURN_ARG(QList < struct deviceinfo>, value));
     return value;
 }
 
@@ -88,18 +108,22 @@ ConnectionManager::ConnectionManager()
     qDBusRegisterMetaType< QList < struct irpoint> >();
     qDBusRegisterMetaType< QList < struct accdata> >();
     qDBusRegisterMetaType< QList < struct stickdata> >();
+    qDBusRegisterMetaType< QList < struct deviceinfo> >();
 
     qDBusRegisterMetaType< struct irpoint>();
     qDBusRegisterMetaType< struct accdata>();
     qDBusRegisterMetaType< struct stickdata>();
+    qDBusRegisterMetaType< struct deviceinfo>();
 
     qRegisterMetaType< irpoint>("irpoint");
     qRegisterMetaType< accdata>("accdata");
     qRegisterMetaType< stickdata>("stickdata");
+    qRegisterMetaType< deviceinfo>("deviceinfo");
 
     qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
     qRegisterMetaType< QList< accdata> >("QList< accdata>");
     qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
+    qRegisterMetaType< QList< deviceinfo> >("QList< deviceinfo>");
 
     QSettings settings(filePathWiimotedev, QSettings::IniFormat);
     settings.beginGroup(sequenceGroup);
@@ -156,6 +180,23 @@ void ConnectionManager::registerConnection(void *object)
     if (connection->getWiimoteSequence())
         connection->setLedStatus(connection->getWiimoteSequence());
 
+    struct deviceinfo dev;
+    dev.id = connection->getWiimoteSequence();
+    dev.registred = connection->getWiimoteSequence();
+    dev.addr = connection->getWiimoteSAddr().toStdString();
+    dev.nunchuk = false;
+    dev.classic = false;
+
+
+    qDebug() << object;
+
+    deviceList[object] = dev;
+
+    connect(connection, SIGNAL(dbusNunchukPlugged(quint32)), this, SLOT(slotDBusNunchukPlugged(quint32)));
+    connect(connection, SIGNAL(dbusNunchukUnplugged(quint32)), this, SLOT(slotDBusNunchukUnplugged(quint32)));
+    connect(connection, SIGNAL(dbusClassicControllerPlugged(quint32)), this, SLOT(slotDBusClassicControllerPlugged(quint32)));
+    connect(connection, SIGNAL(dbusClassicControllerUnplugged(quint32)), this, SLOT(slotDBusClassicControllerUnplugged(quint32)));
+
     connect(connection, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::DirectConnection);
 
     connect(connection, SIGNAL(dbusWiimoteConnected(quint32)), this, SIGNAL(dbusWiimoteConnected(quint32)), Qt::DirectConnection);
@@ -188,6 +229,8 @@ void ConnectionManager::unregisterConnection(void *object)
     WiimoteConnection *connection = static_cast< WiimoteConnection*>( object);
     disconnect(connection, 0, 0, 0);
 
+    deviceList.remove(object);
+
 #ifdef __syslog
     syslog(LOG_NOTICE, "Connection closed %s", connection->getWiimoteSAddr().toAscii().data());
 #endif
@@ -200,4 +243,41 @@ void ConnectionManager::unregisterConnection(void *object)
         objectList.removeAt(i);
         break;
     }
+}
+
+void ConnectionManager::slotDBusNunchukPlugged(quint32)
+{
+    struct deviceinfo dev = deviceList[static_cast< void *>(sender())];
+    dev.nunchuk = true;
+    deviceList[static_cast< void *>(sender())] = dev;
+}
+
+void ConnectionManager::slotDBusNunchukUnplugged(quint32)
+{
+    struct deviceinfo dev = deviceList[static_cast< void *>(sender())];
+    dev.nunchuk = false;
+    deviceList[static_cast< void *>(sender())] = dev;
+}
+
+void ConnectionManager::slotDBusClassicControllerPlugged(quint32)
+{
+    struct deviceinfo dev = deviceList[static_cast< void *>(sender())];
+    dev.classic = true;
+    deviceList[static_cast< void *>(sender())] = dev;
+}
+
+void ConnectionManager::slotDBusClassicControllerUnplugged(quint32)
+{
+    struct deviceinfo dev = deviceList[static_cast< void *>(sender())];
+    dev.classic = false;
+    deviceList[static_cast< void *>(sender())] = dev;
+}
+
+QList < struct deviceinfo> ConnectionManager::dbusGetDeviceList()
+{
+    QList < struct deviceinfo> list;
+    QMapIterator<void *, struct deviceinfo> i(deviceList);
+    while (i.hasNext())
+        list << i.next().value();
+    return list;
 }
