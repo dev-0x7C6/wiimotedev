@@ -48,8 +48,7 @@
 #include <QFile>
 #include <QTextStream>
 
-#include "connectionmanager.moc"
-#include "wiimoteconnection.moc"
+#include "connectionmanager.h"
 
 const QString confFile("/etc/wiimotedev/wiimotedev.conf");
 const QString scancodeFile("/etc/wiimotedev/scancode.ini");
