@@ -1,0 +1,1 @@
+install(FILES wiimotedev DESTINATION ${SERVICE_INITD_DIR} )
