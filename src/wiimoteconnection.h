@@ -35,6 +35,9 @@ class WiimoteConnection : public QThread
     Q_OBJECT
 
 private:
+    QList < double> fXmotion;
+    QList < double> fYmotion;
+    QList < double> fZmotion;
     QTimer *timer;
     cwiid_wiimote_t *device;
 

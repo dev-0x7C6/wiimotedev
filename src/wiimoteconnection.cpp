@@ -48,7 +48,7 @@ void WiimoteConnection::run()
     union cwiid_mesg *mesg;
     struct timespec time;
 
-    double x, y, z, roll, pitch;
+    double x, y, z, roll, pitch, vacc;
       
 
     struct cwiid_ir_mesg ir_mesg;
@@ -92,6 +92,25 @@ void WiimoteConnection::run()
 
     QList< irpoint> table;
     struct irpoint point;
+
+    double wxvalueabs, wxvalue = 0.0;
+    double wyvalueabs, wyvalue = 0.0;
+    double wzvalueabs, wzvalue = 0.0;
+
+    bool wiimoteShiftAction;
+    qint64 shiftLeftPoints;
+    qint64 shiftRightPoints;
+    quint8 c1 = 0;
+    quint8 c2 = 0;
+    quint8 c3 = 0;
+    double xvacc, yvacc, zvacc;
+    xvacc = 0.0;
+
+    qint32 counter = 0;
+
+    double wxpow;
+    double wypow;
+    double wzpow;
 
     while (!cwiid_get_mesg(device, &count, &mesg, &time))
     {
@@ -270,6 +289,7 @@ void WiimoteConnection::run()
                 z =  static_cast< double>((mesg[i].acc_mesg.acc[2] - wiimote_calibration.zero[2])) /
                      (wiimote_calibration.one[2] - wiimote_calibration.zero[2]);
 
+
                 if ((LastWiimoteAccX != x) || (LastWiimoteAccY != y) || (LastWiimoteAccZ != z))
                 {
                     LastWiimoteAccX = x;
@@ -293,11 +313,73 @@ void WiimoteConnection::run()
 
                     WiimoteButtonsTmp = WiimoteButtons;
                     WiimoteButtons &= WIIMOTE_TILT_NOTMASK;
+                    WiimoteButtons &= WIIMOTE_SHIFT_NOTMASK;
 
                     if (pitch > 0.30) WiimoteButtons |= WIIMOTE_BTN_TILT_FRONT; else
                     if (pitch < -0.30) WiimoteButtons |= WIIMOTE_BTN_TILT_BACK;
                     if (roll < -0.45) WiimoteButtons |= WIIMOTE_BTN_TILT_RIGHT; else
                     if (roll > 0.45) WiimoteButtons |= WIIMOTE_BTN_TILT_LEFT;
+
+                    vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+
+                    wxpow = sqrt(pow(x, 2));
+                    wypow = sqrt(pow(y, 2));
+                    wzpow = sqrt(pow(z, 2));
+
+                    if ((wxpow > 2.5) || (wypow > 2.5) || (wzpow > 2.5))
+                    {
+                        counter = 10;
+                        if (wxpow > 2.5) fXmotion << x;
+                        if (wypow > 2.5) fYmotion << y;
+                        if (wzpow > 2.5) fZmotion << z;
+                    }
+
+                    if ((counter == 0) && ((fXmotion.count() > 0) || (fYmotion.count() > 0) || (fZmotion.count() > 0)))
+                    {
+                        wxvalue = (fXmotion.count() > 0) ? fXmotion.last() : 0.0;
+                        wyvalue = (fYmotion.count() > 0) ? fYmotion.last() : 0.0;
+                        wzvalue = (fZmotion.count() > 0) ? fZmotion.last() : 0.0;
+                        if (fXmotion.count() > 1)
+                            for (int i = fXmotion.count() - 1; i > 0; --i)
+                                if (wxvalue > 0) wxvalue += (fXmotion.at(i - 1) > 0) ? fXmotion.at(i - 1) : 0; else
+                                                 wxvalue += (fXmotion.at(i - 1) < 0) ? fXmotion.at(i - 1) : 0;
+                        if (fYmotion.count() > 1)
+                            for (int i = fYmotion.count() - 1; i > 0; --i)
+                                if (wyvalue > 0) wyvalue += (fYmotion.at(i - 1) > 0) ? fYmotion.at(i - 1) : 0; else
+                                                 wyvalue += (fYmotion.at(i - 1) < 0) ? fYmotion.at(i - 1) : 0;
+                        if (fZmotion.count() > 1)
+                            for (int i = fZmotion.count() - 1; i > 0; --i)
+                                if (wzvalue > 0) wzvalue += (fZmotion.at(i - 1) > 0) ? fZmotion.at(i - 1) : 0; else
+                                                 wzvalue += (fZmotion.at(i - 1) < 0) ? fZmotion.at(i - 1) : 0;
+
+                        fXmotion.clear();
+                        fYmotion.clear();
+                        fZmotion.clear();
+
+                        wxvalueabs = (wxvalue > 0) ? wxvalue : -wxvalue;
+                        wyvalueabs = (wyvalue > 0) ? wyvalue : -wyvalue;
+                        wzvalueabs = (wzvalue > 0) ? wzvalue : -wzvalue;
+
+
+                        if (wxvalueabs > 20) wyvalueabs -= 80; else
+                        if (wxvalueabs > 10) wyvalueabs -= 40; else
+                        if (wxvalueabs > 5) wyvalueabs -= 20;
+
+                        if (wyvalue < -4) wyvalueabs += 60; else
+                        if (wyvalue < -3) wyvalueabs += 40; else
+                        if (wyvalue < -2) wyvalueabs += 20; else
+                        if (wyvalue < -1) wyvalueabs += 10;
+
+                        if ((wxvalueabs > wyvalueabs) && (wxvalueabs > wzvalueabs))
+                        {
+                            WiimoteButtons |= ((wxvalue > 0) ? WIIMOTE_BTN_SHIFT_RIGHT : WIIMOTE_BTN_SHIFT_LEFT);
+                        } else
+                        if ((wyvalueabs > wxvalueabs) && (wyvalueabs > wzvalueabs))
+                        {
+                            WiimoteButtons |= ((wyvalue > 0) ? WIIMOTE_BTN_SHIFT_FORWARD : WIIMOTE_BTN_SHIFT_BACKWARD);
+                        }
+
+                    } else counter--;
 
                     if (WiimoteButtonsTmp != WiimoteButtons)
                     {
@@ -346,6 +428,14 @@ void WiimoteConnection::run()
                     if (pitch < -0.30) WiimoteButtons |= NUNCHUK_BTN_TILT_BACK;
                     if (roll < -0.45) WiimoteButtons  |= NUNCHUK_BTN_TILT_RIGHT; else
                     if (roll > 0.45) WiimoteButtons   |= NUNCHUK_BTN_TILT_LEFT;
+
+                    vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+
+                    WiimoteButtons &= NUNCHUK_SHIFT_MASK;
+
+
+                   // if
+
                 }
 
                 if (mesg[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_C) WiimoteButtons |= NUNCHUK_BTN_C;
