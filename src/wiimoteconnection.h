@@ -35,12 +35,15 @@ class WiimoteConnection : public QThread
     Q_OBJECT
 
 private:
-    QList < double> fXmotion;
-    QList < double> fYmotion;
-    QList < double> fZmotion;
+    QList < double> wfXmotion;
+    QList < double> wfYmotion;
+    QList < double> wfZmotion;
+    QList < double> nfXmotion;
+    QList < double> nfYmotion;
+    QList < double> nfZmotion;
     QTimer *timer;
-    cwiid_wiimote_t *device;
 
+    cwiid_wiimote_t *device;
     bool connected;
     bdaddr_t wiimotebdaddr;
     int id;

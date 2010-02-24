@@ -93,24 +93,11 @@ void WiimoteConnection::run()
     QList< irpoint> table;
     struct irpoint point;
 
-    double wxvalueabs, wxvalue = 0.0;
-    double wyvalueabs, wyvalue = 0.0;
-    double wzvalueabs, wzvalue = 0.0;
+    double wxvalueabs, wxvalue, nxvalueabs, nxvalue, wxpow, nxpow = 0.0;
+    double wyvalueabs, wyvalue, nyvalueabs, nyvalue, wypow, nypow = 0.0;
+    double wzvalueabs, wzvalue, nzvalueabs, nzvalue, wzpow, nzpow = 0.0;
 
-    bool wiimoteShiftAction;
-    qint64 shiftLeftPoints;
-    qint64 shiftRightPoints;
-    quint8 c1 = 0;
-    quint8 c2 = 0;
-    quint8 c3 = 0;
-    double xvacc, yvacc, zvacc;
-    xvacc = 0.0;
-
-    qint32 counter = 0;
-
-    double wxpow;
-    double wypow;
-    double wzpow;
+    qint32 wcounter, ncounter = 0;
 
     while (!cwiid_get_mesg(device, &count, &mesg, &time))
     {
@@ -326,35 +313,35 @@ void WiimoteConnection::run()
                     wypow = sqrt(pow(y, 2));
                     wzpow = sqrt(pow(z, 2));
 
-                    if ((wxpow > 2.5) || (wypow > 2.5) || (wzpow > 2.5))
+                    if ((wxpow > 2.0) || (wypow > 2.0) || (wzpow > 2.0))
                     {
-                        counter = 10;
-                        if (wxpow > 2.5) fXmotion << x;
-                        if (wypow > 2.5) fYmotion << y;
-                        if (wzpow > 2.5) fZmotion << z;
+                        wcounter = 10;
+                        if (wxpow > 2.0) wfXmotion << x;
+                        if (wypow > 2.0) wfYmotion << y;
+                        if (wzpow > 2.0) wfZmotion << z;
                     }
 
-                    if ((counter == 0) && ((fXmotion.count() > 0) || (fYmotion.count() > 0) || (fZmotion.count() > 0)))
+                    if ((wcounter == 0) && ((wfXmotion.count() > 0) || (wfYmotion.count() > 0) || (wfZmotion.count() > 0)))
                     {
-                        wxvalue = (fXmotion.count() > 0) ? fXmotion.last() : 0.0;
-                        wyvalue = (fYmotion.count() > 0) ? fYmotion.last() : 0.0;
-                        wzvalue = (fZmotion.count() > 0) ? fZmotion.last() : 0.0;
-                        if (fXmotion.count() > 1)
-                            for (int i = fXmotion.count() - 1; i > 0; --i)
-                                if (wxvalue > 0) wxvalue += (fXmotion.at(i - 1) > 0) ? fXmotion.at(i - 1) : 0; else
-                                                 wxvalue += (fXmotion.at(i - 1) < 0) ? fXmotion.at(i - 1) : 0;
-                        if (fYmotion.count() > 1)
-                            for (int i = fYmotion.count() - 1; i > 0; --i)
-                                if (wyvalue > 0) wyvalue += (fYmotion.at(i - 1) > 0) ? fYmotion.at(i - 1) : 0; else
-                                                 wyvalue += (fYmotion.at(i - 1) < 0) ? fYmotion.at(i - 1) : 0;
-                        if (fZmotion.count() > 1)
-                            for (int i = fZmotion.count() - 1; i > 0; --i)
-                                if (wzvalue > 0) wzvalue += (fZmotion.at(i - 1) > 0) ? fZmotion.at(i - 1) : 0; else
-                                                 wzvalue += (fZmotion.at(i - 1) < 0) ? fZmotion.at(i - 1) : 0;
+                        wxvalue = (wfXmotion.count() > 0) ? wfXmotion.last() : 0.0;
+                        wyvalue = (wfYmotion.count() > 0) ? wfYmotion.last() : 0.0;
+                        wzvalue = (wfZmotion.count() > 0) ? wfZmotion.last() : 0.0;
+                        if (wfXmotion.count() > 1)
+                            for (int i = wfXmotion.count() - 1; i > 0; --i)
+                                if (wxvalue > 0) wxvalue += (wfXmotion.at(i - 1) > 0) ? wfXmotion.at(i - 1) : 0; else
+                                                 wxvalue += (wfXmotion.at(i - 1) < 0) ? wfXmotion.at(i - 1) : 0;
+                        if (wfYmotion.count() > 1)
+                            for (int i = wfYmotion.count() - 1; i > 0; --i)
+                                if (wyvalue > 0) wyvalue += (wfYmotion.at(i - 1) > 0) ? wfYmotion.at(i - 1) : 0; else
+                                                 wyvalue += (wfYmotion.at(i - 1) < 0) ? wfYmotion.at(i - 1) : 0;
+                        if (wfZmotion.count() > 1)
+                            for (int i = wfZmotion.count() - 1; i > 0; --i)
+                                if (wzvalue > 0) wzvalue += (wfZmotion.at(i - 1) > 0) ? wfZmotion.at(i - 1) : 0; else
+                                                 wzvalue += (wfZmotion.at(i - 1) < 0) ? wfZmotion.at(i - 1) : 0;
 
-                        fXmotion.clear();
-                        fYmotion.clear();
-                        fZmotion.clear();
+                        wfXmotion.clear();
+                        wfYmotion.clear();
+                        wfZmotion.clear();
 
                         wxvalueabs = (wxvalue > 0) ? wxvalue : -wxvalue;
                         wyvalueabs = (wyvalue > 0) ? wyvalue : -wyvalue;
@@ -379,7 +366,7 @@ void WiimoteConnection::run()
                             WiimoteButtons |= ((wyvalue > 0) ? WIIMOTE_BTN_SHIFT_FORWARD : WIIMOTE_BTN_SHIFT_BACKWARD);
                         }
 
-                    } else counter--;
+                    } else wcounter--;
 
                     if (WiimoteButtonsTmp != WiimoteButtons)
                     {
@@ -431,10 +418,66 @@ void WiimoteConnection::run()
 
                     vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 
-                    WiimoteButtons &= NUNCHUK_SHIFT_MASK;
+                    WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
+
+                    nxpow = sqrt(pow(x, 2));
+                    nypow = sqrt(pow(y, 2));
+                    nzpow = sqrt(pow(z, 2));
+
+                    if ((nxpow > 2.0) || (nypow > 2.0) || (nzpow > 2.0))
+                    {
+                        ncounter = 10;
+                        if (nxpow > 2.0) nfXmotion << x;
+                        if (nypow > 2.0) nfYmotion << y;
+                        if (nzpow > 2.0) nfZmotion << z;
+                    }
+
+                    if ((ncounter == 0) && ((nfXmotion.count() > 0) || (nfYmotion.count() > 0) || (nfZmotion.count() > 0)))
+                    {
+                        nxvalue = (nfXmotion.count() > 0) ? nfXmotion.last() : 0.0;
+                        nyvalue = (nfYmotion.count() > 0) ? nfYmotion.last() : 0.0;
+                        nzvalue = (nfZmotion.count() > 0) ? nfZmotion.last() : 0.0;
+                        if (nfXmotion.count() > 1)
+                            for (int i = nfXmotion.count() - 1; i > 0; --i)
+                                if (nxvalue > 0) nxvalue += (nfXmotion.at(i - 1) > 0) ? nfXmotion.at(i - 1) : 0; else
+                                                 nxvalue += (nfXmotion.at(i - 1) < 0) ? nfXmotion.at(i - 1) : 0;
+                        if (nfYmotion.count() > 1)
+                            for (int i = nfYmotion.count() - 1; i > 0; --i)
+                                if (nyvalue > 0) nyvalue += (nfYmotion.at(i - 1) > 0) ? nfYmotion.at(i - 1) : 0; else
+                                                 nyvalue += (nfYmotion.at(i - 1) < 0) ? nfYmotion.at(i - 1) : 0;
+                        if (nfZmotion.count() > 1)
+                            for (int i = nfZmotion.count() - 1; i > 0; --i)
+                                if (nzvalue > 0) nzvalue += (nfZmotion.at(i - 1) > 0) ? nfZmotion.at(i - 1) : 0; else
+                                                 nzvalue += (nfZmotion.at(i - 1) < 0) ? nfZmotion.at(i - 1) : 0;
+
+                        nfXmotion.clear();
+                        nfYmotion.clear();
+                        nfZmotion.clear();
+
+                        nxvalueabs = (nxvalue > 0) ? nxvalue : -nxvalue;
+                        nyvalueabs = (nyvalue > 0) ? nyvalue : -nyvalue;
+                        nzvalueabs = (nzvalue > 0) ? nzvalue : -nzvalue;
 
 
-                   // if
+                        if (nxvalueabs > 20) nyvalueabs -= 80; else
+                        if (nxvalueabs > 10) nyvalueabs -= 40; else
+                        if (nxvalueabs > 5) nyvalueabs -= 20;
+
+                        if (nyvalue < -4) nyvalueabs += 60; else
+                        if (nyvalue < -3) nyvalueabs += 40; else
+                        if (nyvalue < -2) nyvalueabs += 20; else
+                        if (nyvalue < -1) nyvalueabs += 10;
+
+                        if ((nxvalueabs > nyvalueabs) && (nxvalueabs > nzvalueabs))
+                        {
+                            WiimoteButtons |= ((nxvalue > 0) ? NUNCHUK_BTN_SHIFT_RIGHT : NUNCHUK_BTN_SHIFT_LEFT);
+                        } else
+                        if ((nyvalueabs > nxvalueabs) && (nyvalueabs > nzvalueabs))
+                        {
+                            WiimoteButtons |= ((nyvalue > 0) ? NUNCHUK_BTN_SHIFT_FORWARD : NUNCHUK_BTN_SHIFT_BACKWARD);
+                        }
+
+                    } else ncounter--;
 
                 }
 
