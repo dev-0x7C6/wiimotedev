@@ -92,19 +92,6 @@ const QDBusArgument& operator>>(const QDBusArgument& argument, deviceinfo& info)
 
 DeviceEventsClass::DeviceEventsClass(QObject *parent) : QDBusAbstractAdaptor(parent)
 {
-    setAutoRelaySignals(true);
-}
-
-QList < struct deviceinfo> DeviceEventsClass::dbusGetDeviceList()
-{
-    QList < struct deviceinfo> value;
-    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Q_RETURN_ARG(QList < struct deviceinfo>, value));
-    return value;
-}
-
-
-ConnectionManager::ConnectionManager()
-{
     qDBusRegisterMetaType< QList < struct irpoint> >();
     qDBusRegisterMetaType< QList < struct accdata> >();
     qDBusRegisterMetaType< QList < struct stickdata> >();
@@ -115,15 +102,56 @@ ConnectionManager::ConnectionManager()
     qDBusRegisterMetaType< struct stickdata>();
     qDBusRegisterMetaType< struct deviceinfo>();
 
-    qRegisterMetaType< irpoint>("irpoint");
-    qRegisterMetaType< accdata>("accdata");
-    qRegisterMetaType< stickdata>("stickdata");
-    qRegisterMetaType< deviceinfo>("deviceinfo");
+    setAutoRelaySignals(true);
+}
 
+QList < struct deviceinfo> DeviceEventsClass::dbusGetDeviceList()
+{
+    QList < struct deviceinfo> value;
+    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < struct deviceinfo>, value));
+    return value;
+}
+
+quint8 DeviceEventsClass::dbusWiimoteGetLedStatus(quint32 id)
+{
+    quint8 value;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));
+    return value;
+}
+
+bool DeviceEventsClass::dbusWiimoteGetRumbleStatus(quint32 id)
+{
+    bool value;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetRumbleStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id));
+    return value;
+}
+
+bool DeviceEventsClass::dbusWiimoteSetLedStatus(quint32 id, quint8 status)
+{
+    bool value;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint8, status));
+    return value;
+}
+
+bool DeviceEventsClass::dbusWiimoteSetRumbleStatus(quint32 id, bool status)
+{
+    bool value;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteSetRumbleStatus", Qt::DirectConnection,  Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(bool, status));
+    return value;
+}
+
+
+ConnectionManager::ConnectionManager()
+{
     qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
     qRegisterMetaType< QList< accdata> >("QList< accdata>");
     qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
     qRegisterMetaType< QList< deviceinfo> >("QList< deviceinfo>");
+
+    qRegisterMetaType< irpoint>("irpoint");
+    qRegisterMetaType< accdata>("accdata");
+    qRegisterMetaType< stickdata>("stickdata");
+    qRegisterMetaType< deviceinfo>("deviceinfo");
 
     QSettings settings(filePathWiimotedev, QSettings::IniFormat);
     settings.beginGroup(sequenceGroup);
@@ -280,4 +308,55 @@ QList < struct deviceinfo> ConnectionManager::dbusGetDeviceList()
     while (i.hasNext())
         list << i.next().value();
     return list;
+}
+
+quint8 ConnectionManager::dbusWiimoteGetLedStatus(quint32 id)
+{
+    quint8 status = 0x00;
+    for (register int i = 0; i < objectList.count(); ++i)
+        if (static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence() == id)
+        {
+            status = static_cast< WiimoteConnection*>( objectList.at(i))->getLedStatus();
+            break;
+        }
+    return status;
+}
+
+
+bool ConnectionManager::dbusWiimoteGetRumbleStatus(quint32 id)
+{
+    bool status = false;
+    for (register int i = 0; i < objectList.count(); ++i)
+        if (static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence() == id)
+        {
+            status = static_cast< WiimoteConnection*>( objectList.at(i))->getRumbleStatus();
+            break;
+        }
+    return status;
+}
+
+bool ConnectionManager::dbusWiimoteSetLedStatus(quint32 id, quint8 status)
+{
+    bool done = false;
+    for (register int i = 0; i < objectList.count(); ++i)
+        if (static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence() == id)
+        {
+            static_cast< WiimoteConnection*>( objectList.at(i))->setLedStatus(status);
+            done = true;
+            break;
+        }
+    return done;
+}
+
+bool ConnectionManager::dbusWiimoteSetRumbleStatus(quint32 id, bool status)
+{
+    bool done = false;
+    for (register int i = 0; i < objectList.count(); ++i)
+        if (static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence() == id)
+        {
+            static_cast< WiimoteConnection*>( objectList.at(i))->setRumbleStatus(status);
+            done = true;
+            break;
+        }
+    return done;
 }

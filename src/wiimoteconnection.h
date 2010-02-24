@@ -41,6 +41,10 @@ private:
     QList < double> nfXmotion;
     QList < double> nfYmotion;
     QList < double> nfZmotion;
+
+    quint8 ledStatus;
+    bool rumbleStatus;
+
     QTimer *timer;
 
     cwiid_wiimote_t *device;
@@ -66,7 +70,11 @@ public:
     int getWiimoteSequence(){ return sequence; }
     bool isConnected() { return connected; }
 
-    void setLedStatus(quint8 led){ cwiid_command(device, CWIID_CMD_LED, led); }
+    quint8 getLedStatus();
+    bool getRumbleStatus();
+    void setLedStatus(quint8 status);
+    void setRumbleStatus(bool status);
+
 
 protected:
    void run();

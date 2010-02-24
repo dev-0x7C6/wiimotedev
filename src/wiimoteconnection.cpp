@@ -641,3 +641,26 @@ void WiimoteConnection::getBatteryStatus()
 {
     cwiid_request_status(device);
 }
+
+
+quint8 WiimoteConnection::getLedStatus()
+{
+    return ledStatus;
+}
+
+bool WiimoteConnection::getRumbleStatus()
+{
+    return rumbleStatus;
+}
+
+void WiimoteConnection::setLedStatus(quint8 status)
+{
+    cwiid_set_led(device, status);
+    ledStatus = status;
+}
+
+void WiimoteConnection::setRumbleStatus(bool status)
+{
+    cwiid_set_rumble(device, status);
+    rumbleStatus = status;
+}

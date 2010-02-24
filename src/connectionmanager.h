@@ -52,19 +52,57 @@ extern QString filePathWiimotedev;
 
 const QString sequenceGroup("sequence");
 
+/*
+
+    "    <method name=\"dbusGetDeviceList\">\n"
+    "      <arg type=\"a(usyyy)\" direction=\"out\"/>\n"
+    "    </method>\n"
+
+    "    <method name=\"dbusWiimoteGetRumbleStatus\">\n"
+    "      <arg type=\"b\" direction=\"out\"/>\n"
+    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
+    "    </method>\n"
+    "    <method name=\"dbusWiimoteSetLedStatus\">\n"
+    "      <arg type=\"b\" direction=\"out\"/>\n"
+    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
+    "      <arg name=\"status\" type=\"y\" direction=\"in\"/>\n"
+    "    </method>\n"
+    "    <method name=\"dbusWiimoteSetRumbleStatus\">\n"
+    "      <arg type=\"b\" direction=\"out\"/>\n"
+    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
+    "      <arg name=\"status\" type=\"b\" direction=\"in\"/>\n"
+    "    </method>\n"
+
+  */
+
 class DeviceEventsClass : public QDBusAbstractAdaptor
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.deviceEvents")
     Q_CLASSINFO("D-Bus Introspection", ""
     " <interface name=\"org.wiimotedev.deviceEvents\">\n"
-    "    <method name=\"dbusGetDeviceList\">\n"
-    "      <arg type=\"a(usyyy)\" direction=\"out\"/>\n"
-    "    </method>\n"
     "    <signal name=\"dbusWiimoteGeneralButtons\">\n"
     "     <arg type=\"u\" direction=\"out\"/>\n"
     "      <arg type=\"t\" direction=\"out\"/>\n"
     "    </signal>\n"
+    "   <method name=\"dbusWiimoteGetLedStatus\">\n"
+    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
+    "      <arg type=\"y\" direction=\"out\"/>\n"
+    "    </method>\n"
+    "    <method name=\"dbusWiimoteGetRumbleStatus\">\n"
+    "      <arg type=\"b\" direction=\"out\"/>\n"
+    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
+    "    </method>\n"
+    "    <method name=\"dbusWiimoteSetLedStatus\">\n"
+    "      <arg type=\"b\" direction=\"out\"/>\n"
+    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
+    "      <arg name=\"status\" type=\"y\" direction=\"in\"/>\n"
+    "    </method>\n"
+    "    <method name=\"dbusWiimoteSetRumbleStatus\">\n"
+    "      <arg type=\"b\" direction=\"out\"/>\n"
+    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
+    "      <arg name=\"status\" type=\"b\" direction=\"in\"/>\n"
+    "    </method>\n"
     "    <signal name=\"dbusWiimoteConnected\">\n"
     "      <arg type=\"u\" direction=\"out\"/>\n"
     "    </signal>\n"
@@ -135,6 +173,11 @@ public:
 public slots:
     QList < struct deviceinfo> dbusGetDeviceList();
 
+    bool dbusWiimoteGetRumbleStatus(quint32 id);
+    bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
+    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
+    quint8 dbusWiimoteGetLedStatus(quint32 id);
+
 signals:
     void dbusWiimoteGeneralButtons(quint32, quint64);
 
@@ -191,6 +234,11 @@ private slots:
 
 public slots:
     QList < struct deviceinfo> dbusGetDeviceList();
+
+    bool dbusWiimoteGetRumbleStatus(quint32 id);
+    bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
+    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
+    quint8 dbusWiimoteGetLedStatus(quint32 id);
 
 signals:
     void dbusWiimoteGeneralButtons(quint32, quint64);
