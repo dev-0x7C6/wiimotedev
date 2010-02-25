@@ -18,17 +18,13 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifdef QT_NO_DEBUG
-    #define __daemon
-#endif
-
 #define DAEMON_NAME "Wiimotedev"
 #define DAEMON_VERSION "0.10"
 #define PID_FILE "/var/run/wiimotedev.pid"
 
 #include <stdlib.h>
 
-#ifdef __daemon
+#ifdef DAEMON_SUPPORT
     #include <sys/types.h>
     #include <sys/stat.h>
     #include <stdio.h>
@@ -38,7 +34,7 @@
     #include <string.h>
 #endif
 
-#ifdef __syslog
+#ifdef SYSLOG_SUPPORT
     #include <syslog.h>
 #endif
 
@@ -72,7 +68,7 @@ void signal_handler(int sig) {
 
 int main(int argc, char *argv[])
 {    
-#ifdef __daemon
+#ifdef DAEMON_SUPPORT
     pid_t pid, sid;
 
     pid = fork();
@@ -96,14 +92,14 @@ int main(int argc, char *argv[])
     } else
         exit(EXIT_FAILURE);
 #else
-    qDebug("In debug mode daemon functions will be disabled");
+    qDebug("Daemon functions will be disabled");
 #endif
 
     application = new QCoreApplication(argc, argv);
     application->setApplicationName(DAEMON_NAME);
     application->setApplicationVersion(DAEMON_VERSION);
 
-#ifdef __syslog
+#ifdef SYSLOG_SUPPORT
     setlogmask(LOG_UPTO(LOG_INFO));
     openlog(DAEMON_NAME, LOG_CONS, LOG_USER);
     syslog(LOG_INFO, "daemon started");
@@ -120,7 +116,7 @@ int main(int argc, char *argv[])
     application->exec();
     delete application;
 
-#ifdef __syslog
+#ifdef SYSLOG_SUPPORT
     syslog(LOG_INFO, "daemon closed");
 #endif
 

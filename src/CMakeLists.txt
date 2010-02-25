@@ -3,6 +3,8 @@ set(QT_USE_QTDBUS TRUE)
 
 include( ${QT_USE_FILE} )
 
+add_definitions("-DDAEMON_SUPPORT -DSYSLOG_SUPPORT -Wall -ansi")
+
 set (wiimotedev_sources
         main.cpp
         connectionmanager.cpp

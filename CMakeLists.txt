@@ -4,7 +4,10 @@ project( wiimotedev )
 
 find_package(Qt4 REQUIRED) 
 
-set(CWIID_LIBRARY -lcwiid)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
+find_package(CWiiD REQUIRED)
+
+include_directories(${CWIID_INCLUDE_DIR})
 
 set(SERVICE_INITD_DIR /etc/init.d/)
 set(SERVICE_BIN_DIR /usr/sbin/)
