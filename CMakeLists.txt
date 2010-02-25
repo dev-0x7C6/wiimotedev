@@ -5,7 +5,7 @@ project( wiimotedev )
 find_package(Qt4 REQUIRED) 
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
-find_package(CWiiD REQUIRED)
+find_package(CWiiD REQUIRED NO_POLICY_SCOPE)
 
 include_directories(${CWIID_INCLUDE_DIR})
 
