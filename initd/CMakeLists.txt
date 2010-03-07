@@ -1,5 +1,5 @@
-set( service "initd/${DISTRO}/wiimotedev")
-set( install_path "${DISTRO}/wiimotedev" )
+set( service "initd/${DISTRO}/wiimotedev-daemon")
+set( install_path "${DISTRO}/wiimotedev-daemon" )
 
 if( EXISTS ${service})
   message( "Init.d script for ${DISTRO} is present" )
