@@ -168,8 +168,8 @@ ConnectionManager::ConnectionManager()
     connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
 
     terminateReq = false;
-    bdaddr_any = *BDADDR_ANY;
 
+    memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
 }
 
 ConnectionManager::~ConnectionManager()

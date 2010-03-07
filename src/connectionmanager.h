@@ -186,7 +186,6 @@ private:
     QList< void*> objectList;
     bdaddr_t bdaddr_any;
     bool terminateReq;
-
     WiimoteConnection *connectionObject;
 
 public:
