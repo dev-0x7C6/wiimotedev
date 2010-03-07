@@ -20,9 +20,6 @@
 
 #include "wiimoteconnection.h"
 
-#include <QtDebug>
-#include <math.h>
-
 WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
 {
     connected = false;
@@ -37,12 +34,8 @@ WiimoteConnection::~WiimoteConnection()
 void WiimoteConnection::run()
 {
     if (!device) return;
-    emit dbusWiimoteConnected(sequence);
 
-    timer = new QTimer();
-    connect(timer, SIGNAL(timeout()), this, SLOT(getBatteryStatus()), Qt::DirectConnection);
-    timer->setInterval(60000);
-    timer->start();
+    emit dbusWiimoteConnected(sequence);
 
     int count;
     union cwiid_mesg *mesg;
@@ -590,10 +583,6 @@ void WiimoteConnection::run()
 
     emit dbusWiimoteDisconnected(sequence);
 
-    timer->stop();
-    disconnect(timer, 0, 0, 0);
-    delete timer;
-
     emit unregisterConnection(static_cast< void*>( this));   
     return;
 }
@@ -636,12 +625,6 @@ QString WiimoteConnection::getWiimoteSAddr()
     ba2str(&wiimotebdaddr, addr);
     return QString::fromAscii(addr, 17);
 }
-
-void WiimoteConnection::getBatteryStatus()
-{
-    cwiid_request_status(device);
-}
-
 
 quint8 WiimoteConnection::getLedStatus()
 {

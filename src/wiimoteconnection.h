@@ -21,13 +21,10 @@
 #ifndef WIIMOTECONNECTION_H
 #define WIIMOTECONNECTION_H
 
-#include <QObject>
 #include <QThread>
-#include <QMetaType>
-#include <QMap>
-#include <QTime>
-#include <QTimer>
 #include <cwiid.h>
+#include <math.h>
+
 #include "wiimotedev.h"
 
 class WiimoteConnection : public QThread
@@ -45,16 +42,11 @@ private:
     quint8 ledStatus;
     bool rumbleStatus;
 
-    QTimer *timer;
-
     cwiid_wiimote_t *device;
     bool connected;
     bdaddr_t wiimotebdaddr;
     int id;
-    int sequence;
-
-private slots:
-    void getBatteryStatus();
+    quint32 sequence;
 
 public:
     WiimoteConnection(QObject *parent = 0);
@@ -66,15 +58,14 @@ public:
     bdaddr_t getWiimoteAddr(){ return wiimotebdaddr; }
     QString getWiimoteSAddr();
     int getWiimoteId(){ return id; }
-    void setWiimoteSequence(int seq) { sequence = seq; }
-    int getWiimoteSequence(){ return sequence; }
+    void setWiimoteSequence(quint32 seq) { sequence = seq; }
+    quint32 getWiimoteSequence(){ return sequence; }
     bool isConnected() { return connected; }
 
     quint8 getLedStatus();
     bool getRumbleStatus();
     void setLedStatus(quint8 status);
     void setRumbleStatus(bool status);
-
 
 protected:
    void run();

@@ -215,9 +215,6 @@ void ConnectionManager::registerConnection(void *object)
     dev.nunchuk = false;
     dev.classic = false;
 
-
-    qDebug() << object;
-
     deviceList[object] = dev;
 
     connect(connection, SIGNAL(dbusNunchukPlugged(quint32)), this, SLOT(slotDBusNunchukPlugged(quint32)));

@@ -27,12 +27,9 @@
 
 #include <QDBusAbstractAdaptor>
 #include <QDBusArgument>
-#include <QtDBus>
+#include <QDBusConnection>
+#include <QDBusMetaType>
 
-#include <QObject>
-#include <QThread>
-#include <QList>
-#include <QTimer>
 #include <QTime>
 
 #include "wiimoteconnection.h"
@@ -48,32 +45,8 @@ Q_DECLARE_METATYPE(QList < accdata>)
 Q_DECLARE_METATYPE(QList < stickdata>)
 Q_DECLARE_METATYPE(QList < deviceinfo>)
 
-extern QString filePathWiimotedev;
-
 const QString sequenceGroup("sequence");
-
-/*
-
-    "    <method name=\"dbusGetDeviceList\">\n"
-    "      <arg type=\"a(usyyy)\" direction=\"out\"/>\n"
-    "    </method>\n"
-
-    "    <method name=\"dbusWiimoteGetRumbleStatus\">\n"
-    "      <arg type=\"b\" direction=\"out\"/>\n"
-    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
-    "    </method>\n"
-    "    <method name=\"dbusWiimoteSetLedStatus\">\n"
-    "      <arg type=\"b\" direction=\"out\"/>\n"
-    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
-    "      <arg name=\"status\" type=\"y\" direction=\"in\"/>\n"
-    "    </method>\n"
-    "    <method name=\"dbusWiimoteSetRumbleStatus\">\n"
-    "      <arg type=\"b\" direction=\"out\"/>\n"
-    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
-    "      <arg name=\"status\" type=\"b\" direction=\"in\"/>\n"
-    "    </method>\n"
-
-  */
+extern QString filePathWiimotedev;
 
 class DeviceEventsClass : public QDBusAbstractAdaptor
 {
