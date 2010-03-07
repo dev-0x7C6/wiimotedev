@@ -1,0 +1,15 @@
+#! /bin/sh
+# Distributed under the terms of the GNU General Public License, v2 or later
+
+case "$1" in
+  start)
+    echo "Starting Wiimotedev-daemon "
+    start-stop-daemon --start -q --exec /usr/sbin/wiimotedev
+    ;;
+  stop)
+    echo "Stopping Wiimotedev-daemon"
+    start-stop-daemon --stop -q --pidfile /var/run/wiimotedev.pid
+    ;;
+esac
+
+exit 0

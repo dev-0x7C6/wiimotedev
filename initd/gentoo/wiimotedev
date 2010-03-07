@@ -7,14 +7,13 @@ depend() {
 }
 
 start() {
-	ebegin "Starting Wiimotedev daemon"
-
+	ebegin "Starting Wiimotedev-daemon"
         start-stop-daemon --start -q --exec /usr/sbin/wiimotedev
 	eend $?
 }
 
 stop() {
-	ebegin "Stopping Wiimotedev daemon"
+	ebegin "Stopping Wiimotedev-daemon"
 	start-stop-daemon --stop -q --pidfile /var/run/wiimotedev.pid
 	eend $?
 }
