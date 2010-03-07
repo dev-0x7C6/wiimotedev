@@ -1,6 +1,7 @@
 #!/sbin/runscript
 # Distributed under the terms of the GNU General Public License, v2 or later
-
+# Copyright (C) 2008-2010 Bartłomiej Burdukiewicz
+# Contact: dev.strikeu@gmail.com   
 
 depend() {
 	need dbus bluetooth
