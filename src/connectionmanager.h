@@ -47,7 +47,7 @@ Q_DECLARE_METATYPE(QList < accdata>);
 Q_DECLARE_METATYPE(QList < stickdata>);
 Q_DECLARE_METATYPE(QList < deviceinfo>);
 
-const QString sequenceSection("sequence/");
+const QString sequenceSection("sequence");
 const QString tcpSection("tcp/");
 const QString wiimotedevSection("wiimotedev/");
 

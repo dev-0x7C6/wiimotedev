@@ -166,6 +166,7 @@ ConnectionManager::ConnectionManager()
     QSettings settings(filePathWiimotedev, QSettings::IniFormat);
 
     settings.beginGroup(sequenceSection);
+
     for (register int i = 0; i < settings.allKeys().count(); ++i)
         wiiremoteSequence.insert(settings.allKeys().at(i), settings.value(settings.allKeys().at(i), 0).toInt());
 
