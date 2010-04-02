@@ -18,26 +18,27 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-
 #ifndef MESSAGETHREAD_H
 #define MESSAGETHREAD_H
 
 #include <QThread>
 #include <QTcpSocket>
 #include <QMutex>
+#include <QMetaType>
+#include <QDBusMetaType>
 
 #include "wiimotedevproto.h"
 #include "wiimotedev.h"
 
-Q_DECLARE_METATYPE(irpoint)
-Q_DECLARE_METATYPE(accdata)
-Q_DECLARE_METATYPE(stickdata)
-Q_DECLARE_METATYPE(deviceinfo)
+Q_DECLARE_METATYPE(irpoint);
+Q_DECLARE_METATYPE(accdata);
+Q_DECLARE_METATYPE(stickdata);
+Q_DECLARE_METATYPE(deviceinfo);
 
-Q_DECLARE_METATYPE(QList < irpoint>)
-Q_DECLARE_METATYPE(QList < accdata>)
-Q_DECLARE_METATYPE(QList < stickdata>)
-Q_DECLARE_METATYPE(QList < deviceinfo>)
+Q_DECLARE_METATYPE(QList < irpoint>);
+Q_DECLARE_METATYPE(QList < accdata>);
+Q_DECLARE_METATYPE(QList < stickdata>);
+Q_DECLARE_METATYPE(QList < deviceinfo>);
 
 class MessageThread : public QThread
 {
