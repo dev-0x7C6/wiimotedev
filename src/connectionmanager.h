@@ -32,6 +32,7 @@
 
 #include <QTime>
 
+#include "messageserver.h"
 #include "wiimoteconnection.h"
 #include "wiimotedev.h"
 
@@ -45,7 +46,20 @@ Q_DECLARE_METATYPE(QList < accdata>)
 Q_DECLARE_METATYPE(QList < stickdata>)
 Q_DECLARE_METATYPE(QList < deviceinfo>)
 
-const QString sequenceGroup("sequence");
+const QString sequenceSection("sequence/");
+const QString tcpSection("tcp/");
+const QString wiimotedevSection("wiimotedev/");
+
+const QString wiimotedevDBusIface("DBusInterface");
+const QString wiimotedevTCPIface("TCPInterface");
+
+const QString tcpPort("port");
+
+const bool defDBusInterfaceEnabled = true;
+const bool defTCPInterfaceEnabled = false;
+const quint16 defTCPPort = 50091;
+
+
 extern QString filePathWiimotedev;
 
 class DeviceEventsClass : public QDBusAbstractAdaptor
@@ -180,7 +194,14 @@ class ConnectionManager : public QThread
 {
     Q_OBJECT
 
-private:   
+private:     
+    bool DBusInterface;
+    bool TCPInterface;
+
+    quint16 tcpPort;
+
+    MessageServerThread *tcpServerThread;
+
     QMap< void*, struct deviceinfo> deviceList;
     QMap< QString, quint16> wiiremoteSequence;
     QList< void*> objectList;

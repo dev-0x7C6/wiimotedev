@@ -143,6 +143,8 @@ bool DeviceEventsClass::dbusWiimoteSetRumbleStatus(quint32 id, bool status)
 
 ConnectionManager::ConnectionManager()
 {
+/* Register Meta Types ---------------------------------------------- */
+
     qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
     qRegisterMetaType< QList< accdata> >("QList< accdata>");
     qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
@@ -153,23 +155,47 @@ ConnectionManager::ConnectionManager()
     qRegisterMetaType< stickdata>("stickdata");
     qRegisterMetaType< deviceinfo>("deviceinfo");
 
-    QSettings settings(filePathWiimotedev, QSettings::IniFormat);
-    settings.beginGroup(sequenceGroup);
-
-    for (register int i = 0; i < settings.allKeys().count(); ++i)
-        wiiremoteSequence.insert(settings.allKeys().at(i), settings.value(settings.allKeys().at(i), 0).toInt());
-
-    settings.endGroup();
-
-    new DeviceEventsClass(this);
-
-    QDBusConnection connection = QDBusConnection::systemBus();
-    connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_NAME, this);
-    connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
-
     terminateReq = false;
 
+/* Setup ------------------------------------------------------------ */
+
+    connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
+
+/* Load rules ------------------------------------------------------- */
+
+    QSettings settings(filePathWiimotedev, QSettings::IniFormat);
+
+    for (register int i = 0; i < settings.allKeys().count(); ++i)
+        wiiremoteSequence.insert(sequenceSection + settings.allKeys().at(i), settings.value(settings.allKeys().at(i), 0).toInt());
+
+    DBusInterface = settings.value(wiimotedevSection + wiimotedevDBusIface, defDBusInterfaceEnabled).toBool();
+    TCPInterface = settings.value(wiimotedevSection + wiimotedevTCPIface, defTCPInterfaceEnabled).toBool();
+
+    tcpPort = settings.value(tcpSection + tcpPort, defTCPPort).toInt();
+
     memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
+
+/* DBus interface --------------------------------------------------- */
+
+    if (DBusInterface)
+    {
+        new DeviceEventsClass(this);
+
+        QDBusConnection connection = QDBusConnection::systemBus();
+        connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_NAME, this);
+        connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
+    }
+
+/* TCP interface ---------------------------------------------------- */
+
+    if (TCPInterface)
+    {
+        tcpServerThread = new MessageServerThread(this, tcpPort, this);
+        tcpServerThread->start();
+    }
+
+    if (!(TCPInterface || DBusInterface))
+        terminateReq = true;
 }
 
 ConnectionManager::~ConnectionManager()
