@@ -9,12 +9,6 @@ find_package(CWiiD REQUIRED NO_POLICY_SCOPE)
 
 include_directories(${CWIID_INCLUDE_DIR})
 
-set(SERVICE_INITD_DIR /etc/init.d/)
-set(SERVICE_BIN_DIR /usr/sbin/)
-set(SERVICE_CONF_DIR /etc/wiimotedev/)
-set(SERVICE_HEADER_DIR /usr/include/)
-set(SERVICE_DBUS_DIR /etc/dbus-1/system.d/)
-
 add_subdirectory(src)
 add_subdirectory(initd)
 add_subdirectory(default)

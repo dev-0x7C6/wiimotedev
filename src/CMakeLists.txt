@@ -29,7 +29,7 @@ add_executable(wiimotedev ${wiimotedev_sources} ${wiimotedev_headers})
 
 target_link_libraries(wiimotedev ${QT_LIBRARIES} ${CWIID_LIBRARY})
 
-install(FILES wiimotedev.h DESTINATION ${SERVICE_HEADER_DIR} )
-install(FILES wiimotedevproto.h  DESTINATION ${SERVICE_HEADER_DIR} )
+install(FILES wiimotedev.h DESTINATION /usr/include/ )
+install(FILES wiimotedevproto.h  DESTINATION /usr/include/ )
 
-install(TARGETS wiimotedev DESTINATION ${SERVICE_BIN_DIR} )
+install(TARGETS wiimotedev DESTINATION /usr/sbin/ )

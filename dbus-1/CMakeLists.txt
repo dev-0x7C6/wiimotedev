@@ -1,1 +1,1 @@
-install(FILES org.wiimotedev.conf DESTINATION ${SERVICE_DBUS_DIR} )
+install(FILES org.wiimotedev-daemon.conf DESTINATION /etc/dbus-1/system.d/ )
