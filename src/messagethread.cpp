@@ -88,7 +88,7 @@ void MessageThread::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusWiimoteGeneralButtons);
     out << static_cast< quint32>( id);
     out << static_cast< quint64>( value);
@@ -104,7 +104,7 @@ void MessageThread::dbusWiimoteConnected(quint32 id)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusWiimoteConnected);
     out << static_cast< quint32>( id);
     out.device()->seek(0);
@@ -119,7 +119,7 @@ void MessageThread::dbusWiimoteDisconnected(quint32 id)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusWiimoteDisconnected);
     out << static_cast< quint32>( id);
     out.device()->seek(0);
@@ -134,7 +134,7 @@ void MessageThread::dbusWiimoteBatteryLife(quint32 id, quint8 life)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusWiimoteBatteryLife);
     out << static_cast< quint32>( id);
     out << static_cast< quint8>( life);
@@ -150,7 +150,7 @@ void MessageThread::dbusWiimoteButtons(quint32 id, quint64 value)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusWiimoteButtons);
     out << static_cast< quint32>( id);
     out << static_cast< quint64>( value);
@@ -166,7 +166,7 @@ void MessageThread::dbusWiimoteStatus(quint32 id, quint8 status)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusWiimoteStatus);
     out << static_cast< quint32>( id);
     out << static_cast< quint8>( status);
@@ -182,7 +182,7 @@ void MessageThread::dbusWiimoteInfrared(quint32 id, QList< struct irpoint> point
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusWiimoteInfrared);
     out << static_cast< quint32>( id);
 
@@ -207,7 +207,7 @@ void MessageThread::dbusWiimoteAcc(quint32 id, struct accdata acc)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusWiimoteAcc);
     out << static_cast< quint32>( id);
 
@@ -229,7 +229,7 @@ void MessageThread::dbusNunchukPlugged(quint32 id)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusNunchukPlugged);
     out << static_cast< quint32>( id);
     out.device()->seek(0);
@@ -244,7 +244,7 @@ void MessageThread::dbusNunchukUnplugged(quint32 id)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusNunchukUnplugged);
     out << static_cast< quint32>( id);
     out.device()->seek(0);
@@ -259,7 +259,7 @@ void MessageThread::dbusNunchukButtons(quint32 id, quint64 value)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusNunchukButtons);
     out << static_cast< quint32>( id);
     out << static_cast< quint64>( value);
@@ -275,7 +275,7 @@ void MessageThread::dbusNunchukStick(quint32 id, struct stickdata stick)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusNunchukStick);
     out << static_cast< quint32>( id);
     out << static_cast< quint8>( stick.x);
@@ -292,7 +292,7 @@ void MessageThread::dbusNunchukAcc(quint32 id, struct accdata acc)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusNunchukAcc);
     out << static_cast< quint32>( id);
 
@@ -314,7 +314,7 @@ void MessageThread::dbusClassicControllerPlugged(quint32 id)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusClassicControllerPlugged);
     out << static_cast< quint32>( id);
     out.device()->seek(0);
@@ -329,7 +329,7 @@ void MessageThread::dbusClassicControllerUnplugged(quint32 id)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusClassicControllerUnplugged);
     out << static_cast< quint32>( id);
     out.device()->seek(0);
@@ -344,7 +344,7 @@ void MessageThread::dbusClassicControllerButtons(quint32 id, quint64 value)
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusClassicControllerButtons);
     out << static_cast< quint32>( id);
     out << static_cast< quint64>( value);
@@ -360,7 +360,7 @@ void MessageThread::dbusClassicControllerLStick(quint32 id, struct stickdata sti
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusClassicControllerLStick);
     out << static_cast< quint32>( id);
     out << static_cast< quint8>( stick.x);
@@ -377,7 +377,7 @@ void MessageThread::dbusClassicControllerRStick(quint32 id, struct stickdata sti
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
 
-    out.setVersion(QDataStream::Qt_4_6);
+    out.setVersion(QDataStream::Qt_4_0);
     out << static_cast< quint16>( iddbusClassicControllerRStick);
     out << static_cast< quint32>( id);
     out << static_cast< quint8>( stick.x);
