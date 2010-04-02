@@ -1,0 +1,37 @@
+#!/bin/sh
+# Distributed under the terms of the GNU General Public License, v2 or later
+# Copyright (C) 2010 Korneliusz Jarzębski
+# Contact: public@santyago.pl
+
+PIDFILE=/var/run/wiimotedev.pid
+
+wiimotedev_start() {
+  if [ -x /usr/sbin/wiimotedev ]; then
+    /usr/sbin/wiimotedev
+  fi
+}
+
+wiimotedev_stop() {
+  if [ -e "$PIDFILE" ]; then
+    kill $(cat $PIDFILE)
+    rm -f $PIDFILE
+  fi
+  killall wiimotedev 1> /dev/null 2> /dev/null
+}
+
+case "$1" in
+    start)
+        wiimotedev_start
+        ;;
+    stop)
+        wiimotedev_stop
+        ;;
+    restart)
+        wiimotedev_stop
+        sleep 1
+        wiimotedev_start
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|restart}"
+        ;;
+esac

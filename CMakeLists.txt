@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6) 
 
-project( wiimotedev )
+project( wiimotedev-daemon )
 
 find_package(Qt4 REQUIRED) 
 
