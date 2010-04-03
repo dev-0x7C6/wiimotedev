@@ -25,11 +25,11 @@ set (wiimotedev_headers
 
 QT4_WRAP_CPP(wiimotedev_headers ${wiimotedev_headers} )
 
-add_executable(wiimotedev ${wiimotedev_sources} ${wiimotedev_headers})
+add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers})
 
-target_link_libraries(wiimotedev ${QT_LIBRARIES} ${CWIID_LIBRARY})
+target_link_libraries(wiimotedev-daemon ${QT_LIBRARIES} ${CWIID_LIBRARY})
 
 install(FILES wiimotedev.h DESTINATION /usr/include/ )
 install(FILES wiimotedevproto.h  DESTINATION /usr/include/ )
 
-install(TARGETS wiimotedev DESTINATION /usr/sbin/ )
+install(TARGETS wiimotedev-daemon DESTINATION /usr/sbin/ )

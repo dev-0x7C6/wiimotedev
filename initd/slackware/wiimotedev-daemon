@@ -3,11 +3,11 @@
 # Copyright (C) 2010 Korneliusz Jarzębski
 # Contact: public@santyago.pl
 
-PIDFILE=/var/run/wiimotedev.pid
+PIDFILE=/var/run/wiimotedev-daemon.pid
 
 wiimotedev_start() {
-  if [ -x /usr/sbin/wiimotedev ]; then
-    /usr/sbin/wiimotedev
+  if [ -x /usr/sbin/wiimotedev-daemon ]; then
+    /usr/sbin/wiimotedev-daemon
   fi
 }
 
@@ -16,7 +16,7 @@ wiimotedev_stop() {
     kill $(cat $PIDFILE)
     rm -f $PIDFILE
   fi
-  killall wiimotedev 1> /dev/null 2> /dev/null
+  killall wiimotedev-daemon 1> /dev/null 2> /dev/null
 }
 
 case "$1" in

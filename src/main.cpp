@@ -19,8 +19,8 @@
  ***************************************************************************/
 
 #define DAEMON_NAME "Wiimotedev"
-#define DAEMON_VERSION "0.99.2"
-#define PID_FILE "/var/run/wiimotedev.pid"
+#define DAEMON_VERSION "0.99.3"
+#define PID_FILE "/var/run/wiimotedev-daemon.pid"
 
 #include <stdlib.h>
 

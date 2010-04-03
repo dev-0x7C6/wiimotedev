@@ -9,12 +9,12 @@ depend() {
 
 start() {
 	ebegin "Starting Wiimotedev-daemon"
-        start-stop-daemon --start -q --exec /usr/sbin/wiimotedev
+        start-stop-daemon --start -q --exec /usr/sbin/wiimotedev-daemon
 	eend $?
 }
 
 stop() {
 	ebegin "Stopping Wiimotedev-daemon"
-	start-stop-daemon --stop -q --pidfile /var/run/wiimotedev.pid
+	start-stop-daemon --stop -q --pidfile /var/run/wiimotedev-daemon.pid
 	eend $?
 }

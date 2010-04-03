@@ -6,11 +6,11 @@
 case "$1" in
   start)
     echo "Starting Wiimotedev-daemon "
-    start-stop-daemon --start -q --exec /usr/sbin/wiimotedev
+    start-stop-daemon --start -q --exec /usr/sbin/wiimotedev-daemon
     ;;
   stop)
     echo "Stopping Wiimotedev-daemon"
-    start-stop-daemon --stop -q --pidfile /var/run/wiimotedev.pid
+    start-stop-daemon --stop -q --pidfile /var/run/wiimotedev-daemon.pid
     ;;
 esac
 

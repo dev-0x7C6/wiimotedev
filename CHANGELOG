@@ -1,6 +1,10 @@
 Wiimotedev-daemon Changelog
 ===========================
 
+Wiimotedev-daemon 0.99.3 (rc2 rev3)
+* Renamed binary to wiimotedev-daemon
+* Cleanup and update whole project
+
 Wiimotedev-daemon 0.99.2 (rc2 rev2)
 * Added Slackware init.d script
 
