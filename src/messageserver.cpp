@@ -19,7 +19,6 @@
  ***************************************************************************/
 
 #include "messageserver.h"
-#include "messagethread.h"
 
 MessageServerThread::MessageServerThread(QObject *manager, quint16 port,  QObject *parent) : manager(manager), port(port), QThread(parent)
 {
