@@ -83,6 +83,15 @@ MessageServer::~MessageServer()
         delete connections.at(i);
 }
 
+void MessageServer::tcpSendEvent(QByteArray &data)
+{
+    mutex.lock();
+    for (register int i = 0; i < connections.count(); ++i) {
+        connections.at(i)->write(data);
+    }
+    mutex.unlock();
+}
+
 void MessageServer::incomingConnection(int socketDescriptor)
 {
     QTcpSocket *tcpSocket  = new QTcpSocket();
@@ -121,11 +130,9 @@ void MessageServer::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
     out << static_cast< quint16>( iddbusWiimoteGeneralButtons);
     out << static_cast< quint32>( id);
     out << static_cast< quint64>( value);
+    out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusWiimoteConnected(quint32 id)
@@ -138,10 +145,7 @@ void MessageServer::dbusWiimoteConnected(quint32 id)
     out << static_cast< quint32>( id);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusWiimoteDisconnected(quint32 id)
@@ -154,10 +158,7 @@ void MessageServer::dbusWiimoteDisconnected(quint32 id)
     out << static_cast< quint32>( id);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusWiimoteBatteryLife(quint32 id, quint8 life)
@@ -171,10 +172,7 @@ void MessageServer::dbusWiimoteBatteryLife(quint32 id, quint8 life)
     out << static_cast< quint8>( life);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusWiimoteButtons(quint32 id, quint64 value)
@@ -188,10 +186,7 @@ void MessageServer::dbusWiimoteButtons(quint32 id, quint64 value)
     out << static_cast< quint64>( value);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusWiimoteStatus(quint32 id, quint8 status)
@@ -205,10 +200,7 @@ void MessageServer::dbusWiimoteStatus(quint32 id, quint8 status)
     out << static_cast< quint8>( status);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points)
@@ -227,12 +219,9 @@ void MessageServer::dbusWiimoteInfrared(quint32 id, QList< struct irpoint> point
         out << static_cast< quint16>( points.at(i).x);
         out << static_cast< quint16>( points.at(i).y);
     }
+    out.device()->seek(0);
 
-
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusWiimoteAcc(quint32 id, struct accdata acc)
@@ -249,11 +238,9 @@ void MessageServer::dbusWiimoteAcc(quint32 id, struct accdata acc)
     out << static_cast< quint8>( acc.x);
     out << static_cast< quint8>( acc.y);
     out << static_cast< quint8>( acc.z);
+    out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusNunchukPlugged(quint32 id)
@@ -266,10 +253,7 @@ void MessageServer::dbusNunchukPlugged(quint32 id)
     out << static_cast< quint32>( id);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusNunchukUnplugged(quint32 id)
@@ -282,10 +266,7 @@ void MessageServer::dbusNunchukUnplugged(quint32 id)
     out << static_cast< quint32>( id);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusNunchukButtons(quint32 id, quint64 value)
@@ -299,10 +280,7 @@ void MessageServer::dbusNunchukButtons(quint32 id, quint64 value)
     out << static_cast< quint64>( value);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusNunchukStick(quint32 id, struct stickdata stick)
@@ -317,10 +295,7 @@ void MessageServer::dbusNunchukStick(quint32 id, struct stickdata stick)
     out << static_cast< quint8>( stick.y);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusNunchukAcc(quint32 id, struct accdata acc)
@@ -337,13 +312,9 @@ void MessageServer::dbusNunchukAcc(quint32 id, struct accdata acc)
     out << static_cast< quint8>( acc.x);
     out << static_cast< quint8>( acc.y);
     out << static_cast< quint8>( acc.z);
-
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusClassicControllerPlugged(quint32 id)
@@ -356,10 +327,7 @@ void MessageServer::dbusClassicControllerPlugged(quint32 id)
     out << static_cast< quint32>( id);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusClassicControllerUnplugged(quint32 id)
@@ -372,10 +340,7 @@ void MessageServer::dbusClassicControllerUnplugged(quint32 id)
     out << static_cast< quint32>( id);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusClassicControllerButtons(quint32 id, quint64 value)
@@ -389,10 +354,7 @@ void MessageServer::dbusClassicControllerButtons(quint32 id, quint64 value)
     out << static_cast< quint64>( value);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusClassicControllerLStick(quint32 id, struct stickdata stick)
@@ -407,10 +369,7 @@ void MessageServer::dbusClassicControllerLStick(quint32 id, struct stickdata sti
     out << static_cast< quint8>( stick.y);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }
 
 void MessageServer::dbusClassicControllerRStick(quint32 id, struct stickdata stick)
@@ -425,8 +384,5 @@ void MessageServer::dbusClassicControllerRStick(quint32 id, struct stickdata sti
     out << static_cast< quint8>( stick.y);
     out.device()->seek(0);
 
-    for (register int i = 0; i < connections.count(); ++i) {
-        out.device()->seek(0);
-        connections.at(i)->write(block);
-    }
+    tcpSendEvent(block);
 }

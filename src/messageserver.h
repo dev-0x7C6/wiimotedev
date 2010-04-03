@@ -61,8 +61,13 @@ protected:
 private:
     QList < QTcpSocket*> connections;
 
+    void tcpSendEvent(QByteArray &data);
+
     quint16 port;
     QObject *manager;
+    QMutex mutex;
+
+
 
 public slots:
     void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
