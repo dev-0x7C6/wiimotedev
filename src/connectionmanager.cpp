@@ -193,7 +193,7 @@ ConnectionManager::ConnectionManager()
 /* TCP interface ---------------------------------------------------- */
 
     if (TCPInterface)
-    {
+    {      
         tcpServerThread = new MessageServerThread(this, tcpPort, this);
         tcpServerThread->start();
     }

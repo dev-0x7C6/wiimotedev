@@ -4,21 +4,19 @@ set(QT_USE_QTNETWORK TRUE)
 
 include( ${QT_USE_FILE} )
 
-add_definitions("-DDAEMON_SUPPORT -DSYSLOG_SUPPORT -Wall -ansi")
+# add_definitions("-DDAEMON_SUPPORT -DSYSLOG_SUPPORT -Wall -ansi")
 
 set (wiimotedev_sources
         main.cpp
         connectionmanager.cpp
         wiimoteconnection.cpp
         messageserver.cpp
-        messagethread.cpp
 )
 
 set (wiimotedev_headers
         connectionmanager.h
         wiimoteconnection.h
         messageserver.h
-        messagethread.h
         wiimotedev.h
         wiimotedevproto.h
 )

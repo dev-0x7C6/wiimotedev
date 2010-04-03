@@ -37,16 +37,6 @@
 #include "wiimoteconnection.h"
 #include "wiimotedev.h"
 
-Q_DECLARE_METATYPE(irpoint);
-Q_DECLARE_METATYPE(accdata);
-Q_DECLARE_METATYPE(stickdata);
-Q_DECLARE_METATYPE(deviceinfo);
-
-Q_DECLARE_METATYPE(QList < irpoint>);
-Q_DECLARE_METATYPE(QList < accdata>);
-Q_DECLARE_METATYPE(QList < stickdata>);
-Q_DECLARE_METATYPE(QList < deviceinfo>);
-
 const QString sequenceSection("sequence");
 const QString tcpSection("tcp/");
 const QString wiimotedevSection("wiimotedev/");
