@@ -1,24 +1,26 @@
-/***************************************************************************
- *   Copyright (C) 2008-2010 by Bartlomiej Burdukiewicz                    *
- *   dev.strikeu@gmail.com                                                 *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
+/**********************************************************************************
+ * Wiimotedev daemon, wiiremote system service                                    *
+ * Copyright (C) 2010  Bartlomiej Burdukiewicz                                    *
+ * Contact: dev.strikeu@gmail.com                                                 *
+ *                                                                                *
+ * This library is free software; you can redistribute it and/or                  *
+ * modify it under the terms of the GNU Lesser General Public                     *
+ * License as published by the Free Software Foundation; either                   *
+ * version 2.1 of the License, or (at your option) any later version.             *
+ *                                                                                *
+ * This library is distributed in the hope that it will be useful,                *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                 *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU              *
+ * Lesser General Public License for more details.                                *
+ *                                                                                *
+ * You should have received a copy of the GNU Lesser General Public               *
+ * License along with this library; if not, write to the Free Software            *
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
+ **********************************************************************************/
 
 #include "wiimoteconnection.h"
+#include <QtDebug>
+#include <QTime>
 
 WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
 {
@@ -56,35 +58,75 @@ void WiimoteConnection::run()
     unsigned long long WiimoteButtons = 0x00;
     unsigned long long WiimoteButtonsTmp = 0x00;
 
-    unsigned char ClassicLStickX = 0x00;
-    unsigned char ClassicLStickY = 0x00;
-    unsigned char ClassicRStickX = 0x00;
-    unsigned char ClassicRStickY = 0x00;
-    unsigned char NunchukStickX = 0x00;
-    unsigned char NunchukStickY = 0x00;
 
-    unsigned short int LastClassicButtons = 0x00;
 
     struct acc_cal wiimote_calibration;
-    struct acc_cal nunchuk_calibration;
+
     memset(&wiimote_calibration, 0, sizeof(struct acc_cal));
-    memset(&nunchuk_calibration, 0, sizeof(struct acc_cal));
+
 
     double LastWiimoteAccX = 0.0;
     double LastWiimoteAccY = 0.0;
     double LastWiimoteAccZ = 0.0;
 
-    double LastNunchukAccX = 0.0;
-    double LastNunchukAccY = 0.0;
-    double LastNunchukAccZ = 0.0;
-
     struct accdata acc;
-    struct stickdata stick;
+
+/*  Wiimote temporary variables *****************************************************/
+    QList< irpoint> wiimoteIrTable;
+    struct irpoint wiimotePoint;
+
+/*  Nunchuk temporary variables *****************************************************/
+    struct stickdata nunchukStickdata;
+    struct accdata nunchukAccdata;
+
+    nunchukStickdata.x = 0;
+    nunchukStickdata.y = 0;
+
+    nunchukAccdata.x = 0xFF >> 1;
+    nunchukAccdata.y = 0xFF >> 1;
+    nunchukAccdata.z = 0xFF >> 1;
+    nunchukAccdata.pitch = 0.0;
+    nunchukAccdata.roll = 0.0;
+
+    double nunchukAccX = 0.0;
+    double nunchukAccY = 0.0;
+    double nunchukAccZ = 0.0;
+
+    const quint8 nunchukToleranceValue = (0xFF >> 2);
+
+    const quint8 nunchukStickMaxX = (0xFF >> 1) + nunchukToleranceValue;
+    const quint8 nunchukStickMinX = (0xFF >> 1) - nunchukToleranceValue;
+    const quint8 nunchukStickMaxY = (0xFF >> 1) + nunchukToleranceValue;
+    const quint8 nunchukStickMinY = (0xFF >> 1) - nunchukToleranceValue;
+
+    struct acc_cal nunchuk_calibration;
+    memset(&nunchuk_calibration, 0, sizeof(struct acc_cal));
+
+/*  Classic temporary variables *****************************************************/
+    struct stickdata classicRStickdata, classicLStickdata;
+    classicRStickdata.x = 0;
+    classicRStickdata.y = 0;
+    classicLStickdata.x = 0;
+    classicLStickdata.y = 0;
+    unsigned short int LastClassicButtons = 0x00;
+
+    const quint8 classicLToleranceValue = (0x3F >> 2);
+    const quint8 classicRToleranceValue = (0x1F >> 2);
+
+    const quint8 classicLStickMaxX = (0x3F >> 1) + classicLToleranceValue;
+    const quint8 classicLStickMinX = (0x3F >> 1) - classicLToleranceValue;
+    const quint8 classicLStickMaxY = (0x3F >> 1) + classicLToleranceValue;
+    const quint8 classicLStickMinY = (0x3F >> 1) - classicLToleranceValue;
+    const quint8 classicRStickMaxX = (0x1F >> 1) + classicRToleranceValue;
+    const quint8 classicRStickMinX = (0x1F >> 1) - classicRToleranceValue;
+    const quint8 classicRStickMaxY = (0x1F >> 1) + classicRToleranceValue;
+    const quint8 classicRStickMinY = (0x1F >> 1) - classicRToleranceValue;
+
+    QTime latencyTimer;
 
     cwiid_get_acc_cal(device, CWIID_EXT_NONE, &wiimote_calibration);
 
-    QList< irpoint> table;
-    struct irpoint point;
+
 
     double wxvalueabs, wxvalue, nxvalueabs, nxvalue, wxpow, nxpow = 0.0;
     double wyvalueabs, wyvalue, nyvalueabs, nyvalue, wypow, nypow = 0.0;
@@ -92,46 +134,31 @@ void WiimoteConnection::run()
 
     qint32 wcounter, ncounter = 0;
 
-    while (!cwiid_get_mesg(device, &count, &mesg, &time))
-    {
-        for (register int i = 0; i < count; ++i) switch (mesg[i].type)
-        {
+    currentLatency = 0;
+    averageLatency = 0;
+
+    while (!cwiid_get_mesg(device, &count, &mesg, &time)) {
+        currentLatency = latencyTimer.elapsed();
+        latencyTimer.start();
+
+        if (!averageLatency)
+            averageLatency = currentLatency;
+
+        averageLatency = (averageLatency + currentLatency) >> 1;
+
+        for (register int i = 0; i < count; ++i) switch (mesg[i].type) {
+
+/* Disconnect section ****************************************************************************************************************/
             case CWIID_MESG_ERROR:
+            /* Classic cleanup *******************************************************************************************************/
+                if (WiimoteStatus & STATUS_WIIMOTE_CLASSIC_CONNECTED) classicDeviceCleanup(classicLStickdata, classicRStickdata);
+
+            /* Nunchuk cleanup *******************************************************************************************************/
+                if (WiimoteStatus & STATUS_WIIMOTE_NUNCHUK_CONNECTED) nunchukDeviceCleanup(nunchukStickdata, nunchukAccdata);
+
+           /* Wiimote cleanup *******************************************************************************************************/
                 connected = false;
                 WiimoteButtons = 0;
-
-                acc.x = 0xFF / 2;
-                acc.y = 0xFF / 2;
-                acc.z = 0xFF / 2;
-
-                acc.pitch = 0;
-                acc.roll = 0;
-
-                if (WiimoteStatus & STATUS_WIIMOTE_CLASSIC_CONNECTED)
-                {
-                    stick.x = CLASSIC_LSTICK_X_MAX / 2;
-                    stick.y = CLASSIC_LSTICK_Y_MAX / 2;
-
-                    emit dbusClassicControllerLStick(sequence, stick);
-
-                    stick.x = CLASSIC_RSTICK_X_MAX / 2;
-                    stick.y = CLASSIC_RSTICK_Y_MAX / 2;
-
-                    emit dbusClassicControllerRStick(sequence, stick);
-                    emit dbusClassicControllerButtons(sequence, WiimoteButtons);
-                    emit dbusClassicControllerUnplugged(sequence);
-                }
-
-                if (WiimoteStatus & STATUS_WIIMOTE_NUNCHUK_CONNECTED)
-                {
-                    stick.x = NUNCHUK_STICK_X_MAX / 2;
-                    stick.y = NUNCHUK_STICK_Y_MAX / 2;
-
-                    emit dbusNunchukStick(sequence, stick);
-                    emit dbusNunchukAcc(sequence, acc);
-                    emit dbusNunchukButtons(sequence, WiimoteButtons);
-                    emit dbusNunchukUnplugged(sequence);
-                }
 
                 point.size = -1;
                 point.x = 0;
@@ -148,6 +175,7 @@ void WiimoteConnection::run()
                 ButtonRequest = true;
                 break;
 
+/* Status section ********************************************************************************************************************/
             case CWIID_MESG_STATUS:
                 NewBatteryLife = static_cast< unsigned char>(100.0 * (mesg[i].status_mesg.battery / static_cast< double>(CWIID_BATTERY_MAX)));
                 if (BatteryLife != NewBatteryLife) {
@@ -155,66 +183,43 @@ void WiimoteConnection::run()
                     emit dbusWiimoteBatteryLife(sequence, BatteryLife);
                 }
 
-                switch (mesg[i].status_mesg.ext_type)
-                {
-                    case CWIID_EXT_NONE:    
-                        if (WiimoteStatus & STATUS_WIIMOTE_CLASSIC_CONNECTED)
-                        {
+                switch (mesg[i].status_mesg.ext_type) {
+
+                /* Status section ***************************************************************************************************/
+                    case CWIID_EXT_NONE:
+                    /* Classic unpluged *********************************************************************************************/
+                        if (WiimoteStatus & STATUS_WIIMOTE_CLASSIC_CONNECTED) {
                             WiimoteButtons &= CLASSIC_BUTTON_NOTMASK;
                             WiimoteButtons &= CLASSIC_LSTICK_NOTMASK;
                             WiimoteButtons &= CLASSIC_RSTICK_NOTMASK;
-
-                            stick.x = CLASSIC_LSTICK_X_MAX / 2;
-                            stick.y = CLASSIC_LSTICK_Y_MAX / 2;
-
-                            emit dbusClassicControllerLStick(sequence, stick);
-
-                            stick.x = CLASSIC_RSTICK_X_MAX / 2;
-                            stick.y = CLASSIC_RSTICK_Y_MAX / 2;
-
-                            emit dbusClassicControllerRStick(sequence, stick);
-                            emit dbusClassicControllerButtons(sequence, WiimoteButtons);
-                            emit dbusClassicControllerUnplugged(sequence);
+                            classicDeviceCleanup(classicLStickdata, classicRStickdata);
                             ButtonRequest = true;
                         }
 
-                        if (WiimoteStatus & STATUS_WIIMOTE_NUNCHUK_CONNECTED)
-                        {
+                    /* Nunchuk unpluged *********************************************************************************************/
+                        if (WiimoteStatus & STATUS_WIIMOTE_NUNCHUK_CONNECTED) {
                             WiimoteButtons &= NUNCHUK_BUTTON_NOTMASK;
                             WiimoteButtons &= NUNCHUK_STICK_NOTMASK;
                             WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
                             WiimoteButtons &= NUNCHUK_TILT_NOTMASK;
-
-                            stick.x = NUNCHUK_STICK_X_MAX / 2;
-                            stick.y = NUNCHUK_STICK_Y_MAX / 2;
-
-                            emit dbusNunchukStick(sequence, stick);
-
-                            acc.x = 0xFF / 2;
-                            acc.y = 0xFF / 2;
-                            acc.z = 0xFF / 2;
-
-                            acc.pitch = 0;
-                            acc.roll = 0;
-
-                            emit dbusNunchukAcc(sequence, acc);
-
-                            emit dbusNunchukButtons(sequence, WiimoteButtons);
-                            emit dbusNunchukUnplugged(sequence);
+                            nunchukDeviceCleanup(nunchukStickdata, nunchukAccdata);
                             ButtonRequest = true;
                         }
+
                         WiimoteStatus = STATUS_WIIMOTE_CONNECTED;
                         emit dbusWiimoteStatus(sequence, WiimoteStatus);
                         break;
-                        
+
+                /* Nunchuk pluged ***************************************************************************************************/
                     case CWIID_EXT_NUNCHUK:
+                        cwiid_get_acc_cal(device, CWIID_EXT_NUNCHUK, &nunchuk_calibration);
                         if (!(WiimoteStatus & STATUS_WIIMOTE_NUNCHUK_CONNECTED))
                             emit dbusNunchukPlugged(sequence);
-                        cwiid_get_acc_cal(device, CWIID_EXT_NUNCHUK, &nunchuk_calibration);
                         WiimoteStatus |= STATUS_WIIMOTE_NUNCHUK_CONNECTED;
                         emit dbusWiimoteStatus(sequence, WiimoteStatus);
                         break;
-                        
+
+                /* Classic pluged ***************************************************************************************************/
                     case CWIID_EXT_CLASSIC:
                         if (!(WiimoteStatus & STATUS_WIIMOTE_CLASSIC_CONNECTED))
                             emit dbusClassicControllerPlugged(sequence);
@@ -369,129 +374,113 @@ void WiimoteConnection::run()
                 }
                 break;
 
+/* Nunchuk messages ******************************************************************************************************************/
             case CWIID_MESG_NUNCHUK:             
                 WiimoteButtonsTmp = WiimoteButtons;
+
+            /* Nunchuk button section ************************************************************************************************/
                 WiimoteButtons &= NUNCHUK_BUTTON_NOTMASK;
-                WiimoteButtons &= NUNCHUK_STICK_NOTMASK;
-
-                x =  static_cast< double>((mesg[i].nunchuk_mesg.acc[0] - nunchuk_calibration.zero[0])) /
-                     (nunchuk_calibration.one[0] - nunchuk_calibration.zero[0]);
-                y =  static_cast< double>((mesg[i].nunchuk_mesg.acc[1] - nunchuk_calibration.zero[1])) /
-                     (nunchuk_calibration.one[1] - nunchuk_calibration.zero[1]);
-                z =  static_cast< double>((mesg[i].nunchuk_mesg.acc[2] - nunchuk_calibration.zero[2])) /
-                     (nunchuk_calibration.one[2] - nunchuk_calibration.zero[2]);
-
-                if ((LastNunchukAccX != x) || (LastNunchukAccY != y) || (LastNunchukAccZ != z))
-                {
-                    LastNunchukAccX = x;
-                    LastNunchukAccY = y;
-                    LastNunchukAccZ = z;
-
-                    roll = atan(x / z);
-                    if (z <= 0.0)
-                       roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
-                    roll *= -1;
-                    if (z)
-                       pitch = atan(y / z * cos(roll)); else pitch = 0.0;
-
-                    acc.x = mesg[i].nunchuk_mesg.acc[0];
-                    acc.y = mesg[i].nunchuk_mesg.acc[1];
-                    acc.z = mesg[i].nunchuk_mesg.acc[2];
-                    acc.pitch = pitch;
-                    acc.roll = roll;
-
-                    emit dbusNunchukAcc(sequence, acc);
-
-                    WiimoteButtons &= NUNCHUK_TILT_NOTMASK;
-
-                    if (pitch > 0.30) WiimoteButtons  |= NUNCHUK_BTN_TILT_FRONT; else
-                    if (pitch < -0.30) WiimoteButtons |= NUNCHUK_BTN_TILT_BACK;
-                    if (roll < -0.45) WiimoteButtons  |= NUNCHUK_BTN_TILT_RIGHT; else
-                    if (roll > 0.45) WiimoteButtons   |= NUNCHUK_BTN_TILT_LEFT;
-
-                    vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-
-                    WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
-
-                    nxpow = sqrt(pow(x, 2));
-                    nypow = sqrt(pow(y, 2));
-                    nzpow = sqrt(pow(z, 2));
-
-                    if ((nxpow > 2.0) || (nypow > 2.0) || (nzpow > 2.0))
-                    {
-                        ncounter = 10;
-                        if (nxpow > 2.0) nfXmotion << x;
-                        if (nypow > 2.0) nfYmotion << y;
-                        if (nzpow > 2.0) nfZmotion << z;
-                    }
-
-                    if ((ncounter == 0) && ((nfXmotion.count() > 0) || (nfYmotion.count() > 0) || (nfZmotion.count() > 0)))
-                    {
-                        nxvalue = (nfXmotion.count() > 0) ? nfXmotion.last() : 0.0;
-                        nyvalue = (nfYmotion.count() > 0) ? nfYmotion.last() : 0.0;
-                        nzvalue = (nfZmotion.count() > 0) ? nfZmotion.last() : 0.0;
-                        if (nfXmotion.count() > 1)
-                            for (int i = nfXmotion.count() - 1; i > 0; --i)
-                                if (nxvalue > 0) nxvalue += (nfXmotion.at(i - 1) > 0) ? nfXmotion.at(i - 1) : 0; else
-                                                 nxvalue += (nfXmotion.at(i - 1) < 0) ? nfXmotion.at(i - 1) : 0;
-                        if (nfYmotion.count() > 1)
-                            for (int i = nfYmotion.count() - 1; i > 0; --i)
-                                if (nyvalue > 0) nyvalue += (nfYmotion.at(i - 1) > 0) ? nfYmotion.at(i - 1) : 0; else
-                                                 nyvalue += (nfYmotion.at(i - 1) < 0) ? nfYmotion.at(i - 1) : 0;
-                        if (nfZmotion.count() > 1)
-                            for (int i = nfZmotion.count() - 1; i > 0; --i)
-                                if (nzvalue > 0) nzvalue += (nfZmotion.at(i - 1) > 0) ? nfZmotion.at(i - 1) : 0; else
-                                                 nzvalue += (nfZmotion.at(i - 1) < 0) ? nfZmotion.at(i - 1) : 0;
-
-                        nfXmotion.clear();
-                        nfYmotion.clear();
-                        nfZmotion.clear();
-
-                        nxvalueabs = (nxvalue > 0) ? nxvalue : -nxvalue;
-                        nyvalueabs = (nyvalue > 0) ? nyvalue : -nyvalue;
-                        nzvalueabs = (nzvalue > 0) ? nzvalue : -nzvalue;
-
-
-                        if (nxvalueabs > 20) nyvalueabs -= 80; else
-                        if (nxvalueabs > 10) nyvalueabs -= 40; else
-                        if (nxvalueabs > 5) nyvalueabs -= 20;
-
-                        if (nyvalue < -4) nyvalueabs += 60; else
-                        if (nyvalue < -3) nyvalueabs += 40; else
-                        if (nyvalue < -2) nyvalueabs += 20; else
-                        if (nyvalue < -1) nyvalueabs += 10;
-
-                        if ((nxvalueabs > nyvalueabs) && (nxvalueabs > nzvalueabs))
-                        {
-                            WiimoteButtons |= ((nxvalue > 0) ? NUNCHUK_BTN_SHIFT_RIGHT : NUNCHUK_BTN_SHIFT_LEFT);
-                        } else
-                        if ((nyvalueabs > nxvalueabs) && (nyvalueabs > nzvalueabs))
-                        {
-                            WiimoteButtons |= ((nyvalue > 0) ? NUNCHUK_BTN_SHIFT_FORWARD : NUNCHUK_BTN_SHIFT_BACKWARD);
-                        }
-
-                    } else ncounter--;
-
-                }
 
                 if (mesg[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_C) WiimoteButtons |= NUNCHUK_BTN_C;
                 if (mesg[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_Z) WiimoteButtons |= NUNCHUK_BTN_Z;
 
+            /* Nunchuk stick section *************************************************************************************************/
+                WiimoteButtons &= NUNCHUK_STICK_NOTMASK;
 
-                if ((NunchukStickX != mesg[i].nunchuk_mesg.stick[0]) ||
-                    (NunchukStickY != mesg[i].nunchuk_mesg.stick[1]))
-                {
-                    NunchukStickX = mesg[i].nunchuk_mesg.stick[0];
-                    NunchukStickY = mesg[i].nunchuk_mesg.stick[1];
-                    stick.x = NunchukStickX;
-                    stick.y = NunchukStickY;
-                    emit dbusNunchukStick(sequence, stick);
+                if (nunchukStickdata.x != mesg[i].nunchuk_mesg.stick[0] || nunchukStickdata.y != mesg[i].nunchuk_mesg.stick[1]) {
+                    nunchukStickdata.x = mesg[i].nunchuk_mesg.stick[0];
+                    nunchukStickdata.y = mesg[i].nunchuk_mesg.stick[1];
+                    emit dbusNunchukStick(sequence, nunchukStickdata);
                 }
 
-                if (NunchukStickX > 178) WiimoteButtons |= NUNCHUK_BTN_STICK_RIGHT; else
-                if (NunchukStickX < 78)  WiimoteButtons |= NUNCHUK_BTN_STICK_LEFT;
-                if (NunchukStickY > 178) WiimoteButtons |= NUNCHUK_BTN_STICK_UP; else
-                if (NunchukStickY < 78)  WiimoteButtons |= NUNCHUK_BTN_STICK_DOWN;
+                if (nunchukStickdata.x > nunchukStickMaxX) WiimoteButtons |= NUNCHUK_BTN_STICK_RIGHT; else
+                if (nunchukStickdata.x < nunchukStickMinX) WiimoteButtons |= NUNCHUK_BTN_STICK_LEFT;
+                if (nunchukStickdata.y > nunchukStickMaxY) WiimoteButtons |= NUNCHUK_BTN_STICK_UP; else
+                if (nunchukStickdata.y < nunchukStickMinY) WiimoteButtons |= NUNCHUK_BTN_STICK_DOWN;
+
+            /* Nunchuk params section ************************************************************************************************/
+                x =  static_cast< double>((mesg[i].nunchuk_mesg.acc[0] - nunchuk_calibration.zero[0])) / (nunchuk_calibration.one[0] - nunchuk_calibration.zero[0]);
+                y =  static_cast< double>((mesg[i].nunchuk_mesg.acc[1] - nunchuk_calibration.zero[1])) / (nunchuk_calibration.one[1] - nunchuk_calibration.zero[1]);
+                z =  static_cast< double>((mesg[i].nunchuk_mesg.acc[2] - nunchuk_calibration.zero[2])) / (nunchuk_calibration.one[2] - nunchuk_calibration.zero[2]);
+
+                if (nunchukAccX != x || nunchukAccY != y || nunchukAccZ != z)
+                {
+                    nunchukAccdata.x = nunchukAccX = x;
+                    nunchukAccdata.y = nunchukAccY = y;
+                    nunchukAccdata.z = nunchukAccZ = z;
+
+                    nunchukAccdata.roll = atan(x / z);
+                    if (z <= 0.0) nunchukAccdata.roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
+                    nunchukAccdata.roll = -nunchukAccdata.roll;
+                    if (z) nunchukAccdata.pitch = atan(y / z * cos(nunchukAccdata.roll)); else nunchukAccdata.pitch = 0.0;
+
+                    emit dbusNunchukAcc(sequence, acc);
+                }
+
+            /* Nunchuk tilt section **************************************************************************************************/
+                WiimoteButtons &= NUNCHUK_TILT_NOTMASK;
+
+                if (nunchukAccdata.pitch > 0.30) WiimoteButtons  |= NUNCHUK_BTN_TILT_FRONT; else
+                if (nunchukAccdata.pitch < -0.30) WiimoteButtons |= NUNCHUK_BTN_TILT_BACK;
+                if (nunchukAccdata.roll < -0.45) WiimoteButtons  |= NUNCHUK_BTN_TILT_RIGHT; else
+                if (nunchukAccdata.roll > 0.45) WiimoteButtons   |= NUNCHUK_BTN_TILT_LEFT;
+
+            /* Nunchuk shift section *************************************************************************************************/
+                WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
+
+                vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+
+                nxpow = sqrt(pow(x, 2));
+                nypow = sqrt(pow(y, 2));
+                nzpow = sqrt(pow(z, 2));
+
+                if (nxpow > 2.0 || nypow > 2.0 || nzpow > 2.0) {
+                    ncounter = 10;
+                    if (nxpow > 2.0) nfXmotion << x;
+                    if (nypow > 2.0) nfYmotion << y;
+                    if (nzpow > 2.0) nfZmotion << z;
+                }
+
+                if (ncounter == 0 && (nfXmotion.count() > 0 || nfYmotion.count() > 0 || nfZmotion.count() > 0)) {
+                    nxvalue = (nfXmotion.count() > 0) ? nfXmotion.last() : 0.0;
+                    nyvalue = (nfYmotion.count() > 0) ? nfYmotion.last() : 0.0;
+                    nzvalue = (nfZmotion.count() > 0) ? nfZmotion.last() : 0.0;
+                    if (nfXmotion.count() > 1)
+                        for (int i = nfXmotion.count() - 1; i > 0; --i)
+                            if (nxvalue > 0) nxvalue += (nfXmotion.at(i - 1) > 0) ? nfXmotion.at(i - 1) : 0; else
+                                             nxvalue += (nfXmotion.at(i - 1) < 0) ? nfXmotion.at(i - 1) : 0;
+                    if (nfYmotion.count() > 1)
+                        for (int i = nfYmotion.count() - 1; i > 0; --i)
+                            if (nyvalue > 0) nyvalue += (nfYmotion.at(i - 1) > 0) ? nfYmotion.at(i - 1) : 0; else
+                                             nyvalue += (nfYmotion.at(i - 1) < 0) ? nfYmotion.at(i - 1) : 0;
+                    if (nfZmotion.count() > 1)
+                        for (int i = nfZmotion.count() - 1; i > 0; --i)
+                            if (nzvalue > 0) nzvalue += (nfZmotion.at(i - 1) > 0) ? nfZmotion.at(i - 1) : 0; else
+                                             nzvalue += (nfZmotion.at(i - 1) < 0) ? nfZmotion.at(i - 1) : 0;
+
+                    nfXmotion.clear();
+                    nfYmotion.clear();
+                    nfZmotion.clear();
+
+                    nxvalueabs = (nxvalue > 0) ? nxvalue : -nxvalue;
+                    nyvalueabs = (nyvalue > 0) ? nyvalue : -nyvalue;
+                    nzvalueabs = (nzvalue > 0) ? nzvalue : -nzvalue;
+
+
+                    if (nxvalueabs > 20) nyvalueabs -= 80; else
+                    if (nxvalueabs > 10) nyvalueabs -= 40; else
+                    if (nxvalueabs > 5) nyvalueabs -= 20;
+
+                    if (nyvalue < -4) nyvalueabs += 60; else
+                    if (nyvalue < -3) nyvalueabs += 40; else
+                    if (nyvalue < -2) nyvalueabs += 20; else
+                    if (nyvalue < -1) nyvalueabs += 10;
+
+                    if ((nxvalueabs > nyvalueabs) && (nxvalueabs > nzvalueabs))
+                        WiimoteButtons |= ((nxvalue > 0) ? NUNCHUK_BTN_SHIFT_RIGHT : NUNCHUK_BTN_SHIFT_LEFT);
+                            else if ((nyvalueabs > nxvalueabs) && (nyvalueabs > nzvalueabs))
+                                WiimoteButtons |= ((nyvalue > 0) ? NUNCHUK_BTN_SHIFT_FORWARD : NUNCHUK_BTN_SHIFT_BACKWARD);
+                } else ncounter--;
 
                 if (WiimoteButtonsTmp != WiimoteButtons) {
                     ButtonRequest = true;
@@ -500,41 +489,36 @@ void WiimoteConnection::run()
 
                 break;
 
+/* Classic messages ******************************************************************************************************************/
             case CWIID_MESG_CLASSIC:
                 WiimoteButtonsTmp = WiimoteButtons;
-                WiimoteButtons &= CLASSIC_LSTICK_NOTMASK;
+            /* Classic right stick section *******************************************************************************************/
                 WiimoteButtons &= CLASSIC_RSTICK_NOTMASK;
-
-                if ((ClassicLStickX != mesg[i].classic_mesg.l_stick[0]) ||
-                    (ClassicLStickY != mesg[i].classic_mesg.l_stick[1]))
-                {
-                    ClassicLStickX = mesg[i].classic_mesg.l_stick[0];
-                    ClassicLStickY = mesg[i].classic_mesg.l_stick[1];
-                    stick.x = ClassicLStickX;
-                    stick.y = ClassicLStickY;
-                    emit dbusClassicControllerLStick(sequence, stick);
+                if ((classicRStickdata.x != mesg[i].classic_mesg.r_stick[0]) || (classicRStickdata.y != mesg[i].classic_mesg.r_stick[1])){
+                    classicRStickdata.x = mesg[i].classic_mesg.r_stick[0];
+                    classicRStickdata.y = mesg[i].classic_mesg.r_stick[1];
+                    emit dbusClassicControllerRStick(sequence, classicRStickdata);
                 }
 
-                if ((ClassicRStickX != mesg[i].classic_mesg.r_stick[0]) ||
-                    (ClassicRStickY != mesg[i].classic_mesg.r_stick[1]))
-                {
-                    ClassicRStickX = mesg[i].classic_mesg.r_stick[0];
-                    ClassicRStickY = mesg[i].classic_mesg.r_stick[1];
-                    stick.x = ClassicRStickX;
-                    stick.y = ClassicRStickY;
-                    emit dbusClassicControllerRStick(sequence, stick);
+                if (classicRStickdata.x > classicRStickMaxX) WiimoteButtons |= CLASSIC_BTN_RSTICK_RIGHT; else
+                if (classicRStickdata.x < classicRStickMinX) WiimoteButtons |= CLASSIC_BTN_RSTICK_LEFT;
+                if (classicRStickdata.y > classicRStickMaxY) WiimoteButtons |= CLASSIC_BTN_RSTICK_UP; else
+                if (classicRStickdata.y < classicRStickMinY) WiimoteButtons |= CLASSIC_BTN_RSTICK_DOWN;
+
+            /* Classic left stick section ********************************************************************************************/
+                WiimoteButtons &= CLASSIC_LSTICK_NOTMASK;
+                if ((classicLStickdata.x != mesg[i].classic_mesg.l_stick[0]) || (classicLStickdata.y != mesg[i].classic_mesg.l_stick[1])){
+                    classicLStickdata.x = mesg[i].classic_mesg.l_stick[0];
+                    classicLStickdata.y = mesg[i].classic_mesg.l_stick[1];
+                    emit dbusClassicControllerLStick(sequence, classicLStickdata);
                 }
 
-                if (ClassicLStickX > 42) WiimoteButtons |= CLASSIC_BTN_LSTICK_RIGHT; else
-                if (ClassicLStickX < 22) WiimoteButtons |= CLASSIC_BTN_LSTICK_LEFT;
-                if (ClassicLStickY > 42) WiimoteButtons |= CLASSIC_BTN_LSTICK_UP; else
-                if (ClassicLStickY < 22) WiimoteButtons |= CLASSIC_BTN_LSTICK_DOWN;
+                if (classicLStickdata.x > classicLStickMaxX) WiimoteButtons |= CLASSIC_BTN_LSTICK_RIGHT; else
+                if (classicLStickdata.x < classicLStickMinX) WiimoteButtons |= CLASSIC_BTN_LSTICK_LEFT;
+                if (classicLStickdata.y > classicLStickMaxY) WiimoteButtons |= CLASSIC_BTN_LSTICK_UP; else
+                if (classicLStickdata.y < classicLStickMinY) WiimoteButtons |= CLASSIC_BTN_LSTICK_DOWN;
 
-                if (ClassicRStickX > 21) WiimoteButtons |= CLASSIC_BTN_RSTICK_RIGHT; else
-                if (ClassicRStickX < 11) WiimoteButtons |= CLASSIC_BTN_RSTICK_LEFT;
-                if (ClassicRStickY > 21) WiimoteButtons |= CLASSIC_BTN_RSTICK_UP; else
-                if (ClassicRStickY < 11) WiimoteButtons |= CLASSIC_BTN_LSTICK_DOWN;
-
+            /* Classic button section ************************************************************************************************/
                 if (LastClassicButtons != mesg[i].classic_mesg.buttons)
                 {               
                     LastClassicButtons = mesg[i].classic_mesg.buttons;
@@ -585,6 +569,28 @@ void WiimoteConnection::run()
 
     emit unregisterConnection(static_cast< void*>( this));   
     return;
+}
+
+
+/* Classic cleanup method *************************************************************************/
+void WiimoteConnection::classicDeviceCleanup(struct stickdata &lstick, struct stickdata &rstick) {
+    lstick.x = lstick.y = 0x3F >> 1;
+    rstick.x = rstick.y = 0x1F >> 1;
+    emit dbusClassicControllerLStick(sequence, lstick);
+    emit dbusClassicControllerRStick(sequence, rstick);
+    emit dbusClassicControllerButtons(sequence, 0);
+    emit dbusClassicControllerUnplugged(sequence);
+}
+
+/* Nunchuk cleanup method ************************************************************************/
+void WiimoteConnection::nunchukDeviceCleanup(struct stickdata &stick, struct accdata &acc) {
+    acc.x = acc.y = acc.z = 0xFF >> 1;
+    acc.pitch = acc.roll = 0.0;
+    stick.x = stick.y = 0xFF >> 1;
+    emit dbusNunchukStick(sequence, stick);
+    emit dbusNunchukAcc(sequence, acc);
+    emit dbusNunchukButtons(sequence, 0);
+    emit dbusNunchukUnplugged(sequence);
 }
 
 bool WiimoteConnection::connectAny()

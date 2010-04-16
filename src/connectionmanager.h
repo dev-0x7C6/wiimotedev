@@ -1,22 +1,22 @@
-/***************************************************************************
- *   Copyright (C) 2008-2010 by Bartlomiej Burdukiewicz                    *
- *   dev.strikeu@gmail.com                                                 *
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This program is distributed in the hope that it will be useful,       *
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of        *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
- *   GNU General Public License for more details.                          *
- *                                                                         *
- *   You should have received a copy of the GNU General Public License     *
- *   along with this program; if not, write to the                         *
- *   Free Software Foundation, Inc.,                                       *
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
- ***************************************************************************/
+/**********************************************************************************
+ * Wiimotedev daemon, wiiremote system service                                    *
+ * Copyright (C) 2010  Bartlomiej Burdukiewicz                                    *
+ * Contact: dev.strikeu@gmail.com                                                 *
+ *                                                                                *
+ * This library is free software; you can redistribute it and/or                  *
+ * modify it under the terms of the GNU Lesser General Public                     *
+ * License as published by the Free Software Foundation; either                   *
+ * version 2.1 of the License, or (at your option) any later version.             *
+ *                                                                                *
+ * This library is distributed in the hope that it will be useful,                *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                 *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU              *
+ * Lesser General Public License for more details.                                *
+ *                                                                                *
+ * You should have received a copy of the GNU Lesser General Public               *
+ * License along with this library; if not, write to the Free Software            *
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
+ **********************************************************************************/
 
 #ifndef CONNECTIONMANAGER_H
 #define CONNECTIONMANAGER_H
@@ -62,7 +62,15 @@ class DeviceEventsClass : public QDBusAbstractAdaptor
     "    <signal name=\"dbusWiimoteGeneralButtons\">\n"
     "     <arg type=\"u\" direction=\"out\"/>\n"
     "      <arg type=\"t\" direction=\"out\"/>\n"
-    "    </signal>\n"
+    "    </signal>\n"    
+    "   <method name=\"dbusWiimoteGetCurrentLatency\">\n"
+    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
+    "      <arg type=\"u\" direction=\"out\"/>\n"
+    "    </method>\n"
+    "   <method name=\"dbusWiimoteGetAverageLatency\">\n"
+    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
+    "      <arg type=\"u\" direction=\"out\"/>\n"
+    "    </method>\n"
     "   <method name=\"dbusWiimoteGetLedStatus\">\n"
     "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
     "      <arg type=\"y\" direction=\"out\"/>\n"
@@ -151,6 +159,9 @@ public:
 public slots:
     QList < struct deviceinfo> dbusGetDeviceList();
 
+    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+    quint32 dbusWiimoteGetAverageLatency(quint32 id);
+
     bool dbusWiimoteGetRumbleStatus(quint32 id);
     bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
     bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
@@ -207,6 +218,9 @@ public:
 protected:
     void run();  
 
+private:
+    WiimoteConnection* findWiiremoteObject(quint32 id);
+
 private slots:
     void registerConnection(void *object);
     void unregisterConnection(void *object);
@@ -218,6 +232,9 @@ private slots:
 
 public slots:
     QList < struct deviceinfo> dbusGetDeviceList();
+
+    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+    quint32 dbusWiimoteGetAverageLatency(quint32 id);
 
     bool dbusWiimoteGetRumbleStatus(quint32 id);
     bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);

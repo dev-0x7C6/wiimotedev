@@ -1,23 +1,5 @@
 Wiimotedev-daemon Changelog
 ===========================
 
-Wiimotedev-daemon 0.99.3 (rc2 rev3)
-* Renamed binary to wiimotedev-daemon
-* Cleanup and update whole project
-
-Wiimotedev-daemon 0.99.2 (rc2 rev2)
-* Added Slackware init.d script
-
-Wiimotedev-daemon 0.99.1 (rc2 rev1)
-* Added TCP/IP interface
-* Configurable TCP/IP interface
-* Configurable DBus interface
-
-Wiimotedev-daemon 0.99 (rc2)
-* documentation
-
-Wiimotedev-daemon 0.98 (rc1)
-* first official release
-* stable dbus api
-* init.d scripts for debian, gentoo, ubuntu
- 
+Wiimotedev daemon 1.0 (stable)
+- First public release
