@@ -55,7 +55,7 @@ private:
 /*  Cleanup  *************************************************************/
     void classicDeviceCleanup(struct stickdata &lstick, struct stickdata &rstick);
     void nunchukDeviceCleanup(struct stickdata &stick, struct accdata &acc);
-    void wiimoteDeviceCleanup(QList< struct irpoint> &)
+    void wiimoteDeviceCleanup(QList< struct irpoint> &points, struct accdata &acc);
 
 public:
     WiimoteConnection(QObject *parent = 0);

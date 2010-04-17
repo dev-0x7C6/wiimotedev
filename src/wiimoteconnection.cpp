@@ -19,7 +19,6 @@
  **********************************************************************************/
 
 #include "wiimoteconnection.h"
-#include <QtDebug>
 #include <QTime>
 
 WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
@@ -74,6 +73,13 @@ void WiimoteConnection::run()
 /*  Wiimote temporary variables *****************************************************/
     QList< irpoint> wiimoteIrTable;
     struct irpoint wiimotePoint;
+    struct accdata wiimoteAccdata;
+
+    wiimoteAccdata.x = 0xFF >> 1;
+    wiimoteAccdata.y = 0xFF >> 1;
+    wiimoteAccdata.z = 0xFF >> 1;
+    wiimoteAccdata.pitch = 0.0;
+    wiimoteAccdata.roll = 0.0;
 
 /*  Nunchuk temporary variables *****************************************************/
     struct stickdata nunchukStickdata;
@@ -159,19 +165,7 @@ void WiimoteConnection::run()
            /* Wiimote cleanup *******************************************************************************************************/
                 connected = false;
                 WiimoteButtons = 0;
-
-                point.size = -1;
-                point.x = 0;
-                point.y = 0;
-                table << point << point << point << point;
-
-                // emit dbusWiimoteBatteryLife(sequence, 0); don't send this sig
-                // emit dbusWiimoteStatus(sequence, 0); same here
-
-                emit dbusWiimoteAcc(sequence, acc);
-                emit dbusWiimoteInfrared(sequence, table);
-                emit dbusWiimoteButtons(sequence, WiimoteButtons);
-
+                wiimoteDeviceCleanup(wiimoteIrTable, wiimoteAccdata);
                 ButtonRequest = true;
                 break;
 
@@ -591,6 +585,22 @@ void WiimoteConnection::nunchukDeviceCleanup(struct stickdata &stick, struct acc
     emit dbusNunchukAcc(sequence, acc);
     emit dbusNunchukButtons(sequence, 0);
     emit dbusNunchukUnplugged(sequence);
+}
+
+/* Nunchuk cleanup method ************************************************************************/
+void WiimoteConnection::wiimoteDeviceCleanup(QList< struct irpoint> &points, struct accdata &acc) {
+    struct irpoint point;
+    points.clear();
+    point.x = point.y = 0;
+    point.size = -1;
+    points << point << point << point << point;
+
+    acc.x = acc.y = acc.z = 0xFF >> 1;
+    acc.pitch = acc.roll = 0.0;
+
+    emit dbusWiimoteAcc(sequence, acc);
+    emit dbusWiimoteInfrared(sequence, points);
+    emit dbusWiimoteButtons(sequence, 0);
 }
 
 bool WiimoteConnection::connectAny()
