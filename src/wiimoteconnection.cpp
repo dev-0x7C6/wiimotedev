@@ -240,15 +240,14 @@ void WiimoteConnection::run()
                     wiimotePoint.y = mesg[i].ir_mesg.src[j].pos[1];
                     sendIrSignal = true;
                     wiimoteIrTable << wiimotePoint;
-                }
-
-                if (sendIrSignal) {
+                } else {
                     wiimotePoint.size = -1;
                     wiimotePoint.x = 0;
                     wiimotePoint.y = 0;
-                    for (register int j = wiimoteIrTable.count(); j < 4; ++j) wiimoteIrTable << wiimotePoint;
-                    emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
+                    wiimoteIrTable << wiimotePoint;
                 }
+
+                if (sendIrSignal) emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
                 break;
 
             case CWIID_MESG_BTN:
