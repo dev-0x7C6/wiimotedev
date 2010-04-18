@@ -20,6 +20,7 @@
 
 #include "wiimoteconnection.h"
 #include <QTime>
+#include <QtDebug>
 
 WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
 {
@@ -63,7 +64,6 @@ void WiimoteConnection::run()
 
     memset(&wiimote_calibration, 0, sizeof(struct acc_cal));
 
-
     double LastWiimoteAccX = 0.0;
     double LastWiimoteAccY = 0.0;
     double LastWiimoteAccZ = 0.0;
@@ -73,6 +73,8 @@ void WiimoteConnection::run()
 /*  Wiimote temporary variables *****************************************************/
     QList< irpoint> wiimoteIrTable;
     struct irpoint wiimotePoint;
+    bool sendIrSignal = false;
+
     struct accdata wiimoteAccdata;
 
     wiimoteAccdata.x = 0xFF >> 1;
@@ -226,18 +228,24 @@ void WiimoteConnection::run()
                 }
                 break;
 
+/* Infrared section ******************************************************************************************************************/
             case CWIID_MESG_IR:
-                {
-                    QList< irpoint> table;
-                    irpoint point;
-                    for (register int j = 0; j < 4; ++j)
-                    {
-                        point.size = mesg[i].ir_mesg.src[j].valid ? mesg[i].ir_mesg.src[j].size : -1;
-                        point.x = mesg[i].ir_mesg.src[j].pos[0];
-                        point.y = mesg[i].ir_mesg.src[j].pos[1];
-                        table << point;
-                    }
-                    emit dbusWiimoteInfrared(sequence, table);
+                wiimoteIrTable.clear();
+                sendIrSignal = false;
+                for (register int j = 0; j < 4; ++j) if (mesg[i].ir_mesg.src[j].valid) {
+                    wiimotePoint.size =  (mesg[i].ir_mesg.src[j].size <= 0) ? 1 : mesg[i].ir_mesg.src[j].size; // when wiiremote extension present size of points are -1 ? libcwiid bug ?
+                    wiimotePoint.x = mesg[i].ir_mesg.src[j].pos[0];
+                    wiimotePoint.y = mesg[i].ir_mesg.src[j].pos[1];
+                    sendIrSignal = true;
+                    wiimoteIrTable << wiimotePoint;
+                }
+
+                if (sendIrSignal) {
+                    wiimotePoint.size = -1;
+                    wiimotePoint.x = 0;
+                    wiimotePoint.y = 0;
+                    for (register int j = wiimoteIrTable.count(); j < 4; ++j) wiimoteIrTable << wiimotePoint;
+                    emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
                 }
                 break;
 
