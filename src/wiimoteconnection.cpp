@@ -20,12 +20,14 @@
 
 #include "wiimoteconnection.h"
 #include <QTime>
-#include <QtDebug>
 
 WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
 {
+/* Defaults *********************************************************/
     connected = false;
     id = 0;
+    rumbleStatus = false;
+    ledStatus = 0;
     setTerminationEnabled(true);
 }
 
