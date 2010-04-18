@@ -40,7 +40,6 @@ const QString tcpSection("tcp/");
 const QString tcpAllowedValue("allowed");
 const QString tcpPortValue("port");
 
-
 MessageServer::MessageServer(QObject *manager, quint16 port, QObject *parent) : manager(manager), port(port), QTcpServer(parent)
 {
 /* Register Meta Types ---------------------------------------------- */
