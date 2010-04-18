@@ -399,16 +399,18 @@ void WiimoteConnection::run()
 
                 if (nunchukAccX != x || nunchukAccY != y || nunchukAccZ != z)
                 {
-                    nunchukAccdata.x = nunchukAccX = x;
-                    nunchukAccdata.y = nunchukAccY = y;
-                    nunchukAccdata.z = nunchukAccZ = z;
-
+                    nunchukAccdata.x = mesg[i].nunchuk_mesg.acc[0];
+                    nunchukAccdata.y = mesg[i].nunchuk_mesg.acc[1];
+                    nunchukAccdata.z = mesg[i].nunchuk_mesg.acc[2];
+                    nunchukAccX = x;
+                    nunchukAccY = y;
+                    nunchukAccZ = z;
                     nunchukAccdata.roll = atan(x / z);
                     if (z <= 0.0) nunchukAccdata.roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
                     nunchukAccdata.roll = -nunchukAccdata.roll;
                     if (z) nunchukAccdata.pitch = atan(y / z * cos(nunchukAccdata.roll)); else nunchukAccdata.pitch = 0.0;
 
-                    emit dbusNunchukAcc(sequence, acc);
+                    emit dbusNunchukAcc(sequence, nunchukAccdata);
                 }
 
             /* Nunchuk tilt section **************************************************************************************************/
