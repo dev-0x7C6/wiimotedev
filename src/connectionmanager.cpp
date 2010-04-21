@@ -20,6 +20,7 @@
 
 #include <QMapIterator>
 #include <QSettings>
+#include "syslogsupport.h"
 
 #include "connectionmanager.h"
 
@@ -175,6 +176,7 @@ ConnectionManager::ConnectionManager()
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 
 /* Load rules ------------------------------------------------------- */
+    syslog_message(QString::fromUtf8("loading rules from %1").arg(filePathWiimotedev).toAscii().constData());
 
     QSettings settings(filePathWiimotedev, QSettings::IniFormat);
 
@@ -192,15 +194,22 @@ ConnectionManager::ConnectionManager()
 
     memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
 
+/* Syslog interface ------------------------------------------------- */
+    syslog_message(QString::fromUtf8("dbus interface - %1").arg(DBusInterface ? "enabled" : "disabled").toAscii().constData());
+    syslog_message(QString::fromUtf8("tcp/ip interface - %1").arg(TCPInterface ? "enabled" : "disabled").toAscii().constData());
+
 /* DBus interface --------------------------------------------------- */
 
     if (DBusInterface)
-    {
+    {    
         new DeviceEventsClass(this);
 
         QDBusConnection connection = QDBusConnection::systemBus();
-        connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_NAME, this);
-        connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
+        bool registerObject = connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_NAME, this);
+        bool registerService = connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
+
+        syslog_message(QString::fromUtf8("register %1 object %2").arg(QString(WIIMOTEDEV_DBUS_OBJECT_NAME), registerObject ? "done" : "failed").toAscii().constData());
+        syslog_message(QString::fromUtf8("register %1 service %2").arg(QString(WIIMOTEDEV_DBUS_SERVICE_NAME), registerService ? "done" : "failed").toAscii().constData());
     }
 
 /* TCP interface ---------------------------------------------------- */
@@ -209,18 +218,22 @@ ConnectionManager::ConnectionManager()
     {      
         tcpServerThread = new MessageServerThread(this, tcpPort, this);
         tcpServerThread->start();
+        syslog_message(QString::fromUtf8("starting tcp/ip thread at 0x%1").arg(QString::number(tcpServerThread->thread()->currentThreadId(), 0x10)).toAscii().constData());
     }
 
     if (!(TCPInterface || DBusInterface))
+    {
+        syslog_message(QString::fromUtf8("dbus/tcp disabled, stoping wiimotedev").toAscii().constData());
         terminateReq = true;
+    }
 }
 
 ConnectionManager::~ConnectionManager()
 {
     terminateReq = true;
 
-    connectionObject->_disconnect();
     disconnect(connectionObject, 0, 0, 0);
+    connectionObject->_disconnect();
 
     while (objectList.count()) msleep(1);
 }
@@ -243,13 +256,20 @@ void ConnectionManager::registerConnection(void *object)
 {
     WiimoteConnection *connection = static_cast< WiimoteConnection*>( object);
 
-#ifdef __syslog
-    syslog(LOG_NOTICE, "Connection established with %s", connection->getWiimoteSAddr().toAscii().data());
-#endif
-
     connection->setWiimoteSequence(wiiremoteSequence.value(connection->getWiimoteSAddr(), 0));
     if (connection->getWiimoteSequence())
         connection->setLedStatus(connection->getWiimoteSequence());
+
+    syslog_message(QString::fromUtf8("Established connection with wiiremote, ID %1 MAC %2").arg(QString::number(connection->getWiimoteSequence(), 10), connection->getWiimoteSAddr()).toAscii().constData());
+    if (!connection->getWiimoteSequence())
+    {
+        syslog_message(QString::fromUtf8("Wiiremote MAC %1 is unregistred, run wiimotedev-register and reconnect device").arg(connection->getWiimoteSAddr()).toAscii().constData());
+        QString mac = connection->getWiimoteSAddr();
+        connection->_disconnect();
+        unregisterConnection(static_cast< void*>( connection));
+        emit dbusReportUnregistredWiiremote(mac);
+        return;
+    }
 
     struct deviceinfo dev;
     dev.id = connection->getWiimoteSequence();
@@ -299,9 +319,7 @@ void ConnectionManager::unregisterConnection(void *object)
 
     deviceList.remove(object);
 
-#ifdef __syslog
-    syslog(LOG_NOTICE, "Connection closed %s", connection->getWiimoteSAddr().toAscii().data());
-#endif
+    syslog_message(QString::fromUtf8("Wiiremote disconnected, ID %1; MAC %2").arg(QString::number(connection->getWiimoteSequence(), 10), connection->getWiimoteSAddr()).toAscii().constData());
 
     connection->wait();
     delete connection;

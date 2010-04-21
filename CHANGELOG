@@ -1,5 +1,10 @@
 Wiimotedev-daemon Changelog
 ===========================
 
+Wiimotedev daemon 1.0-1
+- dbusReportUnregisterWiiremote() signal
+- unregistred devices are now automaticly disconnected
+- added new reports for syslog 
+
 Wiimotedev daemon 1.0 (stable)
 - First public release

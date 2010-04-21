@@ -59,6 +59,9 @@ class DeviceEventsClass : public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.deviceEvents")
     Q_CLASSINFO("D-Bus Introspection", ""
     " <interface name=\"org.wiimotedev.deviceEvents\">\n"
+    "    <signal name=\"dbusReportUnregistredWiiremote\">\n"
+    "     <arg type=\"s\" direction=\"out\"/>\n"
+    "    </signal>\n"
     "    <signal name=\"dbusWiimoteGeneralButtons\">\n"
     "     <arg type=\"u\" direction=\"out\"/>\n"
     "      <arg type=\"t\" direction=\"out\"/>\n"
@@ -168,6 +171,7 @@ public slots:
     quint8 dbusWiimoteGetLedStatus(quint32 id);
 
 signals:
+    void dbusReportUnregistredWiiremote(QString);
     void dbusWiimoteGeneralButtons(quint32, quint64);
 
     void dbusWiimoteConnected(quint32);
@@ -242,6 +246,7 @@ public slots:
     quint8 dbusWiimoteGetLedStatus(quint32 id);
 
 signals:
+    void dbusReportUnregistredWiiremote(QString);
     void dbusWiimoteGeneralButtons(quint32, quint64);
 
     void dbusWiimoteConnected(quint32);

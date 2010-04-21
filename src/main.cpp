@@ -34,9 +34,7 @@
     #include <string.h>
 #endif
 
-#ifdef SYSLOG_SUPPORT
-    #include <syslog.h>
-#endif
+#include "syslogsupport.h"
 
 #include <signal.h>
 
@@ -62,6 +60,9 @@ void signal_handler(int sig) {
         case SIGINT:
         case SIGQUIT:
             application->quit();
+            break;
+        case SIGPIPE: // Ignore this signal
+            signal(SIGPIPE, signal_handler);
             break;
     }
 }
@@ -99,16 +100,14 @@ int main(int argc, char *argv[])
     application->setApplicationName(DAEMON_NAME);
     application->setApplicationVersion(DAEMON_VERSION);
 
-#ifdef SYSLOG_SUPPORT
-    setlogmask(LOG_UPTO(LOG_INFO));
-    openlog(DAEMON_NAME, LOG_CONS, LOG_USER);
-    syslog(LOG_INFO, "daemon started");
-#endif
+    syslog_open(DAEMON_NAME);
+    syslog_message("system service started in background");
 
     signal(SIGHUP, signal_handler);
     signal(SIGTERM, signal_handler);
     signal(SIGINT, signal_handler);
     signal(SIGQUIT, signal_handler);
+    signal(SIGPIPE, signal_handler);
 
     ConnectionManager manager;
     manager.start();
@@ -116,9 +115,8 @@ int main(int argc, char *argv[])
     application->exec();
     delete application;
 
-#ifdef SYSLOG_SUPPORT
-    syslog(LOG_INFO, "daemon closed");
-#endif
+    syslog_message("system service closed");
+    syslog_close();
 
     exit(EXIT_SUCCESS);
 }

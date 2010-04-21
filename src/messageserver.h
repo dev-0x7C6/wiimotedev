@@ -62,8 +62,9 @@ private:
 
     void tcpSendEvent(QByteArray &data);
 
-    quint16 port;
+
     QObject *manager;
+    quint16 port;
     QMutex mutex;
 
 public slots:

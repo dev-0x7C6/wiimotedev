@@ -19,8 +19,9 @@
  **********************************************************************************/
 
 #include "messageserver.h"
+#include "syslogsupport.h"
 
-MessageServerThread::MessageServerThread(QObject *manager, quint16 port,  QObject *parent) : manager(manager), port(port), QThread(parent)
+MessageServerThread::MessageServerThread(QObject *manager, quint16 port,  QObject *parent) : QThread(parent), port(port), manager(manager)
 {
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
@@ -28,9 +29,12 @@ MessageServerThread::MessageServerThread(QObject *manager, quint16 port,  QObjec
 void MessageServerThread::run()
 {
     MessageServer *server = new MessageServer(manager, port);
-    server->listen(QHostAddress::Any, port);
-
-    exec();
+    if (server->listen(QHostAddress::Any, port))
+    {
+        syslog_message(QString::fromUtf8("listening on %1").arg(QString::number(port, 10)).toAscii().constData());
+        exec();
+    } else
+        syslog_message(QString::fromUtf8("can't listen on %1, tcp service halted").arg(QString::number(port, 10)).toAscii().constData());
 }
 
 extern QString filePathWiimotedev;
@@ -40,7 +44,7 @@ const QString tcpSection("tcp/");
 const QString tcpAllowedValue("allowed");
 const QString tcpPortValue("port");
 
-MessageServer::MessageServer(QObject *manager, quint16 port, QObject *parent) : manager(manager), port(port), QTcpServer(parent)
+MessageServer::MessageServer(QObject *manager, quint16 port, QObject *parent) : QTcpServer(parent), manager(manager), port(port)
 {
 /* Register Meta Types ---------------------------------------------- */
     qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
@@ -102,6 +106,8 @@ void MessageServer::incomingConnection(int socketDescriptor)
 
     quint32 host = tcpSocket->peerAddress().toIPv4Address();
 
+    syslog_message(QString::fromUtf8("Incoming connection from %1").arg(tcpSocket->peerAddress().toString()).toAscii().constData());
+
     bool accepted = false;
 
     QSettings *settings = new QSettings(filePathWiimotedev, QSettings::IniFormat);
@@ -114,8 +120,16 @@ void MessageServer::incomingConnection(int socketDescriptor)
 
     delete settings;
 
-    if (!accepted)
+    syslog_message(QString::fromUtf8("Incoming connection from %1").arg(tcpSocket->peerAddress().toString()).toAscii().constData());
+
+    if (!accepted) {
+        syslog_message(QString::fromUtf8("Connection rejected %1, probably host is not allowed").arg(tcpSocket->peerAddress().toString()).toAscii().constData());
+        tcpSocket->disconnectFromHost();
+        delete tcpSocket;
         return;
+    }
+
+    syslog_message(QString::fromUtf8("Connection established with %1").arg(tcpSocket->peerAddress().toString()).toAscii().constData());
 
     connections << tcpSocket;
 }

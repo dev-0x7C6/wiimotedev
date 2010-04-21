@@ -17,6 +17,7 @@ set (wiimotedev_headers
         wiimoteconnection.h
         messageserver.h
         connectionmanager.h
+        syslogsupport.h
 )
 
 QT4_WRAP_CPP(wiimotedev_headers ${wiimotedev_headers} )
