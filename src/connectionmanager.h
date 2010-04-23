@@ -53,12 +53,21 @@ const quint16 defTCPPort = 50091;
 
 extern QString filePathWiimotedev;
 
+class ServiceClass : public QDBusAbstractAdaptor
+{
+    Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.daemon")
+    Q_CLASSINFO("D-Bus Introspection", ""
+    " <interface name=\"org.wiimotedev.daemon\">\n"
+    "  </interface>");
+};
+
 class DeviceEventsClass : public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.deviceEvents")
+    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.daemon")
     Q_CLASSINFO("D-Bus Introspection", ""
-    " <interface name=\"org.wiimotedev.deviceEvents\">\n"
+    " <interface name=\"org.wiimotedev.daemon\">\n"
     "    <signal name=\"dbusReportUnregistredWiiremote\">\n"
     "     <arg type=\"s\" direction=\"out\"/>\n"
     "    </signal>\n"

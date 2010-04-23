@@ -32,12 +32,9 @@ class WiimoteConnection : public QThread
     Q_OBJECT
 
 private:
-    QList < double> wfXmotion;
-    QList < double> wfYmotion;
-    QList < double> wfZmotion;
-    QList < double> nfXmotion;
-    QList < double> nfYmotion;
-    QList < double> nfZmotion;
+    QList < double> wfXmotion; QList < double> nfXmotion;
+    QList < double> wfYmotion; QList < double> nfYmotion;
+    QList < double> wfZmotion; QList < double> nfZmotion;
 
     quint8 ledStatus;
     bool rumbleStatus;

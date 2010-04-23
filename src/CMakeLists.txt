@@ -13,16 +13,19 @@ set (wiimotedev_sources
         connectionmanager.cpp
 )
 
-set (wiimotedev_headers
+set (wiimotedev_headers_qt
         wiimoteconnection.h
         messageserver.h
         connectionmanager.h
+)
+
+set (wiimotedev_headers
         syslogsupport.h
 )
 
-QT4_WRAP_CPP(wiimotedev_headers ${wiimotedev_headers} )
+QT4_WRAP_CPP(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
 
-add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers})
+add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers} ${wiimotedev_headers_qt})
 
 target_link_libraries(wiimotedev-daemon ${QT_LIBRARIES} ${CWIID_LIBRARY})
 

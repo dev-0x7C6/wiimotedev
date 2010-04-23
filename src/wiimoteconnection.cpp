@@ -136,8 +136,6 @@ void WiimoteConnection::run()
 
     cwiid_get_acc_cal(device, CWIID_EXT_NONE, &wiimote_calibration);
 
-
-
     double wxvalueabs, wxvalue, nxvalueabs, nxvalue, wxpow, nxpow = 0.0;
     double wyvalueabs, wyvalue, nyvalueabs, nyvalue, wypow, nypow = 0.0;
     double wzvalueabs, wzvalue, nzvalueabs, nzvalue, wzpow, nzpow = 0.0;
