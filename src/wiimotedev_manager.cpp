@@ -65,7 +65,7 @@ ConnectionManager::ConnectionManager()
 /* DBus interface --------------------------------------------------- */
 
     if (DBusInterface) {
-        QDBusConnection connection = QDBusConnection::sessionBus();
+        QDBusConnection connection = QDBusConnection::systemBus();
 
         dbusDeviceEventsAdaptor = new DBusDeviceEventsAdaptorWrapper(this, connection);
         dbusServiceAdaptor = new DBusServiceAdaptorWrapper(this, connection);
