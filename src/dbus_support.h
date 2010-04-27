@@ -22,7 +22,6 @@
 #define DBUSSUPPORT_H
 
 // Defaults
-#include <QtDBus>
 #include <QDBusAbstractAdaptor>
 #include <QDBusArgument>
 #include <QDBusConnection>
@@ -34,6 +33,23 @@
 #include <QDBusMetaType>
 #include <QMetaType>
 
+#define QWIIMOTEDEV_REGISTER_META_TYPES                                      \
+    qRegisterMetaType< QList< struct irpoint> >("QList< irpoint>");          \
+    qRegisterMetaType< QList< struct accdata> >("QList< accdata>");          \
+    qRegisterMetaType< QList< struct stickdata> >("QList< stickdata>");      \
+    qRegisterMetaType< QList< struct deviceinfo> >("QList< deviceinfo>");    \
+    qRegisterMetaType< struct irpoint>("irpoint");                           \
+    qRegisterMetaType< struct accdata>("accdata");                           \
+    qRegisterMetaType< struct stickdata>("stickdata");                       \
+    qRegisterMetaType< struct deviceinfo>("deviceinfo");                     \
+    qDBusRegisterMetaType< QList < struct irpoint> >();                      \
+    qDBusRegisterMetaType< QList < struct accdata> >();                      \
+    qDBusRegisterMetaType< QList < struct stickdata> >();                    \
+    qDBusRegisterMetaType< QList < struct deviceinfo> >();                   \
+    qDBusRegisterMetaType< struct irpoint>();                                \
+    qDBusRegisterMetaType< struct accdata>();                                \
+    qDBusRegisterMetaType< struct stickdata>();                              \
+    qDBusRegisterMetaType< struct deviceinfo>();
 
 #ifndef QWIIMOTEDEV_META_TYPES
 #define QWIIMOTEDEV_META_TYPES
@@ -77,18 +93,11 @@ class DBusServiceAdaptor : public QDBusAbstractAdaptor
 
 public:
     DBusServiceAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent) {
-        qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
-        qRegisterMetaType< QList< accdata> >("QList< accdata>");
-        qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
-        qRegisterMetaType< QList< deviceinfo> >("QList< deviceinfo>");
-
-        qRegisterMetaType< irpoint>("irpoint");
-        qRegisterMetaType< accdata>("accdata");
-        qRegisterMetaType< stickdata>("stickdata");
-        qRegisterMetaType< deviceinfo>("deviceinfo");
-
+        QWIIMOTEDEV_REGISTER_META_TYPES;
         setAutoRelaySignals(true);
     }
+
+public slots:
     bool dbusReloadSequenceList();
 };
 
@@ -197,16 +206,7 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 
 public:
     DBusDeviceEventsAdaptor (QObject *parent) : QDBusAbstractAdaptor(parent) {
-        qDBusRegisterMetaType< QList < struct irpoint> >();
-        qDBusRegisterMetaType< QList < struct accdata> >();
-        qDBusRegisterMetaType< QList < struct stickdata> >();
-        qDBusRegisterMetaType< QList < struct deviceinfo> >();
-
-        qDBusRegisterMetaType< struct irpoint>();
-        qDBusRegisterMetaType< struct accdata>();
-        qDBusRegisterMetaType< struct stickdata>();
-        qDBusRegisterMetaType< struct deviceinfo>();
-
+        QWIIMOTEDEV_REGISTER_META_TYPES;
         setAutoRelaySignals(true);
     }
 
