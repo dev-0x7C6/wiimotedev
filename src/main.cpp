@@ -19,7 +19,7 @@
  **********************************************************************************/
 
 #define DAEMON_NAME "Wiimotedev"
-#define DAEMON_VERSION "1.0"
+#define DAEMON_VERSION "1.2"
 #define PID_FILE "/var/run/wiimotedev-daemon.pid"
 
 #include <stdlib.h>
@@ -34,15 +34,13 @@
     #include <string.h>
 #endif
 
-#include "syslogsupport.h"
-
 #include <signal.h>
 
 #include <QCoreApplication>
 #include <QFile>
 #include <QTextStream>
 
-#include "connectionmanager.h"
+#include "wiimotedev_manager.h"
 
 const QString confFile("/etc/wiimotedev/wiimotedev.conf");
 const QString scancodeFile("/etc/wiimotedev/scancode.ini");

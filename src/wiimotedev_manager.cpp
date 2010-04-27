@@ -18,142 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <QMapIterator>
-#include <QSettings>
-#include "syslogsupport.h"
-
-#include "connectionmanager.h"
-
-QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point)
-{
-    argument.beginStructure();
-    argument << point.size << point.x << point.y;
-    argument.endStructure();
-    return argument;
-}
-
-const QDBusArgument& operator>>(const QDBusArgument& argument, irpoint& point)
-{
-    argument.beginStructure();
-    argument >> point.size >> point.x >> point.y;
-    argument.endStructure();
-    return argument;
-}
-
-QDBusArgument& operator<<(QDBusArgument& argument, const accdata& acc)
-{
-    argument.beginStructure();
-    argument << acc.x << acc.y << acc.z << acc.pitch << acc.roll;
-    argument.endStructure();
-    return argument;
-}
-
-const QDBusArgument& operator>>(const QDBusArgument& argument, accdata& acc)
-{
-    argument.beginStructure();
-    argument >> acc.x >> acc.y >> acc.z >> acc.pitch >> acc.roll;
-    argument.endStructure();
-    return argument;
-}
-
-QDBusArgument& operator<<(QDBusArgument& argument, const stickdata& stick)
-{
-    argument.beginStructure();
-    argument << stick.x << stick.y;
-    argument.endStructure();
-    return argument;
-}
-
-const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick)
-{
-    argument.beginStructure();
-    argument >> stick.x >> stick.y;
-    argument.endStructure();
-    return argument;
-}
-
-QDBusArgument& operator<<(QDBusArgument& argument, const deviceinfo& info)
-{
-    argument.beginStructure();
-    argument << info.id << QString().fromStdString(info.addr) << info.registred << info.nunchuk << info.classic;
-    argument.endStructure();
-    return argument;
-}
-
-const QDBusArgument& operator>>(const QDBusArgument& argument, deviceinfo& info)
-{
-    QString data;
-    argument.beginStructure();
-    argument >> info.id >> data;
-    info.addr = data.toStdString();
-    argument >> info.registred >> info.nunchuk >> info.classic;
-    argument.endStructure();
-    return argument;
-}
-
-DeviceEventsClass::DeviceEventsClass(QObject *parent) : QDBusAbstractAdaptor(parent)
-{
-    qDBusRegisterMetaType< QList < struct irpoint> >();
-    qDBusRegisterMetaType< QList < struct accdata> >();
-    qDBusRegisterMetaType< QList < struct stickdata> >();
-    qDBusRegisterMetaType< QList < struct deviceinfo> >();
-
-    qDBusRegisterMetaType< struct irpoint>();
-    qDBusRegisterMetaType< struct accdata>();
-    qDBusRegisterMetaType< struct stickdata>();
-    qDBusRegisterMetaType< struct deviceinfo>();
-
-    setAutoRelaySignals(true);
-}
-
-QList < struct deviceinfo> DeviceEventsClass::dbusGetDeviceList()
-{
-    QList < struct deviceinfo> value;
-    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < struct deviceinfo>, value));
-    return value;
-}
-
-quint8 DeviceEventsClass::dbusWiimoteGetLedStatus(quint32 id)
-{
-    quint8 value;
-    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));
-    return value;
-}
-
-bool DeviceEventsClass::dbusWiimoteGetRumbleStatus(quint32 id)
-{
-    bool value;
-    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetRumbleStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id));
-    return value;
-}
-
-bool DeviceEventsClass::dbusWiimoteSetLedStatus(quint32 id, quint8 status)
-{
-    bool value;
-    QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint8, status));
-    return value;
-}
-
-bool DeviceEventsClass::dbusWiimoteSetRumbleStatus(quint32 id, bool status)
-{
-    bool value;
-    QMetaObject::invokeMethod(parent(), "dbusWiimoteSetRumbleStatus", Qt::DirectConnection,  Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(bool, status));
-    return value;
-}
-
-quint32 DeviceEventsClass::dbusWiimoteGetCurrentLatency(quint32 id)
-{
-    quint32 latency;
-    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetCurrentLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
-    return latency;
-}
-
-quint32 DeviceEventsClass::dbusWiimoteGetAverageLatency(quint32 id)
-{
-    quint32 latency;
-    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAverageLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
-    return latency;
-}
+#include "wiimotedev_manager.h"
 
 ConnectionManager::ConnectionManager()
 {
@@ -172,7 +37,6 @@ ConnectionManager::ConnectionManager()
     terminateReq = false;
 
 /* Setup ------------------------------------------------------------ */
-
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 
 /* Load rules ------------------------------------------------------- */
@@ -200,22 +64,24 @@ ConnectionManager::ConnectionManager()
 
 /* DBus interface --------------------------------------------------- */
 
-    if (DBusInterface)
-    {    
-        new DeviceEventsClass(this);
+    if (DBusInterface) {
+        QDBusConnection connection = QDBusConnection::sessionBus();
 
-        QDBusConnection connection = QDBusConnection::systemBus();
-        bool registerObject = connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_NAME, this);
-        bool registerService = connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
+        dbusDeviceEventsAdaptor = new DBusDeviceEventsAdaptorWrapper(this, connection);
+        dbusServiceAdaptor = new DBusServiceAdaptorWrapper(this, connection);
+        bool registred = connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
 
-        syslog_message(QString::fromUtf8("register %1 object %2").arg(QString(WIIMOTEDEV_DBUS_OBJECT_NAME), registerObject ? "done" : "failed").toAscii().constData());
-        syslog_message(QString::fromUtf8("register %1 service %2").arg(QString(WIIMOTEDEV_DBUS_SERVICE_NAME), registerService ? "done" : "failed").toAscii().constData());
+        connect(this, SIGNAL(dbusReportUnregistredWiiremote(QString)), dbusDeviceEventsAdaptor, SIGNAL(dbusReportUnregistredWiiremote(QString)));
+
+        syslog_message(QString::fromUtf8("register %1 object %2").arg(QString(WIIMOTEDEV_DBUS_EVENTS_OBJECT), dbusDeviceEventsAdaptor->isRegistred() ? "done" : "failed").toAscii().constData());
+        syslog_message(QString::fromUtf8("register %1 object %2").arg(QString(WIIMOTEDEV_DBUS_SERVICE_OBJECT), dbusServiceAdaptor->isRegistred() ? "done" : "failed").toAscii().constData());
+        syslog_message(QString::fromUtf8("register %1 service %2").arg(QString(WIIMOTEDEV_DBUS_SERVICE_NAME), registred ? "done" : "failed").toAscii().constData());
     }
 
 /* TCP interface ---------------------------------------------------- */
 
     if (TCPInterface)
-    {      
+    {
         tcpServerThread = new MessageServerThread(this, tcpPort, this);
         tcpServerThread->start();
         syslog_message(QString::fromUtf8("starting tcp/ip thread at 0x%1").arg(QString::number(tcpServerThread->thread()->currentThreadId(), 0x10)).toAscii().constData());
@@ -226,6 +92,22 @@ ConnectionManager::ConnectionManager()
         syslog_message(QString::fromUtf8("dbus/tcp disabled, stoping wiimotedev").toAscii().constData());
         terminateReq = true;
     }
+}
+
+bool ConnectionManager::dbusReloadSequenceList()
+{
+    wiiremoteSequence.clear();
+    syslog_message(QString::fromUtf8("loading sequences from %1").arg(filePathWiimotedev).toAscii().constData());
+
+    QSettings settings(filePathWiimotedev, QSettings::IniFormat);
+    settings.beginGroup(sequenceSection);
+
+    for (register int i = 0; i < settings.allKeys().count(); ++i)
+        wiiremoteSequence.insert(settings.allKeys().at(i), settings.value(settings.allKeys().at(i), 0).toInt());
+
+    settings.endGroup();
+
+    return true;
 }
 
 ConnectionManager::~ConnectionManager()
@@ -285,27 +167,27 @@ void ConnectionManager::registerConnection(void *object)
     connect(connection, SIGNAL(dbusClassicControllerPlugged(quint32)), this, SLOT(slotDBusClassicControllerPlugged(quint32)));
     connect(connection, SIGNAL(dbusClassicControllerUnplugged(quint32)), this, SLOT(slotDBusClassicControllerUnplugged(quint32)));
 
-    connect(connection, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::DirectConnection);
 
-    connect(connection, SIGNAL(dbusWiimoteConnected(quint32)), this, SIGNAL(dbusWiimoteConnected(quint32)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusWiimoteDisconnected(quint32)), this, SIGNAL(dbusWiimoteDisconnected(quint32)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), this, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusWiimoteButtons(quint32,quint64)), this, SIGNAL(dbusWiimoteButtons(quint32,quint64)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusWiimoteStatus(quint32,quint8)), this, SIGNAL(dbusWiimoteStatus(quint32,quint8)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), this, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), this, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteConnected(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteConnected(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteDisconnected(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteDisconnected(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteButtons(quint32,quint64)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteStatus(quint32,quint8)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteStatus(quint32,quint8)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)), Qt::DirectConnection);
 
-    connect(connection, SIGNAL(dbusNunchukPlugged(quint32)), this, SIGNAL(dbusNunchukPlugged(quint32)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusNunchukUnplugged(quint32)), this, SIGNAL(dbusNunchukUnplugged(quint32)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), this, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusNunchukButtons(quint32,quint64)), this, SIGNAL(dbusNunchukButtons(quint32,quint64)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), this, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukPlugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukPlugged(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukUnplugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukUnplugged(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukButtons(quint32,quint64)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), Qt::DirectConnection);
 
-    connect(connection, SIGNAL(dbusClassicControllerPlugged(quint32)), this, SIGNAL(dbusClassicControllerPlugged(quint32)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusClassicControllerUnplugged(quint32)), this, SIGNAL(dbusClassicControllerUnplugged(quint32)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), this, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), this, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::DirectConnection);
-    connect(connection, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), this, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusClassicControllerPlugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerPlugged(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusClassicControllerUnplugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerUnplugged(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::DirectConnection);
 
   // profile interface
     connect(connection, SIGNAL(unregisterConnection(void*)), this, SLOT(unregisterConnection(void*)), Qt::QueuedConnection);

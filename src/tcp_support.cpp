@@ -18,8 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include "messageserver.h"
-#include "syslogsupport.h"
+#include "tcp_support.h"
 
 MessageServerThread::MessageServerThread(QObject *manager, quint16 port,  QObject *parent) : QThread(parent), port(port), manager(manager)
 {

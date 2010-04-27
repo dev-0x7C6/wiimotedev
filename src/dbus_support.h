@@ -18,63 +18,93 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#ifndef CONNECTIONMANAGER_H
-#define CONNECTIONMANAGER_H
+#ifndef DBUSSUPPORT_H
+#define DBUSSUPPORT_H
 
-#ifdef __syslog
-    #include <syslog.h>
-#endif
-
+// Defaults
+#include <QtDBus>
 #include <QDBusAbstractAdaptor>
 #include <QDBusArgument>
 #include <QDBusConnection>
-#include <QMetaType>
-#include <QDBusMetaType>
 
-#include <QTime>
-
-#include "messageserver.h"
-#include "wiimoteconnection.h"
+#include <QList>
 #include "wiimotedev.h"
 
-const QString sequenceSection("sequence");
-const QString tcpSection("tcp/");
-const QString wiimotedevSection("wiimotedev/");
-
-const QString wiimotedevDBusIface("DBusInterface");
-const QString wiimotedevTCPIface("TCPInterface");
-
-const QString tcpPort("port");
-
-const bool defDBusInterfaceEnabled = true;
-const bool defTCPInterfaceEnabled = false;
-const quint16 defTCPPort = 50091;
+// Meta-types
+#include <QDBusMetaType>
+#include <QMetaType>
 
 
-extern QString filePathWiimotedev;
+#ifndef QWIIMOTEDEV_META_TYPES
+#define QWIIMOTEDEV_META_TYPES
 
-class ServiceClass : public QDBusAbstractAdaptor
+    Q_DECLARE_METATYPE(QList < deviceinfo>);
+    Q_DECLARE_METATYPE(QList < irpoint>);
+    Q_DECLARE_METATYPE(QList < accdata>);
+    Q_DECLARE_METATYPE(QList < stickdata>);
+
+    Q_DECLARE_METATYPE(deviceinfo);
+    Q_DECLARE_METATYPE(irpoint);
+    Q_DECLARE_METATYPE(accdata);
+    Q_DECLARE_METATYPE(stickdata);
+
+#endif
+
+#ifndef QWIIMOTEDEV_MARSHALL
+#define QWIIMOTEDEV_MARSHALL
+
+    QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point);
+    const QDBusArgument& operator>>(const QDBusArgument& argument, irpoint& point);
+    QDBusArgument& operator<<(QDBusArgument& argument, const accdata& acc);
+    const QDBusArgument& operator>>(const QDBusArgument& argument, accdata& acc);
+    QDBusArgument& operator<<(QDBusArgument& argument, const stickdata& stick);
+    const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick);
+    QDBusArgument& operator<<(QDBusArgument& argument, const deviceinfo& info);
+    const QDBusArgument& operator>>(const QDBusArgument& argument, deviceinfo& info);
+
+#endif
+
+class DBusServiceAdaptor : public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.daemon")
+    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
     Q_CLASSINFO("D-Bus Introspection", ""
-    " <interface name=\"org.wiimotedev.daemon\">\n"
+    "<interface name=\"org.wiimotedev.service\">\n"
+    "    <method name=\"dbusReloadSequenceList\">\n"
+    "      <arg type=\"y\" direction=\"out\"/>\n"
+    "    </method>\n"
     "  </interface>");
+
+public:
+    DBusServiceAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent) {
+        qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
+        qRegisterMetaType< QList< accdata> >("QList< accdata>");
+        qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
+        qRegisterMetaType< QList< deviceinfo> >("QList< deviceinfo>");
+
+        qRegisterMetaType< irpoint>("irpoint");
+        qRegisterMetaType< accdata>("accdata");
+        qRegisterMetaType< stickdata>("stickdata");
+        qRegisterMetaType< deviceinfo>("deviceinfo");
+
+        setAutoRelaySignals(true);
+    }
+    bool dbusReloadSequenceList();
 };
 
-class DeviceEventsClass : public QDBusAbstractAdaptor
+class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.daemon")
+    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.deviceEvents")
     Q_CLASSINFO("D-Bus Introspection", ""
-    " <interface name=\"org.wiimotedev.daemon\">\n"
+    " <interface name=\"org.wiimotedev.deviceEvents\">\n"
     "    <signal name=\"dbusReportUnregistredWiiremote\">\n"
     "     <arg type=\"s\" direction=\"out\"/>\n"
     "    </signal>\n"
     "    <signal name=\"dbusWiimoteGeneralButtons\">\n"
     "     <arg type=\"u\" direction=\"out\"/>\n"
     "      <arg type=\"t\" direction=\"out\"/>\n"
-    "    </signal>\n"    
+    "    </signal>\n"
     "   <method name=\"dbusWiimoteGetCurrentLatency\">\n"
     "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
     "      <arg type=\"u\" direction=\"out\"/>\n"
@@ -164,9 +194,21 @@ class DeviceEventsClass : public QDBusAbstractAdaptor
     "      <arg type=\"(yy)\" direction=\"out\"/>\n"
     "    </signal>\n"
     "  </interface>");
+
 public:
-    DeviceEventsClass(QObject *parent);
-    virtual ~DeviceEventsClass(){};
+    DBusDeviceEventsAdaptor (QObject *parent) : QDBusAbstractAdaptor(parent) {
+        qDBusRegisterMetaType< QList < struct irpoint> >();
+        qDBusRegisterMetaType< QList < struct accdata> >();
+        qDBusRegisterMetaType< QList < struct stickdata> >();
+        qDBusRegisterMetaType< QList < struct deviceinfo> >();
+
+        qDBusRegisterMetaType< struct irpoint>();
+        qDBusRegisterMetaType< struct accdata>();
+        qDBusRegisterMetaType< struct stickdata>();
+        qDBusRegisterMetaType< struct deviceinfo>();
+
+        setAutoRelaySignals(true);
+    }
 
 public slots:
     QList < struct deviceinfo> dbusGetDeviceList();
@@ -204,57 +246,81 @@ signals:
     void dbusClassicControllerRStick(quint32, struct stickdata);
 };
 
-
-class ConnectionManager : public QThread
+class DBusServiceAdaptorWrapper : public QObject
 {
     Q_OBJECT
-
-private:     
-    bool DBusInterface;
-    bool TCPInterface;
-
-    quint16 tcpPort;
-
-    MessageServerThread *tcpServerThread;
-
-    QMap< void*, struct deviceinfo> deviceList;
-    QMap< QString, quint16> wiiremoteSequence;
-    QList< void*> objectList;
-    bdaddr_t bdaddr_any;
-    bool terminateReq;
-    WiimoteConnection *connectionObject;
+private:
+    bool registred;
 
 public:
-    ConnectionManager();
-   ~ConnectionManager();
+    DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent) {
+        new DBusServiceAdaptor(this);
+        registred = connection.registerObject(WIIMOTEDEV_DBUS_SERVICE_OBJECT, this);
+    }
 
-protected:
-    void run();  
+    inline bool isRegistred() { return registred; }
 
+public Q_SLOTS:
+    bool dbusReloadSequenceList() {
+        bool value;
+        QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+        return value;
+    }
+};
+
+class DBusDeviceEventsAdaptorWrapper : public QObject
+{
+    Q_OBJECT
 private:
-    WiimoteConnection* findWiiremoteObject(quint32 id);
+    bool registred;
 
-private slots:
-    void registerConnection(void *object);
-    void unregisterConnection(void *object);
+public:
+    DBusDeviceEventsAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent) {
+        new DBusDeviceEventsAdaptor(this);
+        registred = connection.registerObject(WIIMOTEDEV_DBUS_EVENTS_OBJECT, this);
+    }
 
-    void slotDBusNunchukPlugged(quint32);
-    void slotDBusNunchukUnplugged(quint32);
-    void slotDBusClassicControllerPlugged(quint32);
-    void slotDBusClassicControllerUnplugged(quint32);
+    inline bool isRegistred() { return registred; }
 
-public slots:
-    QList < struct deviceinfo> dbusGetDeviceList();
+public Q_SLOTS:
+    quint32 dbusWiimoteGetCurrentLatency(quint32 id){
+        quint32 latency;
+        QMetaObject::invokeMethod(parent(), "dbusWiimoteGetCurrentLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
+        return latency;
+    }
 
-    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
-    quint32 dbusWiimoteGetAverageLatency(quint32 id);
+    quint32 dbusWiimoteGetAverageLatency(quint32 id) {
+        quint32 latency;
+        QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAverageLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
+        return latency;
+    }
 
-    bool dbusWiimoteGetRumbleStatus(quint32 id);
-    bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
-    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
-    quint8 dbusWiimoteGetLedStatus(quint32 id);
+    bool dbusWiimoteGetRumbleStatus(quint32 id){
+        bool value;
+        QMetaObject::invokeMethod(parent(), "dbusWiimoteGetRumbleStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id));
+        return value;
+    }
 
-signals:
+    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status)
+    {
+        bool value;
+        QMetaObject::invokeMethod(parent(), "dbusWiimoteSetRumbleStatus", Qt::DirectConnection,  Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(bool, status));
+        return value;
+    }
+
+    quint8 dbusWiimoteGetLedStatus(quint32 id){
+        quint8 value;
+        QMetaObject::invokeMethod(parent(), "dbusWiimoteGetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));
+        return value;
+    }
+
+    bool dbusWiimoteSetLedStatus(quint32 id, quint8 status){
+        bool value;
+        QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint8, status));
+        return value;
+    }
+
+Q_SIGNALS:
     void dbusReportUnregistredWiiremote(QString);
     void dbusWiimoteGeneralButtons(quint32, quint64);
 
@@ -279,4 +345,4 @@ signals:
     void dbusClassicControllerRStick(quint32, struct stickdata);
 };
 
-#endif // CONNECTIONMANAGER_H
+#endif // DBUSSUPPORT_H

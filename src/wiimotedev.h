@@ -24,9 +24,11 @@
 #include <iostream>
 
 #define WIIMOTEDEV_CONFIG_FILE "/etc/wiimotedev/wiimotedev.conf"
-#define WIIMOTEDEV_DBUS_SERVICE_OBJECT_NAME "/service"
-#define WIIMOTEDEV_DBUS_DEVICE_EVENTS_OBJECT_NAME "/deviceEvents"
 #define WIIMOTEDEV_DBUS_SERVICE_NAME "org.wiimotedev.daemon"
+#define WIIMOTEDEV_DBUS_SERVICE_IFACE "org.wiimotedev.service"
+#define WIIMOTEDEV_DBUS_EVENTS_IFACE "org.wiimotedev.deviceEvents"
+#define WIIMOTEDEV_DBUS_SERVICE_OBJECT "/service"
+#define WIIMOTEDEV_DBUS_EVENTS_OBJECT "/deviceEvents"
 
 /* Compatibility ------------------------------------------------- */
 
