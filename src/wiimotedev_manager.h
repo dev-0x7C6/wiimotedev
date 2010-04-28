@@ -86,7 +86,7 @@ private slots:
     void slotDBusNunchukPlugged(quint32);
     void slotDBusNunchukUnplugged(quint32);
     void slotDBusClassicControllerPlugged(quint32);
-    void slotDBusClassicControllerUnplugged(quint32);
+    void slotDBusClassicControllerUnplugged(quint32);    
 
 public slots:
     QList < struct deviceinfo> dbusGetDeviceList();

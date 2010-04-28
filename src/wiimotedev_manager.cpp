@@ -19,6 +19,7 @@
  **********************************************************************************/
 
 #include "wiimotedev_manager.h"
+#include <QTime>
 
 ConnectionManager::ConnectionManager()
 {
