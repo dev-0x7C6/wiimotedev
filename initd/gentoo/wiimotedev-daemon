@@ -3,11 +3,6 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com   
 
-#!/sbin/runscript
-# Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
-# Copyright (C) 2010 Bartłomiej Burdukiewicz
-# Contact: dev.strikeu@gmail.com   
-
 PIDFILE=/var/run/wiimotedev-daemon.pid
 SERVICE=/usr/sbin/wiimotedev-daemon
 GROUP=wiimotedev
@@ -19,11 +14,11 @@ opts="reload"
 
 function wiimotedev_check_group {
   if [ -z $(cat /etc/group | grep "$GROUP") ]; then
-    echo " -- Adding new group ${GROUP}"
+    echo " -- Adding new group \"${GROUP}\""
     groupadd $GROUP
 
     if [ -n $(cat /etc/group | grep "$GROUP") ]; then
-      echo " -- Group ${GROUP} added successful"
+      echo " -- Group \"${GROUP}\" added successful"
     else
       echo " -- Cannot add new group \"${GROUP}\""
       return 1
@@ -47,6 +42,8 @@ function wiimotedev_start() {
 # int wiimotedev_stop()
 
 function wiimotedev_stop() {
+  wiimotedev_check_group
+
   if [ -f "$PIDFILE" ]; then
     start-stop-daemon --stop -q -p "$PIDFILE" --group "$GROUP"
   fi
@@ -57,12 +54,12 @@ function wiimotedev_stop() {
 
 function wiimotedev_reload() {
   if [ ! -f "$PIDFILE" ]; then
-    echo " -- ${PIDFILE} file does not exist"
+    echo " -- \"${PIDFILE}\" file does not exist"
     return 1
   fi
 
   if [ ! -f "$CONFIG" ]; then
-    echo " -- ${CONFIG} configuration does not exist"
+    echo " -- \"${CONFIG}\" configuration does not exist"
     return 1
   fi
 
