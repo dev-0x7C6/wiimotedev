@@ -1,12 +1,19 @@
 Wiimotedev-daemon Changelog
 ===========================
 
-Wiimotedev daemon 1.1.80 (beta)
-- now daemon works on org.wiimotedev.daemon
-- added new object /deviceEvents and org.wiimotedev.deviceEvents interface
-- added new object /service and org.wiimotedev.service interface
-- dbusReloadSequenceList() method in /service
-- many changes in api (broken compatibility with previous versions, sorry!)
+Wiimotedev daemon 1.2
+- NEW API, incompatible with 1.0, sorry
+- added new object /deviceEvents
+- added new object /service
+- added new interface org.wiimotedev.deviceEvents
+- added new interface org.wiimotedev.service
+- updated dbusReportUnregisterWiiremote() signal
+- added dbusUnregistredWiiremoteList() method
+- added dbusReloadSequenceList() method
+- added dbusUnregistredWiiremoteList() method
+- improved init.d scripts (now supports reload, restart)
+- wiimotedev-daemon now works in group wiimotedev
+- automated init.d scripts (creating groups)
 
 Wiimotedev daemon 1.0-1
 - dbusReportUnregisterWiiremote() signal

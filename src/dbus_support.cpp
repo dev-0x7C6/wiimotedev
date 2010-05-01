@@ -101,6 +101,13 @@ QList < int> DBusDeviceEventsAdaptor::dbusGetDeviceList()
     return list;
 }
 
+QStringList DBusDeviceEventsAdaptor::dbusUnregistredWiiremoteList()
+{
+    QStringList list;
+    QMetaObject::invokeMethod(parent(), "dbusUnregistredWiiremoteList", Qt::DirectConnection, Q_RETURN_ARG(QStringList, list));
+    return list;
+}
+
 quint8 DBusDeviceEventsAdaptor::dbusWiimoteGetLedStatus(quint32 id)
 {
     quint8 value;

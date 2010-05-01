@@ -148,6 +148,17 @@ void ConnectionManager::registerConnection(void *object)
     {
         syslog_message(QString::fromUtf8("Wiiremote MAC %1 is unregistred, run wiimotedev-register and reconnect device").arg(connection->getWiimoteSAddr()).toAscii().constData());
         QString mac = connection->getWiimoteSAddr();
+
+        bool exist = false;
+
+        for (register int i = 0; i < unregisterWiiremoteList.count(); ++i)
+            if (unregisterWiiremoteList.at(i) == mac) {
+                exist = true;
+                break;
+            }
+
+        if (!exist) unregisterWiiremoteList << mac;
+
         connection->_disconnect();
         unregisterConnection(static_cast< void*>( connection));
         emit dbusReportUnregistredWiiremote(mac);
@@ -248,6 +259,11 @@ QList < int> ConnectionManager::dbusGetDeviceList()
     for (register int i = 0; i < objectList.count(); ++i)
         list << static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence();
     return list;
+}
+
+QStringList ConnectionManager::dbusUnregistredWiiremoteList()
+{
+    return unregisterWiiremoteList;
 }
 
 WiimoteConnection* ConnectionManager::findWiiremoteObject(quint32 id)

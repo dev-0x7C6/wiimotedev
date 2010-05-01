@@ -109,11 +109,14 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
     " <interface name=\"org.wiimotedev.deviceEvents\">\n"
     "    <signal name=\"dbusReportUnregistredWiiremote\">\n"
     "     <arg type=\"s\" direction=\"out\"/>\n"
-    "    </signal>\n"
+    "    </signal>\n"    
     "    <signal name=\"dbusWiimoteGeneralButtons\">\n"
     "     <arg type=\"u\" direction=\"out\"/>\n"
     "      <arg type=\"t\" direction=\"out\"/>\n"
     "    </signal>\n"
+    "   <method name=\"dbusUnregistredWiiremoteList\">\n"
+    "      <arg type=\"as\" direction=\"out\"/>\n"
+    "    </method>\n"
     "   <method name=\"dbusWiimoteGetCurrentLatency\">\n"
     "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
     "      <arg type=\"u\" direction=\"out\"/>\n"
@@ -218,6 +221,7 @@ public slots:
     quint32 dbusWiimoteGetAverageLatency(quint32 id);
 
     QList < int> dbusGetDeviceList();
+    QStringList dbusUnregistredWiiremoteList();
 
     bool dbusWiimoteGetRumbleStatus(quint32 id);
     bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
@@ -264,7 +268,7 @@ public:
     inline bool isRegistred() { return registred; }
 
 public Q_SLOTS:
-    bool dbusReloadSequenceList() {
+    inline bool dbusReloadSequenceList() {
         bool value;
         QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
         return value;
@@ -286,47 +290,53 @@ public:
     inline bool isRegistred() { return registred; }
 
 public Q_SLOTS:
-    quint32 dbusWiimoteGetCurrentLatency(quint32 id){
+    inline quint32 dbusWiimoteGetCurrentLatency(quint32 id){
         quint32 latency;
         QMetaObject::invokeMethod(parent(), "dbusWiimoteGetCurrentLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
         return latency;
     }
 
-    quint32 dbusWiimoteGetAverageLatency(quint32 id) {
+    inline quint32 dbusWiimoteGetAverageLatency(quint32 id) {
         quint32 latency;
         QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAverageLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
         return latency;
     }
 
-    bool dbusWiimoteGetRumbleStatus(quint32 id){
+    inline bool dbusWiimoteGetRumbleStatus(quint32 id){
         bool value;
         QMetaObject::invokeMethod(parent(), "dbusWiimoteGetRumbleStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id));
         return value;
     }
 
-    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status)
+    inline bool dbusWiimoteSetRumbleStatus(quint32 id, bool status)
     {
         bool value;
         QMetaObject::invokeMethod(parent(), "dbusWiimoteSetRumbleStatus", Qt::DirectConnection,  Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(bool, status));
         return value;
     }
 
-    quint8 dbusWiimoteGetLedStatus(quint32 id){
+    inline quint8 dbusWiimoteGetLedStatus(quint32 id){
         quint8 value;
         QMetaObject::invokeMethod(parent(), "dbusWiimoteGetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));
         return value;
     }
 
-    bool dbusWiimoteSetLedStatus(quint32 id, quint8 status){
+    inline bool dbusWiimoteSetLedStatus(quint32 id, quint8 status){
         bool value;
         QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint8, status));
         return value;
     }
 
-    QList < int> dbusGetDeviceList()
+    inline QList < int> dbusGetDeviceList()
     {
         QList < int> list;
         QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < int>, list));
+        return list;
+    }
+
+    inline QStringList dbusUnregistredWiiremoteList() {
+        QStringList list;
+        QMetaObject::invokeMethod(parent(), "dbusUnregistredWiiremoteList", Qt::DirectConnection, Q_RETURN_ARG(QStringList, list));
         return list;
     }
 

@@ -57,6 +57,8 @@ private:
     DBusDeviceEventsAdaptorWrapper *dbusDeviceEventsAdaptor;
     DBusServiceAdaptorWrapper *dbusServiceAdaptor;
 
+    QStringList unregisterWiiremoteList;
+
     bool DBusInterface;
     bool TCPInterface;
 
@@ -100,6 +102,7 @@ public slots:
     quint8 dbusWiimoteGetLedStatus(quint32 id);
 
     QList < int> dbusGetDeviceList();
+    QStringList dbusUnregistredWiiremoteList();
 
     bool dbusReloadSequenceList();
 
