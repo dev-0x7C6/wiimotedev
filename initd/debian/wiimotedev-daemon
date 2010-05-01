@@ -10,7 +10,7 @@ CONFIG=/etc/wiimotedev/wiimotedev.conf
 
 # int wiimotedev_check_group()
 
-function wiimotedev_check_group {
+wiimotedev_check_group() {
   if [ -z $(cat /etc/group | grep "$GROUP") ]; then
     echo " -- Adding new group \"${GROUP}\""
     groupadd $GROUP
@@ -26,7 +26,7 @@ function wiimotedev_check_group {
 
 # int wiimotedev_start()
 
-function wiimotedev_start() {
+wiimotedev_start() {
   wiimotedev_check_group
 
   if [ ! -x $SERVICE ]; then
@@ -39,7 +39,7 @@ function wiimotedev_start() {
 
 # int wiimotedev_stop()
 
-function wiimotedev_stop() {
+wiimotedev_stop() {
   wiimotedev_check_group
 
   if [ -f "$PIDFILE" ]; then
@@ -50,7 +50,7 @@ function wiimotedev_stop() {
 
 # int wiimotedev_reload()
 
-function wiimotedev_reload() {
+wiimotedev_reload() {
   if [ ! -f "$PIDFILE" ]; then
     echo " -- \"${PIDFILE}\" file does not exist"
     return 1
