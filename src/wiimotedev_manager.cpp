@@ -242,15 +242,13 @@ void ConnectionManager::slotDBusClassicControllerUnplugged(quint32)
     deviceList[static_cast< void *>(sender())] = dev;
 }
 
-QList < struct deviceinfo> ConnectionManager::dbusGetDeviceList()
+QList < int> ConnectionManager::dbusGetDeviceList()
 {
-    QList < struct deviceinfo> list;
-    QMapIterator<void *, struct deviceinfo> i(deviceList);
-    while (i.hasNext())
-        list << i.next().value();
+    QList < int> list;
+    for (register int i = 0; i < objectList.count(); ++i)
+        list << static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence();
     return list;
 }
-
 
 WiimoteConnection* ConnectionManager::findWiiremoteObject(quint32 id)
 {

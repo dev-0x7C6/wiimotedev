@@ -25,6 +25,8 @@
     #include <syslog.h>
 #endif
 
+#include <QList>
+
 #include "wiimotedev_connection.h"
 #include "wiimotedev_settings.h"
 
@@ -89,8 +91,6 @@ private slots:
     void slotDBusClassicControllerUnplugged(quint32);    
 
 public slots:
-    QList < struct deviceinfo> dbusGetDeviceList();
-
     quint32 dbusWiimoteGetCurrentLatency(quint32 id);
     quint32 dbusWiimoteGetAverageLatency(quint32 id);
 
@@ -98,6 +98,8 @@ public slots:
     bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
     bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
     quint8 dbusWiimoteGetLedStatus(quint32 id);
+
+    QList < int> dbusGetDeviceList();
 
     bool dbusReloadSequenceList();
 

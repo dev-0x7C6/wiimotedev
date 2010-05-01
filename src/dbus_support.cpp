@@ -94,11 +94,11 @@ bool DBusServiceAdaptor::dbusReloadSequenceList()
     return value;
 }
 
-QList < struct deviceinfo> DBusDeviceEventsAdaptor::dbusGetDeviceList()
+QList < int> DBusDeviceEventsAdaptor::dbusGetDeviceList()
 {
-    QList < struct deviceinfo> value;
-    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < struct deviceinfo>, value));
-    return value;
+    QList < int> list;
+    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < int>, list));
+    return list;
 }
 
 quint8 DBusDeviceEventsAdaptor::dbusWiimoteGetLedStatus(quint32 id)

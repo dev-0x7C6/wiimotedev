@@ -139,6 +139,9 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
     "      <arg type=\"b\" direction=\"out\"/>\n"
     "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
     "      <arg name=\"status\" type=\"b\" direction=\"in\"/>\n"
+    "    </method>\n"    
+    "    <method name=\"dbusGetDeviceList\">\n"
+    "      <arg type=\"ai\" direction=\"out\"/>\n"
     "    </method>\n"
     "    <signal name=\"dbusWiimoteConnected\">\n"
     "      <arg type=\"u\" direction=\"out\"/>\n"
@@ -211,10 +214,10 @@ public:
     }
 
 public slots:
-    QList < struct deviceinfo> dbusGetDeviceList();
-
     quint32 dbusWiimoteGetCurrentLatency(quint32 id);
     quint32 dbusWiimoteGetAverageLatency(quint32 id);
+
+    QList < int> dbusGetDeviceList();
 
     bool dbusWiimoteGetRumbleStatus(quint32 id);
     bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
@@ -318,6 +321,13 @@ public Q_SLOTS:
         bool value;
         QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint8, status));
         return value;
+    }
+
+    QList < int> dbusGetDeviceList()
+    {
+        QList < int> list;
+        QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < int>, list));
+        return list;
     }
 
 Q_SIGNALS:
