@@ -93,6 +93,7 @@ struct stickdata
 
 enum GENERAL_BUTTONS
 {
+// 1.0 API
     GENERAL_WIIMOTE_BTN_1 = 0,
     GENERAL_WIIMOTE_BTN_2,
     GENERAL_WIIMOTE_BTN_A,
@@ -152,7 +153,10 @@ enum GENERAL_BUTTONS
     GENERAL_CLASSIC_BTN_RSTICK_RIGHT,
     GENERAL_CLASSIC_BTN_RSTICK_LEFT,
     GENERAL_CLASSIC_BTN_RSTICK_DOWN,
-    GENERAL_CLASSIC_BTN_RSTICK_UP
+    GENERAL_CLASSIC_BTN_RSTICK_UP,
+// 1.2 API
+    GENERAL_WIIMOTE_BTN_SHIFT_SHAKE,
+    GENERAL_NUNCHUK_BTN_SHIFT_SHAKE
 };
 
 #define calcbit(x) (static_cast<uint64>( true) << x)
@@ -230,6 +234,8 @@ const uint64 CLASSIC_BTN_RSTICK_LEFT = calcbit(GENERAL_CLASSIC_BTN_RSTICK_LEFT);
 const uint64 CLASSIC_BTN_RSTICK_DOWN = calcbit(GENERAL_CLASSIC_BTN_RSTICK_DOWN);
 const uint64 CLASSIC_BTN_RSTICK_UP = calcbit(GENERAL_CLASSIC_BTN_RSTICK_UP);
 
+const uint64 WIIMOTE_BTN_SHIFT_SHAKE = calcbit(GENERAL_WIIMOTE_BTN_SHIFT_SHAKE);
+const uint64 NUNCHUK_BTN_SHIFT_SHAKE = calcbit(GENERAL_NUNCHUK_BTN_SHIFT_SHAKE);
 
 const uint64 WIIMOTE_BUTTON_MASK =  WIIMOTE_BTN_1 |
                                     WIIMOTE_BTN_2 |
@@ -248,7 +254,8 @@ const uint64 WIIMOTE_SHIFT_MASK = WIIMOTE_BTN_SHIFT_BACKWARD |
                                   WIIMOTE_BTN_SHIFT_RIGHT |
                                   WIIMOTE_BTN_SHIFT_LEFT |
                                   WIIMOTE_BTN_SHIFT_DOWN |
-                                  WIIMOTE_BTN_SHIFT_UP;
+                                  WIIMOTE_BTN_SHIFT_UP |
+                                  WIIMOTE_BTN_SHIFT_SHAKE;
 
 const uint64 WIIMOTE_TILT_MASK = WIIMOTE_BTN_TILT_FRONT |
                                  WIIMOTE_BTN_TILT_BACK |
@@ -268,7 +275,8 @@ const uint64 NUNCHUK_SHIFT_MASK = NUNCHUK_BTN_SHIFT_BACKWARD |
                                   NUNCHUK_BTN_SHIFT_RIGHT |
                                   NUNCHUK_BTN_SHIFT_LEFT |
                                   NUNCHUK_BTN_SHIFT_DOWN |
-                                  NUNCHUK_BTN_SHIFT_UP;
+                                  NUNCHUK_BTN_SHIFT_UP |
+                                  NUNCHUK_BTN_SHIFT_SHAKE;
 
 const uint64 NUNCHUK_TILT_MASK = NUNCHUK_BTN_TILT_FRONT |
                                  NUNCHUK_BTN_TILT_BACK |
@@ -311,132 +319,5 @@ const uint64 NUNCHUK_TILT_NOTMASK = ~NUNCHUK_TILT_MASK;
 const uint64 CLASSIC_BUTTON_NOTMASK = ~CLASSIC_BUTTON_MASK;
 const uint64 CLASSIC_LSTICK_NOTMASK = ~CLASSIC_LSTICK_MASK;
 const uint64 CLASSIC_RSTICK_NOTMASK = ~CLASSIC_RSTICK_MASK;
-
-namespace Wiimote
-{
-    namespace Buttons {
-        const uint64 Mask = WIIMOTE_BUTTON_MASK;
-        const uint64 NotMask = WIIMOTE_BUTTON_NOTMASK;
-        const uint64 B1 = WIIMOTE_BTN_1;
-        const uint64 B2 = WIIMOTE_BTN_2;
-        const uint64 A = WIIMOTE_BTN_A;
-        const uint64 B = WIIMOTE_BTN_B;
-        const uint64 Minus = WIIMOTE_BTN_MINUS;
-        const uint64 Plus = WIIMOTE_BTN_PLUS;
-        const uint64 Home = WIIMOTE_BTN_HOME;
-        const uint64 Right = WIIMOTE_BTN_RIGHT;
-        const uint64 Left = WIIMOTE_BTN_LEFT;
-        const uint64 Up = WIIMOTE_BTN_UP;
-        const uint64 Down = WIIMOTE_BTN_DOWN;
-    }
-
-    namespace Shifts {
-        const uint64 Mask = WIIMOTE_SHIFT_MASK;
-        const uint64 NotMask = WIIMOTE_SHIFT_NOTMASK;
-        const uint64 Backward = WIIMOTE_BTN_SHIFT_BACKWARD;
-        const uint64 Forward = WIIMOTE_BTN_SHIFT_FORWARD;
-        const uint64 Right = WIIMOTE_BTN_SHIFT_RIGHT;
-        const uint64 Left = WIIMOTE_BTN_SHIFT_LEFT;
-        const uint64 Up = WIIMOTE_BTN_SHIFT_UP;
-        const uint64 Down = WIIMOTE_BTN_SHIFT_DOWN;
-    }
-
-    namespace Tilts {
-        const uint64 Mask = WIIMOTE_TILT_MASK;
-        const uint64 NotMask = WIIMOTE_TILT_NOTMASK;
-        const uint64 Front = WIIMOTE_BTN_TILT_FRONT;
-        const uint64 Back = WIIMOTE_BTN_TILT_BACK;
-        const uint64 Right = WIIMOTE_BTN_TILT_RIGHT;
-        const uint64 Left = WIIMOTE_BTN_TILT_LEFT;
-    }
-}
-
-namespace Nunchuk
-{
-    namespace Buttons {
-        const uint64 Mask = NUNCHUK_BUTTON_MASK;
-        const uint64 NotMask = NUNCHUK_BUTTON_NOTMASK;
-        const uint64 Z = NUNCHUK_BTN_Z;
-        const uint64 C = NUNCHUK_BTN_C;
-    }
-
-    namespace Shifts {
-        const uint64 Mask = NUNCHUK_SHIFT_MASK;
-        const uint64 NotMask = NUNCHUK_SHIFT_NOTMASK;
-        const uint64 Backward = NUNCHUK_BTN_SHIFT_BACKWARD;
-        const uint64 Forward = NUNCHUK_BTN_SHIFT_FORWARD;
-        const uint64 Right = NUNCHUK_BTN_SHIFT_RIGHT;
-        const uint64 Left = NUNCHUK_BTN_SHIFT_LEFT;
-        const uint64 Up = NUNCHUK_BTN_SHIFT_UP;
-        const uint64 Down = NUNCHUK_BTN_SHIFT_DOWN;
-    }
-
-    namespace Tilts {
-        const uint64 Mask = NUNCHUK_TILT_MASK;
-        const uint64 NotMask = NUNCHUK_TILT_NOTMASK;
-        const uint64 Front = NUNCHUK_BTN_TILT_FRONT;
-        const uint64 Back = NUNCHUK_BTN_TILT_BACK;
-        const uint64 Right = NUNCHUK_BTN_TILT_RIGHT;
-        const uint64 Left = NUNCHUK_BTN_TILT_LEFT;
-    }
-
-    namespace Stick
-    {
-        const uint8 StickXMax = 0xFF;
-        const uint8 StickYMax = 0xFF;
-        const uint64 Mask = NUNCHUK_STICK_MASK;
-        const uint64 NotMask = NUNCHUK_STICK_NOTMASK;
-        const uint64 Up = NUNCHUK_BTN_STICK_UP;
-        const uint64 Down = NUNCHUK_BTN_STICK_DOWN;
-        const uint64 Right = NUNCHUK_BTN_STICK_RIGHT;
-        const uint64 Left = NUNCHUK_BTN_STICK_LEFT;
-    }
-}
-
-namespace Classic
-{
-    namespace Buttons {
-        const uint64 Mask = CLASSIC_BUTTON_MASK;
-        const uint64 NotMask = CLASSIC_BUTTON_NOTMASK;
-        const uint64 X = CLASSIC_BTN_X;
-        const uint64 Y = CLASSIC_BTN_Y;
-        const uint64 A = CLASSIC_BTN_A;
-        const uint64 B = CLASSIC_BTN_B;
-        const uint64 L = CLASSIC_BTN_L;
-        const uint64 R = CLASSIC_BTN_R;
-        const uint64 ZL = CLASSIC_BTN_ZL;
-        const uint64 ZR = CLASSIC_BTN_ZR;
-        const uint64 Minus = CLASSIC_BTN_MINUS;
-        const uint64 Plus = CLASSIC_BTN_PLUS;
-        const uint64 Home = CLASSIC_BTN_HOME;
-        const uint64 Right = CLASSIC_BTN_RIGHT;
-        const uint64 Left = CLASSIC_BTN_LEFT;
-        const uint64 Down = CLASSIC_BTN_DOWN;
-        const uint64 Up = CLASSIC_BTN_UP;
-    }
-
-    namespace Sticks {
-        namespace Left {
-            const uint8 StickXMax = 0x3F;
-            const uint8 StickYMax = 0x3F;
-            const uint64 Mask = CLASSIC_LSTICK_MASK;
-            const uint64 NotMask = CLASSIC_LSTICK_NOTMASK;
-            const uint64 Up = CLASSIC_BTN_LSTICK_UP;
-            const uint64 Down = CLASSIC_BTN_LSTICK_DOWN;
-            const uint64 Right = CLASSIC_BTN_LSTICK_RIGHT;
-            const uint64 Left = CLASSIC_BTN_LSTICK_LEFT;
-        }
-        namespace Right {
-            const uint8 StickXMax = 0x1F;
-            const uint8 StickYMax = 0x1F;
-            const uint64 Mask = CLASSIC_RSTICK_MASK;
-            const uint64 NotMask = CLASSIC_RSTICK_NOTMASK;
-            const uint64 Up = CLASSIC_BTN_RSTICK_UP;
-            const uint64 Down = CLASSIC_BTN_RSTICK_DOWN;
-            const uint64 Right = CLASSIC_BTN_RSTICK_RIGHT;
-            const uint64 Left = CLASSIC_BTN_RSTICK_LEFT;
-        }
-    }
-}
 
 #endif
