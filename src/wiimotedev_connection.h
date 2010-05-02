@@ -45,6 +45,8 @@ private:
     int id;
     quint32 sequence;
 
+    quint32 WiimoteStatus;
+
 /*  Latency  *************************************************************/
     quint32 currentLatency;
     quint32 averageLatency;
@@ -76,6 +78,8 @@ public:
     bool getRumbleStatus();
     void setLedStatus(quint8 status);
     void setRumbleStatus(bool status);
+
+    inline quint8 getWiimoteStatus() { return WiimoteStatus; }
 
 protected:
    void run();

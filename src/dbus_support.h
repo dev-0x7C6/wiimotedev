@@ -77,6 +77,8 @@
     const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick);
     QDBusArgument& operator<<(QDBusArgument& argument, const deviceinfo& info);
     const QDBusArgument& operator>>(const QDBusArgument& argument, deviceinfo& info);
+    QDBusArgument& operator<<(QDBusArgument& argument, const QList < quint32>& list);
+    const QDBusArgument& operator>>(const QDBusArgument& argument, QList < quint32>& list);
 
 #endif
 
@@ -144,7 +146,12 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
     "      <arg name=\"status\" type=\"b\" direction=\"in\"/>\n"
     "    </method>\n"    
     "    <method name=\"dbusGetDeviceList\">\n"
-    "      <arg type=\"ai\" direction=\"out\"/>\n"
+    "      <annotation value=\"QList&lt;uint>\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\" />\n"
+    "      <arg type=\"au\" direction=\"out\"/>\n"
+    "    </method>\n"
+    "   <method name=\"dbusWiimoteGetStatus\">\n"
+    "      <arg name=\"id\" type=\"u\" direction=\"in\"/>\n"
+    "      <arg type=\"y\" direction=\"out\"/>\n"
     "    </method>\n"
     "    <signal name=\"dbusWiimoteConnected\">\n"
     "      <arg type=\"u\" direction=\"out\"/>\n"
@@ -220,13 +227,14 @@ public slots:
     quint32 dbusWiimoteGetCurrentLatency(quint32 id);
     quint32 dbusWiimoteGetAverageLatency(quint32 id);
 
-    QList < int> dbusGetDeviceList();
+    QList < quint32> dbusGetDeviceList();
     QStringList dbusUnregistredWiiremoteList();
 
     bool dbusWiimoteGetRumbleStatus(quint32 id);
     bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
     bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
     quint8 dbusWiimoteGetLedStatus(quint32 id);
+    quint8 dbusWiimoteGetStatus(quint32 id);
 
 signals:
     void dbusReportUnregistredWiiremote(QString);
@@ -327,10 +335,16 @@ public Q_SLOTS:
         return value;
     }
 
-    inline QList < int> dbusGetDeviceList()
+    inline quint8 dbusWiimoteGetStatus(quint32 id){
+        quint8 value;
+        QMetaObject::invokeMethod(parent(), "dbusWiimoteGetStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));
+        return value;
+    }
+
+    inline QList < quint32> dbusGetDeviceList()
     {
-        QList < int> list;
-        QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < int>, list));
+        QList < quint32> list;
+        QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < quint32>, list));
         return list;
     }
 

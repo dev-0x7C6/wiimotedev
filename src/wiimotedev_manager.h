@@ -101,7 +101,9 @@ public slots:
     bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
     quint8 dbusWiimoteGetLedStatus(quint32 id);
 
-    QList < int> dbusGetDeviceList();
+    quint8 dbusWiimoteGetStatus(quint32 id);
+
+    QList < quint32> dbusGetDeviceList();
     QStringList dbusUnregistredWiiremoteList();
 
     bool dbusReloadSequenceList();

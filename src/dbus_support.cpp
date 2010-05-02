@@ -87,6 +87,31 @@ const QDBusArgument& operator>>(const QDBusArgument& argument, deviceinfo& info)
     return argument;
 }
 
+QDBusArgument& operator<<(QDBusArgument& argument, const QList < quint32>& list)
+{
+    argument.beginArray();
+    for (register int i = 0; i < list.count(); ++i)
+        argument << list.at(i);
+    argument.endArray();
+    return argument;
+}
+
+const QDBusArgument& operator>>(const QDBusArgument& argument, QList < quint32>& list)
+{
+    argument.beginArray();
+    list.clear();
+
+    while (!argument.atEnd()){
+        quint32 i;
+        argument >> i;
+        list << i;
+    }
+
+    argument.endArray();
+    return argument;
+}
+
+
 bool DBusServiceAdaptor::dbusReloadSequenceList()
 {
     bool value;
@@ -94,10 +119,10 @@ bool DBusServiceAdaptor::dbusReloadSequenceList()
     return value;
 }
 
-QList < int> DBusDeviceEventsAdaptor::dbusGetDeviceList()
+QList < quint32> DBusDeviceEventsAdaptor::dbusGetDeviceList()
 {
-    QList < int> list;
-    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < int>, list));
+    QList < quint32> list;
+    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < quint32>, list));
     return list;
 }
 
@@ -106,6 +131,13 @@ QStringList DBusDeviceEventsAdaptor::dbusUnregistredWiiremoteList()
     QStringList list;
     QMetaObject::invokeMethod(parent(), "dbusUnregistredWiiremoteList", Qt::DirectConnection, Q_RETURN_ARG(QStringList, list));
     return list;
+}
+
+quint8 DBusDeviceEventsAdaptor::dbusWiimoteGetStatus(quint32 id)
+{
+    quint8 value;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));    
+    return value;
 }
 
 quint8 DBusDeviceEventsAdaptor::dbusWiimoteGetLedStatus(quint32 id)

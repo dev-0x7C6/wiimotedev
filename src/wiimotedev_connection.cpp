@@ -29,6 +29,7 @@ WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
     rumbleStatus = false;
     ledStatus = 0;
     setTerminationEnabled(true);
+    WiimoteStatus = 0;
 }
 
 WiimoteConnection::~WiimoteConnection()
@@ -56,7 +57,7 @@ void WiimoteConnection::run()
     bool ButtonRequest = false;
     unsigned char BatteryLife, NewBatteryLife;
 
-    unsigned int WiimoteStatus = STATUS_WIIMOTE_CONNECTED;
+    WiimoteStatus = STATUS_WIIMOTE_CONNECTED;
     unsigned long long WiimoteButtons = 0x00;
     unsigned long long WiimoteButtonsTmp = 0x00;
 
