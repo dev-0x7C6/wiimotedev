@@ -306,6 +306,8 @@ void WiimoteConnection::run()
 
                     vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 
+                    if (vacc > 2.2) WiimoteButtons |= WIIMOTE_BTN_SHIFT_SHAKE;
+
                     wxpow = sqrt(pow(x, 2));
                     wypow = sqrt(pow(y, 2));
                     wzpow = sqrt(pow(z, 2));
@@ -430,6 +432,8 @@ void WiimoteConnection::run()
                 WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
 
                 vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+
+                if (vacc > 2.2) WiimoteButtons |= NUNCHUK_BTN_SHIFT_SHAKE;
 
                 nxpow = sqrt(pow(x, 2));
                 nypow = sqrt(pow(y, 2));
