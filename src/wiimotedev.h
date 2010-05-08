@@ -24,17 +24,21 @@
 #include <iostream>
 
 #define WIIMOTEDEV_CONFIG_FILE "/etc/wiimotedev/wiimotedev.conf"
+#define WIIMOTEDEV_TCP_PORT 50091
+
 #define WIIMOTEDEV_DBUS_SERVICE_NAME "org.wiimotedev.daemon"
+
+#define WIIMOTEDEV_DBUS_IFACE_EVENTS "org.wiimotedev.deviceEvents"
+#define WIIMOTEDEV_DBUS_IFACE_SERVICE "org.wiimotedev.service"
+#define WIIMOTEDEV_DBUS_OBJECT_EVENTS "/deviceEvents"
+#define WIIMOTEDEV_DBUS_OBJECT_SERVICE "/service"
+
+/* Compatibility ------------------------------------------------- */
+
 #define WIIMOTEDEV_DBUS_SERVICE_IFACE "org.wiimotedev.service"
 #define WIIMOTEDEV_DBUS_EVENTS_IFACE "org.wiimotedev.deviceEvents"
 #define WIIMOTEDEV_DBUS_SERVICE_OBJECT "/service"
 #define WIIMOTEDEV_DBUS_EVENTS_OBJECT "/deviceEvents"
-
-/* Compatibility ------------------------------------------------- */
-
-#define WIIMOTEDEV_DBUS_OBJECT_NAME WIIMOTEDEV_DBUS_DEVICE_EVENTS_OBJECT_NAME
-
-//
 
 /* Typedefs ------------------------------------------------------ */
 

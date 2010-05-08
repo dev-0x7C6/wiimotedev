@@ -54,15 +54,16 @@
 #ifndef QWIIMOTEDEV_META_TYPES
 #define QWIIMOTEDEV_META_TYPES
 
-    Q_DECLARE_METATYPE(QList < deviceinfo>);
-    Q_DECLARE_METATYPE(QList < irpoint>);
-    Q_DECLARE_METATYPE(QList < accdata>);
-    Q_DECLARE_METATYPE(QList < stickdata>);
+    Q_DECLARE_METATYPE(QList < deviceinfo>)
+    Q_DECLARE_METATYPE(QList < irpoint>)
+    Q_DECLARE_METATYPE(QList < accdata>)
+    Q_DECLARE_METATYPE(QList < stickdata>)
+    Q_DECLARE_METATYPE(QList < quint32>)
 
-    Q_DECLARE_METATYPE(deviceinfo);
-    Q_DECLARE_METATYPE(irpoint);
-    Q_DECLARE_METATYPE(accdata);
-    Q_DECLARE_METATYPE(stickdata);
+    Q_DECLARE_METATYPE(deviceinfo)
+    Q_DECLARE_METATYPE(irpoint)
+    Q_DECLARE_METATYPE(accdata)
+    Q_DECLARE_METATYPE(stickdata)
 
 #endif
 

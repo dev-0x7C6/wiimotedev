@@ -36,8 +36,6 @@ void MessageServerThread::run()
         syslog_message(QString::fromUtf8("can't listen on %1, tcp service halted").arg(QString::number(port, 10)).toAscii().constData());
 }
 
-extern QString filePathWiimotedev;
-
 const QString tcpSection("tcp/");
 
 const QString tcpAllowedValue("allowed");
@@ -109,7 +107,7 @@ void MessageServer::incomingConnection(int socketDescriptor)
 
     bool accepted = false;
 
-    QSettings *settings = new QSettings(filePathWiimotedev, QSettings::IniFormat);
+    QSettings *settings = new QSettings(WIIMOTEDEV_CONFIG_FILE, QSettings::IniFormat);
     QStringList allowed = settings->value(tcpSection + tcpAllowedValue, QStringList()).toStringList();
 
     for (register int i = 0; i < allowed.count(); ++i) if (QHostAddress(allowed.at(i)).toIPv4Address() == host) {

@@ -22,6 +22,8 @@
 #define WIIMOTECONNECTION_H
 
 #include <QThread>
+#include <QTime>
+
 #include <cwiid.h>
 #include <math.h>
 

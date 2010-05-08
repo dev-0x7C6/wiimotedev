@@ -23,7 +23,7 @@
 
 ConnectionManager::ConnectionManager()
 {
-/* Register Meta Types ---------------------------------------------- */
+// Register Meta Types ---------------------------------------------- /
 
     qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
     qRegisterMetaType< QList< accdata> >("QList< accdata>");
@@ -37,35 +37,19 @@ ConnectionManager::ConnectionManager()
 
     terminateReq = false;
 
-/* Setup ------------------------------------------------------------ */
+// Setup ------------------------------------------------------------ /
+    syslog_message(QString::fromUtf8("loading rules from %1").arg(WIIMOTEDEV_CONFIG_FILE).toAscii().constData());
+    wiimotedevSettings = new WiimotedevSettings(this, WIIMOTEDEV_CONFIG_FILE);
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
-
-/* Load rules ------------------------------------------------------- */
-    syslog_message(QString::fromUtf8("loading rules from %1").arg(filePathWiimotedev).toAscii().constData());
-
-    QSettings settings(filePathWiimotedev, QSettings::IniFormat);
-
-    settings.beginGroup(sequenceSection);
-
-    for (register int i = 0; i < settings.allKeys().count(); ++i)
-        wiiremoteSequence.insert(settings.allKeys().at(i), settings.value(settings.allKeys().at(i), 0).toInt());
-
-    settings.endGroup();
-
-    DBusInterface = settings.value(wiimotedevSection + wiimotedevDBusIface, defDBusInterfaceEnabled).toBool();
-    TCPInterface = settings.value(wiimotedevSection + wiimotedevTCPIface, defTCPInterfaceEnabled).toBool();
-
-    tcpPort = settings.value(tcpSection + tcpPort, defTCPPort).toInt();
-
     memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
 
-/* Syslog interface ------------------------------------------------- */
-    syslog_message(QString::fromUtf8("dbus interface - %1").arg(DBusInterface ? "enabled" : "disabled").toAscii().constData());
-    syslog_message(QString::fromUtf8("tcp/ip interface - %1").arg(TCPInterface ? "enabled" : "disabled").toAscii().constData());
+// Syslog interface ------------------------------------------------- /
+    syslog_message(QString::fromUtf8("dbus interface - %1").arg(wiimotedevSettings->dbusInterfaceSupport() ? "enabled" : "disabled").toAscii().constData());
+    syslog_message(QString::fromUtf8("tcp/ip interface - %1").arg(wiimotedevSettings->tcpInterfaceSupport() ? "enabled" : "disabled").toAscii().constData());
 
-/* DBus interface --------------------------------------------------- */
+// DBus interface --------------------------------------------------- /
 
-    if (DBusInterface) {
+    if (wiimotedevSettings->dbusInterfaceSupport()) {
         QDBusConnection connection = QDBusConnection::systemBus();
 
         dbusDeviceEventsAdaptor = new DBusDeviceEventsAdaptorWrapper(this, connection);
@@ -74,22 +58,20 @@ ConnectionManager::ConnectionManager()
 
         connect(this, SIGNAL(dbusReportUnregistredWiiremote(QString)), dbusDeviceEventsAdaptor, SIGNAL(dbusReportUnregistredWiiremote(QString)));
 
-        syslog_message(QString::fromUtf8("register %1 object %2").arg(QString(WIIMOTEDEV_DBUS_EVENTS_OBJECT), dbusDeviceEventsAdaptor->isRegistred() ? "done" : "failed").toAscii().constData());
-        syslog_message(QString::fromUtf8("register %1 object %2").arg(QString(WIIMOTEDEV_DBUS_SERVICE_OBJECT), dbusServiceAdaptor->isRegistred() ? "done" : "failed").toAscii().constData());
+        syslog_message(QString::fromUtf8("register %1 object %2").arg(QString(WIIMOTEDEV_DBUS_OBJECT_EVENTS), dbusDeviceEventsAdaptor->isRegistred() ? "done" : "failed").toAscii().constData());
+        syslog_message(QString::fromUtf8("register %1 object %2").arg(QString(WIIMOTEDEV_DBUS_OBJECT_SERVICE), dbusServiceAdaptor->isRegistred() ? "done" : "failed").toAscii().constData());
         syslog_message(QString::fromUtf8("register %1 service %2").arg(QString(WIIMOTEDEV_DBUS_SERVICE_NAME), registred ? "done" : "failed").toAscii().constData());
     }
 
-/* TCP interface ---------------------------------------------------- */
+// TCP interface ---------------------------------------------------- /
 
-    if (TCPInterface)
-    {
-        tcpServerThread = new MessageServerThread(this, tcpPort, this);
+    if (wiimotedevSettings->tcpInterfaceSupport()) {
+        tcpServerThread = new MessageServerThread(this, wiimotedevSettings->tcpGetPort(), this);
         tcpServerThread->start();
         syslog_message(QString::fromUtf8("starting tcp/ip thread at 0x%1").arg(QString::number(tcpServerThread->thread()->currentThreadId(), 0x10)).toAscii().constData());
     }
 
-    if (!(TCPInterface || DBusInterface))
-    {
+    if (!(wiimotedevSettings->tcpInterfaceSupport() || wiimotedevSettings->dbusInterfaceSupport())) {
         syslog_message(QString::fromUtf8("dbus/tcp disabled, stoping wiimotedev").toAscii().constData());
         terminateReq = true;
     }
@@ -97,18 +79,12 @@ ConnectionManager::ConnectionManager()
 
 bool ConnectionManager::dbusReloadSequenceList()
 {
-    wiiremoteSequence.clear();
-    syslog_message(QString::fromUtf8("loading sequences from %1").arg(filePathWiimotedev).toAscii().constData());
+    syslog_message(QString::fromUtf8("loading sequences from %1").arg(WIIMOTEDEV_CONFIG_FILE).toAscii().constData());
 
-    QSettings settings(filePathWiimotedev, QSettings::IniFormat);
-    settings.beginGroup(sequenceSection);
+    wiimotedevSettings->reload();
+    wiiremoteSequence = wiimotedevSettings->getWiiremoteSequence();
 
-    for (register int i = 0; i < settings.allKeys().count(); ++i)
-        wiiremoteSequence.insert(settings.allKeys().at(i), settings.value(settings.allKeys().at(i), 0).toInt());
-
-    settings.endGroup();
-
-    return true;
+    return !wiiremoteSequence.isEmpty();
 }
 
 ConnectionManager::~ConnectionManager()
@@ -119,6 +95,8 @@ ConnectionManager::~ConnectionManager()
     connectionObject->_disconnect();
 
     while (objectList.count()) msleep(1);
+
+    delete wiimotedevSettings;
 }
 
 void ConnectionManager::run()

@@ -37,17 +37,7 @@
 #include <signal.h>
 
 #include <QCoreApplication>
-#include <QFile>
-#include <QTextStream>
-
 #include "wiimotedev_manager.h"
-
-const QString confFile("/etc/wiimotedev/wiimotedev.conf");
-const QString scancodeFile("/etc/wiimotedev/scancode.ini");
-
-QString filePathWiimotedev = "/etc/wiimotedev/wiimotedev.conf";
-QString filePathScancode = "/etc/wiimotedev/scancode.ini";
-QString filePathLogfile = "/var/log/wiimotedev.log";
 
 QCoreApplication *application = 0;
 
@@ -57,7 +47,7 @@ void signal_handler(int sig) {
         case SIGTERM:
         case SIGINT:
         case SIGQUIT:
-            application->quit();
+            if (application) application->quit();
             break;
         case SIGPIPE: // Ignore this signal
             signal(SIGPIPE, signal_handler);
@@ -66,30 +56,28 @@ void signal_handler(int sig) {
 }
 
 int main(int argc, char *argv[])
-{    
+{        
 #ifdef DAEMON_SUPPORT
-    pid_t pid, sid;
-
-    pid = fork();
+    pid_t pid = fork();
     if (pid < 0) exit(EXIT_FAILURE);
     if (pid > 0) exit(EXIT_SUCCESS);
 
-    sid = setsid();
+    pid_t sid = setsid();
     if (sid < 0) exit(EXIT_FAILURE);
     if (chdir("/") < 0) exit(EXIT_FAILURE);
+
+    int fd = open(PID_FILE, O_CREAT | O_WRONLY | O_SYNC);
+
+    if (!fd) exit(EXIT_FAILURE);
+
+    QString out = QString::number(sid, 10);
+    write(fd, out.toAscii().constData(), out.length());
+    close(fd);
 
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
 
-    QFile file(PID_FILE);
-    if (file.open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        QTextStream out(&file);
-        out << qint64(sid);
-        file.close();
-    } else
-        exit(EXIT_FAILURE);
 #else
     qDebug("Daemon functions will be disabled");
 #endif

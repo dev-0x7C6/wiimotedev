@@ -21,10 +21,7 @@
 #ifndef CONNECTIONMANAGER_H
 #define CONNECTIONMANAGER_H
 
-#ifdef __syslog
-    #include <syslog.h>
-#endif
-
+#include <QThread>
 #include <QList>
 
 #include "wiimotedev_connection.h"
@@ -35,39 +32,23 @@
 #include "dbus_support.h"
 #include "wiimotedev.h"
 
-const QString sequenceSection("sequence");
-const QString tcpSection("tcp/");
-const QString wiimotedevSection("wiimotedev/");
-
-const QString wiimotedevDBusIface("DBusInterface");
-const QString wiimotedevTCPIface("TCPInterface");
-
-const QString tcpPort("port");
-
-const bool defDBusInterfaceEnabled = true;
-const bool defTCPInterfaceEnabled = false;
-const quint16 defTCPPort = 50091;
-
-extern QString filePathWiimotedev;
-
 class ConnectionManager : public QThread
 {
     Q_OBJECT
 private:
+// Adaptor section ------------------------------------------ /
     DBusDeviceEventsAdaptorWrapper *dbusDeviceEventsAdaptor;
     DBusServiceAdaptorWrapper *dbusServiceAdaptor;
 
+// Settings ------------------------------------------------- /
+    WiimotedevSettings *wiimotedevSettings;
+
     QStringList unregisterWiiremoteList;
-
-    bool DBusInterface;
-    bool TCPInterface;
-
-    quint16 tcpPort;
 
     MessageServerThread *tcpServerThread;
 
     QMap< void*, struct deviceinfo> deviceList;
-    QMap< QString, quint16> wiiremoteSequence;
+    QMap< QString, quint32> wiiremoteSequence;
     QList< void*> objectList;
     bdaddr_t bdaddr_any;
     bool terminateReq;

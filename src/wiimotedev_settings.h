@@ -23,17 +23,43 @@
 #define WIIMOTEDEV_SETTINGS_H
 
 #include <QObject>
+#include <QSettings>
+#include <QStringList>
+
+#include "wiimotedev.h"
 
 class WiimotedevSettings : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
+private:
+    QSettings *settings;
+    QString config;
+
+    bool ifaceDBusSupport;
+    bool ifaceTcpSupport;
+
+    QMap < QString, quint32> sequence;
+    QStringList tcpAllowed;
+
+    quint16 tcpPort;
+
 public:
-    explicit WiimotedevSettings(QObject *parent = 0);
+    WiimotedevSettings(QObject *parent = 0, QString file = WIIMOTEDEV_CONFIG_FILE);
+    ~WiimotedevSettings();
 
-signals:
+public:
+    void reload();
 
-public slots:
+    inline bool dbusInterfaceSupport() { return ifaceDBusSupport; }
+    inline bool tcpInterfaceSupport() { return ifaceTcpSupport; }
 
+    inline QMap < QString, quint32> getWiiremoteSequence() { return sequence; }
+
+    inline QStringList tcpGetAllowedHostList() { return tcpAllowed; }
+    inline quint16 tcpGetPort() { return tcpPort; }
+
+    void setDBusInterfaceSupport(bool support);
+    void setTcpInterfaceSupport(bool support);
 };
 
 #endif // WIIMOTEDEV_SETTINGS_H
