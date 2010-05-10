@@ -77,7 +77,6 @@ int main(int argc, char *argv[])
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
-
 #else
     qDebug("Daemon functions will be disabled");
 #endif
@@ -100,6 +99,7 @@ int main(int argc, char *argv[])
 
     application->exec();
     delete application;
+
 
     syslog_message("system service closed");
     syslog_close();

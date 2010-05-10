@@ -67,10 +67,7 @@ protected:
 
 private:
     QList < QTcpSocket*> connections;
-
     void tcpSendEvent(QByteArray &data);
-
-
     QObject *manager;
     quint16 port;
     QMutex mutex;
