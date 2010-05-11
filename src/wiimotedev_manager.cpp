@@ -40,6 +40,7 @@ ConnectionManager::ConnectionManager()
 // Setup ------------------------------------------------------------ /
     syslog_message(QString::fromUtf8("loading rules from %1").arg(WIIMOTEDEV_CONFIG_FILE).toAscii().constData());
     wiimotedevSettings = new WiimotedevSettings(this, WIIMOTEDEV_CONFIG_FILE);
+    wiiremoteSequence = wiimotedevSettings->getWiiremoteSequence();
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
     memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
 
