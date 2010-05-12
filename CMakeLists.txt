@@ -10,6 +10,6 @@ find_package(CWiiD REQUIRED NO_POLICY_SCOPE)
 include_directories(${CWIID_INCLUDE_DIR})
 
 add_subdirectory(src)
-add_subdirectory(initd)
-add_subdirectory(default)
+add_subdirectory(init.d)
+add_subdirectory(config)
 add_subdirectory(dbus-1)
