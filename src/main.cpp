@@ -94,12 +94,15 @@ int main(int argc, char *argv[])
     signal(SIGQUIT, signal_handler);
     signal(SIGPIPE, signal_handler);
 
-    ConnectionManager manager;
-    manager.start();
+    ConnectionManager *manager = new ConnectionManager();
+    manager->start();
 
     application->exec();
     delete application;
 
+    manager->wiimotedevQuitRequest();
+    manager->wait();
+    delete manager;
 
     syslog_message("system service closed");
     syslog_close();

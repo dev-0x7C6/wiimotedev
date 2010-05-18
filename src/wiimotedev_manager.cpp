@@ -24,6 +24,7 @@
 ConnectionManager::ConnectionManager()
 {
 // Register Meta Types ---------------------------------------------- /
+    setTerminationEnabled(true);
 
     qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
     qRegisterMetaType< QList< accdata> >("QList< accdata>");
@@ -90,14 +91,25 @@ bool ConnectionManager::dbusReloadSequenceList()
 
 ConnectionManager::~ConnectionManager()
 {
-    terminateReq = true;
-
-    disconnect(connectionObject, 0, 0, 0);
-    connectionObject->_disconnect();
-
-    while (objectList.count()) msleep(1);
-
     delete wiimotedevSettings;
+}
+
+void ConnectionManager::wiimotedevQuitRequest()
+{
+    terminateReq = true;
+    syslog_message(QString::fromUtf8("WiimotedevQuitRequest, prepare to shutdown").toAscii().constData());
+    syslog_message(QString::fromUtf8("WiimotedevQuitRequest, active connections count = %1").arg(QString::number(objectList.count())).toAscii().constData());
+
+    for (register int i = 0; i < objectList.count(); ++i)
+    {
+        disconnect(static_cast< WiimoteConnection*>( objectList.at(i)), 0, 0, 0);
+        static_cast< WiimoteConnection*>( objectList.at(i))->disconnectFromDevice();
+        static_cast< WiimoteConnection*>( objectList.at(i))->wait();
+        syslog_message(QString::fromUtf8("WiimotedevQuitRequest, MAC %1 disconnected").arg(QString::number( static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence(), 10)).toAscii().constData());
+        delete static_cast< WiimoteConnection*>( objectList.at(i));
+    }
+
+    objectList.clear();
 }
 
 void ConnectionManager::run()
@@ -105,13 +117,23 @@ void ConnectionManager::run()
     QTime time;
     while (!terminateReq)
     {
-        connectionObject = new WiimoteConnection();
-        connect(connectionObject, SIGNAL(registerConnection(void*)), this, SLOT(registerConnection(void*)), Qt::DirectConnection);
+        WiimoteConnection *connection = new WiimoteConnection();
+
         time.start();
-        if (connectionObject->connectAny())
-            objectList << static_cast< void*>(connectionObject); else delete connectionObject;
-        msleep((time.elapsed() < 100) ? 3000 : 0);
+        if (connection->connectAny() && !terminateReq) {
+            registerConnection(static_cast< void*>( connection));
+            continue;
+        }
+
+        delete connection;
+
+        if (terminateReq)
+            msleep((time.elapsed() < 100) ? 3000 : 0);
     }
+
+    while (objectList.count());
+
+    syslog_message(QString::fromUtf8("Leaving connection thread").toAscii().constData());
 }
 
 void ConnectionManager::registerConnection(void *object)

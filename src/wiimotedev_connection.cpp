@@ -21,7 +21,7 @@
 #include "wiimotedev_connection.h"
 
 
-WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
+WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent), disconnectRequest(false)
 {
 // Defaults ******************************************************** /
     connected = false;
@@ -146,7 +146,7 @@ void WiimoteConnection::run()
     currentLatency = 0;
     averageLatency = 0;
 
-    while (!cwiid_get_mesg(device, &count, &mesg, &time)) {
+    while (!cwiid_get_mesg(device, &count, &mesg, &time) && !disconnectRequest) {
         currentLatency = latencyTimer.elapsed();
         latencyTimer.start();
 
@@ -231,9 +231,11 @@ void WiimoteConnection::run()
 
 // Infrared section ***************************************************************************************************************** /
             case CWIID_MESG_IR:
-                wiimoteIrTable.clear();
-                sendIrSignal = false;
+
                 for (register int j = 0; j < 4; ++j) if (mesg[i].ir_mesg.src[j].valid) {
+                    if (!sendIrSignal)
+                        wiimoteIrTable.clear();
+
                     wiimotePoint.size =  (mesg[i].ir_mesg.src[j].size <= 0) ? 1 : mesg[i].ir_mesg.src[j].size; // when wiiremote extension present size of points are -1 ? libcwiid bug ?
                     wiimotePoint.x = mesg[i].ir_mesg.src[j].pos[0];
                     wiimotePoint.y = mesg[i].ir_mesg.src[j].pos[1];
@@ -243,6 +245,7 @@ void WiimoteConnection::run()
 
                 if (sendIrSignal) {
                     emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
+                    sendIrSignal = false;
                 }
                 break;
 
@@ -568,6 +571,7 @@ void WiimoteConnection::run()
         if(!connected) break;
     }
 
+    connected = false;
     cwiid_close(device);
 
     emit dbusWiimoteDisconnected(sequence);
@@ -639,11 +643,12 @@ bool WiimoteConnection::connectAny()
 
 void WiimoteConnection::_disconnect()
 {
-    if (!connected) return;
-    cwiid_set_rpt_mode(device, 0);
-    cwiid_close(device);
-    connected = false;
-    emit unregisterConnection(static_cast< void*>(this));
+
+}
+
+void WiimoteConnection::disconnectFromDevice()
+{
+    disconnectRequest = true;
 }
 
 QString WiimoteConnection::getWiimoteSAddr()

@@ -38,6 +38,8 @@ private:
     QList < double> wfYmotion; QList < double> nfYmotion;
     QList < double> wfZmotion; QList < double> nfZmotion;
 
+    bool disconnectRequest;
+
     quint8 ledStatus;
     bool rumbleStatus;
 
@@ -62,8 +64,12 @@ public:
     WiimoteConnection(QObject *parent = 0);
    ~WiimoteConnection();
 
+
     bool connectAny();
     void _disconnect();
+
+    bool connectWithDevice(QString mac);
+    void disconnectFromDevice();
 
     bdaddr_t getWiimoteAddr(){ return wiimotebdaddr; }
     QString getWiimoteSAddr();

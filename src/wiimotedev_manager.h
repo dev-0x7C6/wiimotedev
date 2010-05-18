@@ -52,11 +52,11 @@ private:
     QList< void*> objectList;
     bdaddr_t bdaddr_any;
     bool terminateReq;
-    WiimoteConnection *connectionObject;
 
 public:
     ConnectionManager();
    ~ConnectionManager();
+    void wiimotedevQuitRequest();
 
 protected:
     void run();  
