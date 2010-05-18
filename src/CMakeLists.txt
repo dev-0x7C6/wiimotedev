@@ -1,3 +1,7 @@
+# Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
+# Copyright (C) 2010 Bartłomiej Burdukiewicz
+# Contact: dev.strikeu@gmail.com
+
 set(QT_DONT_USE_QTGUI TRUE)
 set(QT_USE_QTDBUS TRUE)
 set(QT_USE_QTNETWORK TRUE)
