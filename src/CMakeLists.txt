@@ -40,5 +40,5 @@ add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers} ${w
 target_link_libraries(wiimotedev-daemon ${QT_LIBRARIES} ${CWIID_LIBRARY})
 
 install(TARGETS wiimotedev-daemon DESTINATION /usr/sbin/)
-install(FILES wiimotedev.h DESTINATION /usr/include/)
-install(FILES wiimotedevproto.h DESTINATION /usr/include/)
+install(FILES include/wiimotedev.h DESTINATION /usr/include/)
+install(FILES include/wiimotedevproto.h DESTINATION /usr/include/)
