@@ -19,8 +19,8 @@
  **********************************************************************************/
 
 
-#ifndef MESSAGESERVER_H
-#define MESSAGESERVER_H
+#ifndef NETWORK_SUPPORT_H
+#define NETWORK_SUPPORT_H
 
 #include <QTcpServer>
 #include <QTcpSocket>
@@ -37,7 +37,7 @@
 #include "wiimotedevproto.h"
 #include "wiimotedev.h"
 
-#include "syslog_support.h"
+#include "../syslog/support.h"
 
 #ifndef QWIIMOTEDEV_META_TYPES
 #define QWIIMOTEDEV_META_TYPES
@@ -111,4 +111,4 @@ private:
 };
 
 
-#endif // MESSAGESERVER_H
+#endif // NETWORK_SUPPORT_H

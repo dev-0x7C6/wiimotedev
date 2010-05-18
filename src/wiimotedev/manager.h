@@ -24,13 +24,14 @@
 #include <QThread>
 #include <QList>
 
-#include "wiimotedev_connection.h"
-#include "wiimotedev_settings.h"
+#include "../dbus/deviceevents.h"
+#include "../dbus/service.h"
+#include "../include/wiimotedev.h"
+#include "../network/support.h"
+#include "../syslog/support.h"
 
-#include "syslog_support.h"
-#include "tcp_support.h"
-#include "dbus_support.h"
-#include "wiimotedev.h"
+#include "connection.h"
+#include "settings.h"
 
 class ConnectionManager : public QThread
 {

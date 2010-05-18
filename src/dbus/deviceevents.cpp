@@ -18,105 +18,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include "dbus_support.h"
+#include "deviceevents.h"
 
-QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point)
+DBusDeviceEventsAdaptor::DBusDeviceEventsAdaptor (QObject *parent) : QDBusAbstractAdaptor(parent)
 {
-    argument.beginStructure();
-    argument << point.size << point.x << point.y;
-    argument.endStructure();
-    return argument;
-}
-
-const QDBusArgument& operator>>(const QDBusArgument& argument, irpoint& point)
-{
-    argument.beginStructure();
-    argument >> point.size >> point.x >> point.y;
-    argument.endStructure();
-    return argument;
-}
-
-QDBusArgument& operator<<(QDBusArgument& argument, const accdata& acc)
-{
-    argument.beginStructure();
-    argument << acc.x << acc.y << acc.z << acc.pitch << acc.roll;
-    argument.endStructure();
-    return argument;
-}
-
-const QDBusArgument& operator>>(const QDBusArgument& argument, accdata& acc)
-{
-    argument.beginStructure();
-    argument >> acc.x >> acc.y >> acc.z >> acc.pitch >> acc.roll;
-    argument.endStructure();
-    return argument;
-}
-
-QDBusArgument& operator<<(QDBusArgument& argument, const stickdata& stick)
-{
-    argument.beginStructure();
-    argument << stick.x << stick.y;
-    argument.endStructure();
-    return argument;
-}
-
-const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick)
-{
-    argument.beginStructure();
-    argument >> stick.x >> stick.y;
-    argument.endStructure();
-    return argument;
-}
-
-QDBusArgument& operator<<(QDBusArgument& argument, const deviceinfo& info)
-{
-    argument.beginStructure();
-    argument << info.id << QString().fromStdString(info.addr) << info.registred << info.nunchuk << info.classic;
-    argument.endStructure();
-    return argument;
-}
-
-const QDBusArgument& operator>>(const QDBusArgument& argument, deviceinfo& info)
-{
-    QString data;
-    argument.beginStructure();
-    argument >> info.id >> data;
-    info.addr = data.toStdString();
-    argument >> info.registred >> info.nunchuk >> info.classic;
-    argument.endStructure();
-    return argument;
-}
-
-QDBusArgument& operator<<(QDBusArgument& argument, const QList < quint32>& list)
-{
-    argument.beginArray();
-    for (register int i = 0; i < list.count(); ++i)
-        argument << list.at(i);
-    argument.endArray();
-    return argument;
-}
-
-const QDBusArgument& operator>>(const QDBusArgument& argument, QList < quint32>& list)
-{
-    argument.beginArray();
-    list.clear();
-
-    while (!argument.atEnd()){
-        quint32 i;
-        argument >> i;
-        list << i;
-    }
-
-    argument.endArray();
-    return argument;
-}
-
-
-bool DBusServiceAdaptor::dbusReloadSequenceList()
-{
-    bool value;
-    QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-    return value;
+    QWIIMOTEDEV_REGISTER_META_TYPES;
+    setAutoRelaySignals(true);
 }
 
 QList < quint32> DBusDeviceEventsAdaptor::dbusGetDeviceList()
@@ -136,7 +43,7 @@ QStringList DBusDeviceEventsAdaptor::dbusUnregistredWiiremoteList()
 quint8 DBusDeviceEventsAdaptor::dbusWiimoteGetStatus(quint32 id)
 {
     quint8 value;
-    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));    
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));
     return value;
 }
 
@@ -180,4 +87,67 @@ quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetAverageLatency(quint32 id)
     quint32 latency;
     QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAverageLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
     return latency;
+}
+
+DBusDeviceEventsAdaptorWrapper::DBusDeviceEventsAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
+{
+    new DBusDeviceEventsAdaptor(this);
+    registred = connection.registerObject(WIIMOTEDEV_DBUS_EVENTS_OBJECT, this);
+}
+
+
+quint32 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetCurrentLatency(quint32 id){
+    quint32 latency;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetCurrentLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
+    return latency;
+}
+
+quint32 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAverageLatency(quint32 id) {
+    quint32 latency;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAverageLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
+    return latency;
+}
+
+bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetRumbleStatus(quint32 id){
+    bool value;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetRumbleStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id));
+    return value;
+}
+
+bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetRumbleStatus(quint32 id, bool status)
+{
+    bool value;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteSetRumbleStatus", Qt::DirectConnection,  Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(bool, status));
+    return value;
+}
+
+quint8 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetLedStatus(quint32 id){
+    quint8 value;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));
+    return value;
+}
+
+bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetLedStatus(quint32 id, quint8 status){
+    bool value;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint8, status));
+    return value;
+}
+
+quint8 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetStatus(quint32 id){
+    quint8 value;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));
+    return value;
+}
+
+QList < quint32> DBusDeviceEventsAdaptorWrapper::dbusGetDeviceList()
+{
+    QList < quint32> list;
+    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < quint32>, list));
+    return list;
+}
+
+QStringList DBusDeviceEventsAdaptorWrapper::dbusUnregistredWiiremoteList() {
+    QStringList list;
+    QMetaObject::invokeMethod(parent(), "dbusUnregistredWiiremoteList", Qt::DirectConnection, Q_RETURN_ARG(QStringList, list));
+    return list;
 }

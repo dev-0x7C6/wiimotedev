@@ -18,23 +18,30 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#ifndef SYSLOGSUPPORT_H
-#define SYSLOGSUPPORT_H
+#include "service.h"
 
-#ifdef SYSLOG_SUPPORT
+DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent)
+{
+    QWIIMOTEDEV_REGISTER_META_TYPES;
+    setAutoRelaySignals(true);
+}
 
-    #include <syslog.h>
+bool DBusServiceAdaptor::dbusReloadSequenceList()
+{
+    bool value;
+    QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+    return value;
+}
 
-    #define syslog_open(x) setlogmask(LOG_UPTO(LOG_INFO)); openlog(x, LOG_CONS, LOG_USER);
-    #define syslog_close() closelog();
-    #define syslog_message(x) syslog(LOG_INFO, "%s", x);
+DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
+{
+    new DBusServiceAdaptor(this);
+    registred = connection.registerObject(WIIMOTEDEV_DBUS_SERVICE_OBJECT, this);
+}
 
-#else
-
-    #define syslog_open(x)      ;
-    #define syslog_close()      ;
-    #define syslog_message(x)   ;
-
-#endif
-
-#endif // SYSLOGSUPPORT_H
+bool DBusServiceAdaptorWrapper::dbusReloadSequenceList()
+{
+    bool value;
+    QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+    return value;
+}

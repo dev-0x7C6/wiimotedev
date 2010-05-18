@@ -18,8 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include "wiimotedev_connection.h"
-
+#include "connection.h"
 
 WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent), disconnectRequest(false)
 {

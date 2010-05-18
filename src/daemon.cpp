@@ -37,7 +37,7 @@
 #include <signal.h>
 
 #include <QCoreApplication>
-#include "wiimotedev_manager.h"
+#include "wiimotedev/manager.h"
 
 QCoreApplication *application = 0;
 
