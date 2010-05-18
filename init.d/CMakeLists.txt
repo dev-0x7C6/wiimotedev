@@ -9,7 +9,7 @@ if( EXISTS  "/etc/init.d" AND IS_DIRECTORY "/etc/init.d")
 endif( EXISTS  "/etc/init.d" AND IS_DIRECTORY "/etc/init.d")
 
 
-set( service "initd/${DISTRO}/wiimotedev-daemon")
+set( service "init.d/${DISTRO}/wiimotedev-daemon")
 set( install_path "${DISTRO}/wiimotedev-daemon" )
 
 if( EXISTS ${service})
