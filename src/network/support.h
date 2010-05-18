@@ -22,22 +22,17 @@
 #ifndef NETWORK_SUPPORT_H
 #define NETWORK_SUPPORT_H
 
+#include "../include/wiimotedevproto.h"
+#include "../include/wiimotedev.h"
+#include "../wiimotedev/settings.h"
+#include "../syslog/support.h"
+
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QSettings>
 #include <QStringList>
-#include <QThread>
 #include <QThread>
 #include <QTcpSocket>
 #include <QMutex>
-#include <QMetaType>
-#include <QDBusMetaType>
-#include <QSettings>
-
-#include "wiimotedevproto.h"
-#include "wiimotedev.h"
-
-#include "../syslog/support.h"
 
 #ifndef QWIIMOTEDEV_META_TYPES
 #define QWIIMOTEDEV_META_TYPES
@@ -58,8 +53,11 @@
 class MessageServer : public QTcpServer
 {
 Q_OBJECT
+private:
+    WiimotedevSettings *settings;
+
 public:
-    explicit MessageServer(QObject *manager, quint16 port, QObject *parent = 0);
+    explicit MessageServer(QObject *manager, WiimotedevSettings* settings, quint16 port, QObject *parent = 0);
     virtual ~MessageServer();
 
 protected:
@@ -69,6 +67,7 @@ private:
     QList < QTcpSocket*> connections;
     void tcpSendEvent(QByteArray &data);
     QObject *manager;
+
     quint16 port;
     QMutex mutex;
 
@@ -100,14 +99,14 @@ public slots:
 class MessageServerThread : public QThread
 {
     Q_OBJECT
-public:
-    explicit MessageServerThread(QObject *manager, quint16 port,  QObject *parent = 0);
-    void run();
-
 private:
+    WiimotedevSettings *settings;
     quint16 port;
     QObject *manager;
 
+public:
+    explicit MessageServerThread(QObject *manager, WiimotedevSettings* settings, quint16 port,  QObject *parent = 0);
+    void run();
 };
 
 

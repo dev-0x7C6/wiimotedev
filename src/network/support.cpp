@@ -20,14 +20,15 @@
 
 #include "support.h"
 
-MessageServerThread::MessageServerThread(QObject *manager, quint16 port,  QObject *parent) : QThread(parent), port(port), manager(manager)
+MessageServerThread::MessageServerThread(QObject *manager, WiimotedevSettings* settings, quint16 port,  QObject *parent)
+    :QThread(parent), settings(settings), port(port), manager(manager)
 {
     connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void MessageServerThread::run()
 {
-    MessageServer *server = new MessageServer(manager, port);
+    MessageServer *server = new MessageServer(manager, settings, port);
     if (server->listen(QHostAddress::Any, port))
     {
         syslog_message(QString::fromUtf8("listening on %1").arg(QString::number(port, 10)).toAscii().constData());
@@ -36,12 +37,7 @@ void MessageServerThread::run()
         syslog_message(QString::fromUtf8("can't listen on %1, tcp service halted").arg(QString::number(port, 10)).toAscii().constData());
 }
 
-const QString tcpSection("tcp/");
-
-const QString tcpAllowedValue("allowed");
-const QString tcpPortValue("port");
-
-MessageServer::MessageServer(QObject *manager, quint16 port, QObject *parent) : QTcpServer(parent), manager(manager), port(port)
+MessageServer::MessageServer(QObject *manager, WiimotedevSettings* settings, quint16 port, QObject *parent) : QTcpServer(parent), settings(settings), manager(manager), port(port)
 {
 /* Register Meta Types ---------------------------------------------- */
     qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
@@ -105,17 +101,15 @@ void MessageServer::incomingConnection(int socketDescriptor)
 
     syslog_message(QString::fromUtf8("Incoming connection from %1").arg(tcpSocket->peerAddress().toString()).toAscii().constData());
 
+
     bool accepted = false;
 
-    QSettings *settings = new QSettings(WIIMOTEDEV_CONFIG_FILE, QSettings::IniFormat);
-    QStringList allowed = settings->value(tcpSection + tcpAllowedValue, QStringList()).toStringList();
+    QStringList allowed = settings->tcpGetAllowedHostList();
 
     for (register int i = 0; i < allowed.count(); ++i) if (QHostAddress(allowed.at(i)).toIPv4Address() == host) {
         accepted = true;
         break;
     }
-
-    delete settings;
 
     syslog_message(QString::fromUtf8("Incoming connection from %1").arg(tcpSocket->peerAddress().toString()).toAscii().constData());
 

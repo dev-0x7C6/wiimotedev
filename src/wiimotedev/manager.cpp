@@ -68,7 +68,7 @@ ConnectionManager::ConnectionManager()
 // TCP interface ---------------------------------------------------- /
 
     if (wiimotedevSettings->tcpInterfaceSupport()) {
-        tcpServerThread = new MessageServerThread(this, wiimotedevSettings->tcpGetPort(), this);
+        tcpServerThread = new MessageServerThread(this, wiimotedevSettings, wiimotedevSettings->tcpGetPort(), this);
         tcpServerThread->start();
         syslog_message(QString::fromUtf8("starting tcp/ip thread at 0x%1").arg(QString::number(tcpServerThread->thread()->currentThreadId(), 0x10)).toAscii().constData());
     }
