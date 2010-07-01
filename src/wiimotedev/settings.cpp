@@ -34,6 +34,8 @@ WiimotedevSettings::~WiimotedevSettings()
 
 void WiimotedevSettings::reload()
 {
+    settings->sync();
+
     ifaceDBusSupport = settings->value("wiimotedev/DBusInterface", false).toBool();
     ifaceTcpSupport = settings->value("wiimotedev/TCPInterface", false).toBool();
     tcpAllowed = settings->value("tcp/allowed", QStringList()).toStringList();
