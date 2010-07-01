@@ -27,7 +27,7 @@
 #include <cwiid.h>
 #include <math.h>
 
-#include "wiimotedev.h"
+#include "../include/wiimotedev.h"
 
 class WiimoteConnection : public QThread
 {

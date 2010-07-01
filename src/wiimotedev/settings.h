@@ -25,7 +25,7 @@
 #include <QSettings>
 #include <QStringList>
 
-#include "wiimotedev.h"
+#include "../include/wiimotedev.h"
 
 class WiimotedevSettings : public QObject
 {
