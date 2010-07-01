@@ -571,12 +571,9 @@ void WiimoteConnection::run()
     }
 
     connected = false;
-    cwiid_close(device);
 
     emit dbusWiimoteDisconnected(sequence);
-
     emit unregisterConnection(static_cast< void*>( this));   
-    return;
 }
 
 
@@ -648,6 +645,8 @@ void WiimoteConnection::_disconnect()
 void WiimoteConnection::disconnectFromDevice()
 {
     disconnectRequest = true;
+    cwiid_set_rpt_mode(device, 0);
+    cwiid_disconnect(device);
 }
 
 QString WiimoteConnection::getWiimoteSAddr()

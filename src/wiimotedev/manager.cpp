@@ -140,31 +140,38 @@ void ConnectionManager::registerConnection(void *object)
 {
     WiimoteConnection *connection = static_cast< WiimoteConnection*>( object);
 
-    connection->setWiimoteSequence(wiiremoteSequence.value(connection->getWiimoteSAddr(), 0));
+    QString macaddr = connection->getWiimoteSAddr();
+
+    connection->setWiimoteSequence(wiiremoteSequence.value(macaddr, 0));
     if (connection->getWiimoteSequence())
         connection->setLedStatus(connection->getWiimoteSequence());
 
-    syslog_message(QString::fromUtf8("Established connection with wiiremote, ID %1 MAC %2").arg(QString::number(connection->getWiimoteSequence(), 10), connection->getWiimoteSAddr()).toAscii().constData());
+    syslog_message(QString::fromUtf8("Established connection with wiiremote, ID %1 MAC %2").arg(QString::number(connection->getWiimoteSequence(), 10), macaddr).toAscii().constData());
     if (!connection->getWiimoteSequence())
     {
-        syslog_message(QString::fromUtf8("Wiiremote MAC %1 is unregistred, run wiimotedev-register and reconnect device").arg(connection->getWiimoteSAddr()).toAscii().constData());
-        QString mac = connection->getWiimoteSAddr();
+        syslog_message(QString::fromUtf8("Wiiremote MAC %1 is unregistred, run wiimotedev-register and reconnect device").arg(macaddr).toAscii().constData());
+
+        connection->setLedStatus(0x0F);
 
         bool exist = false;
 
         for (register int i = 0; i < unregisterWiiremoteList.count(); ++i)
-            if (unregisterWiiremoteList.at(i) == mac) {
+            if (unregisterWiiremoteList.at(i) == macaddr) {
                 exist = true;
                 break;
             }
 
-        if (!exist) unregisterWiiremoteList << mac;
+        if (!exist) unregisterWiiremoteList << macaddr;
 
-        connection->_disconnect();
-        unregisterConnection(static_cast< void*>( connection));
-        emit dbusReportUnregistredWiiremote(mac);
+        connection->disconnectFromDevice();
+        connection->wait();
+        delete connection;
+
+        emit dbusReportUnregistredWiiremote(macaddr);
         return;
     }
+
+    objectList << object;
 
     struct deviceinfo dev;
     dev.id = connection->getWiimoteSequence();
