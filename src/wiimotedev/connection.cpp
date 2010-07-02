@@ -637,15 +637,12 @@ bool WiimoteConnection::connectAny()
     return false;
 }
 
-void WiimoteConnection::_disconnect()
-{
 
-}
-
-void WiimoteConnection::disconnectFromDevice()
+void WiimoteConnection::disconnectFromDevice(const bool report)
 {
     disconnectRequest = true;
-    cwiid_set_rpt_mode(device, 0);
+    if (report)
+        cwiid_set_rpt_mode(device, 0);
     cwiid_disconnect(device);
 }
 

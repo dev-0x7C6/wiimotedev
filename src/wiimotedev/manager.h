@@ -54,10 +54,12 @@ private:
     bdaddr_t bdaddr_any;
     bool terminateReq;
 
+    WiimoteConnection *active_connection;
+
 public:
     ConnectionManager();
    ~ConnectionManager();
-   inline void terminateRequest() { terminateReq = true; };
+    void terminateRequest();
 
 protected:
     void run();  

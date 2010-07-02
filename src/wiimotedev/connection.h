@@ -68,8 +68,7 @@ public:
     bool connectAny();
     void _disconnect();
 
-    bool connectWithDevice(QString mac);
-    void disconnectFromDevice();
+    void disconnectFromDevice(const bool report = true);
 
     bdaddr_t getWiimoteAddr(){ return wiimotebdaddr; }
     QString getWiimoteSAddr();
