@@ -57,7 +57,7 @@ private:
 public:
     ConnectionManager();
    ~ConnectionManager();
-    void wiimotedevQuitRequest();
+   inline void terminateRequest() { terminateReq = true; };
 
 protected:
     void run();  

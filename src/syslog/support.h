@@ -21,6 +21,8 @@
 #ifndef SYSLOG_H
 #define SYSLOG_H
 
+#include <QString>
+
 #ifdef SYSLOG_SUPPORT
 
     #include <syslog.h>
@@ -36,5 +38,10 @@
     #define syslog_message(x)   ;
 
 #endif
+
+inline void syslog(const QString message)
+{
+    syslog_message(message.toAscii().constData());
+};
 
 #endif // SYSLOG_H
