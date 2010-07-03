@@ -18,45 +18,67 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#ifndef WIIMOTEDEV_SETTINGS_H
-#define WIIMOTEDEV_SETTINGS_H
+#ifndef WIIREMOTE_H
+#define WIIREMOTE_H
 
-#include <QSettings>
-#include <QStringList>
+// This is wrapper class, for changes in cwiid API or when wiimotedev-daemon will use
+// other library like *libwiimotedev (when is done)
+
+#include <QObject>
+#include <QTime>
+
+#include <cwiid.h>
+#include <math.h>
 
 #include "../include/wiimotedev.h"
 
-class WiimotedevSettings : public QObject
+#define defaultReportFlags CWIID_RPT_STATUS | \
+                           CWIID_RPT_BTN | \
+                           CWIID_RPT_IR | \
+                           CWIID_RPT_NUNCHUK | \
+                           CWIID_RPT_CLASSIC | \
+                           CWIID_RPT_ACC
+
+class WiiremoteDevice : public QObject
 {
 private:
-    QSettings *settings;
-    QString config;
+    bdaddr_t bdaddr;
+    cwiid_wiimote_t *device;
+    qint32 id;
 
-    bool ifaceDBusSupport;
-    bool ifaceTcpSupport;
-
-    QMap < QString, quint32> sequence;
-    QStringList tcpAllowed;
-
-    quint16 tcpPort;
-
-public:
-    WiimotedevSettings(QObject *parent = 0, QString file = WIIMOTEDEV_CONFIG_FILE);
-    ~WiimotedevSettings();
+private:
+    bool isRumble;
+    quint8 switchOnLeds;
+    quint8 reportMode;
+    quint8 status;
 
 public:
-    void reload();
+    explicit WiiremoteDevice(QObject *parent = 0);
+    virtual ~WiiremoteDevice();
 
-    inline bool dbusInterfaceSupport() { return ifaceDBusSupport; }
-    inline bool tcpInterfaceSupport() { return ifaceTcpSupport; }
+    bool connectToDevice(const quint32 timeout = 3);
+    bool disconnectFromDevice(const bool switchOfReport = true);
 
-    inline QMap < QString, quint32> getWiiremoteSequence() { return sequence; }
+    bool getMesgStruct(int *count, union cwiid_mesg *mesg[], struct timespec *time);
 
-    inline QStringList tcpGetAllowedHostList() { return tcpAllowed; }
-    inline quint16 tcpGetPort() { return tcpPort; }
+    inline bool isConnected() { return (device != 0); }
+    inline bool isDisconnected() { return (device == 0); }
 
-    void setDBusInterfaceSupport(bool support);
-    void setTcpInterfaceSupport(bool support);
+    bool setLedStatus(quint8 led);
+    bool setRumbleStatus(bool rumble);
+    bool setReportMode(quint8 mode);
+    bool setDeviceStatus(quint8 devs);
+
+    quint8 getLedStatus();
+    bool getRumbleStatus();
+    quint8 getReportMode();
+    quint8 getDeviceStatus();
+
+    bool getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal);
+
+    QString getWiimoteSAddr();
+    bdaddr_t getWiimoteAddr();
+
 };
 
-#endif // WIIMOTEDEV_SETTINGS_H
+#endif // WIIREMOTE_H

@@ -24,32 +24,21 @@
 #include <QThread>
 #include <QTime>
 
-#include <cwiid.h>
-#include <math.h>
-
 #include "../include/wiimotedev.h"
+#include "wiiremote.h"
 
 class WiimoteConnection : public QThread
 {
     Q_OBJECT
 
 private:
+    bool quitRequest;
+
     QList < double> wfXmotion; QList < double> nfXmotion;
     QList < double> wfYmotion; QList < double> nfYmotion;
     QList < double> wfZmotion; QList < double> nfZmotion;
 
-    bool disconnectRequest;
-
-    quint8 ledStatus;
-    bool rumbleStatus;
-
-    cwiid_wiimote_t *device;
-    bool connected;
-    bdaddr_t wiimotebdaddr;
-    int id;
     quint32 sequence;
-
-    quint32 WiimoteStatus;
 
 /*  Latency  *************************************************************/
     quint32 currentLatency;
@@ -64,29 +53,16 @@ public:
     WiimoteConnection(QObject *parent = 0);
    ~WiimoteConnection();
 
+    void quitThread();
 
-    bool connectAny();
-    void _disconnect();
+    WiiremoteDevice *Device;
 
-    void disconnectFromDevice(const bool report = true);
-
-    bdaddr_t getWiimoteAddr(){ return wiimotebdaddr; }
-    QString getWiimoteSAddr();
-    int getWiimoteId(){ return id; }
     void setWiimoteSequence(quint32 seq) { sequence = seq; }
     quint32 getWiimoteSequence(){ return sequence; }
-    bool isConnected() { return connected; }
 
 /* Exported methods ******************************************************/
     quint32 dbusWiimoteGetCurrentLatency(){ return currentLatency; };
     quint32 dbusWiimoteGetAverageLatency(){ return averageLatency; };
-
-    quint8 getLedStatus();
-    bool getRumbleStatus();
-    void setLedStatus(quint8 status);
-    void setRumbleStatus(bool status);
-
-    inline quint8 getWiimoteStatus() { return WiimoteStatus; }
 
 protected:
    void run();

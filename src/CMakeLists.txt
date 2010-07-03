@@ -18,23 +18,25 @@ set (wiimotedev_sources
         wiimotedev/connection.cpp
         wiimotedev/manager.cpp
         wiimotedev/settings.cpp
+        wiimotedev/wiiremote.cpp
         daemon.cpp
 )
 
 set (wiimotedev_headers_qt
         dbus/deviceevents.h
         dbus/service.h
-        dbus/support.h
         network/support.h
         wiimotedev/connection.h
         wiimotedev/manager.h
-        wiimotedev/settings.h
 )
 
 set (wiimotedev_headers
+        dbus/support.h
         include/wiimotedev.h
         include/wiimotedevproto.h
         syslog/support.h
+        wiimotedev/settings.h
+        wiimotedev/wiiremote.h
 )
 
 QT4_WRAP_CPP(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
