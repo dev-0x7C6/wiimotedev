@@ -27,7 +27,7 @@
 // --debug -> for additional debug output
 // --help -> print help page
 // --no-daemon -> do not run in daemon mode
-
+// --no-quiet -> do not block stdout messages
 
 #include <stdlib.h>
 
@@ -77,6 +77,7 @@ int main(int argc, char *argv[])
         qDebug() << "  --debug\t\tfor additional debug output";
         qDebug() << "  --help\t\tprint help page";
         qDebug() << "  --no-daemon\t\tdo not run in background";
+        qDebug() << "  --no-quiet\t\tdo not block stdout messages";
         qDebug() << "";
         exit(EXIT_SUCCESS);
     }
@@ -101,13 +102,16 @@ int main(int argc, char *argv[])
         QString out = QString::number(sid, 10);
         write(fd, out.toAscii().constData(), out.length());
         close(fd);
+    }
+#else
+#endif
 
+    if (application.arguments().indexOf("--no-quiet") == -1)
+    {
         close(STDIN_FILENO);
         close(STDOUT_FILENO);
         close(STDERR_FILENO);
     }
-#else
-#endif
 
     syslog_open(DAEMON_NAME);
     syslog_message("system service started");
