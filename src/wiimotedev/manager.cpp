@@ -303,7 +303,7 @@ quint8 ConnectionManager::dbusWiimoteGetStatus(quint32 id)
 {
     WiimoteConnection *connection = findWiiremoteObject(id);
     if (connection)
-        return connection->Device->getDeviceStatus();
+        return connection->getWiiremoteStatus();
     return 0;
 }
 

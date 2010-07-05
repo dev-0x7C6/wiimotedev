@@ -27,7 +27,6 @@ WiiremoteDevice::WiiremoteDevice(QObject *parent) : QObject(parent)
     isRumble = false;
     switchOnLeds = 0;
     reportMode = 0;
-    status = 0;
 }
 
 WiiremoteDevice::~WiiremoteDevice()
@@ -66,7 +65,6 @@ bool WiiremoteDevice::disconnectFromDevice(const bool switchOfReport)
     isRumble = false;
     switchOnLeds = 0;
     reportMode = 0;
-    status = 0;
 
     return true;
 }
@@ -158,24 +156,6 @@ bdaddr_t WiiremoteDevice::getWiimoteAddr()
 {
     return bdaddr;
 }
-
-bool WiiremoteDevice::setDeviceStatus(quint8 devs)
-{
-    if (isDisconnected())
-        return false;
-
-    status = devs;
-    return true;
-}
-
-quint8 WiiremoteDevice::WiiremoteDevice::getDeviceStatus()
-{
-    if (isDisconnected())
-        return 0;
-
-    return status;
-}
-
 
 bool WiiremoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal)
 {

@@ -50,7 +50,6 @@ private:
     bool isRumble;
     quint8 switchOnLeds;
     quint8 reportMode;
-    quint8 status;
 
 public:
     explicit WiiremoteDevice(QObject *parent = 0);
@@ -67,12 +66,10 @@ public:
     bool setLedStatus(quint8 led);
     bool setRumbleStatus(bool rumble);
     bool setReportMode(quint8 mode);
-    bool setDeviceStatus(quint8 devs);
 
     quint8 getLedStatus();
     bool getRumbleStatus();
     quint8 getReportMode();
-    quint8 getDeviceStatus();
 
     bool getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal);
 

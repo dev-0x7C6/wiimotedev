@@ -54,11 +54,8 @@ void WiimoteConnection::run()
     bool ButtonRequest = false;
     unsigned char BatteryLife, NewBatteryLife;
 
-    Device->setDeviceStatus(STATUS_WIIMOTE_CONNECTED);
     unsigned long long WiimoteButtons = 0x00;
     unsigned long long WiimoteButtonsTmp = 0x00;
-
-
 
     struct acc_cal wiimote_calibration;
 
@@ -145,12 +142,14 @@ void WiimoteConnection::run()
     averageLatency = 0;
 
     quitRequest = false;
+    bool nunchukPlugged = false;
+    bool classicPlugged = false;
 
+    status = STATUS_WIIMOTE_CONNECTED;
 
     while (Device->getMesgStruct(&count, &mesg, &time) && !quitRequest) {
         currentLatency = latencyTimer.elapsed();
         latencyTimer.start();
-
 
         if (!averageLatency)
             averageLatency = currentLatency;
@@ -162,10 +161,10 @@ void WiimoteConnection::run()
 // Disconnect section *************************************************************************************************************** /
             case CWIID_MESG_ERROR:
             // Classic cleanup ****************************************************************************************************** /
-                if (Device->getDeviceStatus() & STATUS_WIIMOTE_CLASSIC_CONNECTED) classicDeviceCleanup(classicLStickdata, classicRStickdata);
+                if (classicPlugged) classicDeviceCleanup(classicLStickdata, classicRStickdata);
 
             // Nunchuk cleanup ****************************************************************************************************** /
-                if (Device->getDeviceStatus() & STATUS_WIIMOTE_NUNCHUK_CONNECTED) nunchukDeviceCleanup(nunchukStickdata, nunchukAccdata);
+                if (nunchukPlugged) nunchukDeviceCleanup(nunchukStickdata, nunchukAccdata);
 
            // Wiimote cleanup ****************************************************************************************************** /
                 Device->disconnectFromDevice(false);
@@ -188,7 +187,8 @@ void WiimoteConnection::run()
                 // Status section ************************************************************************************************** /
                     case CWIID_EXT_NONE:
                     // Classic unpluged ******************************************************************************************** /
-                        if (Device->getDeviceStatus() & STATUS_WIIMOTE_CLASSIC_CONNECTED) {
+                        if (classicPlugged) {
+                            classicPlugged = false;
                             WiimoteButtons &= CLASSIC_BUTTON_NOTMASK;
                             WiimoteButtons &= CLASSIC_LSTICK_NOTMASK;
                             WiimoteButtons &= CLASSIC_RSTICK_NOTMASK;
@@ -197,7 +197,8 @@ void WiimoteConnection::run()
                         }
 
                     // Nunchuk unpluged ******************************************************************************************** /
-                        if (Device->getDeviceStatus() & STATUS_WIIMOTE_NUNCHUK_CONNECTED) {
+                        if (nunchukPlugged) {
+                            nunchukPlugged = false;
                             WiimoteButtons &= NUNCHUK_BUTTON_NOTMASK;
                             WiimoteButtons &= NUNCHUK_STICK_NOTMASK;
                             WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
@@ -206,25 +207,32 @@ void WiimoteConnection::run()
                             ButtonRequest = true;
                         }
 
-                        Device->setDeviceStatus(Device->getDeviceStatus() | STATUS_WIIMOTE_CONNECTED);
-                        emit dbusWiimoteStatus(sequence, Device->getDeviceStatus());
+                        status = STATUS_WIIMOTE_CONNECTED;
+                        emit dbusWiimoteStatus(sequence, status);
+
                         break;
 
                 // Nunchuk pluged ************************************************************************************************** /
                     case CWIID_EXT_NUNCHUK:
                         Device->getDeviceCallibration(CWIID_EXT_NUNCHUK, &nunchuk_calibration);
-                        if (!(Device->getDeviceStatus() & STATUS_WIIMOTE_NUNCHUK_CONNECTED))
+                        if (!nunchukPlugged)
+                        {
+                            nunchukPlugged = true;
+                            status = STATUS_WIIMOTE_CONNECTED | STATUS_WIIMOTE_NUNCHUK_CONNECTED;
                             emit dbusNunchukPlugged(sequence);
-                        Device->setDeviceStatus(Device->getDeviceStatus() | STATUS_WIIMOTE_NUNCHUK_CONNECTED);
-                        emit dbusWiimoteStatus(sequence, Device->getDeviceStatus());
+                            emit dbusWiimoteStatus(sequence, status);
+                        }
                         break;
 
                 // Classic pluged ************************************************************************************************** /
                     case CWIID_EXT_CLASSIC:
-                        if (!(Device->getDeviceStatus() & STATUS_WIIMOTE_CLASSIC_CONNECTED))
+                        if (!classicPlugged)
+                        {
+                            classicPlugged = true;
+                            status = STATUS_WIIMOTE_CONNECTED | STATUS_WIIMOTE_CLASSIC_CONNECTED;
                             emit dbusClassicControllerPlugged(sequence);
-                        Device->setDeviceStatus(Device->getDeviceStatus() | STATUS_WIIMOTE_CLASSIC_CONNECTED);
-                        emit dbusWiimoteStatus(sequence, Device->getDeviceStatus());
+                            emit dbusWiimoteStatus(sequence, status);
+                        }
                         break;
 
                     default:

@@ -49,6 +49,8 @@ private:
     void nunchukDeviceCleanup(struct stickdata &stick, struct accdata &acc);
     void wiimoteDeviceCleanup(QList< struct irpoint> &points, struct accdata &acc);
 
+    quint8 status;
+
 public:
     WiimoteConnection(QObject *parent = 0);
    ~WiimoteConnection();
@@ -61,8 +63,9 @@ public:
     quint32 getWiimoteSequence(){ return sequence; }
 
 /* Exported methods ******************************************************/
-    quint32 dbusWiimoteGetCurrentLatency(){ return currentLatency; };
-    quint32 dbusWiimoteGetAverageLatency(){ return averageLatency; };
+    inline quint32 dbusWiimoteGetCurrentLatency(){ return currentLatency; }
+    inline quint32 dbusWiimoteGetAverageLatency(){ return averageLatency; }
+    inline quint8 getWiiremoteStatus() { return status; }
 
 protected:
    void run();
