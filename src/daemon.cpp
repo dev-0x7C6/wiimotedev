@@ -19,7 +19,7 @@
  **********************************************************************************/
 
 #define DAEMON_NAME "wiimotedev"
-#define DAEMON_VERSION "1.2" // 1.1.96
+#define DAEMON_VERSION "1.2" // 1.1.97
 #define PID_FILE "/var/run/wiimotedev-daemon.pid"
 
 //*Wiimotedev-daemon arguments

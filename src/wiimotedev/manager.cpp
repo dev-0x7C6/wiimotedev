@@ -315,9 +315,9 @@ void ConnectionManager::slotDBusClassicControllerUnplugged(quint32)
     deviceList[static_cast< void *>(sender())] = dev;
 }
 
-QList < quint32> ConnectionManager::dbusGetDeviceList()
+QList < uint> ConnectionManager::dbusGetDeviceList()
 {
-    QList < quint32> list;
+    QList < uint> list;
     for (register int i = 0; i < objectList.count(); ++i)
         list << static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence();
     return list;

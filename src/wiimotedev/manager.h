@@ -87,7 +87,7 @@ public slots:
 
     quint8 dbusWiimoteGetStatus(quint32 id);
 
-    QList < quint32> dbusGetDeviceList();
+    QList < uint> dbusGetDeviceList();
     QStringList dbusUnregistredWiiremoteList();
 
     bool dbusReloadSequenceList();

@@ -26,10 +26,10 @@ DBusDeviceEventsAdaptor::DBusDeviceEventsAdaptor (QObject *parent) : QDBusAbstra
     setAutoRelaySignals(true);
 }
 
-QList < quint32> DBusDeviceEventsAdaptor::dbusGetDeviceList()
+QList < uint> DBusDeviceEventsAdaptor::dbusGetDeviceList()
 {
-    QList < quint32> list;
-    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < quint32>, list));
+    QList < uint> list;
+    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, list));
     return list;
 }
 
@@ -139,10 +139,10 @@ quint8 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetStatus(quint32 id){
     return value;
 }
 
-QList < quint32> DBusDeviceEventsAdaptorWrapper::dbusGetDeviceList()
+QList < uint> DBusDeviceEventsAdaptorWrapper::dbusGetDeviceList()
 {
-    QList < quint32> list;
-    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < quint32>, list));
+    QList < uint> list;
+    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, list));
     return list;
 }
 
