@@ -58,7 +58,7 @@
     Q_DECLARE_METATYPE(QList < irpoint>)
     Q_DECLARE_METATYPE(QList < accdata>)
     Q_DECLARE_METATYPE(QList < stickdata>)
-    Q_DECLARE_METATYPE(QList < quint32>)
+    Q_DECLARE_METATYPE(QList < uint>)
 
     Q_DECLARE_METATYPE(deviceinfo)
     Q_DECLARE_METATYPE(irpoint)
