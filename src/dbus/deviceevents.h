@@ -29,9 +29,24 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.deviceEvents")
     Q_CLASSINFO("D-Bus Introspection", ""
 " <interface name=\"org.wiimotedev.deviceEvents\">\n"
-"    <method name=\"dbusGetDeviceList\">\n"
-"      <annotation value=\"QList&lt;uint>\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\" />\n"
+"    <method name=\"dbusGetWiimoteList\">\n"
+"      <annotation value=\"QList&lt;uint>\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\"/>\n"
 "      <arg direction=\"out\" type=\"au\" name=\"id_list\"/>\n"
+"    </method>\n"
+"    <method name=\"dbusGetUnregistredWiimoteList\">\n"
+"      <arg direction=\"out\" type=\"as\" name=\"list\"/>\n"
+"    </method>\n"
+"   <method name=\"dbusIsClassicConnected\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+"    </method>\n"
+"   <method name=\"dbusIsNunchukConnected\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+"    </method>\n"
+"   <method name=\"dbusIsWiimoteConnected\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
 "    </method>\n"
 "   <method name=\"dbusWiimoteGetAverageLatency\">\n"
 "      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
@@ -62,10 +77,6 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
 "      <arg direction=\"in\" type=\"b\" name=\"status\"/>\n"
 "      <arg direction=\"out\" type=\"b\" name=\"rumble\"/>\n"
-"    </method>\n"
-"    <method name=\"dbusUnregistredWiiremoteList\">\n"
-"      <annotation value=\"QStringList\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\" />\n"
-"      <arg direction=\"out\" type=\"as\" name=\"list\"/>\n"
 "    </method>\n"
 "    <signal name=\"dbusClassicControllerButtons\">\n"
 "      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
@@ -133,7 +144,7 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
 "      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
 "    </signal>\n"
-"    <signal name=\"dbusReportUnregistredWiiremote\">\n"
+"    <signal name=\"dbusReportUnregistredWiimote\">\n"
 "      <arg direction=\"out\" type=\"s\" name=\"mac\"/>\n"
 "    </signal>\n"
 "  </interface>");
@@ -142,11 +153,14 @@ public:
     DBusDeviceEventsAdaptor (QObject *parent);
 
 public slots:
+    bool dbusIsClassicConnected(quint32 id);
+    bool dbusIsNunchukConnected(quint32 id);
+    bool dbusIsWiimoteConnected(quint32 id);
     quint32 dbusWiimoteGetCurrentLatency(quint32 id);
     quint32 dbusWiimoteGetAverageLatency(quint32 id);
 
-    QList < uint> dbusGetDeviceList();
-    QStringList dbusUnregistredWiiremoteList();
+    QList < uint> dbusGetWiimoteList();
+    QStringList dbusGetUnregistredWiimoteList();
 
     bool dbusWiimoteGetRumbleStatus(quint32 id);
     bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
@@ -155,7 +169,7 @@ public slots:
     quint8 dbusWiimoteGetStatus(quint32 id);
 
 signals:
-    void dbusReportUnregistredWiiremote(QString);
+    void dbusReportUnregistredWiimote(QString);
     void dbusWiimoteGeneralButtons(quint32, quint64);
 
     void dbusWiimoteConnected(quint32);
@@ -191,6 +205,9 @@ public:
     inline bool isRegistred() { return registred; }
 
 public Q_SLOTS:
+    bool dbusIsClassicConnected(quint32 id);
+    bool dbusIsNunchukConnected(quint32 id);
+    bool dbusIsWiimoteConnected(quint32 id);
     quint32 dbusWiimoteGetCurrentLatency(quint32 id);
     quint32 dbusWiimoteGetAverageLatency(quint32 id);
     bool dbusWiimoteGetRumbleStatus(quint32 id);
@@ -198,11 +215,11 @@ public Q_SLOTS:
     quint8 dbusWiimoteGetLedStatus(quint32 id);
     bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
     quint8 dbusWiimoteGetStatus(quint32 id);
-    QList < uint> dbusGetDeviceList();
-    QStringList dbusUnregistredWiiremoteList();
+    QList < uint> dbusGetWiimoteList();
+    QStringList dbusGetUnregistredWiimoteList();
 
 Q_SIGNALS:
-    void dbusReportUnregistredWiiremote(QString);
+    void dbusReportUnregistredWiimote(QString);
     void dbusWiimoteGeneralButtons(quint32, quint64);
 
     void dbusWiimoteConnected(quint32);

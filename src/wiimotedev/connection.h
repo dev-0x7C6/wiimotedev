@@ -62,7 +62,12 @@ public:
     void setWiimoteSequence(quint32 seq) { sequence = seq; }
     quint32 getWiimoteSequence(){ return sequence; }
 
-/* Exported methods ******************************************************/
+/* Exported methods ******************************************************/   
+
+    inline bool dbusIsClassicConnected(){ return (status & STATUS_WIIMOTE_CLASSIC_CONNECTED); }
+    inline bool dbusIsNunchukConnected(){ return (status & STATUS_WIIMOTE_NUNCHUK_CONNECTED); }
+    inline bool dbusIsWiimoteConnected(){ return (status & STATUS_WIIMOTE_CONNECTED); }
+
     inline quint32 dbusWiimoteGetCurrentLatency(){ return currentLatency; }
     inline quint32 dbusWiimoteGetAverageLatency(){ return averageLatency; }
     inline quint8 getWiiremoteStatus() { return status; }

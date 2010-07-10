@@ -77,6 +77,11 @@ private slots:
     void slotDBusClassicControllerUnplugged(quint32);    
 
 public slots:
+
+    bool dbusIsClassicConnected(quint32 id);
+    bool dbusIsNunchukConnected(quint32 id);
+    bool dbusIsWiimoteConnected(quint32 id);
+
     quint32 dbusWiimoteGetCurrentLatency(quint32 id);
     quint32 dbusWiimoteGetAverageLatency(quint32 id);
 
@@ -87,13 +92,13 @@ public slots:
 
     quint8 dbusWiimoteGetStatus(quint32 id);
 
-    QList < uint> dbusGetDeviceList();
-    QStringList dbusUnregistredWiiremoteList();
+    QList < uint> dbusGetWiimoteList();
+    QStringList dbusGetUnregistredWiimoteList();
 
     bool dbusReloadSequenceList();
 
 signals:
-    void dbusReportUnregistredWiiremote(QString);
+    void dbusReportUnregistredWiimote(QString);
     void dbusWiimoteGeneralButtons(quint32, quint64);
 
     void dbusWiimoteConnected(quint32);

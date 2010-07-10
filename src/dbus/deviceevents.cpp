@@ -26,17 +26,38 @@ DBusDeviceEventsAdaptor::DBusDeviceEventsAdaptor (QObject *parent) : QDBusAbstra
     setAutoRelaySignals(true);
 }
 
-QList < uint> DBusDeviceEventsAdaptor::dbusGetDeviceList()
+QList < uint> DBusDeviceEventsAdaptor::dbusGetWiimoteList()
 {
     QList < uint> list;
-    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, list));
+    QMetaObject::invokeMethod(parent(), "dbusGetWiimoteList", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, list));
     return list;
 }
 
-QStringList DBusDeviceEventsAdaptor::dbusUnregistredWiiremoteList()
+bool DBusDeviceEventsAdaptor::dbusIsClassicConnected(quint32 id)
+{
+    bool connected;
+    QMetaObject::invokeMethod(parent(), "dbusIsClassicConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(quint32, id));
+    return connected;
+}
+
+bool DBusDeviceEventsAdaptor::dbusIsNunchukConnected(quint32 id)
+{
+    bool connected;
+    QMetaObject::invokeMethod(parent(), "dbusIsNunchukConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(quint32, id));
+    return connected;
+}
+
+bool DBusDeviceEventsAdaptor::dbusIsWiimoteConnected(quint32 id)
+{
+    bool connected;
+    QMetaObject::invokeMethod(parent(), "dbusIsWiimoteConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(quint32, id));
+    return connected;
+}
+
+QStringList DBusDeviceEventsAdaptor::dbusGetUnregistredWiimoteList()
 {
     QStringList list;
-    QMetaObject::invokeMethod(parent(), "dbusUnregistredWiiremoteList", Qt::DirectConnection, Q_RETURN_ARG(QStringList, list));
+    QMetaObject::invokeMethod(parent(), "dbusGetUnregistredWiimoteList", Qt::DirectConnection, Q_RETURN_ARG(QStringList, list));
     return list;
 }
 
@@ -139,15 +160,36 @@ quint8 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetStatus(quint32 id){
     return value;
 }
 
-QList < uint> DBusDeviceEventsAdaptorWrapper::dbusGetDeviceList()
+QList < uint> DBusDeviceEventsAdaptorWrapper::dbusGetWiimoteList()
 {
     QList < uint> list;
-    QMetaObject::invokeMethod(parent(), "dbusGetDeviceList", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, list));
+    QMetaObject::invokeMethod(parent(), "dbusGetWiimoteList", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, list));
     return list;
 }
 
-QStringList DBusDeviceEventsAdaptorWrapper::dbusUnregistredWiiremoteList() {
+QStringList DBusDeviceEventsAdaptorWrapper::dbusGetUnregistredWiimoteList() {
     QStringList list;
-    QMetaObject::invokeMethod(parent(), "dbusUnregistredWiiremoteList", Qt::DirectConnection, Q_RETURN_ARG(QStringList, list));
+    QMetaObject::invokeMethod(parent(), "dbusGetUnregistredWiimoteList", Qt::DirectConnection, Q_RETURN_ARG(QStringList, list));
     return list;
+}
+
+bool DBusDeviceEventsAdaptorWrapper::dbusIsClassicConnected(quint32 id)
+{
+    bool connected;
+    QMetaObject::invokeMethod(parent(), "dbusIsClassicConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(quint32, id));
+    return connected;
+}
+
+bool DBusDeviceEventsAdaptorWrapper::dbusIsNunchukConnected(quint32 id)
+{
+    bool connected;
+    QMetaObject::invokeMethod(parent(), "dbusIsNunchukConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(quint32, id));
+    return connected;
+}
+
+bool DBusDeviceEventsAdaptorWrapper::dbusIsWiimoteConnected(quint32 id)
+{
+    bool connected;
+    QMetaObject::invokeMethod(parent(), "dbusIsWiimoteConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(quint32, id));
+    return connected;
 }

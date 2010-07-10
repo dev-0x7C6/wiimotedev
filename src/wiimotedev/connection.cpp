@@ -611,6 +611,7 @@ void WiimoteConnection::nunchukDeviceCleanup(struct stickdata &stick, struct acc
     emit dbusNunchukUnplugged(sequence);
 }
 
+
 // Nunchuk cleanup method ************************************************************************/
 void WiimoteConnection::wiimoteDeviceCleanup(QList< struct irpoint> &points, struct accdata &acc) {
     struct irpoint point;

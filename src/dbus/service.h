@@ -28,11 +28,17 @@ class DBusServiceAdaptor : public QDBusAbstractAdaptor
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
     Q_CLASSINFO("D-Bus Introspection", ""
-    "<interface name=\"org.wiimotedev.service\">\n"
-    "    <method name=\"dbusReloadSequenceList\">\n"
-    "      <arg type=\"y\" direction=\"out\"/>\n"
-    "    </method>\n"
-    "  </interface>");
+"<interface name=\"org.wiimotedev.service\">\n"
+"    <method name=\"dbusDisconnectWiimote\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
+"    </method>\n"
+"    <method name=\"dbusDefaultLedStatus\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
+"    </method>\n"
+"    <method name=\"dbusReloadSequenceList\">\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+"    </method>\n"
+"  </interface>");
 
 public:
     DBusServiceAdaptor(QObject *parent);

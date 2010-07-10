@@ -64,7 +64,7 @@ ConnectionManager::ConnectionManager()
         dbusServiceAdaptor = new DBusServiceAdaptorWrapper(this, connection);
         bool registred = connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
 
-        connect(this, SIGNAL(dbusReportUnregistredWiiremote(QString)), dbusDeviceEventsAdaptor, SIGNAL(dbusReportUnregistredWiiremote(QString)));
+        connect(this, SIGNAL(dbusReportUnregistredWiimote(QString)), dbusDeviceEventsAdaptor, SIGNAL(dbusReportUnregistredWiimote(QString)));
 
         if (additional_debug) {
             syslog(QString("register %1 object %2").arg(WIIMOTEDEV_DBUS_OBJECT_EVENTS, dbusDeviceEventsAdaptor->isRegistred() ? "done" : "failed"));
@@ -193,7 +193,7 @@ void ConnectionManager::registerConnection(void *object)
         connection->wait();
         delete connection;
 
-        emit dbusReportUnregistredWiiremote(macaddr);
+        emit dbusReportUnregistredWiimote(macaddr);
         return;
     }
 
@@ -315,7 +315,7 @@ void ConnectionManager::slotDBusClassicControllerUnplugged(quint32)
     deviceList[static_cast< void *>(sender())] = dev;
 }
 
-QList < uint> ConnectionManager::dbusGetDeviceList()
+QList < uint> ConnectionManager::dbusGetWiimoteList()
 {
     QList < uint> list;
     for (register int i = 0; i < objectList.count(); ++i)
@@ -323,7 +323,7 @@ QList < uint> ConnectionManager::dbusGetDeviceList()
     return list;
 }
 
-QStringList ConnectionManager::dbusUnregistredWiiremoteList()
+QStringList ConnectionManager::dbusGetUnregistredWiimoteList()
 {
     return unregisterWiiremoteList;
 }
@@ -396,4 +396,28 @@ quint32 ConnectionManager::dbusWiimoteGetAverageLatency(quint32 id)
     if (connection)
         return connection->dbusWiimoteGetAverageLatency();
     return 0;
+}
+
+bool ConnectionManager::dbusIsClassicConnected(quint32 id)
+{
+    WiimoteConnection *connection = findWiiremoteObject(id);
+    if (connection)
+        return connection->dbusIsClassicConnected();
+    return false;
+}
+
+bool ConnectionManager::dbusIsNunchukConnected(quint32 id)
+{
+    WiimoteConnection *connection = findWiiremoteObject(id);
+    if (connection)
+        return connection->dbusIsNunchukConnected();
+    return false;
+}
+
+bool ConnectionManager::dbusIsWiimoteConnected(quint32 id)
+{
+    WiimoteConnection *connection = findWiiremoteObject(id);
+    if (connection)
+        return connection->dbusIsWiimoteConnected();
+    return false;
 }
