@@ -170,3 +170,15 @@ bool WiiremoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct
     return true;
 }
 
+bool WiiremoteDevice::getWiimoteState(struct cwiid_state &state)
+{
+    if (isDisconnected())
+        return false;
+
+    if (cwiid_get_state(device, &state)){
+        disconnectFromDevice(false);
+        return false;
+    }
+
+    return true;
+}

@@ -82,10 +82,10 @@ bool DBusDeviceEventsAdaptor::dbusWiimoteGetRumbleStatus(quint32 id)
     return value;
 }
 
-bool DBusDeviceEventsAdaptor::dbusWiimoteSetLedStatus(quint32 id, quint8 status)
+bool DBusDeviceEventsAdaptor::dbusWiimoteSetLedStatus(quint32 id, quint32 status)
 {
     bool value;
-    QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint8, status));
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint32, status));
     return value;
 }
 
@@ -101,6 +101,13 @@ quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetCurrentLatency(quint32 id)
     quint32 latency;
     QMetaObject::invokeMethod(parent(), "dbusWiimoteGetCurrentLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
     return latency;
+}
+
+quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetBatteryLife(quint32 id)
+{
+    quint32 life;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetBatteryLife", Qt::DirectConnection, Q_RETURN_ARG(quint32, life), Q_ARG(quint32, id));
+    return life;
 }
 
 quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetAverageLatency(quint32 id)
@@ -135,6 +142,13 @@ bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetRumbleStatus(quint32 id){
     return value;
 }
 
+quint32 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetBatteryLife(quint32 id)
+{
+    quint32 life;
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteGetBatteryLife", Qt::DirectConnection, Q_RETURN_ARG(quint32, life), Q_ARG(quint32, id));
+    return life;
+}
+
 bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetRumbleStatus(quint32 id, bool status)
 {
     bool value;
@@ -148,9 +162,10 @@ quint8 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetLedStatus(quint32 id){
     return value;
 }
 
-bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetLedStatus(quint32 id, quint8 status){
+bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetLedStatus(quint32 id, quint32 status)
+{
     bool value;
-    QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint8, status));
+    QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint32, status));
     return value;
 }
 

@@ -70,6 +70,7 @@ public:
     quint8 getLedStatus();
     bool getRumbleStatus();
     quint8 getReportMode();
+    bool getWiimoteState(struct cwiid_state &state);
 
     bool getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal);
 

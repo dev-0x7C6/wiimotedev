@@ -30,143 +30,150 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Introspection", ""
 " <interface name=\"org.wiimotedev.deviceEvents\">\n"
 "    <method name=\"dbusGetWiimoteList\">\n"
-"      <annotation value=\"QList&lt;uint>\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\"/>\n"
-"      <arg direction=\"out\" type=\"au\" name=\"id_list\"/>\n"
+"      <annotation value=\"QList&lt;uint>\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\" />\n"
+"      <arg direction=\"out\" type=\"au\" name=\"id_list\" />\n"
 "    </method>\n"
 "    <method name=\"dbusGetUnregistredWiimoteList\">\n"
-"      <arg direction=\"out\" type=\"as\" name=\"list\"/>\n"
+"      <arg direction=\"out\" type=\"as\" name=\"list\" />\n"
 "    </method>\n"
-"   <method name=\"dbusIsClassicConnected\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+"    <method name=\"dbusIsClassicConnected\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\" />\n"
 "    </method>\n"
-"   <method name=\"dbusIsNunchukConnected\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+"    <method name=\"dbusIsNunchukConnected\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\" />\n"
 "    </method>\n"
-"   <method name=\"dbusIsWiimoteConnected\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+"    <method name=\"dbusIsWiimoteConnected\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\" />\n"
 "    </method>\n"
-"   <method name=\"dbusWiimoteGetAverageLatency\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"u\" name=\"latency\"/>\n"
-"    </method>\n"
-"   <method name=\"dbusWiimoteGetCurrentLatency\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
+"    <method name=\"dbusWiimoteGetAverageLatency\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
 "      <arg direction=\"out\" type=\"u\" name=\"latency\" />\n"
 "    </method>\n"
-"   <method name=\"dbusWiimoteGetLedStatus\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"y\" name=\"led\"/>\n"
+"    <method name=\"dbusWiimoteGetBatteryLife\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"u\" name=\"latency\" />\n"
+"    </method>\n"
+"    <method name=\"dbusWiimoteGetCurrentLatency\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"u\" name=\"latency\" />\n"
+"    </method>\n"
+"    <method name=\"dbusWiimoteGetLedStatus\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"y\" name=\"led\" />\n"
 "    </method>\n"
 "    <method name=\"dbusWiimoteGetRumbleStatus\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"b\" name=\"rumble\"/>\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"b\" name=\"rumble\" />\n"
 "    </method>\n"
 "    <method name=\"dbusWiimoteGetStatus\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\" />\n"
 "    </method>\n"
 "    <method name=\"dbusWiimoteSetLedStatus\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"in\" type=\"y\" name=\"status\"/>\n"
-"      <arg direction=\"out\" type=\"b\" name=\"led\"/>\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"in\" type=\"u\" name=\"status\" />\n"
+"      <arg direction=\"out\" type=\"b\" name=\"led\" />\n"
 "    </method>\n"
 "    <method name=\"dbusWiimoteSetRumbleStatus\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"in\" type=\"b\" name=\"status\"/>\n"
-"      <arg direction=\"out\" type=\"b\" name=\"rumble\"/>\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"in\" type=\"b\" name=\"status\" />\n"
+"      <arg direction=\"out\" type=\"b\" name=\"rumble\" />\n"
 "    </method>\n"
 "    <signal name=\"dbusClassicControllerButtons\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"t\" name=\"value\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"t\" name=\"value\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusClassicControllerLStick\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"(yy)\" name=\"value\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"(yy)\" name=\"value\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusClassicControllerPlugged\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusClassicControllerRStick\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"(yy)\" name=\"value\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"(yy)\" name=\"value\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusClassicControllerUnplugged\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusNunchukAcc\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"(yyydd)\" name=\"acc\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"(yyydd)\" name=\"acc\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusNunchukButtons\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"t\" name=\"value\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"t\" name=\"value\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusNunchukPlugged\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusNunchukStick\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"(yy)\" name=\"value\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"(yy)\" name=\"value\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusNunchukUnplugged\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusWiimoteAcc\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"(yyydd)\" name=\"acc\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"(yyydd)\" name=\"acc\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusWiimoteBatteryLife\">\n"
-"     <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"     <arg direction=\"out\" type=\"y\" name=\"life\"/>\n"
+"     <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"     <arg direction=\"out\" type=\"y\" name=\"life\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusWiimoteButtons\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"t\" name=\"value\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"t\" name=\"value\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusWiimoteConnected\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusWiimoteDisconnected\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusWiimoteGeneralButtons\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"t\" name=\"value\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"t\" name=\"value\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusWiimoteInfrared\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"a(nqq)\" name=\"table\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"a(nqq)\" name=\"table\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusWiimoteStatus\">\n"
-"      <arg direction=\"out\" type=\"u\" name=\"id\"/>\n"
-"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\" />\n"
 "    </signal>\n"
 "    <signal name=\"dbusReportUnregistredWiimote\">\n"
-"      <arg direction=\"out\" type=\"s\" name=\"mac\"/>\n"
+"      <arg direction=\"out\" type=\"s\" name=\"mac\" />\n"
 "    </signal>\n"
 "  </interface>");
 
 public:
     DBusDeviceEventsAdaptor (QObject *parent);
 
-public slots:
+public Q_SLOTS:
     bool dbusIsClassicConnected(quint32 id);
     bool dbusIsNunchukConnected(quint32 id);
     bool dbusIsWiimoteConnected(quint32 id);
-    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+
     quint32 dbusWiimoteGetAverageLatency(quint32 id);
+    quint32 dbusWiimoteGetBatteryLife(quint32 id);
+    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+
+    quint8 dbusWiimoteGetLedStatus(quint32 id);
+    quint8 dbusWiimoteGetStatus(quint32 id);
 
     QList < uint> dbusGetWiimoteList();
     QStringList dbusGetUnregistredWiimoteList();
 
     bool dbusWiimoteGetRumbleStatus(quint32 id);
-    bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
+    bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
     bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
-    quint8 dbusWiimoteGetLedStatus(quint32 id);
-    quint8 dbusWiimoteGetStatus(quint32 id);
 
 signals:
     void dbusReportUnregistredWiimote(QString);
@@ -208,15 +215,20 @@ public Q_SLOTS:
     bool dbusIsClassicConnected(quint32 id);
     bool dbusIsNunchukConnected(quint32 id);
     bool dbusIsWiimoteConnected(quint32 id);
-    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+
     quint32 dbusWiimoteGetAverageLatency(quint32 id);
-    bool dbusWiimoteGetRumbleStatus(quint32 id);
-    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
+    quint32 dbusWiimoteGetBatteryLife(quint32 id);
+    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+
     quint8 dbusWiimoteGetLedStatus(quint32 id);
-    bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
     quint8 dbusWiimoteGetStatus(quint32 id);
+
     QList < uint> dbusGetWiimoteList();
     QStringList dbusGetUnregistredWiimoteList();
+
+    bool dbusWiimoteGetRumbleStatus(quint32 id);
+    bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
+    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
 
 Q_SIGNALS:
     void dbusReportUnregistredWiimote(QString);

@@ -362,7 +362,7 @@ bool ConnectionManager::dbusWiimoteGetRumbleStatus(quint32 id)
     return false;
 }
 
-bool ConnectionManager::dbusWiimoteSetLedStatus(quint32 id, quint8 status)
+bool ConnectionManager::dbusWiimoteSetLedStatus(quint32 id, quint32 status)
 {
     WiimoteConnection *connection = findWiiremoteObject(id);
     if (connection) {
@@ -420,4 +420,12 @@ bool ConnectionManager::dbusIsWiimoteConnected(quint32 id)
     if (connection)
         return connection->dbusIsWiimoteConnected();
     return false;
+}
+
+quint32 ConnectionManager::dbusWiimoteGetBatteryLife(quint32 id)
+{
+    WiimoteConnection *connection = findWiiremoteObject(id);
+    if (connection)
+        return connection->dbusWiimoteGetBatteryLife();
+    return 0;
 }

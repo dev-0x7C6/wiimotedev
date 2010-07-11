@@ -18,6 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
+#include <QTimer>
 #include "connection.h"
 
 WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
@@ -44,12 +45,9 @@ void WiimoteConnection::run()
     struct timespec time;
 
     double x, y, z, roll, pitch, vacc;
-      
 
     struct cwiid_ir_mesg ir_mesg;
     memset(&ir_mesg, 0, sizeof(struct cwiid_ir_mesg));
-
-
 
     bool ButtonRequest = false;
     unsigned char BatteryLife, NewBatteryLife;
@@ -129,7 +127,6 @@ void WiimoteConnection::run()
 
     QTime latencyTimer;
 
-
     Device->getDeviceCallibration(CWIID_EXT_NONE, &wiimote_calibration);
 
     double wxvalueabs, wxvalue, nxvalueabs, nxvalue, wxpow, nxpow = 0.0;
@@ -147,6 +144,8 @@ void WiimoteConnection::run()
 
     status = STATUS_WIIMOTE_CONNECTED;
 
+    int batteryRequest = 0;
+
     while (Device->getMesgStruct(&count, &mesg, &time) && !quitRequest) {
         currentLatency = latencyTimer.elapsed();
         latencyTimer.start();
@@ -155,6 +154,13 @@ void WiimoteConnection::run()
             averageLatency = currentLatency;
 
         averageLatency = (averageLatency + currentLatency) >> 1;
+
+        if (batteryRequest > 10000) {
+            batteryStatusRequest();
+            batteryRequest = 0;
+        }
+
+        batteryRequest += 1;
 
         for (register int i = 0; i < count; ++i) switch (mesg[i].type) {
 
@@ -176,7 +182,7 @@ void WiimoteConnection::run()
 
 // Status section ******************************************************************************************************************* /
             case CWIID_MESG_STATUS:
-                NewBatteryLife = static_cast< unsigned char>(100.0 * (mesg[i].status_mesg.battery / static_cast< double>(CWIID_BATTERY_MAX)));
+                NewBatteryLife = life = static_cast< unsigned char>(100.0 * (mesg[i].status_mesg.battery / static_cast< double>(CWIID_BATTERY_MAX)));
                 if (BatteryLife != NewBatteryLife) {
                     BatteryLife = NewBatteryLife;
                     emit dbusWiimoteBatteryLife(sequence, BatteryLife);
@@ -587,6 +593,16 @@ void WiimoteConnection::run()
 
     emit dbusWiimoteDisconnected(sequence);
     emit unregisterConnection(static_cast< void*>( this));   
+}
+
+void WiimoteConnection::batteryStatusRequest()
+{
+    struct cwiid_state state;
+    Device->getWiimoteState(state);
+    int newlife = static_cast< unsigned char>(100.0 * (state.battery / static_cast< double>(CWIID_BATTERY_MAX)));
+    if (life != newlife)
+        emit dbusWiimoteBatteryLife(sequence, life);
+    life = newlife;
 }
 
 

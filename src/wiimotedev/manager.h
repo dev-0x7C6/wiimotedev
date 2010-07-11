@@ -77,16 +77,16 @@ private slots:
     void slotDBusClassicControllerUnplugged(quint32);    
 
 public slots:
-
     bool dbusIsClassicConnected(quint32 id);
     bool dbusIsNunchukConnected(quint32 id);
     bool dbusIsWiimoteConnected(quint32 id);
 
-    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
     quint32 dbusWiimoteGetAverageLatency(quint32 id);
+    quint32 dbusWiimoteGetBatteryLife(quint32 id);
+    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
 
     bool dbusWiimoteGetRumbleStatus(quint32 id);
-    bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
+    bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
     bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
     quint8 dbusWiimoteGetLedStatus(quint32 id);
 

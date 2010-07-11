@@ -49,6 +49,7 @@ private:
     void nunchukDeviceCleanup(struct stickdata &stick, struct accdata &acc);
     void wiimoteDeviceCleanup(QList< struct irpoint> &points, struct accdata &acc);
 
+    quint8 life;
     quint8 status;
 
 public:
@@ -68,12 +69,16 @@ public:
     inline bool dbusIsNunchukConnected(){ return (status & STATUS_WIIMOTE_NUNCHUK_CONNECTED); }
     inline bool dbusIsWiimoteConnected(){ return (status & STATUS_WIIMOTE_CONNECTED); }
 
-    inline quint32 dbusWiimoteGetCurrentLatency(){ return currentLatency; }
     inline quint32 dbusWiimoteGetAverageLatency(){ return averageLatency; }
+    inline quint32 dbusWiimoteGetBatteryLife(){ return life; }
+    inline quint32 dbusWiimoteGetCurrentLatency(){ return currentLatency; }
     inline quint8 getWiiremoteStatus() { return status; }
 
 protected:
    void run();
+
+private Q_SLOTS:
+   void batteryStatusRequest();
 
 signals:
    void registerConnection(void*);
