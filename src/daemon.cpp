@@ -1,26 +1,26 @@
 /**********************************************************************************
  * Wiimotedev daemon, wiiremote system service                                    *
- * Copyright (C) 2010  Bartlomiej Burdukiewicz                                    *
+ * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
  * Contact: dev.strikeu@gmail.com                                                 *
  *                                                                                *
- * This library is free software; you can redistribute it and/or                  *
+ * This program is free software; you can redistribute it and/or                  *
  * modify it under the terms of the GNU Lesser General Public                     *
  * License as published by the Free Software Foundation; either                   *
  * version 2.1 of the License, or (at your option) any later version.             *
  *                                                                                *
- * This library is distributed in the hope that it will be useful,                *
+ * This program is distributed in the hope that it will be useful,                *
  * but WITHOUT ANY WARRANTY; without even the implied warranty of                 *
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU              *
  * Lesser General Public License for more details.                                *
  *                                                                                *
  * You should have received a copy of the GNU Lesser General Public               *
- * License along with this library; if not, write to the Free Software            *
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
+ * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
 #define DAEMON_NAME "wiimotedev"
 #define DAEMON_VERSION "1.2" // 1.1.97
 #define PID_FILE "/var/run/wiimotedev-daemon.pid"
+#define PID_MODE 0644
 
 //*Wiimotedev-daemon arguments
 
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
         if (sid < 0) exit(EXIT_FAILURE);
         if (chdir("/") < 0) exit(EXIT_FAILURE);
 
-        int fd = open(PID_FILE, O_CREAT | O_WRONLY | O_SYNC);
+        int fd = open(PID_FILE, O_CREAT | O_WRONLY | O_SYNC, PID_MODE);
 
         if (!fd) exit(EXIT_FAILURE);
 
