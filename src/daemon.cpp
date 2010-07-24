@@ -22,7 +22,7 @@
 #define PID_FILE "/var/run/wiimotedev-daemon.pid"
 #define PID_MODE 0644
 
-//*Wiimotedev-daemon arguments
+//Wiimotedev-daemon arguments
 
 // --debug -> for additional debug output
 // --help -> print help page

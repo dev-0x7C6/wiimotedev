@@ -81,9 +81,16 @@ MessageServer::~MessageServer()
 void MessageServer::tcpSendEvent(QByteArray &data)
 {
     mutex.lock();
+    QList < void* > ptrs;
     for (register int i = 0; i < connections.count(); ++i) {
-        connections.at(i)->write(data);
+        if (connections.at(i)->isWritable())
+            connections.at(i)->write(data); else
+            ptrs << static_cast< void*>( connections.at(i));
     }
+
+    for (register int i = 0; i < ptrs.count(); ++i)
+        connections.removeAt(connections.indexOf(static_cast< QTcpSocket*>( ptrs.at(i))));
+
     mutex.unlock();
 }
 
@@ -109,8 +116,6 @@ void MessageServer::incomingConnection(int socketDescriptor)
         accepted = true;
         break;
     }
-
-    syslog_message(QString::fromUtf8("Incoming connection from %1").arg(tcpSocket->peerAddress().toString()).toAscii().constData());
 
     if (!accepted) {
         syslog_message(QString::fromUtf8("Connection rejected %1, probably host is not allowed").arg(tcpSocket->peerAddress().toString()).toAscii().constData());
