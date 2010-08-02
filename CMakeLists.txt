@@ -3,8 +3,12 @@
 # Contact: dev.strikeu@gmail.com
 
 cmake_minimum_required(VERSION 2.6)
-
 project( wiimotedev-daemon )
+
+set(init_directory "/etc/init.d")
+set(dbus_directory "/etc/dbus-1/system.d")
+set(sbin_directory "/usr/sbin")
+set(include_directory "/usr/include")
 
 find_package(Qt4 REQUIRED) 
 

@@ -2,4 +2,4 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-install(FILES org.wiimotedev-daemon.conf DESTINATION /etc/dbus-1/system.d/ )
+install(FILES org.wiimotedev-daemon.conf DESTINATION ${dbus_directory} )
