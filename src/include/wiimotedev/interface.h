@@ -66,55 +66,56 @@
 #ifndef QWIIMOTEDEV_MARSHALL
 #define QWIIMOTEDEV_MARSHALL
 
-QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point)
-{
+    QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point);
+    const QDBusArgument& operator>>(const QDBusArgument& argument, irpoint& point);
+    QDBusArgument& operator<<(QDBusArgument& argument, const accdata& acc);
+    const QDBusArgument& operator>>(const QDBusArgument& argument, accdata& acc);
+    QDBusArgument& operator<<(QDBusArgument& argument, const stickdata& stick);
+    const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick);
+    
+inline QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point) {
     argument.beginStructure();
     argument << point.size << point.x << point.y;
     argument.endStructure();
     return argument;
 }
 
-const QDBusArgument& operator>>(const QDBusArgument& argument, irpoint& point)
-{
+inline const QDBusArgument& operator>>(const QDBusArgument& argument, irpoint& point) {
     argument.beginStructure();
     argument >> point.size >> point.x >> point.y;
     argument.endStructure();
     return argument;
 }
 
-QDBusArgument& operator<<(QDBusArgument& argument, const accdata& acc)
-{
+inline QDBusArgument& operator<<(QDBusArgument& argument, const accdata& acc) {
     argument.beginStructure();
     argument << acc.x << acc.y << acc.z << acc.pitch << acc.roll;
     argument.endStructure();
     return argument;
 }
 
-const QDBusArgument& operator>>(const QDBusArgument& argument, accdata& acc)
-{
+inline const QDBusArgument& operator>>(const QDBusArgument& argument, accdata& acc) {
     argument.beginStructure();
     argument >> acc.x >> acc.y >> acc.z >> acc.pitch >> acc.roll;
     argument.endStructure();
     return argument;
 }
 
-QDBusArgument& operator<<(QDBusArgument& argument, const stickdata& stick)
-{
+inline QDBusArgument& operator<<(QDBusArgument& argument, const stickdata& stick) {
     argument.beginStructure();
     argument << stick.x << stick.y;
     argument.endStructure();
     return argument;
 }
 
-const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick)
-{
+inline const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick) {
     argument.beginStructure();
     argument >> stick.x >> stick.y;
     argument.endStructure();
     return argument;
 }
 
-#endif
+#endif QWIIMOTEDEV_MARSHALL
 
 class DBusDeviceEventsInterface :public QDBusAbstractInterface
 {
