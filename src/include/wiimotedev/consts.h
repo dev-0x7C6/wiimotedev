@@ -1,5 +1,5 @@
 /**********************************************************************************
- * Wiimotedev daemon, wiiremote system service                                    *
+ * Wiimotedev daemon headers                                                      *
  * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
  * Contact: dev.strikeu@gmail.com                                                 *
  *                                                                                *
@@ -19,8 +19,6 @@
 
 #ifndef WIIMOTEDEV_H
 #define WIIMOTEDEV_H
-
-#include <iostream>
 
 #define WIIMOTEDEV_CONFIG_FILE "/etc/wiimotedev/wiimotedev.conf"
 #define WIIMOTEDEV_TCP_PORT 50091
@@ -63,39 +61,23 @@ const uint8 STATUS_WIIMOTE_CLASSIC_CONNECTED = 0x04;
 
 /* Structs  --------------------------------------------- */
 
-struct deviceinfo
-{
-    uint32 id;
-    std::string addr;
-    bool registred;
-    bool nunchuk;
-    bool classic;
-};
-
-struct irpoint
-{
+struct irpoint {
     int16 size;
     uint16 x;
-    uint16 y;
-};
+    uint16 y;  };
 
-struct accdata
-{
+struct accdata {
     uint8 x;
     uint8 y;
     uint8 z;
     double pitch;
-    double roll;
-};
+    double roll; };
 
-struct stickdata
-{
+struct stickdata {
     uint8 x;
-    uint8 y;
-};
+    uint8 y; };
 
-enum GENERAL_BUTTONS
-{
+enum GENERAL_BUTTONS {
 // 1.0 API
     GENERAL_WIIMOTE_BTN_1 = 0,
     GENERAL_WIIMOTE_BTN_2,
@@ -240,77 +222,87 @@ const uint64 CLASSIC_BTN_RSTICK_UP = calcbit(GENERAL_CLASSIC_BTN_RSTICK_UP);
 const uint64 WIIMOTE_BTN_SHIFT_SHAKE = calcbit(GENERAL_WIIMOTE_BTN_SHIFT_SHAKE);
 const uint64 NUNCHUK_BTN_SHIFT_SHAKE = calcbit(GENERAL_NUNCHUK_BTN_SHIFT_SHAKE);
 
-const uint64 WIIMOTE_BUTTON_MASK =  WIIMOTE_BTN_1 |
-                                    WIIMOTE_BTN_2 |
-                                    WIIMOTE_BTN_A |
-                                    WIIMOTE_BTN_B |
-                                    WIIMOTE_BTN_MINUS |
-                                    WIIMOTE_BTN_PLUS |
-                                    WIIMOTE_BTN_HOME |
-                                    WIIMOTE_BTN_RIGHT |
-                                    WIIMOTE_BTN_LEFT |
-                                    WIIMOTE_BTN_DOWN |
-                                    WIIMOTE_BTN_UP;
+const uint64 WIIMOTE_BUTTON_MASK 
+= WIIMOTE_BTN_1 |
+  WIIMOTE_BTN_2 |
+  WIIMOTE_BTN_A |
+  WIIMOTE_BTN_B |
+  WIIMOTE_BTN_MINUS |
+  WIIMOTE_BTN_PLUS |
+  WIIMOTE_BTN_HOME |
+  WIIMOTE_BTN_RIGHT |
+  WIIMOTE_BTN_LEFT |
+  WIIMOTE_BTN_DOWN |
+  WIIMOTE_BTN_UP;
 
-const uint64 WIIMOTE_SHIFT_MASK = WIIMOTE_BTN_SHIFT_BACKWARD |
-                                  WIIMOTE_BTN_SHIFT_FORWARD |
-                                  WIIMOTE_BTN_SHIFT_RIGHT |
-                                  WIIMOTE_BTN_SHIFT_LEFT |
-                                  WIIMOTE_BTN_SHIFT_DOWN |
-                                  WIIMOTE_BTN_SHIFT_UP |
-                                  WIIMOTE_BTN_SHIFT_SHAKE;
+const uint64 WIIMOTE_SHIFT_MASK 
+= WIIMOTE_BTN_SHIFT_BACKWARD |
+  WIIMOTE_BTN_SHIFT_FORWARD |
+  WIIMOTE_BTN_SHIFT_RIGHT |
+  WIIMOTE_BTN_SHIFT_LEFT |
+  WIIMOTE_BTN_SHIFT_DOWN |
+  WIIMOTE_BTN_SHIFT_UP |
+  WIIMOTE_BTN_SHIFT_SHAKE;
 
-const uint64 WIIMOTE_TILT_MASK = WIIMOTE_BTN_TILT_FRONT |
-                                 WIIMOTE_BTN_TILT_BACK |
-                                 WIIMOTE_BTN_TILT_RIGHT |
-                                 WIIMOTE_BTN_TILT_LEFT;
+const uint64 WIIMOTE_TILT_MASK
+= WIIMOTE_BTN_TILT_FRONT |
+  WIIMOTE_BTN_TILT_BACK |
+  WIIMOTE_BTN_TILT_RIGHT |
+  WIIMOTE_BTN_TILT_LEFT;
 
-const uint64 NUNCHUK_BUTTON_MASK = NUNCHUK_BTN_C |
-                                   NUNCHUK_BTN_Z;
+const uint64 NUNCHUK_BUTTON_MASK
+= NUNCHUK_BTN_C |
+  NUNCHUK_BTN_Z;
 
-const uint64 NUNCHUK_STICK_MASK = NUNCHUK_BTN_STICK_RIGHT |
-                                  NUNCHUK_BTN_STICK_LEFT |
-                                  NUNCHUK_BTN_STICK_DOWN |
-                                  NUNCHUK_BTN_STICK_UP;
+const uint64 NUNCHUK_STICK_MASK
+= NUNCHUK_BTN_STICK_RIGHT |
+  NUNCHUK_BTN_STICK_LEFT |
+  NUNCHUK_BTN_STICK_DOWN |
+  NUNCHUK_BTN_STICK_UP;
 
-const uint64 NUNCHUK_SHIFT_MASK = NUNCHUK_BTN_SHIFT_BACKWARD |
-                                  NUNCHUK_BTN_SHIFT_FORWARD |
-                                  NUNCHUK_BTN_SHIFT_RIGHT |
-                                  NUNCHUK_BTN_SHIFT_LEFT |
-                                  NUNCHUK_BTN_SHIFT_DOWN |
-                                  NUNCHUK_BTN_SHIFT_UP |
-                                  NUNCHUK_BTN_SHIFT_SHAKE;
+const uint64 NUNCHUK_SHIFT_MASK
+= NUNCHUK_BTN_SHIFT_BACKWARD |
+  NUNCHUK_BTN_SHIFT_FORWARD |
+  NUNCHUK_BTN_SHIFT_RIGHT |
+  NUNCHUK_BTN_SHIFT_LEFT |
+  NUNCHUK_BTN_SHIFT_DOWN |
+  NUNCHUK_BTN_SHIFT_UP |
+  NUNCHUK_BTN_SHIFT_SHAKE;
 
-const uint64 NUNCHUK_TILT_MASK = NUNCHUK_BTN_TILT_FRONT |
-                                 NUNCHUK_BTN_TILT_BACK |
-                                 NUNCHUK_BTN_TILT_RIGHT |
-                                 NUNCHUK_BTN_TILT_LEFT;
+const uint64 NUNCHUK_TILT_MASK
+= NUNCHUK_BTN_TILT_FRONT |
+  NUNCHUK_BTN_TILT_BACK |
+  NUNCHUK_BTN_TILT_RIGHT |
+  NUNCHUK_BTN_TILT_LEFT;
 
-const uint64 CLASSIC_BUTTON_MASK = CLASSIC_BTN_X |
-                                   CLASSIC_BTN_Y |
-                                   CLASSIC_BTN_A |
-                                   CLASSIC_BTN_B |
-                                   CLASSIC_BTN_L |
-                                   CLASSIC_BTN_R |
-                                   CLASSIC_BTN_ZL |
-                                   CLASSIC_BTN_ZR |
-                                   CLASSIC_BTN_MINUS |
-                                   CLASSIC_BTN_PLUS |
-                                   CLASSIC_BTN_HOME |
-                                   CLASSIC_BTN_RIGHT |
-                                   CLASSIC_BTN_LEFT |
-                                   CLASSIC_BTN_DOWN |
-                                   CLASSIC_BTN_UP;
+const uint64 CLASSIC_BUTTON_MASK
+= CLASSIC_BTN_X |
+  CLASSIC_BTN_Y |
+  CLASSIC_BTN_A |
+  CLASSIC_BTN_B |
+  CLASSIC_BTN_L |
+  CLASSIC_BTN_R |
+  CLASSIC_BTN_ZL |
+  CLASSIC_BTN_ZR |
+  CLASSIC_BTN_MINUS |
+  CLASSIC_BTN_PLUS |
+  CLASSIC_BTN_HOME |
+  CLASSIC_BTN_RIGHT |
+  CLASSIC_BTN_LEFT |
+  CLASSIC_BTN_DOWN |
+  CLASSIC_BTN_UP;
 
-const uint64 CLASSIC_LSTICK_MASK = CLASSIC_BTN_LSTICK_RIGHT  |
-                                   CLASSIC_BTN_LSTICK_LEFT |
-                                   CLASSIC_BTN_LSTICK_DOWN |
-                                   CLASSIC_BTN_LSTICK_UP;
+const uint64 CLASSIC_LSTICK_MASK
+= CLASSIC_BTN_LSTICK_RIGHT  |
+  CLASSIC_BTN_LSTICK_LEFT |
+  CLASSIC_BTN_LSTICK_DOWN |
+  CLASSIC_BTN_LSTICK_UP;
 
-const uint64 CLASSIC_RSTICK_MASK = CLASSIC_BTN_RSTICK_RIGHT  |
-                                   CLASSIC_BTN_RSTICK_LEFT |
-                                   CLASSIC_BTN_RSTICK_DOWN |
-                                   CLASSIC_BTN_RSTICK_UP;
+const uint64 CLASSIC_RSTICK_MASK
+= CLASSIC_BTN_RSTICK_RIGHT  |
+  CLASSIC_BTN_RSTICK_LEFT |
+  CLASSIC_BTN_RSTICK_DOWN |
+  CLASSIC_BTN_RSTICK_UP;
 
 const uint64 WIIMOTE_BUTTON_NOTMASK = ~WIIMOTE_BUTTON_MASK;
 const uint64 WIIMOTE_SHIFT_NOTMASK = ~WIIMOTE_SHIFT_MASK;
