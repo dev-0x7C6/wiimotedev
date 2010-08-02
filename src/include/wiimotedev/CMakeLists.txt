@@ -13,5 +13,5 @@ install(FILES ${wiimotedev_includes} DESTINATION ${include_directory}/wiimotedev
 
 # compatibility with wiimotedev-daemon 1.0
 
-install(FILES consts.h DESTINATION ${include_directory}/wiimotedev.h)
-install(FILES proto.h DESTINATION ${include_directory}/wiimotedevproto.h)
+install(FILES consts.h RENAME wiimotedev.h DESTINATION ${include_directory})
+install(FILES proto.h RENAME wiimotedevproto.h DESTINATION ${include_directory})
