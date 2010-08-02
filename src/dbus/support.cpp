@@ -67,25 +67,6 @@ const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick)
     return argument;
 }
 
-QDBusArgument& operator<<(QDBusArgument& argument, const deviceinfo& info)
-{
-    argument.beginStructure();
-    argument << info.id << QString().fromStdString(info.addr) << info.registred << info.nunchuk << info.classic;
-    argument.endStructure();
-    return argument;
-}
-
-const QDBusArgument& operator>>(const QDBusArgument& argument, deviceinfo& info)
-{
-    QString data;
-    argument.beginStructure();
-    argument >> info.id >> data;
-    info.addr = data.toStdString();
-    argument >> info.registred >> info.nunchuk >> info.classic;
-    argument.endStructure();
-    return argument;
-}
-
 QDBusArgument& operator<<(QDBusArgument& argument, const QList < quint32>& list)
 {
     argument.beginArray();

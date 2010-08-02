@@ -29,7 +29,7 @@
 #include <cwiid.h>
 #include <math.h>
 
-#include "../include/wiimotedev.h"
+#include "../include/wiimotedev/consts.h"
 
 #define defaultReportFlags CWIID_RPT_STATUS | \
                            CWIID_RPT_BTN | \

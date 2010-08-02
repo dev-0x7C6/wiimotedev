@@ -26,7 +26,7 @@
 #include <QDBusConnection>
 
 #include <QList>
-#include "../include/wiimotedev.h"
+#include "../include/wiimotedev/consts.h"
 
 // Meta-types
 #include <QDBusMetaType>
@@ -36,30 +36,24 @@
     qRegisterMetaType< QList< struct irpoint> >("QList< irpoint>");          \
     qRegisterMetaType< QList< struct accdata> >("QList< accdata>");          \
     qRegisterMetaType< QList< struct stickdata> >("QList< stickdata>");      \
-    qRegisterMetaType< QList< struct deviceinfo> >("QList< deviceinfo>");    \
     qRegisterMetaType< struct irpoint>("irpoint");                           \
     qRegisterMetaType< struct accdata>("accdata");                           \
     qRegisterMetaType< struct stickdata>("stickdata");                       \
-    qRegisterMetaType< struct deviceinfo>("deviceinfo");                     \
     qDBusRegisterMetaType< QList < struct irpoint> >();                      \
     qDBusRegisterMetaType< QList < struct accdata> >();                      \
     qDBusRegisterMetaType< QList < struct stickdata> >();                    \
-    qDBusRegisterMetaType< QList < struct deviceinfo> >();                   \
     qDBusRegisterMetaType< struct irpoint>();                                \
     qDBusRegisterMetaType< struct accdata>();                                \
-    qDBusRegisterMetaType< struct stickdata>();                              \
-    qDBusRegisterMetaType< struct deviceinfo>();
+    qDBusRegisterMetaType< struct stickdata>();
 
 #ifndef QWIIMOTEDEV_META_TYPES
 #define QWIIMOTEDEV_META_TYPES
 
-    Q_DECLARE_METATYPE(QList < deviceinfo>)
     Q_DECLARE_METATYPE(QList < irpoint>)
     Q_DECLARE_METATYPE(QList < accdata>)
     Q_DECLARE_METATYPE(QList < stickdata>)
     Q_DECLARE_METATYPE(QList < uint>)
 
-    Q_DECLARE_METATYPE(deviceinfo)
     Q_DECLARE_METATYPE(irpoint)
     Q_DECLARE_METATYPE(accdata)
     Q_DECLARE_METATYPE(stickdata)
@@ -75,8 +69,6 @@
     const QDBusArgument& operator>>(const QDBusArgument& argument, accdata& acc);
     QDBusArgument& operator<<(QDBusArgument& argument, const stickdata& stick);
     const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick);
-    QDBusArgument& operator<<(QDBusArgument& argument, const deviceinfo& info);
-    const QDBusArgument& operator>>(const QDBusArgument& argument, deviceinfo& info);
     QDBusArgument& operator<<(QDBusArgument& argument, const QList < quint32>& list);
     const QDBusArgument& operator>>(const QDBusArgument& argument, QList < quint32>& list);
 

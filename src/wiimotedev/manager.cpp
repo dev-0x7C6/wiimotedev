@@ -31,12 +31,10 @@ ConnectionManager::ConnectionManager()
     qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
     qRegisterMetaType< QList< accdata> >("QList< accdata>");
     qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
-    qRegisterMetaType< QList< deviceinfo> >("QList< deviceinfo>");
 
     qRegisterMetaType< irpoint>("irpoint");
     qRegisterMetaType< accdata>("accdata");
     qRegisterMetaType< stickdata>("stickdata");
-    qRegisterMetaType< deviceinfo>("deviceinfo");
 
     terminateReq = false;
 
@@ -200,20 +198,6 @@ void ConnectionManager::registerConnection(void *object)
 
     objectList << object;
 
-    struct deviceinfo dev;
-    dev.id = connection->getWiimoteSequence();
-    dev.registred = connection->getWiimoteSequence();
-    dev.addr = connection->Device->getWiimoteSAddr().toStdString();
-    dev.nunchuk = false;
-    dev.classic = false;
-
-    deviceList[object] = dev;
-
-    connect(connection, SIGNAL(dbusNunchukPlugged(quint32)), this, SLOT(slotDBusNunchukPlugged(quint32)));
-    connect(connection, SIGNAL(dbusNunchukUnplugged(quint32)), this, SLOT(slotDBusNunchukUnplugged(quint32)));
-    connect(connection, SIGNAL(dbusClassicControllerPlugged(quint32)), this, SLOT(slotDBusClassicControllerPlugged(quint32)));
-    connect(connection, SIGNAL(dbusClassicControllerUnplugged(quint32)), this, SLOT(slotDBusClassicControllerUnplugged(quint32)));
-
     if (wiimotedevSettings->dbusInterfaceSupport())
     {
         connect(connection, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::DirectConnection);
@@ -275,8 +259,6 @@ void ConnectionManager::unregisterConnection(void *object)
     WiimoteConnection *connection = static_cast< WiimoteConnection*>( object);
     disconnect(connection, 0, 0, 0);
 
-    deviceList.remove(object);
-
     syslog(QString("wiiremote %1 disconnected, id %2").arg(connection->Device->getWiimoteSAddr(), QString::number(connection->getWiimoteSequence(), 10)));
 
     connection->wait();
@@ -284,34 +266,6 @@ void ConnectionManager::unregisterConnection(void *object)
 
     if (objectList.indexOf(object) != -1)
         objectList.removeAt(objectList.indexOf(object));
-}
-
-void ConnectionManager::slotDBusNunchukPlugged(quint32)
-{
-    struct deviceinfo dev = deviceList[static_cast< void *>(sender())];
-    dev.nunchuk = true;
-    deviceList[static_cast< void *>(sender())] = dev;
-}
-
-void ConnectionManager::slotDBusNunchukUnplugged(quint32)
-{
-    struct deviceinfo dev = deviceList[static_cast< void *>(sender())];
-    dev.nunchuk = false;
-    deviceList[static_cast< void *>(sender())] = dev;
-}
-
-void ConnectionManager::slotDBusClassicControllerPlugged(quint32)
-{
-    struct deviceinfo dev = deviceList[static_cast< void *>(sender())];
-    dev.classic = true;
-    deviceList[static_cast< void *>(sender())] = dev;
-}
-
-void ConnectionManager::slotDBusClassicControllerUnplugged(quint32)
-{
-    struct deviceinfo dev = deviceList[static_cast< void *>(sender())];
-    dev.classic = false;
-    deviceList[static_cast< void *>(sender())] = dev;
 }
 
 QList < uint> ConnectionManager::dbusGetWiimoteList()

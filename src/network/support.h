@@ -20,8 +20,8 @@
 #ifndef NETWORK_SUPPORT_H
 #define NETWORK_SUPPORT_H
 
-#include "../include/wiimotedevproto.h"
-#include "../include/wiimotedev.h"
+#include "../include/wiimotedev/proto.h"
+#include "../include/wiimotedev/consts.h"
 #include "../wiimotedev/settings.h"
 #include "../syslog/support.h"
 
@@ -35,13 +35,11 @@
 #ifndef QWIIMOTEDEV_META_TYPES
 #define QWIIMOTEDEV_META_TYPES
 
-    Q_DECLARE_METATYPE(QList < deviceinfo>)
     Q_DECLARE_METATYPE(QList < irpoint>)
     Q_DECLARE_METATYPE(QList < accdata>)
     Q_DECLARE_METATYPE(QList < stickdata>)
     Q_DECLARE_METATYPE(QList < quint32>)
 
-    Q_DECLARE_METATYPE(deviceinfo)
     Q_DECLARE_METATYPE(irpoint)
     Q_DECLARE_METATYPE(accdata)
     Q_DECLARE_METATYPE(stickdata)

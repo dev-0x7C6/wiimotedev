@@ -23,7 +23,7 @@
 #include <QThread>
 #include <QTime>
 
-#include "../include/wiimotedev.h"
+#include "../include/wiimotedev/consts.h"
 #include "wiiremote.h"
 
 class WiimoteConnection : public QThread

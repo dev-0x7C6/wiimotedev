@@ -42,12 +42,10 @@ MessageServer::MessageServer(QObject *manager, WiimotedevSettings* settings, qui
     qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
     qRegisterMetaType< QList< accdata> >("QList< accdata>");
     qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
-    qRegisterMetaType< QList< deviceinfo> >("QList< deviceinfo>");
 
     qRegisterMetaType< irpoint>("irpoint");
     qRegisterMetaType< accdata>("accdata");
     qRegisterMetaType< stickdata>("stickdata");
-    qRegisterMetaType< deviceinfo>("deviceinfo");
 
     connect(manager, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::QueuedConnection);
 

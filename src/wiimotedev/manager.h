@@ -25,7 +25,7 @@
 
 #include "../dbus/deviceevents.h"
 #include "../dbus/service.h"
-#include "../include/wiimotedev.h"
+#include "../include/wiimotedev/consts.h"
 #include "../network/support.h"
 #include "../syslog/support.h"
 
@@ -47,7 +47,6 @@ private:
 
     MessageServerThread *tcpServerThread;
 
-    QMap< void*, struct deviceinfo> deviceList;
     QMap< QString, quint32> wiiremoteSequence;
     QList< void*> objectList;
     bdaddr_t bdaddr_any;
@@ -69,11 +68,6 @@ private:
 private slots:
     void registerConnection(void *object);
     void unregisterConnection(void *object);
-
-    void slotDBusNunchukPlugged(quint32);
-    void slotDBusNunchukUnplugged(quint32);
-    void slotDBusClassicControllerPlugged(quint32);
-    void slotDBusClassicControllerUnplugged(quint32);    
 
 public slots:
     bool dbusIsClassicConnected(quint32 id);
