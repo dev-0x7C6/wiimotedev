@@ -52,4 +52,4 @@ const uint16 iddbusWiimoteSetLedStatus = 0x02;
 const uint16 iddbusWiimoteSetRumbleStatus = 0x03;
 const uint16 iddbusWiimoteGetLedStatus = 0x04;
 
-#endif WIIMOTEDEVPROTO_H
+#endif //WIIMOTEDEVPROTO_H

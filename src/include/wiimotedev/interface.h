@@ -246,4 +246,4 @@ inline QDBusReply < quint32> DBusDeviceEventsInterface::dbusWiimoteGetBatteryLif
     return callWithArgumentList(QDBus::Block, "dbusWiimoteGetBatteryLife", argumentList);
 }
 
-#endif WIIMOTEDEV_INTERFACE_H
+#endif //WIIMOTEDEV_INTERFACE_H
