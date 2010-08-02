@@ -8,6 +8,10 @@ set(QT_USE_QTNETWORK TRUE)
 
 include( ${QT_USE_FILE} )
 
+add_subdirectory(include)
+
+set(SBIN_INSTALL_DIR "${EXEC_INSTALL_PREFIX}/sbin")
+
 add_definitions("-DDAEMON_SUPPORT -DSYSLOG_SUPPORT -Wall -ansi")
 
 set (wiimotedev_sources
@@ -32,8 +36,8 @@ set (wiimotedev_headers_qt
 
 set (wiimotedev_headers
         dbus/support.h
-        include/wiimotedev.h
-        include/wiimotedevproto.h
+        include/wiimotedev/consts.h
+        include/wiimotedev/proto.h
         syslog/support.h
         wiimotedev/settings.h
         wiimotedev/wiiremote.h
@@ -42,9 +46,6 @@ set (wiimotedev_headers
 QT4_WRAP_CPP(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
 
 add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers} ${wiimotedev_headers_qt})
-
 target_link_libraries(wiimotedev-daemon ${QT_LIBRARIES} ${CWIID_LIBRARY})
 
-install(TARGETS wiimotedev-daemon DESTINATION /usr/sbin/)
-install(FILES include/wiimotedev.h DESTINATION /usr/include/)
-install(FILES include/wiimotedevproto.h DESTINATION /usr/include/)
+install(TARGETS wiimotedev-daemon DESTINATION ${SBIN_INSTALL_DIR})
