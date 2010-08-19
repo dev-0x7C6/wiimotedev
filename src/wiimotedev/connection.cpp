@@ -20,15 +20,65 @@
 #include <QTimer>
 #include "connection.h"
 
-WiimoteConnection::WiimoteConnection(QObject *parent) :QThread(parent)
+extern bool additional_debug;
+
+WiimoteConnection::WiimoteConnection(DBusDeviceEventsAdaptorWrapper *adaptor, QObject *parent)
+    :QThread(parent), adaptor(adaptor)
 {
-// Defaults ******************************************************** /
+    if (additional_debug)
+        syslog_message("> in WiimoteConnection");
+
+    if (adaptor) {
+        connect(this, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusWiimoteConnected(quint32)), adaptor, SIGNAL(dbusWiimoteConnected(quint32)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusWiimoteDisconnected(quint32)), adaptor, SIGNAL(dbusWiimoteDisconnected(quint32)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusWiimoteButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteButtons(quint32,quint64)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusWiimoteStatus(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteStatus(quint32,quint8)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), adaptor, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusNunchukPlugged(quint32)), adaptor, SIGNAL(dbusNunchukPlugged(quint32)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusNunchukUnplugged(quint32)), adaptor, SIGNAL(dbusNunchukUnplugged(quint32)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusNunchukButtons(quint32,quint64)), adaptor, SIGNAL(dbusNunchukButtons(quint32,quint64)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusClassicControllerPlugged(quint32)), adaptor, SIGNAL(dbusClassicControllerPlugged(quint32)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusClassicControllerUnplugged(quint32)), adaptor, SIGNAL(dbusClassicControllerUnplugged(quint32)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), adaptor, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::DirectConnection);
+        connect(this, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::DirectConnection);
+    }
+
     setTerminationEnabled(true);
     Device = new WiiremoteDevice;
 }
 
 WiimoteConnection::~WiimoteConnection()
 {
+    if (additional_debug)
+        syslog_message("> in ~WiimoteConnection");
+
+    if (adaptor) {
+        disconnect(this, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)));
+        disconnect(this, SIGNAL(dbusWiimoteConnected(quint32)), adaptor, SIGNAL(dbusWiimoteConnected(quint32)));
+        disconnect(this, SIGNAL(dbusWiimoteDisconnected(quint32)), adaptor, SIGNAL(dbusWiimoteDisconnected(quint32)));
+        disconnect(this, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)));
+        disconnect(this, SIGNAL(dbusWiimoteButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteButtons(quint32,quint64)));
+        disconnect(this, SIGNAL(dbusWiimoteStatus(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteStatus(quint32,quint8)));
+        disconnect(this, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), adaptor, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)));
+        disconnect(this, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)));
+        disconnect(this, SIGNAL(dbusNunchukPlugged(quint32)), adaptor, SIGNAL(dbusNunchukPlugged(quint32)));
+        disconnect(this, SIGNAL(dbusNunchukUnplugged(quint32)), adaptor, SIGNAL(dbusNunchukUnplugged(quint32)));
+        disconnect(this, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusNunchukStick(quint32,struct stickdata)));
+        disconnect(this, SIGNAL(dbusNunchukButtons(quint32,quint64)), adaptor, SIGNAL(dbusNunchukButtons(quint32,quint64)));
+        disconnect(this, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusNunchukAcc(quint32,struct accdata)));
+        disconnect(this, SIGNAL(dbusClassicControllerPlugged(quint32)), adaptor, SIGNAL(dbusClassicControllerPlugged(quint32)));
+        disconnect(this, SIGNAL(dbusClassicControllerUnplugged(quint32)), adaptor, SIGNAL(dbusClassicControllerUnplugged(quint32)));
+        disconnect(this, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), adaptor, SIGNAL(dbusClassicControllerButtons(quint32,quint64)));
+        disconnect(this, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)));
+        disconnect(this, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)));
+    }
+
     delete Device;
 }
 

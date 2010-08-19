@@ -25,6 +25,8 @@
 //Wiimotedev-daemon arguments
 
 // --debug -> for additional debug output
+// --force-dbus -> enable dbus protocol
+// --force-tcp -> enable tcp protocol
 // --help -> print help page
 // --no-daemon -> do not run in daemon mode
 // --no-quiet -> do not block stdout messages
@@ -49,7 +51,10 @@
 #include "wiimotedev/manager.h"
 
 void *app_pointer = 0;
+
 bool additional_debug = false;
+bool force_dbus = false;
+bool force_tcp = false;
 
 void signal_handler(int sig) {
     switch(sig) {
@@ -75,6 +80,8 @@ int main(int argc, char *argv[])
     {
         qDebug() << "Wiimotedev-daemon argument list\n";
         qDebug() << "  --debug\t\tfor additional debug output";
+        qDebug() << "  --force-dbus\t\tenable dbus protocol";
+        qDebug() << "  --force-tcp\t\tenable tcp protocol";
         qDebug() << "  --help\t\tprint help page";
         qDebug() << "  --no-daemon\t\tdo not run in background";
         qDebug() << "  --no-quiet\t\tdo not block stdout messages";
@@ -84,9 +91,12 @@ int main(int argc, char *argv[])
 
     app_pointer = &application;
 
+    additional_debug = (application.arguments().indexOf("--debug") != -1);
+    force_dbus = (application.arguments().indexOf("--force-dbus") != -1);
+    force_tcp = (application.arguments().indexOf("--force-tcp") != -1);
+
 #ifdef DAEMON_SUPPORT
-    if (application.arguments().indexOf("--no-daemon") == -1)
-    {
+    if (application.arguments().indexOf("--no-daemon") == -1) {
         pid_t pid = fork();
         if (pid < 0) exit(EXIT_FAILURE);
         if (pid > 0) exit(EXIT_SUCCESS);
@@ -99,15 +109,13 @@ int main(int argc, char *argv[])
 
         if (!fd) exit(EXIT_FAILURE);
 
-        QString out = QString::number(sid, 10);
-        write(fd, out.toAscii().constData(), out.length());
+        write(fd, QString::number(sid).toAscii().constData(), QString::number(sid).length());
         close(fd);
     }
 #else
 #endif
 
-    if (application.arguments().indexOf("--no-quiet") == -1)
-    {
+    if (application.arguments().indexOf("--no-quiet") == -1) {
         close(STDIN_FILENO);
         close(STDOUT_FILENO);
         close(STDERR_FILENO);
@@ -115,8 +123,6 @@ int main(int argc, char *argv[])
 
     syslog_open(DAEMON_NAME);
     syslog_message("system service started");
-
-    additional_debug = (application.arguments().indexOf("--debug") != -1);
 
     if (additional_debug)
         syslog_message("additional debug mode switch-on");

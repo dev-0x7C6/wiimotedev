@@ -7,7 +7,7 @@ set(CURRENT "debian")
 STRING(COMPARE EQUAL "${DISTRO}" "${CURRENT}" valid)
 
 if (valid) 
-  message( "-- Init.d script for ${DISTRO} is present" )
+  message( "-- Init.d script for ${DISTRO} is available" )
   install(FILES wiimotedev-daemon DESTINATION ${init_directory}
 	    PERMISSIONS
 	      OWNER_READ  OWNER_WRITE  OWNER_EXECUTE

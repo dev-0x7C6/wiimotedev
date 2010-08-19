@@ -24,13 +24,17 @@
 #include <QTime>
 
 #include "../include/wiimotedev/consts.h"
+#include "../dbus/deviceevents.h"
+#include "../syslog/support.h"
+
 #include "wiiremote.h"
 
 class WiimoteConnection : public QThread
 {
     Q_OBJECT
-
 private:
+    DBusDeviceEventsAdaptorWrapper *adaptor;
+
     bool quitRequest;
 
     QList < double> wfXmotion; QList < double> nfXmotion;
@@ -52,7 +56,7 @@ private:
     quint8 status;
 
 public:
-    WiimoteConnection(QObject *parent = 0);
+    WiimoteConnection(DBusDeviceEventsAdaptorWrapper *adaptor, QObject *parent = 0);
    ~WiimoteConnection();
 
     void quitThread();
@@ -79,13 +83,12 @@ protected:
 private Q_SLOTS:
    void batteryStatusRequest();
 
-signals:
+Q_SIGNALS:
    void registerConnection(void*);
    void unregisterConnection(void*);
 
-signals:
+Q_SIGNALS:
    void dbusWiimoteGeneralButtons(quint32, quint64);
-
    void dbusWiimoteConnected(quint32);
    void dbusWiimoteDisconnected(quint32);
    void dbusWiimoteBatteryLife(quint32, quint8);
@@ -93,13 +96,11 @@ signals:
    void dbusWiimoteStatus(quint32, quint8);
    void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
    void dbusWiimoteAcc(quint32, struct accdata);
-
    void dbusNunchukPlugged(quint32);
    void dbusNunchukUnplugged(quint32);
    void dbusNunchukButtons(quint32, quint64);
    void dbusNunchukStick(quint32, struct stickdata);
    void dbusNunchukAcc(quint32, struct accdata);
-
    void dbusClassicControllerPlugged(quint32);
    void dbusClassicControllerUnplugged(quint32);
    void dbusClassicControllerButtons(quint32, quint64);

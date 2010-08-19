@@ -69,7 +69,7 @@ private slots:
     void registerConnection(void *object);
     void unregisterConnection(void *object);
 
-public slots:
+public Q_SLOTS:
     bool dbusIsClassicConnected(quint32 id);
     bool dbusIsNunchukConnected(quint32 id);
     bool dbusIsWiimoteConnected(quint32 id);
@@ -90,10 +90,9 @@ public slots:
 
     bool dbusReloadSequenceList();
 
-signals:
+Q_SIGNALS:
     void dbusReportUnregistredWiimote(QString);
     void dbusWiimoteGeneralButtons(quint32, quint64);
-
     void dbusWiimoteConnected(quint32);
     void dbusWiimoteDisconnected(quint32);
     void dbusWiimoteBatteryLife(quint32, quint8);
@@ -101,13 +100,11 @@ signals:
     void dbusWiimoteStatus(quint32, quint8);
     void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
     void dbusWiimoteAcc(quint32, struct accdata);
-
     void dbusNunchukPlugged(quint32);
     void dbusNunchukUnplugged(quint32);
     void dbusNunchukButtons(quint32, quint64);
     void dbusNunchukStick(quint32, struct stickdata);
     void dbusNunchukAcc(quint32, struct accdata);
-
     void dbusClassicControllerPlugged(quint32);
     void dbusClassicControllerUnplugged(quint32);
     void dbusClassicControllerButtons(quint32, quint64);
