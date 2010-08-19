@@ -19,7 +19,7 @@ wiimotedev_stop() {
   killall wiimotedev-daemon 1> /dev/null 2> /dev/null
 }
 
-function wiimotedev_reload() {
+wiimotedev_reload() {
   if [ ! -f "$PIDFILE" ]; then
     echo " -- \"${PIDFILE}\" file does not exist"
     return 1
