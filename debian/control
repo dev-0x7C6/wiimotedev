@@ -1,0 +1,25 @@
+Source: wiimotedev-daemon
+Section: devel
+Priority: optional
+Maintainer: Arkadiusz Piekarz <piekarzarkadiusz@gmail.com>
+Build-Depends: cdbs, debhelper (>= 7), cmake, libqt4-dev, libcwiid-dev, libdbus-1-dev
+Standards-Version: 3.8.4
+Homepage: http://gitorious.org/wiimotedev
+
+Package: wiimotedev-daemon
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Wiimotedev daemon service
+ Wiimotedev-daemon is core project in wiimotedev family. 
+ It’s working on dbus system layer, provide full set API to 
+ communicate with wiiremotes. Service brings two interfaces, 
+ one for general communication with wiiremote(s), other 
+ for service management. Other words this service manage 
+ wiiremotes connections, and brings API to communicate with 
+ wiiremotes directly.
+ .
+ Advantages:
+  – an elegant way to add wiiremote support in your application
+  – wiiremotes can be easly shared by large amount of application
+  – very simple api, just run and check by qdbusviewer.
+  – support
