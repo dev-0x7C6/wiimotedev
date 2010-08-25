@@ -32,6 +32,7 @@
 // --no-quiet -> do not block stdout messages
 
 #include <stdlib.h>
+#include "config.h"
 
 #ifdef DAEMON_SUPPORT
     #include <sys/types.h>
@@ -42,6 +43,8 @@
     #include <unistd.h>
     #include <string.h>
 #endif
+
+#include "syslog/support.h"
 
 #include <signal.h>
 
@@ -78,14 +81,14 @@ int main(int argc, char *argv[])
 
     if (application.arguments().indexOf("--help") != -1)
     {
-        qDebug() << "Wiimotedev-daemon argument list\n";
-        qDebug() << "  --debug\t\tfor additional debug output";
-        qDebug() << "  --force-dbus\t\tenable dbus protocol";
-        qDebug() << "  --force-tcp\t\tenable tcp protocol";
-        qDebug() << "  --help\t\tprint help page";
-        qDebug() << "  --no-daemon\t\tdo not run in background";
-        qDebug() << "  --no-quiet\t\tdo not block stdout messages";
-        qDebug() << "";
+        qDebug("Wiimotedev-daemon argument list\n");
+        qDebug("  --debug\t\tfor additional debug output");
+        qDebug("  --force-dbus\t\tenable dbus protocol");
+        qDebug("  --force-tcp\t\tenable tcp protocol");
+        qDebug("  --help\t\tprint help page");
+        qDebug("  --no-daemon\t\tdo not run in background");
+        qDebug("  --no-quiet\t\tdo not block stdout messages");
+        qDebug("");
         exit(EXIT_SUCCESS);
     }
 

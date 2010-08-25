@@ -2,6 +2,14 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
+include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+
+set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
+               ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
 set(QT_DONT_USE_QTGUI TRUE)
 set(QT_USE_QTDBUS TRUE)
 set(QT_USE_QTNETWORK TRUE)
@@ -11,8 +19,6 @@ include( ${QT_USE_FILE} )
 add_subdirectory(include)
 
 set(SBIN_INSTALL_DIR "${EXEC_INSTALL_PREFIX}/sbin")
-
-add_definitions("-DDAEMON_SUPPORT -DSYSLOG_SUPPORT -Wall -ansi")
 
 set (wiimotedev_sources
         dbus/support.cpp

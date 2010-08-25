@@ -17,7 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "support.h"
+#include "network/support.h"
 
 MessageServerThread::MessageServerThread(QObject *manager, WiimotedevSettings* settings, quint16 port,  QObject *parent)
     :QThread(parent), settings(settings), port(port), manager(manager)

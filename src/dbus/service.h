@@ -20,7 +20,7 @@
 #ifndef SERVICE_H
 #define SERVICE_H
 
-#include "support.h"
+#include "dbus/support.h"
 
 class DBusServiceAdaptor : public QDBusAbstractAdaptor
 {

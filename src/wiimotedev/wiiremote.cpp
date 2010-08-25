@@ -17,7 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "wiiremote.h"
+#include "wiimotedev/wiiremote.h"
 
 WiiremoteDevice::WiiremoteDevice(QObject *parent) : QObject(parent)
 {

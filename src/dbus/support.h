@@ -26,7 +26,7 @@
 #include <QDBusConnection>
 
 #include <QList>
-#include "../include/wiimotedev/consts.h"
+#include "include/wiimotedev/consts.h"
 
 // Meta-types
 #include <QDBusMetaType>

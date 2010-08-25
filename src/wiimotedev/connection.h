@@ -21,13 +21,16 @@
 #define WIIMOTECONNECTION_H
 
 #include <QThread>
-#include <QTime>
+#include <QObject>
 
-#include "../include/wiimotedev/consts.h"
-#include "../dbus/deviceevents.h"
-#include "../syslog/support.h"
+#include "include/wiimotedev/consts.h"
+#include "dbus/deviceevents.h"
+#include "syslog/support.h"
+#include "wiimotedev/wiiremote.h"
 
-#include "wiiremote.h"
+class DBusDeviceEventsAdaptorWrapper;
+class WiiremoteDevice;
+class QThread;
 
 class WiimoteConnection : public QThread
 {

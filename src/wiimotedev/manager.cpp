@@ -16,9 +16,10 @@
  * You should have received a copy of the GNU Lesser General Public               *
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
-
-#include "manager.h"
+#include <QList>
 #include <QTime>
+
+#include "wiimotedev/manager.h"
 
 extern bool additional_debug;
 

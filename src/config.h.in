@@ -17,30 +17,12 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "dbus/service.h"
+#ifndef CONFIG_H_IN
+#define CONFIG_H_IN
 
-DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent)
-{
-    QWIIMOTEDEV_REGISTER_META_TYPES;
-    setAutoRelaySignals(true);
-}
+#define CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 
-bool DBusServiceAdaptor::dbusReloadSequenceList()
-{
-    bool value;
-    QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-    return value;
-}
+#cmakedefine DAEMON_SUPPORT
+#cmakedefine SYSLOG_SUPPORT
 
-DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
-{
-    new DBusServiceAdaptor(this);
-    registred = connection.registerObject(WIIMOTEDEV_DBUS_SERVICE_OBJECT, this);
-}
-
-bool DBusServiceAdaptorWrapper::dbusReloadSequenceList()
-{
-    bool value;
-    QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-    return value;
-}
+#endif // CONFIG_H

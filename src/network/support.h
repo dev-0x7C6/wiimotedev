@@ -20,10 +20,10 @@
 #ifndef NETWORK_SUPPORT_H
 #define NETWORK_SUPPORT_H
 
-#include "../include/wiimotedev/proto.h"
-#include "../include/wiimotedev/consts.h"
-#include "../wiimotedev/settings.h"
-#include "../syslog/support.h"
+#include "include/wiimotedev/proto.h"
+#include "include/wiimotedev/consts.h"
+#include "wiimotedev/settings.h"
+#include "syslog/support.h"
 
 #include <QTcpServer>
 #include <QTcpSocket>

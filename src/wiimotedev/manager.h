@@ -21,16 +21,19 @@
 #define CONNECTIONMANAGER_H
 
 #include <QThread>
-#include <QList>
+#include <QMap>
+#include <QStringList>
+#include <cwiid.h>
 
-#include "../dbus/deviceevents.h"
-#include "../dbus/service.h"
-#include "../include/wiimotedev/consts.h"
-#include "../network/support.h"
-#include "../syslog/support.h"
+#include "dbus/deviceevents.h"
+#include "dbus/service.h"
+#include "include/wiimotedev/consts.h"
+#include "network/support.h"
+#include "syslog/support.h"
+#include "wiimotedev/connection.h"
+#include "wiimotedev/settings.h"
 
-#include "connection.h"
-#include "settings.h"
+template class QList< void*>;
 
 class ConnectionManager : public QThread
 {
