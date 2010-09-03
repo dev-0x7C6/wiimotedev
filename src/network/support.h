@@ -23,7 +23,6 @@
 #include "include/wiimotedev/proto.h"
 #include "include/wiimotedev/consts.h"
 #include "wiimotedev/settings.h"
-#include "syslog/support.h"
 
 #include <QTcpServer>
 #include <QTcpSocket>
@@ -35,14 +34,14 @@
 #ifndef QWIIMOTEDEV_META_TYPES
 #define QWIIMOTEDEV_META_TYPES
 
-    Q_DECLARE_METATYPE(QList < irpoint>)
-    Q_DECLARE_METATYPE(QList < accdata>)
-    Q_DECLARE_METATYPE(QList < stickdata>)
-    Q_DECLARE_METATYPE(QList < quint32>)
+  Q_DECLARE_METATYPE(QList < irpoint>)
+  Q_DECLARE_METATYPE(QList < accdata>)
+  Q_DECLARE_METATYPE(QList < stickdata>)
+  Q_DECLARE_METATYPE(QList < quint32>)
 
-    Q_DECLARE_METATYPE(irpoint)
-    Q_DECLARE_METATYPE(accdata)
-    Q_DECLARE_METATYPE(stickdata)
+  Q_DECLARE_METATYPE(irpoint)
+  Q_DECLARE_METATYPE(accdata)
+  Q_DECLARE_METATYPE(stickdata)
 
 #endif
 
@@ -50,59 +49,59 @@ class MessageServer : public QTcpServer
 {
 Q_OBJECT
 private:
-    WiimotedevSettings *settings;
+  WiimotedevSettings *settings;
 
 public:
-    explicit MessageServer(QObject *manager, WiimotedevSettings* settings, quint16 port, QObject *parent = 0);
-    virtual ~MessageServer();
+  explicit MessageServer(QObject *manager, WiimotedevSettings* settings, quint16 port, QObject *parent = 0);
+  virtual ~MessageServer();
 
 protected:
-    void incomingConnection(int socketDescriptor);    
+  void incomingConnection(int socketDescriptor);
 
 private:
-    QList < QTcpSocket*> connections;
-    void tcpSendEvent(QByteArray &data);
-    QObject *manager;
+  QList < QTcpSocket*> connections;
+  void tcpSendEvent(QByteArray &data);
+  QObject *manager;
 
-    quint16 port;
-    QMutex mutex;
+  quint16 port;
+  QMutex mutex;
 
 public slots:
-    void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
+  void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
 
-    void dbusWiimoteConnected(quint32 id);
-    void dbusWiimoteDisconnected(quint32 id);
-    void dbusWiimoteBatteryLife(quint32 id, quint8 life);
-    void dbusWiimoteButtons(quint32 id, quint64 value);
-    void dbusWiimoteStatus(quint32 id, quint8 status);
-    void dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points);
-    void dbusWiimoteAcc(quint32 id, struct accdata acc);
+  void dbusWiimoteConnected(quint32 id);
+  void dbusWiimoteDisconnected(quint32 id);
+  void dbusWiimoteBatteryLife(quint32 id, quint8 life);
+  void dbusWiimoteButtons(quint32 id, quint64 value);
+  void dbusWiimoteStatus(quint32 id, quint8 status);
+  void dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points);
+  void dbusWiimoteAcc(quint32 id, struct accdata acc);
 
-    void dbusNunchukPlugged(quint32 id);
-    void dbusNunchukUnplugged(quint32 id);
-    void dbusNunchukButtons(quint32 id, quint64 value);
-    void dbusNunchukStick(quint32 id, struct stickdata stick);
-    void dbusNunchukAcc(quint32 id, struct accdata acc);
+  void dbusNunchukPlugged(quint32 id);
+  void dbusNunchukUnplugged(quint32 id);
+  void dbusNunchukButtons(quint32 id, quint64 value);
+  void dbusNunchukStick(quint32 id, struct stickdata stick);
+  void dbusNunchukAcc(quint32 id, struct accdata acc);
 
-    void dbusClassicControllerPlugged(quint32 id);
-    void dbusClassicControllerUnplugged(quint32 id);
-    void dbusClassicControllerButtons(quint32 id, quint64 value);
-    void dbusClassicControllerLStick(quint32 id, struct stickdata stick);
-    void dbusClassicControllerRStick(quint32 id, struct stickdata stick);
+  void dbusClassicControllerPlugged(quint32 id);
+  void dbusClassicControllerUnplugged(quint32 id);
+  void dbusClassicControllerButtons(quint32 id, quint64 value);
+  void dbusClassicControllerLStick(quint32 id, struct stickdata stick);
+  void dbusClassicControllerRStick(quint32 id, struct stickdata stick);
 
 };
 
 class MessageServerThread : public QThread
 {
-    Q_OBJECT
+  Q_OBJECT
 private:
-    WiimotedevSettings *settings;
-    quint16 port;
-    QObject *manager;
+  WiimotedevSettings *settings;
+  quint16 port;
+  QObject *manager;
 
 public:
-    explicit MessageServerThread(QObject *manager, WiimotedevSettings* settings, quint16 port,  QObject *parent = 0);
-    void run();
+  explicit MessageServerThread(QObject *manager, WiimotedevSettings* settings, quint16 port,  QObject *parent = 0);
+  void run();
 };
 
 

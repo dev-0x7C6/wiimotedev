@@ -16,46 +16,38 @@
  * You should have received a copy of the GNU Lesser General Public               *
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
+#include "syslog.h"
+#include <syslog.h>
 
-#ifndef WIIMOTEDEV_SETTINGS_H
-#define WIIMOTEDEV_SETTINGS_H
+void systemlog::open(const char *name) {
+  openlog(name, LOG_PID, LOG_DAEMON);
+}
 
-#include <QSettings>
-#include <QStringList>
+void systemlog::close() {
+  closelog();
+}
 
-#include "include/wiimotedev/consts.h"
+void systemlog::critical(const QString message) {
+  syslog(LOG_CRIT, "%s", message.toAscii().constData());
+}
 
-class WiimotedevSettings : public QObject
-{
-private:
-  QSettings *settings;
-  QString config;
+void systemlog::debug(const QString message) {
+  syslog(LOG_DEBUG, "%s", message.toAscii().constData());
+}
 
-  bool ifaceDBusSupport;
-  bool ifaceTcpSupport;
+void systemlog::error(const QString message) {
+  syslog(LOG_ERR, "%s", message.toAscii().constData());
+}
 
-  QMap < QString, quint32> sequence;
-  QStringList tcpAllowed;
+void systemlog::information(const QString message) {
+  syslog(LOG_INFO, "%s", message.toAscii().constData());
+}
 
-  quint16 tcpPort;
+void systemlog::notice(const QString message) {
+  syslog(LOG_NOTICE, "%s", message.toAscii().constData());
+}
 
-public:
-  WiimotedevSettings(QObject *parent = 0, QString file = WIIMOTEDEV_CONFIG_FILE);
-  ~WiimotedevSettings();
 
-public:
-  void reload();
-
-  inline bool dbusInterfaceSupport() { return ifaceDBusSupport; }
-  inline bool tcpInterfaceSupport() { return ifaceTcpSupport; }
-
-  inline QMap < QString, quint32> getWiiremoteSequence() { return sequence; }
-
-  inline QStringList tcpGetAllowedHostList() { return tcpAllowed; }
-  inline quint16 tcpGetPort() { return tcpPort; }
-
-  void setDBusInterfaceSupport(bool support);
-  void setTcpInterfaceSupport(bool support);
-};
-
-#endif // WIIMOTEDEV_SETTINGS_H
+void systemlog::warning(const QString message) {
+  syslog(LOG_WARNING, "%s", message.toAscii().constData());
+}

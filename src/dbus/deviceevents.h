@@ -24,9 +24,9 @@
 
 class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 {
-    Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.deviceEvents")
-    Q_CLASSINFO("D-Bus Introspection", ""
+  Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.deviceEvents")
+  Q_CLASSINFO("D-Bus Introspection", ""
 " <interface name=\"org.wiimotedev.deviceEvents\">\n"
 "    <method name=\"dbusGetWiimoteList\">\n"
 "      <annotation value=\"QList&lt;uint>\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\" />\n"
@@ -153,105 +153,105 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "  </interface>");
 
 public:
-    DBusDeviceEventsAdaptor (QObject *parent);
+  DBusDeviceEventsAdaptor (QObject *parent);
 
 public Q_SLOTS:
-    bool dbusIsClassicConnected(quint32 id);
-    bool dbusIsNunchukConnected(quint32 id);
-    bool dbusIsWiimoteConnected(quint32 id);
+  bool dbusIsClassicConnected(quint32 id);
+  bool dbusIsNunchukConnected(quint32 id);
+  bool dbusIsWiimoteConnected(quint32 id);
 
-    quint32 dbusWiimoteGetAverageLatency(quint32 id);
-    quint32 dbusWiimoteGetBatteryLife(quint32 id);
-    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+  quint32 dbusWiimoteGetAverageLatency(quint32 id);
+  quint32 dbusWiimoteGetBatteryLife(quint32 id);
+  quint32 dbusWiimoteGetCurrentLatency(quint32 id);
 
-    quint8 dbusWiimoteGetLedStatus(quint32 id);
-    quint8 dbusWiimoteGetStatus(quint32 id);
+  quint8 dbusWiimoteGetLedStatus(quint32 id);
+  quint8 dbusWiimoteGetStatus(quint32 id);
 
-    QList < uint> dbusGetWiimoteList();
-    QStringList dbusGetUnregistredWiimoteList();
+  QList < uint> dbusGetWiimoteList();
+  QStringList dbusGetUnregistredWiimoteList();
 
-    bool dbusWiimoteGetRumbleStatus(quint32 id);
-    bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
-    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
+  bool dbusWiimoteGetRumbleStatus(quint32 id);
+  bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
+  bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
 
 signals:
-    void dbusReportUnregistredWiimote(QString);
-    void dbusWiimoteGeneralButtons(quint32, quint64);
+  void dbusReportUnregistredWiimote(QString);
+  void dbusWiimoteGeneralButtons(quint32, quint64);
 
-    void dbusWiimoteConnected(quint32);
-    void dbusWiimoteDisconnected(quint32);
-    void dbusWiimoteBatteryLife(quint32, quint8);
-    void dbusWiimoteButtons(quint32, quint64);
-    void dbusWiimoteStatus(quint32, quint8);
-    void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
-    void dbusWiimoteAcc(quint32, struct accdata);
+  void dbusWiimoteConnected(quint32);
+  void dbusWiimoteDisconnected(quint32);
+  void dbusWiimoteBatteryLife(quint32, quint8);
+  void dbusWiimoteButtons(quint32, quint64);
+  void dbusWiimoteStatus(quint32, quint8);
+  void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
+  void dbusWiimoteAcc(quint32, struct accdata);
 
-    void dbusNunchukPlugged(quint32);
-    void dbusNunchukUnplugged(quint32);
-    void dbusNunchukButtons(quint32, quint64);
-    void dbusNunchukStick(quint32, struct stickdata);
-    void dbusNunchukAcc(quint32, struct accdata);
+  void dbusNunchukPlugged(quint32);
+  void dbusNunchukUnplugged(quint32);
+  void dbusNunchukButtons(quint32, quint64);
+  void dbusNunchukStick(quint32, struct stickdata);
+  void dbusNunchukAcc(quint32, struct accdata);
 
-    void dbusClassicControllerPlugged(quint32);
-    void dbusClassicControllerUnplugged(quint32);
-    void dbusClassicControllerButtons(quint32, quint64);
-    void dbusClassicControllerLStick(quint32, struct stickdata);
-    void dbusClassicControllerRStick(quint32, struct stickdata);
+  void dbusClassicControllerPlugged(quint32);
+  void dbusClassicControllerUnplugged(quint32);
+  void dbusClassicControllerButtons(quint32, quint64);
+  void dbusClassicControllerLStick(quint32, struct stickdata);
+  void dbusClassicControllerRStick(quint32, struct stickdata);
 };
 
 class DBusDeviceEventsAdaptorWrapper : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 private:
-    bool registred;
+  bool registred;
 
 public:
-    DBusDeviceEventsAdaptorWrapper(QObject *parent, QDBusConnection &connection);
+  DBusDeviceEventsAdaptorWrapper(QObject *parent, QDBusConnection &connection);
 
-    inline bool isRegistred() { return registred; }
+  inline bool isRegistred() { return registred; }
 
 public Q_SLOTS:
-    bool dbusIsClassicConnected(quint32 id);
-    bool dbusIsNunchukConnected(quint32 id);
-    bool dbusIsWiimoteConnected(quint32 id);
+  bool dbusIsClassicConnected(quint32 id);
+  bool dbusIsNunchukConnected(quint32 id);
+  bool dbusIsWiimoteConnected(quint32 id);
 
-    quint32 dbusWiimoteGetAverageLatency(quint32 id);
-    quint32 dbusWiimoteGetBatteryLife(quint32 id);
-    quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+  quint32 dbusWiimoteGetAverageLatency(quint32 id);
+  quint32 dbusWiimoteGetBatteryLife(quint32 id);
+  quint32 dbusWiimoteGetCurrentLatency(quint32 id);
 
-    quint8 dbusWiimoteGetLedStatus(quint32 id);
-    quint8 dbusWiimoteGetStatus(quint32 id);
+  quint8 dbusWiimoteGetLedStatus(quint32 id);
+  quint8 dbusWiimoteGetStatus(quint32 id);
 
-    QList < uint> dbusGetWiimoteList();
-    QStringList dbusGetUnregistredWiimoteList();
+  QList < uint> dbusGetWiimoteList();
+  QStringList dbusGetUnregistredWiimoteList();
 
-    bool dbusWiimoteGetRumbleStatus(quint32 id);
-    bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
-    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
+  bool dbusWiimoteGetRumbleStatus(quint32 id);
+  bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
+  bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
 
 Q_SIGNALS:
-    void dbusReportUnregistredWiimote(QString);
-    void dbusWiimoteGeneralButtons(quint32, quint64);
+  void dbusReportUnregistredWiimote(QString);
+  void dbusWiimoteGeneralButtons(quint32, quint64);
 
-    void dbusWiimoteConnected(quint32);
-    void dbusWiimoteDisconnected(quint32);
-    void dbusWiimoteBatteryLife(quint32, quint8);
-    void dbusWiimoteButtons(quint32, quint64);
-    void dbusWiimoteStatus(quint32, quint8);
-    void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
-    void dbusWiimoteAcc(quint32, struct accdata);
+  void dbusWiimoteConnected(quint32);
+  void dbusWiimoteDisconnected(quint32);
+  void dbusWiimoteBatteryLife(quint32, quint8);
+  void dbusWiimoteButtons(quint32, quint64);
+  void dbusWiimoteStatus(quint32, quint8);
+  void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
+  void dbusWiimoteAcc(quint32, struct accdata);
 
-    void dbusNunchukPlugged(quint32);
-    void dbusNunchukUnplugged(quint32);
-    void dbusNunchukButtons(quint32, quint64);
-    void dbusNunchukStick(quint32, struct stickdata);
-    void dbusNunchukAcc(quint32, struct accdata);
+  void dbusNunchukPlugged(quint32);
+  void dbusNunchukUnplugged(quint32);
+  void dbusNunchukButtons(quint32, quint64);
+  void dbusNunchukStick(quint32, struct stickdata);
+  void dbusNunchukAcc(quint32, struct accdata);
 
-    void dbusClassicControllerPlugged(quint32);
-    void dbusClassicControllerUnplugged(quint32);
-    void dbusClassicControllerButtons(quint32, quint64);
-    void dbusClassicControllerLStick(quint32, struct stickdata);
-    void dbusClassicControllerRStick(quint32, struct stickdata);
+  void dbusClassicControllerPlugged(quint32);
+  void dbusClassicControllerUnplugged(quint32);
+  void dbusClassicControllerButtons(quint32, quint64);
+  void dbusClassicControllerLStick(quint32, struct stickdata);
+  void dbusClassicControllerRStick(quint32, struct stickdata);
 };
 
 #endif //DEVICE_EVENTS_H

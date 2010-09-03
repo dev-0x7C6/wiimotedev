@@ -7,8 +7,8 @@ include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURR
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in
-               ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+configure_file(config.h.in
+               config.h)
 
 set(QT_DONT_USE_QTGUI TRUE)
 set(QT_USE_QTDBUS TRUE)
@@ -44,12 +44,18 @@ set (wiimotedev_headers
         dbus/support.h
         include/wiimotedev/consts.h
         include/wiimotedev/proto.h
-        syslog/support.h
         wiimotedev/settings.h
         wiimotedev/wiiremote.h
 )
 
-QT4_WRAP_CPP(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
+
+if(USE_SYSLOG)
+  list(APPEND wiimotedev_sources "syslog/syslog.cpp")
+  list(APPEND wiimotedev_headers "syslog/syslog.h")
+endif(USE_SYSLOG)
+
+
+qt4_wrap_cpp(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
 
 add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers} ${wiimotedev_headers_qt})
 target_link_libraries(wiimotedev-daemon ${QT_LIBRARIES} ${CWIID_LIBRARY})

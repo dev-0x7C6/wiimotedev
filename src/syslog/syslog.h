@@ -21,26 +21,18 @@
 #define SYSLOG_H
 
 #include <QString>
+#include "config.h"
 
-#ifdef SYSLOG_SUPPORT
+namespace systemlog {
+  void open(const char *name);
+  void close();
 
-    #include <syslog.h>
-
-    #define syslog_open(x) setlogmask(LOG_UPTO(LOG_INFO)); openlog(x, LOG_CONS, LOG_USER);
-    #define syslog_close() closelog();
-    #define syslog_message(x) syslog(LOG_INFO, "%s", x);
-
-#else
-
-    #define syslog_open(x)      ;
-    #define syslog_close()      ;
-    #define syslog_message(x)   ;
-
-#endif
-
-inline void syslog(const QString message)
-{
-    syslog_message(message.toAscii().constData());
-};
+  void critical(const QString message);
+  void debug(const QString message);
+  void error(const QString message);
+  void information(const QString message);
+  void notice(const QString message);
+  void warning(const QString message);
+}
 
 #endif // SYSLOG_H

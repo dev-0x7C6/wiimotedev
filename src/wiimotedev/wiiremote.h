@@ -41,40 +41,40 @@
 class WiiremoteDevice : public QObject
 {
 private:
-    bdaddr_t bdaddr;
-    cwiid_wiimote_t *device;
-    qint32 id;
+  bdaddr_t bdaddr;
+  cwiid_wiimote_t *device;
+  qint32 id;
 
 private:
-    bool isRumble;
-    quint8 switchOnLeds;
-    quint8 reportMode;
+  bool isRumble;
+  quint8 switchOnLeds;
+  quint8 reportMode;
 
 public:
-    explicit WiiremoteDevice(QObject *parent = 0);
-    virtual ~WiiremoteDevice();
+  explicit WiiremoteDevice(QObject *parent = 0);
+  virtual ~WiiremoteDevice();
 
-    bool connectToDevice(const quint32 timeout = 3);
-    bool disconnectFromDevice(const bool switchOfReport = true);
+  bool connectToDevice(const quint32 timeout = 3);
+  bool disconnectFromDevice(const bool switchOfReport = true);
 
-    bool getMesgStruct(int *count, union cwiid_mesg *mesg[], struct timespec *time);
+  bool getMesgStruct(int *count, union cwiid_mesg *mesg[], struct timespec *time);
 
-    inline bool isConnected() { return (device != 0); }
-    inline bool isDisconnected() { return (device == 0); }
+  inline bool isConnected() { return (device != 0); }
+  inline bool isDisconnected() { return (device == 0); }
 
-    bool setLedStatus(quint8 led);
-    bool setRumbleStatus(bool rumble);
-    bool setReportMode(quint8 mode);
+  bool setLedStatus(quint8 led);
+  bool setRumbleStatus(bool rumble);
+  bool setReportMode(quint8 mode);
 
-    quint8 getLedStatus();
-    bool getRumbleStatus();
-    quint8 getReportMode();
-    bool getWiimoteState(struct cwiid_state &state);
+  quint8 getLedStatus();
+  bool getRumbleStatus();
+  quint8 getReportMode();
+  bool getWiimoteState(struct cwiid_state &state);
 
-    bool getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal);
+  bool getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal);
 
-    QString getWiimoteSAddr();
-    bdaddr_t getWiimoteAddr();
+  QString getWiimoteSAddr();
+  bdaddr_t getWiimoteAddr();
 
 };
 

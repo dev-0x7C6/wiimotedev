@@ -33,44 +33,44 @@
 #include <QMetaType>
 
 #define QWIIMOTEDEV_REGISTER_META_TYPES                                      \
-    qRegisterMetaType< QList< struct irpoint> >("QList< irpoint>");          \
-    qRegisterMetaType< QList< struct accdata> >("QList< accdata>");          \
-    qRegisterMetaType< QList< struct stickdata> >("QList< stickdata>");      \
-    qRegisterMetaType< struct irpoint>("irpoint");                           \
-    qRegisterMetaType< struct accdata>("accdata");                           \
-    qRegisterMetaType< struct stickdata>("stickdata");                       \
-    qDBusRegisterMetaType< QList < struct irpoint> >();                      \
-    qDBusRegisterMetaType< QList < struct accdata> >();                      \
-    qDBusRegisterMetaType< QList < struct stickdata> >();                    \
-    qDBusRegisterMetaType< struct irpoint>();                                \
-    qDBusRegisterMetaType< struct accdata>();                                \
-    qDBusRegisterMetaType< struct stickdata>();
+  qRegisterMetaType< QList< struct irpoint> >("QList< irpoint>");          \
+  qRegisterMetaType< QList< struct accdata> >("QList< accdata>");          \
+  qRegisterMetaType< QList< struct stickdata> >("QList< stickdata>");      \
+  qRegisterMetaType< struct irpoint>("irpoint");                           \
+  qRegisterMetaType< struct accdata>("accdata");                           \
+  qRegisterMetaType< struct stickdata>("stickdata");                       \
+  qDBusRegisterMetaType< QList < struct irpoint> >();                      \
+  qDBusRegisterMetaType< QList < struct accdata> >();                      \
+  qDBusRegisterMetaType< QList < struct stickdata> >();                    \
+  qDBusRegisterMetaType< struct irpoint>();                                \
+  qDBusRegisterMetaType< struct accdata>();                                \
+  qDBusRegisterMetaType< struct stickdata>();
 
 #ifndef QWIIMOTEDEV_META_TYPES
 #define QWIIMOTEDEV_META_TYPES
 
-    Q_DECLARE_METATYPE(QList < irpoint>)
-    Q_DECLARE_METATYPE(QList < accdata>)
-    Q_DECLARE_METATYPE(QList < stickdata>)
-    Q_DECLARE_METATYPE(QList < uint>)
+  Q_DECLARE_METATYPE(QList < irpoint>)
+  Q_DECLARE_METATYPE(QList < accdata>)
+  Q_DECLARE_METATYPE(QList < stickdata>)
+  Q_DECLARE_METATYPE(QList < uint>)
 
-    Q_DECLARE_METATYPE(irpoint)
-    Q_DECLARE_METATYPE(accdata)
-    Q_DECLARE_METATYPE(stickdata)
+  Q_DECLARE_METATYPE(irpoint)
+  Q_DECLARE_METATYPE(accdata)
+  Q_DECLARE_METATYPE(stickdata)
 
 #endif
 
 #ifndef QWIIMOTEDEV_MARSHALL
 #define QWIIMOTEDEV_MARSHALL
 
-    QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point);
-    const QDBusArgument& operator>>(const QDBusArgument& argument, irpoint& point);
-    QDBusArgument& operator<<(QDBusArgument& argument, const accdata& acc);
-    const QDBusArgument& operator>>(const QDBusArgument& argument, accdata& acc);
-    QDBusArgument& operator<<(QDBusArgument& argument, const stickdata& stick);
-    const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick);
-    QDBusArgument& operator<<(QDBusArgument& argument, const QList < quint32>& list);
-    const QDBusArgument& operator>>(const QDBusArgument& argument, QList < quint32>& list);
+  QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point);
+  const QDBusArgument& operator>>(const QDBusArgument& argument, irpoint& point);
+  QDBusArgument& operator<<(QDBusArgument& argument, const accdata& acc);
+  const QDBusArgument& operator>>(const QDBusArgument& argument, accdata& acc);
+  QDBusArgument& operator<<(QDBusArgument& argument, const stickdata& stick);
+  const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick);
+  QDBusArgument& operator<<(QDBusArgument& argument, const QList < quint32>& list);
+  const QDBusArgument& operator>>(const QDBusArgument& argument, QList < quint32>& list);
 
 #endif
 

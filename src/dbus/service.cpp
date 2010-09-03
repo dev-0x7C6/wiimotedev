@@ -21,26 +21,26 @@
 
 DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent)
 {
-    QWIIMOTEDEV_REGISTER_META_TYPES;
-    setAutoRelaySignals(true);
+  QWIIMOTEDEV_REGISTER_META_TYPES;
+  setAutoRelaySignals(true);
 }
 
 bool DBusServiceAdaptor::dbusReloadSequenceList()
 {
-    bool value;
-    QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-    return value;
+  bool value;
+  QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+  return value;
 }
 
 DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
 {
-    new DBusServiceAdaptor(this);
-    registred = connection.registerObject(WIIMOTEDEV_DBUS_SERVICE_OBJECT, this);
+  new DBusServiceAdaptor(this);
+  registred = connection.registerObject(WIIMOTEDEV_DBUS_SERVICE_OBJECT, this);
 }
 
 bool DBusServiceAdaptorWrapper::dbusReloadSequenceList()
 {
-    bool value;
-    QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-    return value;
+  bool value;
+  QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+  return value;
 }

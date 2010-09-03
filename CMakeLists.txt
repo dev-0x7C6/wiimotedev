@@ -5,20 +5,19 @@
 cmake_minimum_required(VERSION 2.6)
 project( wiimotedev-daemon )
 
-option(DAEMON_SUPPORT "Build as daemon" ON)
-option(SYSLOG_SUPPORT "Syslog support" ON)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
+
+find_package(Qt4 REQUIRED QtCore)
+find_package(Qt4 REQUIRED QtDbus)
+find_package(CWiiD REQUIRED NO_POLICY_SCOPE)
+
+option(DAEMON_MODE "Enable daemon mode" ON)
+option(USE_SYSLOG "Use syslog to raports" ON)
 
 set(init_directory "/etc/init.d")
 set(dbus_directory "/etc/dbus-1/system.d")
 set(sbin_directory "/usr/sbin")
 set(include_directory "/usr/include")
-
-find_package(Qt4 REQUIRED) 
-
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
-find_package(CWiiD REQUIRED NO_POLICY_SCOPE)
-
-include_directories(${CWIID_INCLUDE_DIR})
 
 add_subdirectory(src)
 add_subdirectory(init.d)

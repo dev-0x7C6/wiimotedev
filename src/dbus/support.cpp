@@ -21,72 +21,72 @@
 
 QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point)
 {
-    argument.beginStructure();
-    argument << point.size << point.x << point.y;
-    argument.endStructure();
-    return argument;
+  argument.beginStructure();
+  argument << point.size << point.x << point.y;
+  argument.endStructure();
+  return argument;
 }
 
 const QDBusArgument& operator>>(const QDBusArgument& argument, irpoint& point)
 {
-    argument.beginStructure();
-    argument >> point.size >> point.x >> point.y;
-    argument.endStructure();
-    return argument;
+  argument.beginStructure();
+  argument >> point.size >> point.x >> point.y;
+  argument.endStructure();
+  return argument;
 }
 
 QDBusArgument& operator<<(QDBusArgument& argument, const accdata& acc)
 {
-    argument.beginStructure();
-    argument << acc.x << acc.y << acc.z << acc.pitch << acc.roll;
-    argument.endStructure();
-    return argument;
+  argument.beginStructure();
+  argument << acc.x << acc.y << acc.z << acc.pitch << acc.roll;
+  argument.endStructure();
+  return argument;
 }
 
 const QDBusArgument& operator>>(const QDBusArgument& argument, accdata& acc)
 {
-    argument.beginStructure();
-    argument >> acc.x >> acc.y >> acc.z >> acc.pitch >> acc.roll;
-    argument.endStructure();
-    return argument;
+  argument.beginStructure();
+  argument >> acc.x >> acc.y >> acc.z >> acc.pitch >> acc.roll;
+  argument.endStructure();
+  return argument;
 }
 
 QDBusArgument& operator<<(QDBusArgument& argument, const stickdata& stick)
 {
-    argument.beginStructure();
-    argument << stick.x << stick.y;
-    argument.endStructure();
-    return argument;
+  argument.beginStructure();
+  argument << stick.x << stick.y;
+  argument.endStructure();
+  return argument;
 }
 
 const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata& stick)
 {
-    argument.beginStructure();
-    argument >> stick.x >> stick.y;
-    argument.endStructure();
-    return argument;
+  argument.beginStructure();
+  argument >> stick.x >> stick.y;
+  argument.endStructure();
+  return argument;
 }
 
 QDBusArgument& operator<<(QDBusArgument& argument, const QList < quint32>& list)
 {
-    argument.beginArray();
-    for (register int i = 0; i < list.count(); ++i)
-        argument << list.at(i);
-    argument.endArray();
-    return argument;
+  argument.beginArray();
+  for (register int i = 0; i < list.count(); ++i)
+      argument << list.at(i);
+  argument.endArray();
+  return argument;
 }
 
 const QDBusArgument& operator>>(const QDBusArgument& argument, QList < quint32>& list)
 {
-    argument.beginArray();
-    list.clear();
+  argument.beginArray();
+  list.clear();
 
-    while (!argument.atEnd()){
-        quint32 i;
-        argument >> i;
-        list << i;
-    }
+  while (!argument.atEnd()){
+      quint32 i;
+      argument >> i;
+      list << i;
+  }
 
-    argument.endArray();
-    return argument;
+  argument.endArray();
+  return argument;
 }

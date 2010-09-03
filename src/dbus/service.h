@@ -24,9 +24,9 @@
 
 class DBusServiceAdaptor : public QDBusAbstractAdaptor
 {
-    Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
-    Q_CLASSINFO("D-Bus Introspection", ""
+  Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
+  Q_CLASSINFO("D-Bus Introspection", ""
 "<interface name=\"org.wiimotedev.service\">\n"
 "    <method name=\"dbusReloadSequenceList\">\n"
 "      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
@@ -34,24 +34,24 @@ class DBusServiceAdaptor : public QDBusAbstractAdaptor
 "  </interface>");
 
 public:
-    DBusServiceAdaptor(QObject *parent);
+  DBusServiceAdaptor(QObject *parent);
 
 public slots:
-    bool dbusReloadSequenceList();
+  bool dbusReloadSequenceList();
 };
 
 class DBusServiceAdaptorWrapper : public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 private:
-    bool registred;
+  bool registred;
 
 public:
-    DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection);
-    inline bool isRegistred() { return registred; }
+  DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection);
+  inline bool isRegistred() { return registred; }
 
 public Q_SLOTS:
-    bool dbusReloadSequenceList();
+  bool dbusReloadSequenceList();
 };
 
 #endif //SERVICE_H

@@ -22,7 +22,7 @@
 
 #define CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 
-#cmakedefine DAEMON_SUPPORT
-#cmakedefine SYSLOG_SUPPORT
+#cmakedefine DAEMON_MODE
+#cmakedefine USE_SYSLOG
 
 #endif // CONFIG_H
