@@ -1,6 +1,13 @@
 Wiimotedev-daemon Changelog
 ===========================
 
+1.3
+- include wiimotedev-register
+- include wiimotedev-toolkit
+- include examples
+- performance improvement
+- better guarded code
+
 1.2.1
 - small optimalizations, cleanups
 - various bug fixes 

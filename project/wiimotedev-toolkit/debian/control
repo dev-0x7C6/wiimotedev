@@ -1,0 +1,14 @@
+Source: wiimotedev-toolkit
+Section: devel
+Priority: optional
+Maintainer: Arkadiusz Piekarz <piekarzarkadiusz@gmail.com>
+Build-Depends: cdbs, debhelper (>= 7), cmake, libqt4-dev, libdbus-1-dev, wiimotedev-daemon
+Standards-Version: 3.8.4
+Homepage: http://gitorious.org/wiimotedev
+
+Package: wiimotedev-toolkit
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Qt4 Front-end for wiimotedev service. 
+ This is simple hardware monitor, you can use this 
+ for get low level informations from  wiimote/nunchuk/classic.

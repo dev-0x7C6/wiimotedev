@@ -1,0 +1,17 @@
+Source: wiimotedev-car-example
+Section: devel
+Priority: optional
+Maintainer: Arkadiusz Piekarz <piekarzarkadiusz@gmail.com>
+Build-Depends: cdbs, debhelper (>= 7), cmake, libqt4-dev, libdbus-1-dev, wiimotedev-daemon
+Standards-Version: 3.8.4
+Homepage: http://gitorious.org/wiimotedev
+
+Package: wiimotedev-car-example
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Example how d-bus and wiimotedev-daemon interface works. 
+ It’s modified version of remotecontrolledcar from qt4 qdbus examples.
+ If you’re developer and you’re especially interset in creating 
+ applications with wiiremote (wiimotedev) support check 
+ src/dbus_support.h, src/dbus_support.cpp in first place.
+ checkout homepage for sources.
