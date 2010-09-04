@@ -2,8 +2,6 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-cmake_minimum_required(VERSION 2.6)
-
 find_path(CWIID_INCLUDE_DIR cwiid.h)
 find_library(CWIID_LIBRARY cwiid)
 
