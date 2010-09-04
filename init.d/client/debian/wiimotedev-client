@@ -1,0 +1,82 @@
+#! /bin/sh
+
+### BEGIN INIT INFO
+# Provides:          Wiimotedev
+# Required-Start:    bluetooth
+# Required-Stop:     bluetooth
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Wiimotedev daemon
+### END INIT INFO
+
+# Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
+# Copyright (C) 2010 Jarek Bojko
+# Contact: vazir.pl@gmail.com      
+
+PIDFILE=/var/run/wiimotedev-client.pid
+SERVICE=/usr/sbin/wiimotedev-client
+GROUP=wiimotedev
+CONFIG=/etc/wiimotedev/client.conf
+
+# int wiimotedev_check_group()
+
+wiimotedev_check_group() {
+  if [ -z $(cat /etc/group | grep "$GROUP") ]; then
+    echo " -- Adding new group \"${GROUP}\""
+    groupadd $GROUP
+
+    if [ -n $(cat /etc/group | grep "$GROUP") ]; then
+      echo " -- Group \"${GROUP}\" added successful"
+    else
+      echo " -- Cannot add new group \"${GROUP}\""
+      return 1
+    fi
+  fi
+}
+
+# int wiimotedev_start()
+
+wiimotedev_start() {
+  wiimotedev_check_group
+
+  if [ ! -x $SERVICE ]; then
+    echo " -- ${SERVICE} file is not executable"
+    return 1
+  fi
+
+  start-stop-daemon --start -q -x "$SERVICE" --group "$GROUP"
+}
+
+# int wiimotedev_stop()
+
+wiimotedev_stop() {
+  wiimotedev_check_group
+
+  if [ -f "$PIDFILE" ]; then
+    start-stop-daemon --stop -q -p "$PIDFILE" --group "$GROUP"
+  fi
+}
+
+
+# int wiimotedev_reload()
+
+case "$1" in
+  start)
+    echo "Starting wiimotedev-client"
+    wiimotedev_start
+    ;;
+  stop)
+    echo "Stopping wiimotedev-client"
+    wiimotedev_stop
+    ;;
+  restart)
+    echo "Restarting wiimotedev-client"
+    wiimotedev_stop
+    wiimotedev_start
+    ;;
+  *)
+    echo "Usage (start | stop | restart)"
+    ;;
+esac
+
+exit 0

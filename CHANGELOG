@@ -2,8 +2,10 @@ Wiimotedev-daemon Changelog
 ===========================
 
 1.3
+- better integration between project
 - include wiimotedev-register
 - include wiimotedev-toolkit
+- include wiimotedev-client
 - include examples
 - performance improvement
 - better guarded code

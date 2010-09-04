@@ -7,6 +7,8 @@ project( wiimotedev-project )
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 
+option(BUILD_DAEMON "Build wiimotedev-daemon, main wiiremote manager" ON)
+option(BUILD_CLIENT "Build wiimotedev-client, the tcp/ip client for wiimotedev-daemon" ON)
 option(BUILD_REGISTER "Build wiimotedev-register tool" ON)
 option(BUILD_TOOLKIT "Build wiimotedev-toolkit tool" ON)
 option(BUILD_EXAMPLES "Build additional examples" ON)

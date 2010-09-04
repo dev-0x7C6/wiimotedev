@@ -2,10 +2,8 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-if(BUILD_DAEMON) 
-  add_subdirectory(daemon)
-endif(BUILD_DAEMON)
+add_subdirectory(debian)	
+add_subdirectory(ubuntu)	
+add_subdirectory(gentoo)
+add_subdirectory(slackware)
 
-if(BUILD_CLIENT)
-  add_subdirectory(client)
-endif(BUILD_CLIENT)

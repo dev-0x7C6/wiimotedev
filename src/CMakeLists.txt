@@ -44,28 +44,101 @@ set (wiimotedev_headers
   wiimotedev/wiiremote.h
 )
 
-if(USE_SYSLOG)
-  list(APPEND wiimotedev_sources "syslog/syslog.cpp")
-  list(APPEND wiimotedev_headers "syslog/syslog.h")
-endif(USE_SYSLOG)
+set (client_sources
+  dbus/support.cpp
+  dbus/deviceevents.cpp
+  dbus/service.cpp
+  network/manager.cpp
+  client.cpp
+)
 
-qt4_wrap_cpp(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
+set (client_headers_qt
+  dbus/deviceevents.h
+  dbus/service.h
+  network/manager.h
+)
 
-add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers} ${wiimotedev_headers_qt})
-target_link_libraries(wiimotedev-daemon ${QT_LIBRARIES} ${CWIID_LIBRARY})
+set (client_headers
+  dbus/support.h
+  include/wiimotedev/consts.h
+  include/wiimotedev/proto.h
+)
 
-install(TARGETS wiimotedev-daemon DESTINATION ${sbin_directory})
+set (register_sources
+  register.cpp
+)
+
+set (register_headers
+  include/wiimotedev/consts.h
+  include/wiimotedev/proto.h
+)
+
+
+set(toolkit_sources
+  toolkit.cpp
+  toolkit/mainwindow.cpp
+  toolkit/selectwiimote.cpp
+)
+
+set(toolkit_headers
+  include/wiimotedev/consts.h
+)
+
+set(toolkit_headers_qt
+  toolkit/mainwindow.h
+  toolkit/selectwiimote.h
+  include/wiimotedev/interface.h
+)
+
+set(toolkit_uis
+  toolkit/mainwindow.ui
+  toolkit/selectwiimote.ui
+)
+
+set(car_example_sources
+  example-car.cpp
+  examples/car/car.cpp
+)
+
+set(car_example_headers
+  include/wiimotedev/consts.h
+)
+
+set(car_example_headers_qt
+  examples/car/car.h
+  include/wiimotedev/interface.h
+)
+
+
+if(BUILD_DAEMON)
+  if(USE_SYSLOG)
+    list(APPEND wiimotedev_sources "syslog/syslog.cpp")
+    list(APPEND wiimotedev_headers "syslog/syslog.h")
+  endif(USE_SYSLOG)
+
+  qt4_wrap_cpp(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
+
+  add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers} ${wiimotedev_headers_qt})
+  target_link_libraries(wiimotedev-daemon ${QT_LIBRARIES} ${CWIID_LIBRARY})
+
+  install(TARGETS wiimotedev-daemon DESTINATION ${sbin_directory})
+endif(BUILD_DAEMON)
+
+if(BUILD_CLIENT)
+  if(USE_SYSLOG)
+    list(APPEND client_sources "syslog/syslog.cpp")
+    list(APPEND client_headers "syslog/syslog.h")
+  endif(USE_SYSLOG)
+
+  qt4_wrap_cpp(client_sources ${client_headers_qt} )
+
+  add_executable(wiimotedev-client ${client_sources} ${client_headers})
+  target_link_libraries(wiimotedev-client ${QT_LIBRARIES})
+
+  install(TARGETS wiimotedev-client DESTINATION ${sbin_directory})
+endif(BUILD_CLIENT)
 
 if(BUILD_REGISTER)
-  set (register_sources
-    register.cpp
-  )
-
-  set (register_headers
-    include/wiimotedev/consts.h
-    include/wiimotedev/proto.h
-  )
-
   add_executable(wiimotedev-register ${register_sources} ${register_headers})
   target_link_libraries(wiimotedev-register ${QT_LIBRARIES})
 
@@ -73,27 +146,6 @@ if(BUILD_REGISTER)
 endif(BUILD_REGISTER)
 
 if(BUILD_TOOLKIT)
-  set(toolkit_sources
-    toolkit.cpp
-    toolkit/mainwindow.cpp
-    toolkit/selectwiimote.cpp
-  )
-
-  set(toolkit_headers
-    include/wiimotedev/consts.h
-  )
-
-  set(toolkit_headers_qt
-    toolkit/mainwindow.h
-    toolkit/selectwiimote.h
-    include/wiimotedev/interface.h
-  )
-
-  set(toolkit_uis
-    toolkit/mainwindow.ui
-    toolkit/selectwiimote.ui
-  )
-
   qt4_wrap_ui(toolkit_sources ${toolkit_uis})
   qt4_wrap_cpp(toolkit_sources ${toolkit_headers_qt} )
 
@@ -105,24 +157,10 @@ endif(BUILD_TOOLKIT)
 
 
 if(BUILD_EXAMPLES)
-  set(car_example_sources
-    example-car.cpp
-    examples/car/car.cpp
-  )
-
-  set(car_example_headers
-    include/wiimotedev/consts.h
-  )
-
-  set(car_example_headers_qt
-    examples/car/car.h
-    include/wiimotedev/interface.h
-  )
-
   qt4_wrap_cpp(car_example_sources ${car_example_headers_qt} )
 
   add_executable(wiimotedev-car-example ${car_example_sources} ${car_example_headers})
   target_link_libraries(wiimotedev-car-example ${QT_LIBRARIES})
 
   install(TARGETS wiimotedev-car-example DESTINATION ${bin_directory})
-endif(BUILD_TOOLKIT)
+endif(BUILD_EXAMPLES)

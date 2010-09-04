@@ -2,12 +2,12 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-set(CURRENT "debian")
+set(CURRENT "slackware")
 
 STRING(COMPARE EQUAL "${DISTRO}" "${CURRENT}" valid)
 
 if (valid) 
-  message( "-- Init.d script for ${DISTRO} is available" )
+  message( "-- Init.d script for ${DISTRO} is available [wiimotedev-daemon]" )
   install(FILES wiimotedev-daemon DESTINATION ${init_directory}
 	    PERMISSIONS
 	      OWNER_READ  OWNER_WRITE  OWNER_EXECUTE
