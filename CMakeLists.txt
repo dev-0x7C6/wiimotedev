@@ -13,9 +13,11 @@ find_package(CWiiD REQUIRED NO_POLICY_SCOPE)
 
 option(DAEMON_MODE "Enable daemon mode" ON)
 option(USE_SYSLOG "Use syslog to raports" ON)
+option(REGISTER_TOOL "Build wiimotedev-register tool" ON)
 
 set(init_directory "/etc/init.d")
 set(dbus_directory "/etc/dbus-1/system.d")
+set(bin_directory "/usr/bin")
 set(sbin_directory "/usr/sbin")
 set(include_directory "/usr/include")
 

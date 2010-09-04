@@ -20,6 +20,8 @@
 #ifndef CONNECTIONMANAGER_H
 #define CONNECTIONMANAGER_H
 
+#include <boost/scoped_ptr.hpp>
+
 #include <QThread>
 #include <QMap>
 #include <QStringList>
@@ -42,6 +44,9 @@ private:
   DBusDeviceEventsAdaptorWrapper *dbusDeviceEventsAdaptor;
   DBusServiceAdaptorWrapper *dbusServiceAdaptor;
 
+//
+
+
 // Settings ------------------------------------------------- /
   WiimotedevSettings *wiimotedevSettings;
 
@@ -56,6 +61,8 @@ private:
 
   WiimoteConnection *active_connection;
 
+  WiimoteConnection* findWiiremoteObject(quint32 id);
+
 public:
   ConnectionManager();
  ~ConnectionManager();
@@ -63,13 +70,6 @@ public:
 
 protected:
   void run();
-
-private:
-  WiimoteConnection* findWiiremoteObject(quint32 id);
-
-private slots:
-  void registerConnection(void *object);
-  void unregisterConnection(void *object);
 
 public Q_SLOTS:
   bool dbusIsClassicConnected(quint32 id);
@@ -91,6 +91,10 @@ public Q_SLOTS:
   QStringList dbusGetUnregistredWiimoteList();
 
   bool dbusReloadSequenceList();
+
+private Q_SLOTS:
+  void registerConnection(void *object);
+  void unregisterConnection(void *object);
 
 Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);

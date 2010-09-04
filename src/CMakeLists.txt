@@ -21,39 +21,37 @@ add_subdirectory(include)
 set(SBIN_INSTALL_DIR "${EXEC_INSTALL_PREFIX}/sbin")
 
 set (wiimotedev_sources
-        dbus/support.cpp
-        dbus/deviceevents.cpp
-        dbus/service.cpp
-        network/support.cpp
-        wiimotedev/connection.cpp
-        wiimotedev/manager.cpp
-        wiimotedev/settings.cpp
-        wiimotedev/wiiremote.cpp
-        daemon.cpp
+  dbus/support.cpp
+  dbus/deviceevents.cpp
+  dbus/service.cpp
+  network/support.cpp
+  wiimotedev/connection.cpp
+  wiimotedev/manager.cpp
+  wiimotedev/settings.cpp
+  wiimotedev/wiiremote.cpp
+  daemon.cpp
 )
 
 set (wiimotedev_headers_qt
-        dbus/deviceevents.h
-        dbus/service.h
-        network/support.h
-        wiimotedev/connection.h
-        wiimotedev/manager.h
+  dbus/deviceevents.h
+  dbus/service.h
+  network/support.h
+  wiimotedev/connection.h
+  wiimotedev/manager.h
 )
 
 set (wiimotedev_headers
-        dbus/support.h
-        include/wiimotedev/consts.h
-        include/wiimotedev/proto.h
-        wiimotedev/settings.h
-        wiimotedev/wiiremote.h
+  dbus/support.h
+  include/wiimotedev/consts.h
+  include/wiimotedev/proto.h
+  wiimotedev/settings.h
+  wiimotedev/wiiremote.h
 )
-
 
 if(USE_SYSLOG)
   list(APPEND wiimotedev_sources "syslog/syslog.cpp")
   list(APPEND wiimotedev_headers "syslog/syslog.h")
 endif(USE_SYSLOG)
-
 
 qt4_wrap_cpp(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
 
@@ -61,3 +59,19 @@ add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers} ${w
 target_link_libraries(wiimotedev-daemon ${QT_LIBRARIES} ${CWIID_LIBRARY})
 
 install(TARGETS wiimotedev-daemon DESTINATION ${sbin_directory})
+
+if(REGISTER_TOOL)
+  set (register_sources
+    register.cpp
+  )
+
+  set (register_headers
+    include/wiimotedev/consts.h
+    include/wiimotedev/proto.h
+  )
+
+  add_executable(wiimotedev-register ${register_sources} ${register_headers})
+  target_link_libraries(wiimotedev-register ${QT_LIBRARIES})
+
+  install(TARGETS wiimotedev-register DESTINATION ${bin_directory})
+endif()
