@@ -23,7 +23,6 @@
 #include <QThread>
 #include <QObject>
 
-#include "include/wiimotedev/consts.h"
 #include "dbus/deviceevents.h"
 #include "wiimotedev/wiiremote.h"
 

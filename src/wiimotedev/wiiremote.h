@@ -24,10 +24,7 @@
 // other library like *libwiimotedev (when is done)
 
 #include <QObject>
-#include <QTime>
-
 #include <cwiid.h>
-#include <math.h>
 
 #include "include/wiimotedev/consts.h"
 

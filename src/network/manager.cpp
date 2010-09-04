@@ -22,6 +22,7 @@
 #include <QHostAddress>
 
 #include "network/manager.h"
+#include "syslog/syslog.h"
 
 extern bool additional_debug;
 
@@ -57,7 +58,6 @@ ConnectionManager::ConnectionManager() : terminateReq(false)
 
     connect(this, SIGNAL(dbusReportUnregistredWiiremote(QString)), dbusDeviceEventsAdaptor, SIGNAL(dbusReportUnregistredWiiremote(QString)));
 
-#ifdef USE_SYSLOG
     if (additional_debug) {
       systemlog::debug(QString("register %1 object %2").arg(WIIMOTEDEV_DBUS_OBJECT_EVENTS, dbusDeviceEventsAdaptor->isRegistred() ? "done" : "failed"));
       systemlog::debug(QString("register %1 object %2").arg(WIIMOTEDEV_DBUS_OBJECT_SERVICE, dbusServiceAdaptor->isRegistred() ? "done" : "failed"));
@@ -67,7 +67,6 @@ ConnectionManager::ConnectionManager() : terminateReq(false)
     if (!(dbusDeviceEventsAdaptor->isRegistred() &&
           dbusServiceAdaptor->isRegistred() && registred))
       systemlog::error(QString("can not register dbus service"));
-#endif
 
     connect(this, SIGNAL(dbusWiimoteGeneralButtons(quint32, quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)));
 

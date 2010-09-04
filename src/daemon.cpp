@@ -18,10 +18,11 @@
  **********************************************************************************/
 
 #define DAEMON_NAME "wiimotedev"
-#define DAEMON_VERSION "1.2.1"
+#define DAEMON_VERSION "1.3.0"
 #define PID_FILE "/var/run/wiimotedev-daemon.pid"
 #define PID_MODE 0644
 
+#include "config.h"
 //Wiimotedev-daemon arguments
 // --debug -> for additional debug output
 // --force-dbus -> enable dbus protocol
@@ -30,23 +31,19 @@
 // --no-daemon -> do not run in daemon mode
 // --no-quiet -> do not block stdout messages
 
-#include "config.h"
-#include "syslog/syslog.h"
-#include "wiimotedev/manager.h"
-
 #include <boost/scoped_ptr.hpp>
 #include <stdlib.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+#include <string.h>
 
-#ifdef DAEMON_MODE
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <stdio.h>
-  #include <fcntl.h>
-  #include <errno.h>
-  #include <unistd.h>
-  #include <string.h>
-#endif
+#include "wiimotedev/manager.h"
+#include "syslog/syslog.h"
 
 #include <QCoreApplication>
 
@@ -67,7 +64,7 @@ void signal_handler(int sig) {
 }
 
 int main(int argc, char *argv[])
-{        
+{
   application.reset(new QCoreApplication(argc, argv));
   application.get()->setApplicationName(DAEMON_NAME);
   application.get()->setApplicationVersion(DAEMON_VERSION);
@@ -88,7 +85,6 @@ int main(int argc, char *argv[])
   force_dbus = (application.get()->arguments().indexOf("--force-dbus") != -1);
   force_tcp = (application.get()->arguments().indexOf("--force-tcp") != -1);
 
-#ifdef DAEMON_MODE
   if (application.get()->arguments().indexOf("--no-daemon") == -1) {
     pid_t pid = fork();
     if (pid < 0) exit(EXIT_FAILURE);
@@ -105,7 +101,7 @@ int main(int argc, char *argv[])
     write(fd, QString::number(sid).toAscii().constData(), QString::number(sid).length());
     close(fd);
   }
-#endif
+
   if (application.get()->arguments().indexOf("--no-quiet") == -1) {
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
@@ -118,13 +114,11 @@ int main(int argc, char *argv[])
   signal(SIGQUIT, signal_handler);
   signal(SIGPIPE, signal_handler);
 
-#ifdef USE_SYSLOG
   systemlog::open(DAEMON_NAME);
   systemlog::information("system service started");
 
   if (additional_debug)
     systemlog::debug("additional debug mode switch-on");
-#endif
 
   ConnectionManager *manager_thread = new ConnectionManager();
 
@@ -135,10 +129,8 @@ int main(int argc, char *argv[])
 
   delete manager_thread;
 
-#ifdef USE_SYSLOG
   systemlog::information("system service closed");
   systemlog::close();
-#endif
 
   application.reset();
   exit(EXIT_SUCCESS);

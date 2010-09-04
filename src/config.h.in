@@ -26,7 +26,4 @@
 #cmakedefine WIIMOTEDEV_VERSION_MINOR
 #cmakedefine WIIMOTEDEV_VERSION_PATCH
 
-#cmakedefine DAEMON_MODE
-#cmakedefine USE_SYSLOG
-
 #endif // CONFIG_H

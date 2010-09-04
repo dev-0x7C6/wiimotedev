@@ -45,20 +45,16 @@ ConnectionManager::ConnectionManager():
 // Setup ------------------------------------------------------------ /
   memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
 
-#ifdef USE_SYSLOG
   if (additional_debug)
     systemlog::notice(QString("loading rules from %1").arg(WIIMOTEDEV_CONFIG_FILE));
-#endif
 
   wiimotedevSettings = new WiimotedevSettings(this, WIIMOTEDEV_CONFIG_FILE);
   wiiremoteSequence = wiimotedevSettings->getWiiremoteSequence();
 
-#ifdef USE_SYSLOG
   if (additional_debug) {
     systemlog::debug(QString("dbus interface - %1").arg(wiimotedevSettings->dbusInterfaceSupport() ? "enabled" : "disabled"));
     systemlog::debug(QString("tcp/ip interface - %1").arg(wiimotedevSettings->tcpInterfaceSupport() ? "enabled" : "disabled"));
   }
-#endif
 
 // DBus interface --------------------------------------------------- /
 
@@ -71,19 +67,15 @@ ConnectionManager::ConnectionManager():
 
     connect(this, SIGNAL(dbusReportUnregistredWiimote(QString)), dbusDeviceEventsAdaptor, SIGNAL(dbusReportUnregistredWiimote(QString)));
 
-#ifdef USE_SYSLOG
     if (additional_debug) {
       systemlog::debug(QString("register %1 object %2").arg(WIIMOTEDEV_DBUS_OBJECT_EVENTS, dbusDeviceEventsAdaptor->isRegistred() ? "done" : "failed"));
       systemlog::debug(QString("register %1 object %2").arg(WIIMOTEDEV_DBUS_OBJECT_SERVICE, dbusServiceAdaptor->isRegistred() ? "done" : "failed"));
       systemlog::debug(QString("register %1 service %2").arg(WIIMOTEDEV_DBUS_SERVICE_NAME, registred ? "done" : "failed"));
     }
-#endif
 
-#ifdef USE_SYSLOG
     if (!(dbusDeviceEventsAdaptor->isRegistred() &&
           dbusServiceAdaptor->isRegistred() && registred))
       systemlog::error("can not register dbus service");
-#endif
   }
 
 // TCP interface ---------------------------------------------------- /
@@ -91,31 +83,23 @@ ConnectionManager::ConnectionManager():
   if (wiimotedevSettings->tcpInterfaceSupport()) {
     tcpServerThread = new MessageServerThread(this, wiimotedevSettings, wiimotedevSettings->tcpGetPort(), this);
     tcpServerThread->start();
-#ifdef USE_SYSLOG
     if (additional_debug)
       systemlog::debug(QString("starting tcp/ip thread at 0x%1").arg(QString::number(tcpServerThread->thread()->currentThreadId(), 0x10)));
-#endif
   }
 
   if (!(wiimotedevSettings->tcpInterfaceSupport() || wiimotedevSettings->dbusInterfaceSupport())) {
-#ifdef USE_SYSLOG
     systemlog::error("dbus/tcp disabled, stoping wiimotedev");
-#endif
     terminateReq = true;
   }
 }
 
-ConnectionManager::~ConnectionManager()
-{
+ConnectionManager::~ConnectionManager() {
   delete wiimotedevSettings;
 }
 
-bool ConnectionManager::dbusReloadSequenceList()
-{
-#ifdef USE_SYSLOG
+bool ConnectionManager::dbusReloadSequenceList() {
   if (additional_debug)
     systemlog::notice(QString("loading sequences from %1").arg(WIIMOTEDEV_CONFIG_FILE));
-#endif
 
   wiimotedevSettings->reload();
   wiiremoteSequence = wiimotedevSettings->getWiiremoteSequence();
@@ -130,8 +114,7 @@ void ConnectionManager::terminateRequest()
     active_connection->wait();
 }
 
-void ConnectionManager::run()
-{
+void ConnectionManager::run() {
   QTime time;
   active_connection = new WiimoteConnection(dbusDeviceEventsAdaptor);
 
@@ -153,13 +136,10 @@ void ConnectionManager::run()
   if (active_connection)
     delete active_connection;
 
-
-#ifdef USE_SYSLOG
   if (additional_debug) {
       systemlog::notice("pepare to shutdown");
       systemlog::debug(QString("active connections count = %1").arg(QString::number(objectList.count())));
   }
-#endif
 
   for (register int i = 0; i < objectList.count(); ++i)
   {
@@ -167,17 +147,13 @@ void ConnectionManager::run()
     disconnect(connection, 0, 0, 0);
     connection->quitThread();
     connection->wait();
-#ifdef USE_SYSLOG
     systemlog::information(QString("wiiremote %1 disconnected").arg(connection->Device->getWiimoteSAddr()));
-#endif
     delete connection;
   }
   objectList.clear();
 
-#ifdef USE_SYSLOG
   if (additional_debug)
     systemlog::debug(QString("leaving main thread %1").arg(QString::number(currentThreadId())));
-#endif
 }
 
 void ConnectionManager::registerConnection(void *object)
@@ -191,9 +167,7 @@ void ConnectionManager::registerConnection(void *object)
     connection->Device->setLedStatus(connection->getWiimoteSequence());
 
   if (!connection->getWiimoteSequence()) {
-#ifdef USE_SYSLOG
     systemlog::information(QString("wiiremote %1 is unregistred, disconnected").arg(macaddr));
-#endif
     connection->Device->setLedStatus(0x0F);
 
     bool exist = false;
@@ -214,9 +188,7 @@ void ConnectionManager::registerConnection(void *object)
     return;
   }
 
-#ifdef USE_SYSLOG
   systemlog::information(QString("wiiremote %1 connected, id %2").arg(macaddr, QString::number(connection->getWiimoteSequence(), 10)));
-#endif
 
   objectList << object;
   if (wiimotedevSettings->tcpInterfaceSupport()) {
@@ -250,9 +222,7 @@ void ConnectionManager::unregisterConnection(void *object)
   WiimoteConnection *connection = static_cast< WiimoteConnection*>( object);
   disconnect(connection, 0, 0, 0);
 
-#ifdef USE_SYSLOG
   systemlog::information(QString("wiiremote %1 disconnected, id %2").arg(connection->Device->getWiimoteSAddr(), QString::number(connection->getWiimoteSequence(), 10)));
-#endif
 
   connection->wait();
   delete connection;

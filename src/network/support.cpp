@@ -18,10 +18,7 @@
  **********************************************************************************/
 
 #include "network/support.h"
-
-#ifdef USE_SYSLOG
 #include "syslog/syslog.h"
-#endif
 
 MessageServerThread::MessageServerThread(QObject *manager, WiimotedevSettings* settings, quint16 port,  QObject *parent):
   QThread(parent),
@@ -35,15 +32,11 @@ MessageServerThread::MessageServerThread(QObject *manager, WiimotedevSettings* s
 void MessageServerThread::run() {
   MessageServer *server = new MessageServer(manager, settings, port);
   if (server->listen(QHostAddress::Any, port)) {
-#ifdef USE_SYSLOG
-    syslog::information(QString("listening on %1").arg(QString::number(port, 10)));
-#endif
+    systemlog::information(QString("listening on %1").arg(QString::number(port, 10)));
     exec();
   }
-#ifdef USE_SYSLOG
   else
-    syslog::information(QString("can't listen on %1, tcp service halted").arg(QString::number(port, 10)));
-#endif
+    systemlog::information(QString("can't listen on %1, tcp service halted").arg(QString::number(port, 10)));
 }
 
 MessageServer::MessageServer(QObject *manager, WiimotedevSettings* settings, quint16 port, QObject *parent) : QTcpServer(parent), settings(settings), manager(manager), port(port)
@@ -111,10 +104,7 @@ void MessageServer::incomingConnection(int socketDescriptor)
   }
 
   quint32 host = tcpSocket->peerAddress().toIPv4Address();
-
-#ifdef USE_SYSLOG
-  syslog::information(QString("Incoming connection from %1").arg(tcpSocket->peerAddress())));
-#endif
+  systemlog::information(QString("Incoming connection from %1").arg(tcpSocket->peerAddress().toString()));
 
   bool accepted = false;
 
@@ -126,17 +116,13 @@ void MessageServer::incomingConnection(int socketDescriptor)
   }
 
   if (!accepted) {
-#ifdef USE_SYSLOG
-    syslog::information(QString("Connection rejected %1, probably host is not allowed").arg(tcpSocket->peerAddress()));
-#endif
+    systemlog::information(QString("Connection rejected %1, probably host is not allowed").arg(tcpSocket->peerAddress().toString()));
     tcpSocket->disconnectFromHost();
     delete tcpSocket;
     return;
   }
 
-#ifdef USE_SYSLOG
-  syslog::information(QString("Connection established with %1").arg(tcpSocket->peerAddress());
-#endif
+  systemlog::information(QString("Connection established with %1").arg(tcpSocket->peerAddress().toString()));
   connections << tcpSocket;
 }
 

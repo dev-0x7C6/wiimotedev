@@ -19,8 +19,9 @@
 #include <QThread>
 #include <QTimer>
 #include <QTime>
+#include <math.h>
 
-#include "syslog/syslog.h"
+#include "include/wiimotedev/consts.h"
 #include "wiimotedev/connection.h"
 
 extern bool additional_debug;

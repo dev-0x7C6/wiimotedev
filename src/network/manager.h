@@ -35,9 +35,6 @@
 
 #include "dbus/deviceevents.h"
 #include "dbus/service.h"
-#ifdef USE_SYSLOG
-#include "syslog/syslog.h"
-#endif USE_SYSLOG
 
 const QString clientSection("client/");
 const QString deftcpTimeout("timeout");

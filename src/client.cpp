@@ -18,37 +18,31 @@
  **********************************************************************************/
 
 #define DAEMON_NAME "wiimotedev[client]"
-#define DAEMON_VERSION "1.1.80" // 1.1.80
+#define DAEMON_VERSION "1.3.0"
 #define PID_FILE "/var/run/wiimotedev-client.pid"
 #define PID_MODE 0644
 
+#include "config.h"
 //*Wiimotedev-client arguments
-
 // --debug -> for additional debug output
 // --help -> print help page
 // --no-daemon -> do not run in daemon mode
 // --no-quiet -> do not block stdout messages
 
-#include <stdlib.h>
-
-#ifdef DAEMON_MODE
-  #include <sys/types.h>
-  #include <sys/stat.h>
-  #include <stdio.h>
-  #include <fcntl.h>
-  #include <errno.h>
-  #include <unistd.h>
-  #include <string.h>
-#endif
-
 #include <boost/scoped_ptr.hpp>
 #include <signal.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <unistd.h>
+#include <string.h>
 
-#include <QCoreApplication>
-#include <QFile>
-#include <QTextStream>
-
+#include "syslog/syslog.h"
 #include "network/manager.h"
+#include <QCoreApplication>
 
 boost::scoped_ptr<QCoreApplication> application;
 
@@ -82,8 +76,7 @@ int main(int argc, char *argv[])
 
   additional_debug = (application.get()->arguments().indexOf("--debug") != -1);
 
-#ifdef DAEMON_MODE
-  if (application.arguments().indexOf("--no-daemon") == -1)
+  if (application.get()->arguments().indexOf("--no-daemon") == -1)
   {
     pid_t pid = fork();
     if (pid < 0) exit(EXIT_FAILURE);
@@ -97,24 +90,22 @@ int main(int argc, char *argv[])
 
     if (!fd) exit(EXIT_FAILURE);
 
-    QString out = QString::number(sid, 10);
-    write(fd, out.toAscii().constData(), out.length());
+    write(fd, QString::number(sid).toAscii().constData(), QString::number(sid).length());
     close(fd);
   }
-#endif
+
   if (application.get()->arguments().indexOf("--no-quiet") == -1) {
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
   }
 
-#ifdef USE_SYSLOG
   systemlog::open(DAEMON_NAME);
   systemlog::information("system service started");
 
   if (additional_debug)
     systemlog::debug("additional debug mode switch-on");
-#endif
+
   signal(SIGHUP, signal_handler);
   signal(SIGTERM, signal_handler);
   signal(SIGINT, signal_handler);
@@ -127,10 +118,8 @@ int main(int argc, char *argv[])
   manager.terminateRequest();
   manager.wait();
 
-#ifdef USE_SYSLOG
   systemlog::information("system service closed");
   systemlog::close();
-#endif
 
   application.reset();
 
