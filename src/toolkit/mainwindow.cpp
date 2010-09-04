@@ -17,11 +17,11 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
-
 #include <QMessageBox>
 #include <QDBusReply>
+
+#include "toolkit/mainwindow.h"
+#include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),

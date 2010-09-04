@@ -26,10 +26,10 @@
 #include <QTimer>
 #include <QPainter>
 
-#include "ui/selectwiimote.h"
+#include "toolkit/selectwiimote.h"
 
-#include "interface.h"
-#include "wiimotedev.h"
+#include "include/wiimotedev/interface.h"
+#include "include/wiimotedev/consts.h"
 
 const double defaultPointMultiplier = 2.5;
 

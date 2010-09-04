@@ -10,11 +10,7 @@ set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FL
 configure_file(config.h.in
                config.h)
 
-set(QT_DONT_USE_QTGUI TRUE)
-set(QT_USE_QTDBUS TRUE)
-set(QT_USE_QTNETWORK TRUE)
-
-include( ${QT_USE_FILE} )
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 add_subdirectory(include)
 
@@ -60,7 +56,7 @@ target_link_libraries(wiimotedev-daemon ${QT_LIBRARIES} ${CWIID_LIBRARY})
 
 install(TARGETS wiimotedev-daemon DESTINATION ${sbin_directory})
 
-if(REGISTER_TOOL)
+if(BUILD_REGISTER)
   set (register_sources
     register.cpp
   )
@@ -74,4 +70,59 @@ if(REGISTER_TOOL)
   target_link_libraries(wiimotedev-register ${QT_LIBRARIES})
 
   install(TARGETS wiimotedev-register DESTINATION ${bin_directory})
-endif()
+endif(BUILD_REGISTER)
+
+if(BUILD_TOOLKIT)
+  set(toolkit_sources
+    toolkit.cpp
+    toolkit/mainwindow.cpp
+    toolkit/selectwiimote.cpp
+  )
+
+  set(toolkit_headers
+    include/wiimotedev/consts.h
+  )
+
+  set(toolkit_headers_qt
+    toolkit/mainwindow.h
+    toolkit/selectwiimote.h
+    include/wiimotedev/interface.h
+  )
+
+  set(toolkit_uis
+    toolkit/mainwindow.ui
+    toolkit/selectwiimote.ui
+  )
+
+  qt4_wrap_ui(toolkit_sources ${toolkit_uis})
+  qt4_wrap_cpp(toolkit_sources ${toolkit_headers_qt} )
+
+  add_executable(wiimotedev-toolkit ${toolkit_sources} ${toolkit_headers})
+  target_link_libraries(wiimotedev-toolkit ${QT_LIBRARIES})
+
+  install(TARGETS wiimotedev-toolkit DESTINATION ${bin_directory})
+endif(BUILD_TOOLKIT)
+
+
+if(BUILD_EXAMPLES)
+  set(car_example_sources
+    example-car.cpp
+    examples/car/car.cpp
+  )
+
+  set(car_example_headers
+    include/wiimotedev/consts.h
+  )
+
+  set(car_example_headers_qt
+    examples/car/car.h
+    include/wiimotedev/interface.h
+  )
+
+  qt4_wrap_cpp(car_example_sources ${car_example_headers_qt} )
+
+  add_executable(wiimotedev-car-example ${car_example_sources} ${car_example_headers})
+  target_link_libraries(wiimotedev-car-example ${QT_LIBRARIES})
+
+  install(TARGETS wiimotedev-car-example DESTINATION ${bin_directory})
+endif(BUILD_TOOLKIT)

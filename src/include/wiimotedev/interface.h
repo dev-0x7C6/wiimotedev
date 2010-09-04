@@ -115,7 +115,7 @@ inline const QDBusArgument& operator>>(const QDBusArgument& argument, stickdata&
     return argument;
 }
 
-#endif QWIIMOTEDEV_MARSHALL
+#endif
 
 class DBusDeviceEventsInterface :public QDBusAbstractInterface
 {

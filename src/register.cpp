@@ -25,7 +25,7 @@
 
 
 #define APP_NAME "wiimotedev-register"
-#define APP_VERSION "1.2.1"
+#define APP_VERSION "1.2.80"
 
 int main(int argc, char *argv[])
 {

@@ -2,18 +2,25 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-cmake_minimum_required(VERSION 2.6)
-project( Wiimotedev Project )
+cmake_minimum_required(VERSION 2.8)
+project( wiimotedev-project )
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/")
 
-find_package(Qt4 REQUIRED QtCore)
-find_package(Qt4 REQUIRED QtDbus)
-find_package(CWiiD REQUIRED NO_POLICY_SCOPE)
+option(BUILD_REGISTER "Build wiimotedev-register tool" ON)
+option(BUILD_TOOLKIT "Build wiimotedev-toolkit tool" ON)
+option(BUILD_EXAMPLES "Build additional examples" ON)
 
 option(DAEMON_MODE "Enable daemon mode" ON)
 option(USE_SYSLOG "Use syslog to raports" ON)
-option(REGISTER_TOOL "Build wiimotedev-register tool" ON)
+
+find_package(Qt4 REQUIRED QtCore QtDbus QtNetwork QtGui QtOpenGL)
+
+find_package(CWiiD REQUIRED NO_POLICY_SCOPE)
+find_package(Boost REQUIRED)
+
+add_definitions(${QT_DEFINITIONS})
+include(${QT_USE_FILE})
 
 set(init_directory "/etc/init.d")
 set(dbus_directory "/etc/dbus-1/system.d")

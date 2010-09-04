@@ -1,5 +1,5 @@
 /**********************************************************************************
- * Wiimotedev car example                                                         *
+ * Wiimotedev toolkit                                                             *
  * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
  * Contact: dev.strikeu@gmail.com                                                 *
  *                                                                                *
@@ -17,41 +17,32 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef CAR_H
-#define CAR_H
+#include <QApplication>
+#include <QMessageBox>
 
-#include <QGraphicsItem>
-#include <QObject>
-#include <QBrush>
 
-#include "dbus_support.h"
+#include "include/wiimotedev/consts.h"
+#include "include/wiimotedev/interface.h"
 
-class Car : public QObject, public QGraphicsItem
-{
-    Q_OBJECT
+#include "toolkit/mainwindow.h"
 
-public:
-    Car(quint32 id = 0);
-   ~Car();
-    QRectF boundingRect() const;
-    QBrush color;
+int main(int argc, char *argv[])
+{  
+    QApplication application(argc, argv);
 
-public slots:
-  // slots for signals from DeviceEventsClass
-    void dbusWiimoteButtons(quint32 id, quint64 value);
-    void dbusWiimoteAcc(quint32 id, struct accdata acc);
+    DBusDeviceEventsInterface *iface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
+                                                                     WIIMOTEDEV_DBUS_OBJECT_EVENTS,
+                                                                     QDBusConnection::systemBus(),
+                                                                     &application);
+    if (!iface->isValid()) {
+        QMessageBox::critical(application.activeWindow(), QString("Critical"), QString("Wiimotedev-daemon: service is not available"));
+        return 0;
+    }
 
-protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-    void timerEvent(QTimerEvent *event);
+    delete iface;
 
-private:
-    DBusDeviceEventsInterface *iface; // DBus interface
-    quint32 wiimoteId; // store wiimote id
+    MainWindow window;
+    window.show();
 
-    bool useRoll, carBreak;
-    qreal wheelsAngle;
-    qreal speed;
-};
-
-#endif // CAR_H
+    return application.exec();
+}

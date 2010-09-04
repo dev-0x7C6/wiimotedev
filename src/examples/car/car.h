@@ -1,5 +1,5 @@
 /**********************************************************************************
- * Wiimotedev toolkit                                                             *
+ * Wiimotedev car example                                                         *
  * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
  * Contact: dev.strikeu@gmail.com                                                 *
  *                                                                                *
@@ -17,32 +17,40 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
+#ifndef CAR_H
+#define CAR_H
 
-#include "selectwiimote.h"
-#include "ui_selectwiimote.h"
+#include <QGraphicsItem>
+#include <QObject>
+#include <QBrush>
 
-SelectWiimote::SelectWiimote(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::SelectWiimote)
+#include "include/wiimotedev/interface.h"
+
+class Car : public QObject, public QGraphicsItem
 {
-    ui->setupUi(this);
-    wiimoteid = 0;
-    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(selectButtonPushed()));
-}
+    Q_OBJECT
+public:
+    Car(quint32 id = 0);
+   ~Car();
+    QRectF boundingRect() const;
+    QBrush color;
 
-SelectWiimote::~SelectWiimote()
-{
-    delete ui;
-}
+public slots:
+  // slots for signals from DeviceEventsClass
+    void dbusWiimoteButtons(quint32 id, quint64 value);
+    void dbusWiimoteAcc(quint32 id, struct accdata acc);
 
-void SelectWiimote::selectButtonPushed()
-{
-    wiimoteid = ui->comboBox->currentText().toInt();
-    close();
-}
+protected:
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+    void timerEvent(QTimerEvent *event);
 
-void SelectWiimote::setWiimoteList(QList < uint> &list)
-{
-    for (register int i = 0; i < list.count(); ++i)
-        ui->comboBox->addItem(QString::number(list.at(i)));
-}
+private:
+    DBusDeviceEventsInterface *iface; // DBus interface
+    quint32 wiimoteId; // store wiimote id
+
+    bool useRoll, carBreak;
+    qreal wheelsAngle;
+    qreal speed;
+};
+
+#endif // CAR_H

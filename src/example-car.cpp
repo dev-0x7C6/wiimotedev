@@ -17,12 +17,12 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include <QtGui/QApplication>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QGraphicsScene>
-#include <QtDBus/QDBusConnection>
+#include <QApplication>
+#include <QGraphicsView>
+#include <QGraphicsScene>
+#include <QDBusConnection>
 
-#include "car.h"
+#include "examples/car/car.h"
 
 int main(int argc, char *argv[])
 {
