@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
   foreach (const QString &name, list) {
     while (field[++id]);
     settings.setValue(name, id);
-    qDebug(QString("\t%1 as %2").arg(name, QString::number(id)).toAscii().constData());
+    qDebug("%s", QString("%1 as %2").arg(name, QString::number(id)).toAscii().constData());
   }
 
   settings.endGroup();

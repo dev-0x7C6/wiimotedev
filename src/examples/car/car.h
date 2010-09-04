@@ -28,29 +28,30 @@
 
 class Car : public QObject, public QGraphicsItem
 {
-    Q_OBJECT
+  Q_OBJECT
+  Q_INTERFACES(QGraphicsItem)
 public:
-    Car(quint32 id = 0);
-   ~Car();
-    QRectF boundingRect() const;
-    QBrush color;
+  Car(quint32 id = 0);
+ ~Car();
+  QRectF boundingRect() const;
+  QBrush color;
 
 public slots:
-  // slots for signals from DeviceEventsClass
-    void dbusWiimoteButtons(quint32 id, quint64 value);
-    void dbusWiimoteAcc(quint32 id, struct accdata acc);
+// slots for signals from DeviceEventsClass
+  void dbusWiimoteButtons(quint32 id, quint64 value);
+  void dbusWiimoteAcc(quint32 id, struct accdata acc);
 
 protected:
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-    void timerEvent(QTimerEvent *event);
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+  void timerEvent(QTimerEvent *event);
 
 private:
-    DBusDeviceEventsInterface *iface; // DBus interface
-    quint32 wiimoteId; // store wiimote id
+  DBusDeviceEventsInterface *iface; // DBus interface
+  quint32 wiimoteId; // store wiimote id
 
-    bool useRoll, carBreak;
-    qreal wheelsAngle;
-    qreal speed;
+  bool useRoll, carBreak;
+  qreal wheelsAngle;
+  qreal speed;
 };
 
 #endif // CAR_H

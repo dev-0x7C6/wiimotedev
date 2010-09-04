@@ -36,6 +36,8 @@
 #include "dbus/deviceevents.h"
 #include "dbus/service.h"
 
+#include "syslog/syslog.h"
+
 const QString clientSection("client/");
 const QString deftcpTimeout("timeout");
 const QString deftcpHostname("hostname");

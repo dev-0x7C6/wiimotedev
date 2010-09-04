@@ -22,7 +22,6 @@
 #include <QHostAddress>
 
 #include "network/manager.h"
-#include "syslog/syslog.h"
 
 extern bool additional_debug;
 
@@ -253,19 +252,19 @@ void ConnectionManager::readyRead()
     } while (!stream.atEnd());
 }
 
-quint8 ConnectionManager::dbusWiimoteGetLedStatus(quint32 id)
-{
+quint8 ConnectionManager::dbusWiimoteGetLedStatus(quint32 id) {
+  return 0;
 }
 
 
-bool ConnectionManager::dbusWiimoteGetRumbleStatus(quint32 id)
-{
+bool ConnectionManager::dbusWiimoteGetRumbleStatus(quint32 id) {
+  return false;
 }
 
-bool ConnectionManager::dbusWiimoteSetLedStatus(quint32 id, quint8 status)
-{
+bool ConnectionManager::dbusWiimoteSetLedStatus(quint32 id, quint8 status) {
+  return false;
 }
 
-bool ConnectionManager::dbusWiimoteSetRumbleStatus(quint32 id, bool status)
-{
+bool ConnectionManager::dbusWiimoteSetRumbleStatus(quint32 id, bool status) {
+  return false;
 }

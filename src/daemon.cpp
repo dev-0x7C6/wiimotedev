@@ -31,7 +31,6 @@
 // --no-daemon -> do not run in daemon mode
 // --no-quiet -> do not block stdout messages
 
-#include <boost/scoped_ptr.hpp>
 #include <stdlib.h>
 #include <signal.h>
 #include <sys/types.h>
@@ -46,8 +45,9 @@
 #include "syslog/syslog.h"
 
 #include <QCoreApplication>
+#include <QScopedPointer>
 
-boost::scoped_ptr<QCoreApplication> application;
+QScopedPointer <QCoreApplication> application;
 
 bool additional_debug = false;
 bool force_dbus = false;
@@ -58,7 +58,7 @@ void signal_handler(int sig) {
     case SIGHUP:
     case SIGTERM:
     case SIGINT:
-    case SIGQUIT: application.get()->quit(); break;
+    case SIGQUIT: application.take()->quit(); break;
     case SIGPIPE: signal(SIGPIPE, signal_handler); break;
   }
 }
@@ -66,10 +66,10 @@ void signal_handler(int sig) {
 int main(int argc, char *argv[])
 {
   application.reset(new QCoreApplication(argc, argv));
-  application.get()->setApplicationName(DAEMON_NAME);
-  application.get()->setApplicationVersion(DAEMON_VERSION);
+  application.take()->setApplicationName(DAEMON_NAME);
+  application.take()->setApplicationVersion(DAEMON_VERSION);
 
-  if (application.get()->arguments().indexOf("--help") != -1) {
+  if (application.take()->arguments().indexOf("--help") != -1) {
     qDebug("Wiimotedev-daemon argument list\n");
     qDebug("  --debug\t\tfor additional debug output");
     qDebug("  --force-dbus\t\tenable dbus protocol");
@@ -77,15 +77,15 @@ int main(int argc, char *argv[])
     qDebug("  --help\t\tprint help page");
     qDebug("  --no-daemon\t\tdo not run in background");
     qDebug("  --no-quiet\t\tdo not block stdout messages");
-    qDebug("");
+    qDebug();
     exit(EXIT_SUCCESS);
   }
 
-  additional_debug = (application.get()->arguments().indexOf("--debug") != -1);
-  force_dbus = (application.get()->arguments().indexOf("--force-dbus") != -1);
-  force_tcp = (application.get()->arguments().indexOf("--force-tcp") != -1);
+  additional_debug = (application.take()->arguments().indexOf("--debug") != -1);
+  force_dbus = (application.take()->arguments().indexOf("--force-dbus") != -1);
+  force_tcp = (application.take()->arguments().indexOf("--force-tcp") != -1);
 
-  if (application.get()->arguments().indexOf("--no-daemon") == -1) {
+  if (application.take()->arguments().indexOf("--no-daemon") == -1) {
     pid_t pid = fork();
     if (pid < 0) exit(EXIT_FAILURE);
     if (pid > 0) exit(EXIT_SUCCESS);
@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     close(fd);
   }
 
-  if (application.get()->arguments().indexOf("--no-quiet") == -1) {
+  if (application.take()->arguments().indexOf("--no-quiet") == -1) {
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
@@ -123,7 +123,7 @@ int main(int argc, char *argv[])
   ConnectionManager *manager_thread = new ConnectionManager();
 
   manager_thread->start();
-  application.get()->exec();
+  application.take()->exec();
   manager_thread->terminateRequest();
   manager_thread->wait();
 

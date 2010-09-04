@@ -6,7 +6,6 @@ cmake_minimum_required(VERSION 2.6)
 project( wiimotedev-daemon )
 
 find_package(Qt4 REQUIRED QtCore QtDbus QtNetwork QtGui QtOpenGL)
-find_package(Boost REQUIRED)
 
 include("cmake/FindCWiiD.cmake")
 include("cmake/Version.cmake")
@@ -16,9 +15,6 @@ option(BUILD_CLIENT "Build wiimotedev-client, the tcp/ip client for wiimotedev-d
 option(BUILD_REGISTER "Build wiimotedev-register tool" ON)
 option(BUILD_TOOLKIT "Build wiimotedev-toolkit tool" ON)
 option(BUILD_EXAMPLES "Build additional examples" ON)
-
-add_definitions(${QT_DEFINITIONS})
-include(${QT_USE_FILE})
 
 set(init_directory "/etc/init.d")
 set(dbus_directory "/etc/dbus-1/system.d")

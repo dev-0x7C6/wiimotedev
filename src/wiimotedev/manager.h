@@ -20,8 +20,6 @@
 #ifndef CONNECTIONMANAGER_H
 #define CONNECTIONMANAGER_H
 
-#include <boost/scoped_ptr.hpp>
-
 #include <QThread>
 #include <QMap>
 #include <QStringList>
