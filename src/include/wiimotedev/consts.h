@@ -30,13 +30,6 @@
 #define WIIMOTEDEV_DBUS_OBJECT_EVENTS "/deviceEvents"
 #define WIIMOTEDEV_DBUS_OBJECT_SERVICE "/service"
 
-/* Compatibility ------------------------------------------------- */
-
-#define WIIMOTEDEV_DBUS_SERVICE_IFACE "org.wiimotedev.service"
-#define WIIMOTEDEV_DBUS_EVENTS_IFACE "org.wiimotedev.deviceEvents"
-#define WIIMOTEDEV_DBUS_SERVICE_OBJECT "/service"
-#define WIIMOTEDEV_DBUS_EVENTS_OBJECT "/deviceEvents"
-
 /* Typedefs ------------------------------------------------------ */
 
 typedef unsigned long long uint64;

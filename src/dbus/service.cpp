@@ -35,7 +35,7 @@ bool DBusServiceAdaptor::dbusReloadSequenceList()
 DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
 {
   new DBusServiceAdaptor(this);
-  registred = connection.registerObject(WIIMOTEDEV_DBUS_SERVICE_OBJECT, this);
+  registred = connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_SERVICE, this);
 }
 
 bool DBusServiceAdaptorWrapper::dbusReloadSequenceList()

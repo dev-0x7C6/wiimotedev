@@ -1,25 +1,22 @@
-Wiimotedev-daemon is core project in wiimotedev family. It’s working on dbus system layer, 
-provide full set API to communicate with wiiremotes. Service brings two interfaces, one 
-for general communication with wiiremote(s), other for service management. Other words this 
-service manage wiiremotes connections, and brings API to communicate with wiiremotes directly.
+Wiimotedev-daemon is a core project in wiimotedev family. It works on dbus system layer,
+provides a full set API to communicate with wiiremotes. Service brings two interfaces,
+one for general communication with wiiremote(s), the other for service management. 
+In other words this service manages wiiremotes connections and brings API to communicate 
+with wiiremotes directly.
 
 Advantages:
 – an elegant way to add wiiremote support in your application
 – wiiremotes can be easly shared by large amount of application (that’s big one!)
 – very simple api, just run and check by qdbusviewer.
 – support
-– documentation (working on it)
 
 In oder to compile it run:
-
-> cmake CMakeLists -DDISTRO=yourdistro
-> make all
-> make install # make sure make install is running with root privilages
+cmake . -DDISTRO=yourdistro -DCMAKE_INSTALL_PREFIX=/usr
+make all
+make install
 
 depencies:
 - libcwiid
-- qt-core 
-- qt-network
-- qt-dbus
+- qt4
 
 Supported distributions: gentoo, ubuntu, debian, slackware

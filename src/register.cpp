@@ -23,9 +23,8 @@
 #include <QSettings>
 #include "include/wiimotedev/consts.h"
 
-
 #define APP_NAME "wiimotedev-register"
-#define APP_VERSION "1.2.80"
+#define APP_VERSION "1.3"
 
 int main(int argc, char *argv[])
 {

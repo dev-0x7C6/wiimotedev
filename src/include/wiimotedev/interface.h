@@ -121,7 +121,7 @@ class DBusDeviceEventsInterface :public QDBusAbstractInterface
 {
     Q_OBJECT
 public:
-    static inline const char *staticInterfaceName() { return WIIMOTEDEV_DBUS_EVENTS_IFACE; }
+    static inline const char *staticInterfaceName() { return WIIMOTEDEV_DBUS_IFACE_EVENTS; }
 
 public:
     DBusDeviceEventsInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0)

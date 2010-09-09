@@ -119,7 +119,7 @@ quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetAverageLatency(quint32 id)
 DBusDeviceEventsAdaptorWrapper::DBusDeviceEventsAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
 {
   new DBusDeviceEventsAdaptor(this);
-  registred = connection.registerObject(WIIMOTEDEV_DBUS_EVENTS_OBJECT, this);
+  registred = connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_EVENTS, this);
 }
 
 
