@@ -28,61 +28,61 @@ extern bool additional_debug;
 
 WiimoteConnection::WiimoteConnection(DBusDeviceEventsAdaptorWrapper *adaptor, QObject *parent)
    :QThread(parent),
-    adaptor(adaptor)
+    adaptor(adaptor),
+    wiimote(new WiimoteDevice(this))
 {
-  if (adaptor) {
-    connect(this, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusWiimoteConnected(quint32)), adaptor, SIGNAL(dbusWiimoteConnected(quint32)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusWiimoteDisconnected(quint32)), adaptor, SIGNAL(dbusWiimoteDisconnected(quint32)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusWiimoteButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteButtons(quint32,quint64)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusWiimoteStatus(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteStatus(quint32,quint8)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), adaptor, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusNunchukPlugged(quint32)), adaptor, SIGNAL(dbusNunchukPlugged(quint32)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusNunchukUnplugged(quint32)), adaptor, SIGNAL(dbusNunchukUnplugged(quint32)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusNunchukButtons(quint32,quint64)), adaptor, SIGNAL(dbusNunchukButtons(quint32,quint64)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusClassicControllerPlugged(quint32)), adaptor, SIGNAL(dbusClassicControllerPlugged(quint32)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusClassicControllerUnplugged(quint32)), adaptor, SIGNAL(dbusClassicControllerUnplugged(quint32)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), adaptor, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::DirectConnection);
-    connect(this, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::DirectConnection);
-  }
+  setTerminationEnabled(false);
 
-  setTerminationEnabled(true);
-  Device = new WiiremoteDevice;
+  if (!adaptor)
+    return;
+
+  connect(this, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusWiimoteConnected(quint32)), adaptor, SIGNAL(dbusWiimoteConnected(quint32)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusWiimoteDisconnected(quint32)), adaptor, SIGNAL(dbusWiimoteDisconnected(quint32)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusWiimoteButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteButtons(quint32,quint64)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusWiimoteStatus(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteStatus(quint32,quint8)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), adaptor, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusNunchukPlugged(quint32)), adaptor, SIGNAL(dbusNunchukPlugged(quint32)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusNunchukUnplugged(quint32)), adaptor, SIGNAL(dbusNunchukUnplugged(quint32)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusNunchukButtons(quint32,quint64)), adaptor, SIGNAL(dbusNunchukButtons(quint32,quint64)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusClassicControllerPlugged(quint32)), adaptor, SIGNAL(dbusClassicControllerPlugged(quint32)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusClassicControllerUnplugged(quint32)), adaptor, SIGNAL(dbusClassicControllerUnplugged(quint32)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), adaptor, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::DirectConnection);
+  connect(this, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::DirectConnection);
 }
 
 WiimoteConnection::~WiimoteConnection() {
-  if (adaptor) {
-    disconnect(this, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)));
-    disconnect(this, SIGNAL(dbusWiimoteConnected(quint32)), adaptor, SIGNAL(dbusWiimoteConnected(quint32)));
-    disconnect(this, SIGNAL(dbusWiimoteDisconnected(quint32)), adaptor, SIGNAL(dbusWiimoteDisconnected(quint32)));
-    disconnect(this, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)));
-    disconnect(this, SIGNAL(dbusWiimoteButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteButtons(quint32,quint64)));
-    disconnect(this, SIGNAL(dbusWiimoteStatus(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteStatus(quint32,quint8)));
-    disconnect(this, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), adaptor, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)));
-    disconnect(this, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)));
-    disconnect(this, SIGNAL(dbusNunchukPlugged(quint32)), adaptor, SIGNAL(dbusNunchukPlugged(quint32)));
-    disconnect(this, SIGNAL(dbusNunchukUnplugged(quint32)), adaptor, SIGNAL(dbusNunchukUnplugged(quint32)));
-    disconnect(this, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusNunchukStick(quint32,struct stickdata)));
-    disconnect(this, SIGNAL(dbusNunchukButtons(quint32,quint64)), adaptor, SIGNAL(dbusNunchukButtons(quint32,quint64)));
-    disconnect(this, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusNunchukAcc(quint32,struct accdata)));
-    disconnect(this, SIGNAL(dbusClassicControllerPlugged(quint32)), adaptor, SIGNAL(dbusClassicControllerPlugged(quint32)));
-    disconnect(this, SIGNAL(dbusClassicControllerUnplugged(quint32)), adaptor, SIGNAL(dbusClassicControllerUnplugged(quint32)));
-    disconnect(this, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), adaptor, SIGNAL(dbusClassicControllerButtons(quint32,quint64)));
-    disconnect(this, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)));
-    disconnect(this, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)));
-  }
+  if (!adaptor)
+    return;
 
-  delete Device;
+  disconnect(this, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)));
+  disconnect(this, SIGNAL(dbusWiimoteConnected(quint32)), adaptor, SIGNAL(dbusWiimoteConnected(quint32)));
+  disconnect(this, SIGNAL(dbusWiimoteDisconnected(quint32)), adaptor, SIGNAL(dbusWiimoteDisconnected(quint32)));
+  disconnect(this, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)));
+  disconnect(this, SIGNAL(dbusWiimoteButtons(quint32,quint64)), adaptor, SIGNAL(dbusWiimoteButtons(quint32,quint64)));
+  disconnect(this, SIGNAL(dbusWiimoteStatus(quint32,quint8)), adaptor, SIGNAL(dbusWiimoteStatus(quint32,quint8)));
+  disconnect(this, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), adaptor, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)));
+  disconnect(this, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)));
+  disconnect(this, SIGNAL(dbusNunchukPlugged(quint32)), adaptor, SIGNAL(dbusNunchukPlugged(quint32)));
+  disconnect(this, SIGNAL(dbusNunchukUnplugged(quint32)), adaptor, SIGNAL(dbusNunchukUnplugged(quint32)));
+  disconnect(this, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusNunchukStick(quint32,struct stickdata)));
+  disconnect(this, SIGNAL(dbusNunchukButtons(quint32,quint64)), adaptor, SIGNAL(dbusNunchukButtons(quint32,quint64)));
+  disconnect(this, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), adaptor, SIGNAL(dbusNunchukAcc(quint32,struct accdata)));
+  disconnect(this, SIGNAL(dbusClassicControllerPlugged(quint32)), adaptor, SIGNAL(dbusClassicControllerPlugged(quint32)));
+  disconnect(this, SIGNAL(dbusClassicControllerUnplugged(quint32)), adaptor, SIGNAL(dbusClassicControllerUnplugged(quint32)));
+  disconnect(this, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), adaptor, SIGNAL(dbusClassicControllerButtons(quint32,quint64)));
+  disconnect(this, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)));
+  disconnect(this, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), adaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)));
 }
 
 void WiimoteConnection::run()
 {
-  if (Device->isDisconnected())
+  if (wiimote->isDisconnected())
       return;
 
   emit dbusWiimoteConnected(sequence);
@@ -152,7 +152,6 @@ void WiimoteConnection::run()
   struct acc_cal nunchuk_calibration;
   memset(&nunchuk_calibration, 0, sizeof(struct acc_cal));
 
-//  Classic temporary variables **************************************************** /
   struct stickdata classicRStickdata, classicLStickdata;
   classicRStickdata.x = 0;
   classicRStickdata.y = 0;
@@ -174,7 +173,7 @@ void WiimoteConnection::run()
 
   QTime latencyTimer;
 
-  Device->getDeviceCallibration(CWIID_EXT_NONE, &wiimote_calibration);
+  wiimote->getDeviceCallibration(CWIID_EXT_NONE, &wiimote_calibration);
 
   double wxvalueabs, wxvalue, nxvalueabs, nxvalue, wxpow, nxpow = 0.0;
   double wyvalueabs, wyvalue, nyvalueabs, nyvalue, wypow, nypow = 0.0;
@@ -193,7 +192,7 @@ void WiimoteConnection::run()
 
   int batteryRequest = 0;
 
-  while (Device->getMesgStruct(&count, &mesg, &time) && !quitRequest) {
+  while (wiimote->getMesgStruct(&count, &mesg, &time) && !quitRequest) {
     currentLatency = latencyTimer.elapsed();
     latencyTimer.start();
 
@@ -211,23 +210,17 @@ void WiimoteConnection::run()
 
     for (register int i = 0; i < count; ++i) switch (mesg[i].type) {
 
-    // Disconnect section *************************************************************************************************************** /
       case CWIID_MESG_ERROR:
-      // Classic cleanup ****************************************************************************************************** /
           if (classicPlugged) classicDeviceCleanup(classicLStickdata, classicRStickdata);
 
-      // Nunchuk cleanup ****************************************************************************************************** /
           if (nunchukPlugged) nunchukDeviceCleanup(nunchukStickdata, nunchukAccdata);
-
-     // Wiimote cleanup ****************************************************************************************************** /
-          Device->disconnectFromDevice(false);
+          wiimote->disconnectFromDevice(false);
           WiimoteButtons = 0;
           wiimoteDeviceCleanup(wiimoteIrTable, wiimoteAccdata);
           ButtonRequest = true;
 
           break;
 
-    // Status section ******************************************************************************************************************* /
       case CWIID_MESG_STATUS:
           NewBatteryLife = life = static_cast< unsigned char>(100.0 * (mesg[i].status_mesg.battery / static_cast< double>(CWIID_BATTERY_MAX)));
           if (BatteryLife != NewBatteryLife) {
@@ -237,9 +230,7 @@ void WiimoteConnection::run()
 
           switch (mesg[i].status_mesg.ext_type) {
 
-          // Status section ************************************************************************************************** /
             case CWIID_EXT_NONE:
-            // Classic unpluged ******************************************************************************************** /
               if (classicPlugged) {
                 classicPlugged = false;
                 WiimoteButtons &= CLASSIC_BUTTON_NOTMASK;
@@ -249,7 +240,6 @@ void WiimoteConnection::run()
                 ButtonRequest = true;
               }
 
-            // Nunchuk unpluged ******************************************************************************************** /
               if (nunchukPlugged) {
                 nunchukPlugged = false;
                 WiimoteButtons &= NUNCHUK_BUTTON_NOTMASK;
@@ -265,9 +255,8 @@ void WiimoteConnection::run()
 
               break;
 
-          // Nunchuk pluged ************************************************************************************************** /
             case CWIID_EXT_NUNCHUK:
-              Device->getDeviceCallibration(CWIID_EXT_NUNCHUK, &nunchuk_calibration);
+              wiimote->getDeviceCallibration(CWIID_EXT_NUNCHUK, &nunchuk_calibration);
               if (!nunchukPlugged) {
                 nunchukPlugged = true;
                 status = STATUS_WIIMOTE_CONNECTED | STATUS_WIIMOTE_NUNCHUK_CONNECTED;
@@ -276,7 +265,6 @@ void WiimoteConnection::run()
               }
               break;
 
-          // Classic pluged ************************************************************************************************** /
             case CWIID_EXT_CLASSIC:
               if (!classicPlugged) {
                 classicPlugged = true;
@@ -291,13 +279,12 @@ void WiimoteConnection::run()
         }
         break;
 
-    // Infrared section ***************************************************************************************************************** /
       case CWIID_MESG_IR:
         for (register int j = 0; j < 4; ++j) if (mesg[i].ir_mesg.src[j].valid) {
           if (!sendIrSignal)
             wiimoteIrTable.clear();
 
-          wiimotePoint.size =  (mesg[i].ir_mesg.src[j].size <= 0) ? 1 : mesg[i].ir_mesg.src[j].size; // when wiiremote extension present size of points are -1 ? libcwiid bug ?
+          wiimotePoint.size =  (mesg[i].ir_mesg.src[j].size <= 0) ? 1 : mesg[i].ir_mesg.src[j].size;
           wiimotePoint.x = mesg[i].ir_mesg.src[j].pos[0];
           wiimotePoint.y = mesg[i].ir_mesg.src[j].pos[1];
           sendIrSignal = true;
@@ -435,17 +422,15 @@ void WiimoteConnection::run()
         }
         break;
 
-    // Nunchuk messages ***************************************************************************************************************** /
+
       case CWIID_MESG_NUNCHUK:
         WiimoteButtonsTmp = WiimoteButtons;
 
-    // Nunchuk button section *********************************************************************************************** /
         WiimoteButtons &= NUNCHUK_BUTTON_NOTMASK;
 
         if (mesg[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_C) WiimoteButtons |= NUNCHUK_BTN_C;
         if (mesg[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_Z) WiimoteButtons |= NUNCHUK_BTN_Z;
 
-    // Nunchuk stick section ************************************************************************************************ /
         WiimoteButtons &= NUNCHUK_STICK_NOTMASK;
 
         if (nunchukStickdata.x != mesg[i].nunchuk_mesg.stick[0] || nunchukStickdata.y != mesg[i].nunchuk_mesg.stick[1]) {
@@ -459,7 +444,6 @@ void WiimoteConnection::run()
         if (nunchukStickdata.y > nunchukStickMaxY) WiimoteButtons |= NUNCHUK_BTN_STICK_UP; else
         if (nunchukStickdata.y < nunchukStickMinY) WiimoteButtons |= NUNCHUK_BTN_STICK_DOWN;
 
-    // Nunchuk params section *********************************************************************************************** /
         x =  static_cast< double>((mesg[i].nunchuk_mesg.acc[0] - nunchuk_calibration.zero[0])) / (nunchuk_calibration.one[0] - nunchuk_calibration.zero[0]);
         y =  static_cast< double>((mesg[i].nunchuk_mesg.acc[1] - nunchuk_calibration.zero[1])) / (nunchuk_calibration.one[1] - nunchuk_calibration.zero[1]);
         z =  static_cast< double>((mesg[i].nunchuk_mesg.acc[2] - nunchuk_calibration.zero[2])) / (nunchuk_calibration.one[2] - nunchuk_calibration.zero[2]);
@@ -480,7 +464,6 @@ void WiimoteConnection::run()
           emit dbusNunchukAcc(sequence, nunchukAccdata);
         }
 
-    // Nunchuk tilt section ************************************************************************************************* /
         WiimoteButtons &= NUNCHUK_TILT_NOTMASK;
 
         if (nunchukAccdata.pitch > 0.30) WiimoteButtons  |= NUNCHUK_BTN_TILT_FRONT; else
@@ -488,7 +471,6 @@ void WiimoteConnection::run()
         if (nunchukAccdata.roll < -0.45) WiimoteButtons  |= NUNCHUK_BTN_TILT_RIGHT; else
         if (nunchukAccdata.roll > 0.45) WiimoteButtons   |= NUNCHUK_BTN_TILT_LEFT;
 
-    // Nunchuk shift section ************************************************************************************************ /
         WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
 
         vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
@@ -554,10 +536,9 @@ void WiimoteConnection::run()
 
         break;
 
-    // Classic messages ***************************************************************************************************************** /
       case CWIID_MESG_CLASSIC:
           WiimoteButtonsTmp = WiimoteButtons;
-      // Classic right stick section ****************************************************************************************** /
+
           WiimoteButtons &= CLASSIC_RSTICK_NOTMASK;
           if ((classicRStickdata.x != mesg[i].classic_mesg.r_stick[0]) || (classicRStickdata.y != mesg[i].classic_mesg.r_stick[1])){
             classicRStickdata.x = mesg[i].classic_mesg.r_stick[0];
@@ -570,7 +551,6 @@ void WiimoteConnection::run()
           if (classicRStickdata.y > classicRStickMaxY) WiimoteButtons |= CLASSIC_BTN_RSTICK_UP; else
           if (classicRStickdata.y < classicRStickMinY) WiimoteButtons |= CLASSIC_BTN_RSTICK_DOWN;
 
-      // Classic left stick section ******************************************************************************************* /
           WiimoteButtons &= CLASSIC_LSTICK_NOTMASK;
           if ((classicLStickdata.x != mesg[i].classic_mesg.l_stick[0]) || (classicLStickdata.y != mesg[i].classic_mesg.l_stick[1])){
             classicLStickdata.x = mesg[i].classic_mesg.l_stick[0];
@@ -583,7 +563,6 @@ void WiimoteConnection::run()
           if (classicLStickdata.y > classicLStickMaxY) WiimoteButtons |= CLASSIC_BTN_LSTICK_UP; else
           if (classicLStickdata.y < classicLStickMinY) WiimoteButtons |= CLASSIC_BTN_LSTICK_DOWN;
 
-      // Classic button section *********************************************************************************************** /
           if (LastClassicButtons != mesg[i].classic_mesg.buttons) {
             LastClassicButtons = mesg[i].classic_mesg.buttons;
             WiimoteButtons &= CLASSIC_BUTTON_NOTMASK;
@@ -623,28 +602,26 @@ void WiimoteConnection::run()
     }
 
     delete mesg;
-    if(Device->isDisconnected()) break;
+    if(wiimote->isDisconnected()) break;
   }
 
 
-  Device->disconnectFromDevice(true);
+  wiimote->disconnectFromDevice(true);
 
   emit dbusWiimoteDisconnected(sequence);
-  emit unregisterConnection(static_cast< void*>( this));
+  emit unregisterConnection(this);
 }
 
 void WiimoteConnection::batteryStatusRequest()
 {
   struct cwiid_state state;
-  Device->getWiimoteState(state);
+  wiimote->getWiimoteState(state);
   int newlife = static_cast< unsigned char>(100.0 * (state.battery / static_cast< double>(CWIID_BATTERY_MAX)));
   if (life != newlife)
     emit dbusWiimoteBatteryLife(sequence, life);
   life = newlife;
 }
 
-
-// Classic cleanup method ************************************************************************ /
 void WiimoteConnection::classicDeviceCleanup(struct stickdata &lstick, struct stickdata &rstick) {
   lstick.x = lstick.y = 0x3F >> 1;
   rstick.x = rstick.y = 0x1F >> 1;
@@ -654,7 +631,6 @@ void WiimoteConnection::classicDeviceCleanup(struct stickdata &lstick, struct st
   emit dbusClassicControllerUnplugged(sequence);
 }
 
-// Nunchuk cleanup method *********************************************************************** /
 void WiimoteConnection::nunchukDeviceCleanup(struct stickdata &stick, struct accdata &acc) {
   acc.x = acc.y = acc.z = 0xFF >> 1;
   acc.pitch = acc.roll = 0.0;
@@ -665,8 +641,6 @@ void WiimoteConnection::nunchukDeviceCleanup(struct stickdata &stick, struct acc
   emit dbusNunchukUnplugged(sequence);
 }
 
-
-// Nunchuk cleanup method ************************************************************************/
 void WiimoteConnection::wiimoteDeviceCleanup(QList< struct irpoint> &points, struct accdata &acc) {
   struct irpoint point;
   points.clear();

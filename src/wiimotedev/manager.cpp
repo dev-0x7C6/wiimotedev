@@ -24,32 +24,21 @@
 
 extern bool additional_debug;
 
-ConnectionManager::ConnectionManager():
-    dbusDeviceEventsAdaptor(0),
-    dbusServiceAdaptor(0),
-    active_connection(0)
+ConnectionManager::ConnectionManager(QObject *parent):
+  QThread(parent),
+  dbusDeviceEventsAdaptor(0),
+  dbusServiceAdaptor(0),
+  terminateReq(false)
 {
-// Register Meta Types ---------------------------------------------- /
-  setTerminationEnabled(true);
-
-  qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
-  qRegisterMetaType< QList< accdata> >("QList< accdata>");
-  qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
-
-  qRegisterMetaType< irpoint>("irpoint");
-  qRegisterMetaType< accdata>("accdata");
-  qRegisterMetaType< stickdata>("stickdata");
-
-  terminateReq = false;
-
 // Setup ------------------------------------------------------------ /
   memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
+  setTerminationEnabled(true);
 
   if (additional_debug)
     systemlog::notice(QString("loading rules from %1").arg(WIIMOTEDEV_CONFIG_FILE));
 
-  wiimotedevSettings = new WiimotedevSettings(this, WIIMOTEDEV_CONFIG_FILE);
-  wiiremoteSequence = wiimotedevSettings->getWiiremoteSequence();
+  wiimotedevSettings = new WiimotedevSettings(WIIMOTEDEV_CONFIG_FILE, this);
+  sequence = wiimotedevSettings->getWiiremoteSequence();
 
   if (additional_debug) {
     systemlog::debug(QString("dbus interface - %1").arg(wiimotedevSettings->dbusInterfaceSupport() ? "enabled" : "disabled"));
@@ -81,7 +70,7 @@ ConnectionManager::ConnectionManager():
 // TCP interface ---------------------------------------------------- /
 
   if (wiimotedevSettings->tcpInterfaceSupport()) {
-    tcpServerThread = new MessageServerThread(this, wiimotedevSettings, wiimotedevSettings->tcpGetPort(), this);
+    tcpServerThread = new MessageServerThread(wiimotedevSettings, wiimotedevSettings->tcpGetPort(), this);
     tcpServerThread->start();
     if (additional_debug)
       systemlog::debug(QString("starting tcp/ip thread at 0x%1").arg(QString::number(tcpServerThread->thread()->currentThreadId(), 0x10)));
@@ -93,104 +82,80 @@ ConnectionManager::ConnectionManager():
   }
 }
 
-ConnectionManager::~ConnectionManager() {
-  delete wiimotedevSettings;
-}
-
 bool ConnectionManager::dbusReloadSequenceList() {
   if (additional_debug)
     systemlog::notice(QString("loading sequences from %1").arg(WIIMOTEDEV_CONFIG_FILE));
 
   wiimotedevSettings->reload();
-  wiiremoteSequence = wiimotedevSettings->getWiiremoteSequence();
+  sequence = wiimotedevSettings->getWiiremoteSequence();
 
-  return !wiiremoteSequence.isEmpty();
+  return !sequence.isEmpty();
 }
 
 void ConnectionManager::terminateRequest()
 {
   terminateReq = true;
-  if (!active_connection)
-    active_connection->wait();
+  connections.last()->wait();
 }
 
 void ConnectionManager::run() {
-  QTime time;
-  active_connection = new WiimoteConnection(dbusDeviceEventsAdaptor);
+  QTime clock;
+
+  connections << (new WiimoteConnection(dbusDeviceEventsAdaptor));
 
   while (!terminateReq) {
-    time.start();
-    if (active_connection->Device->connectToDevice(1)) {
-      if (!terminateReq) {
-        registerConnection(static_cast< void*>( active_connection));
-        active_connection = new WiimoteConnection(dbusDeviceEventsAdaptor);
-        continue;
-      } else
-        break;
+    clock.start();
+    if (connections.last()->wiimote->connectToDevice(1)) {
+      if (!registerConnection(connections.last())) {
+        qDebug() << ":)";
+        delete connections.last();
+        connections.removeLast();
+      }
+      connections << (new WiimoteConnection(dbusDeviceEventsAdaptor));
+      continue;
     }
 
-    if (!terminateReq)
-      msleep((time.elapsed() < 100) ? 1000 : 0);
+    msleep((clock.elapsed() < 100 && !terminateReq) ? 1000 : 0);
   }
-
-  if (active_connection)
-    delete active_connection;
 
   if (additional_debug) {
-      systemlog::notice("pepare to shutdown");
-      systemlog::debug(QString("active connections count = %1").arg(QString::number(objectList.count())));
+    systemlog::notice("pepare to shutdown");
+    systemlog::debug(QString("active connections count = %1").arg(QString::number(objectList.count())));
   }
 
-  for (register int i = 0; i < objectList.count(); ++i)
-  {
-    register WiimoteConnection* connection = static_cast< WiimoteConnection*>( objectList.at(i));
-    disconnect(connection, 0, 0, 0);
+  foreach (WiimoteConnection* connection, connections) {
     connection->quitThread();
     connection->wait();
-    systemlog::information(QString("wiiremote %1 disconnected").arg(connection->Device->getWiimoteSAddr()));
+    systemlog::information(QString("wiiremote %1 disconnected").arg(connection->wiimote->getWiimoteSAddr()));
     delete connection;
   }
-  objectList.clear();
+
+  connections.clear();
 
   if (additional_debug)
     systemlog::debug(QString("leaving main thread %1").arg(QString::number(currentThreadId())));
 }
 
-void ConnectionManager::registerConnection(void *object)
+bool ConnectionManager::registerConnection(WiimoteConnection *connection)
 {
-  WiimoteConnection *connection = static_cast< WiimoteConnection*>( object);
+  QString addr = connection->wiimote->getWiimoteSAddr();
+  quint32 id = sequence.value(addr, 0);
 
-  QString macaddr = connection->Device->getWiimoteSAddr();
-
-  connection->setWiimoteSequence(wiiremoteSequence.value(macaddr, 0));
-  if (connection->getWiimoteSequence())
-    connection->Device->setLedStatus(connection->getWiimoteSequence());
-
-  if (!connection->getWiimoteSequence()) {
-    systemlog::information(QString("wiiremote %1 is unregistred, disconnected").arg(macaddr));
-    connection->Device->setLedStatus(0x0F);
-
-    bool exist = false;
-
-    for (register int i = 0; i < unregisterWiiremoteList.count(); ++i)
-      if (unregisterWiiremoteList.at(i) == macaddr) {
-        exist = true;
-        break;
-      }
-
-    if (!exist) unregisterWiiremoteList << macaddr;
-
-    connection->Device->disconnectFromDevice();
+  if (!id) {
+    connection->wiimote->setLedStatus(0x0f); // special blink, but better some animation will be better ?
+    unregisterWiiremoteList[addr] = true;
+    connection->wiimote->disconnectFromDevice();
     connection->wait();
-    delete connection;
-
-    emit dbusReportUnregistredWiimote(macaddr);
-    return;
+    systemlog::information(QString("wiiremote %1 is unregistred, disconnected").arg(addr));
+    return false;
   }
 
-  systemlog::information(QString("wiiremote %1 connected, id %2").arg(macaddr, QString::number(connection->getWiimoteSequence(), 10)));
+  unregisterWiiremoteList[addr] = false; // if rules are changed, this remove unregistred wiiremote from this list
+  connection->wiimote->setLedStatus(id);
+  connection->setWiimoteSequence(id);
 
-  objectList << object;
+  systemlog::information(QString("wiiremote %1 connected, id %2").arg(addr, QString::number(id)));
+
   if (wiimotedevSettings->tcpInterfaceSupport()) {
     connect(connection, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::QueuedConnection);
     connect(connection, SIGNAL(dbusWiimoteConnected(quint32)), this, SIGNAL(dbusWiimoteConnected(quint32)), Qt::QueuedConnection);
@@ -212,23 +177,21 @@ void ConnectionManager::registerConnection(void *object)
     connect(connection, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), this, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::QueuedConnection);
   }
 
-// profile interface
-  connect(connection, SIGNAL(unregisterConnection(void*)), this, SLOT(unregisterConnection(void*)), Qt::QueuedConnection);
+  connect(connection, SIGNAL(unregisterConnection(WiimoteConnection*)), this, SLOT(unregisterConnection(WiimoteConnection*)), Qt::QueuedConnection);
   connection->start();
+
+  return true;
 }
 
-void ConnectionManager::unregisterConnection(void *object)
+void ConnectionManager::unregisterConnection(WiimoteConnection *connection)
 {
-  WiimoteConnection *connection = static_cast< WiimoteConnection*>( object);
-  disconnect(connection, 0, 0, 0);
-
-  systemlog::information(QString("wiiremote %1 disconnected, id %2").arg(connection->Device->getWiimoteSAddr(), QString::number(connection->getWiimoteSequence(), 10)));
+  systemlog::information(QString("wiiremote %1 disconnected, id %2").arg(connection->wiimote->getWiimoteSAddr(), QString::number(connection->getWiimoteSequence(), 10)));
 
   connection->wait();
+  connections.removeAt(connections.indexOf(connection, 0));
   delete connection;
 
-  if (objectList.indexOf(object) != -1)
-    objectList.removeAt(objectList.indexOf(object));
+  qDebug() << connections.count();
 }
 
 QList < uint> ConnectionManager::dbusGetWiimoteList()
@@ -241,7 +204,16 @@ QList < uint> ConnectionManager::dbusGetWiimoteList()
 
 QStringList ConnectionManager::dbusGetUnregistredWiimoteList()
 {
-  return unregisterWiiremoteList;
+  QStringList list;
+
+  QMapIterator <QString, bool> map(unregisterWiiremoteList);
+
+  while (map.hasNext()) {
+    map.next();
+    if (map.value()) list << map.key();
+  }
+
+  return list;
 }
 
 quint8 ConnectionManager::dbusWiimoteGetStatus(quint32 id)
@@ -264,7 +236,7 @@ quint8 ConnectionManager::dbusWiimoteGetLedStatus(quint32 id)
 {
   WiimoteConnection *connection = findWiiremoteObject(id);
   if (connection)
-    return connection->Device->getLedStatus();
+    return connection->wiimote->getLedStatus();
   return 0;
 }
 
@@ -274,7 +246,7 @@ bool ConnectionManager::dbusWiimoteGetRumbleStatus(quint32 id)
   WiimoteConnection *connection = findWiiremoteObject(id);
 
   if (connection)
-    return connection->Device->getRumbleStatus();
+    return connection->wiimote->getRumbleStatus();
   return false;
 }
 
@@ -282,7 +254,7 @@ bool ConnectionManager::dbusWiimoteSetLedStatus(quint32 id, quint32 status)
 {
   WiimoteConnection *connection = findWiiremoteObject(id);
   if (connection) {
-    connection->Device->setLedStatus(status);
+    connection->wiimote->setLedStatus(status);
     return true;
   }
   return false;
@@ -292,7 +264,7 @@ bool ConnectionManager::dbusWiimoteSetRumbleStatus(quint32 id, bool status)
 {
   WiimoteConnection *connection = findWiiremoteObject(id);
   if (connection) {
-    connection->Device->setRumbleStatus(status);
+    connection->wiimote->setRumbleStatus(status);
     return true;
   }
   return false;

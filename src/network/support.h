@@ -31,20 +31,6 @@
 #include <QTcpSocket>
 #include <QMutex>
 
-#ifndef QWIIMOTEDEV_META_TYPES
-#define QWIIMOTEDEV_META_TYPES
-
-  Q_DECLARE_METATYPE(QList < irpoint>)
-  Q_DECLARE_METATYPE(QList < accdata>)
-  Q_DECLARE_METATYPE(QList < stickdata>)
-  Q_DECLARE_METATYPE(QList < quint32>)
-
-  Q_DECLARE_METATYPE(irpoint)
-  Q_DECLARE_METATYPE(accdata)
-  Q_DECLARE_METATYPE(stickdata)
-
-#endif
-
 class MessageServer : public QTcpServer
 {
 Q_OBJECT
@@ -52,7 +38,7 @@ private:
   WiimotedevSettings *settings;
 
 public:
-  explicit MessageServer(QObject *manager, WiimotedevSettings* settings, quint16 port, QObject *parent = 0);
+  explicit MessageServer(WiimotedevSettings* settings, quint16 port, QObject *parent = 0);
   virtual ~MessageServer();
 
 protected:
@@ -100,7 +86,7 @@ private:
   QObject *manager;
 
 public:
-  explicit MessageServerThread(QObject *manager, WiimotedevSettings* settings, quint16 port,  QObject *parent = 0);
+  explicit MessageServerThread(WiimotedevSettings* settings, quint16 port,  QObject *parent = 0);
   void run();
 };
 

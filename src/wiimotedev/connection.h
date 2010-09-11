@@ -27,7 +27,9 @@
 #include "wiimotedev/wiiremote.h"
 
 class DBusDeviceEventsAdaptorWrapper;
-class WiiremoteDevice;
+class WiimoteDevice;
+class WiimoteConnection;
+
 class QThread;
 
 class WiimoteConnection : public QThread
@@ -62,7 +64,7 @@ public:
 
   void quitThread();
 
-  WiiremoteDevice *Device;
+  WiimoteDevice *wiimote;
 
   void setWiimoteSequence(quint32 seq) { sequence = seq; }
   quint32 getWiimoteSequence(){ return sequence; }
@@ -81,12 +83,15 @@ public:
 protected:
  void run();
 
+private:
+ void cwiidClassicMesg(cwiid_classic_mesg&);
+
 private Q_SLOTS:
  void batteryStatusRequest();
 
 Q_SIGNALS:
- void registerConnection(void*);
- void unregisterConnection(void*);
+ void registerConnection(WiimoteConnection*);
+ void unregisterConnection(WiimoteConnection*);
 
 Q_SIGNALS:
  void dbusWiimoteGeneralButtons(quint32, quint64);

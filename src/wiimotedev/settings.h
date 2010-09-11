@@ -40,8 +40,7 @@ private:
   quint16 tcpPort;
 
 public:
-  WiimotedevSettings(QObject *parent = 0, QString file = WIIMOTEDEV_CONFIG_FILE);
-  ~WiimotedevSettings();
+  WiimotedevSettings(QString file = WIIMOTEDEV_CONFIG_FILE, QObject *parent = 0);
 
 public:
   void reload();

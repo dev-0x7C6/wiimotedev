@@ -23,7 +23,10 @@
 #include <QThread>
 #include <QMap>
 #include <QStringList>
+#include <QScopedPointer>
+
 #include <cwiid.h>
+
 
 #include "dbus/deviceevents.h"
 #include "dbus/service.h"
@@ -43,31 +46,35 @@ private:
   DBusServiceAdaptorWrapper *dbusServiceAdaptor;
 
 //
-
+  bool terminateReq;
 
 // Settings ------------------------------------------------- /
   WiimotedevSettings *wiimotedevSettings;
-
-  QStringList unregisterWiiremoteList;
-
   MessageServerThread *tcpServerThread;
 
-  QMap< QString, quint32> wiiremoteSequence;
+  QList< WiimoteConnection*> connections;
+
+  QMap< QString, bool> unregisterWiiremoteList;
+
+
+  QMap< QString, quint32> sequence;
+
   QList< void*> objectList;
   bdaddr_t bdaddr_any;
-  bool terminateReq;
-
-  WiimoteConnection *active_connection;
 
   WiimoteConnection* findWiiremoteObject(quint32 id);
 
 public:
-  ConnectionManager();
- ~ConnectionManager();
+  ConnectionManager(QObject *parent = 0);
   void terminateRequest();
 
 protected:
   void run();
+
+public Q_SLOTS:
+  bool registerConnection(WiimoteConnection*);
+  void unregisterConnection(WiimoteConnection*);
+
 
 public Q_SLOTS:
   bool dbusIsClassicConnected(quint32 id);
@@ -89,10 +96,6 @@ public Q_SLOTS:
   QStringList dbusGetUnregistredWiimoteList();
 
   bool dbusReloadSequenceList();
-
-private Q_SLOTS:
-  void registerConnection(void *object);
-  void unregisterConnection(void *object);
 
 Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);

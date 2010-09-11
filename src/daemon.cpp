@@ -120,9 +120,17 @@ int main(int argc, char *argv[])
   if (additional_debug)
     systemlog::debug("additional debug mode switch-on");
 
-  ConnectionManager *manager_thread = new ConnectionManager();
+  qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
+  qRegisterMetaType< QList< accdata> >("QList< accdata>");
+  qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
 
-  manager_thread->start();
+  qRegisterMetaType< irpoint>("irpoint");
+  qRegisterMetaType< accdata>("accdata");
+  qRegisterMetaType< stickdata>("stickdata");
+
+
+  ConnectionManager *manager_thread = new ConnectionManager();
+  manager_thread->start(QThread::HighPriority);
   application.take()->exec();
   manager_thread->terminateRequest();
   manager_thread->wait();

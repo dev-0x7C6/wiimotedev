@@ -20,22 +20,23 @@
 
 #include "wiimotedev/wiiremote.h"
 
-WiiremoteDevice::WiiremoteDevice(QObject *parent) : QObject(parent)
+WiimoteDevice::WiimoteDevice(QObject *parent):
+  QObject(parent),
+  device(0),
+  isRumble(false),
+  switchOnLeds(0),
+  reportMode(0)
 {
   memset(&bdaddr, 0, sizeof(bdaddr_t));
-  device = 0;
-  isRumble = false;
-  switchOnLeds = 0;
-  reportMode = 0;
 }
 
-WiiremoteDevice::~WiiremoteDevice()
+WiimoteDevice::~WiimoteDevice()
 {
   if (isConnected())
     disconnectFromDevice(true);
 }
 
-bool WiiremoteDevice::connectToDevice(const quint32 timeout)
+bool WiimoteDevice::connectToDevice(const quint32 timeout)
 {
   memset(&bdaddr, 0, sizeof(bdaddr_t));
 
@@ -51,16 +52,12 @@ bool WiiremoteDevice::connectToDevice(const quint32 timeout)
   return false;
 }
 
-bool WiiremoteDevice::disconnectFromDevice(const bool switchOfReport)
-{
-  if (isDisconnected())
-    return false;
+bool WiimoteDevice::disconnectFromDevice(const bool switchOfReport) {
+  if (isDisconnected()) return false;
 
-  if (switchOfReport)
-    cwiid_set_rpt_mode(device, 0);
+  if (switchOfReport) cwiid_set_rpt_mode(device, 0);
 
   cwiid_disconnect(device);
-
   device = 0;
   isRumble = false;
   switchOnLeds = 0;
@@ -69,8 +66,7 @@ bool WiiremoteDevice::disconnectFromDevice(const bool switchOfReport)
   return true;
 }
 
-bool WiiremoteDevice::getMesgStruct(int *count, union cwiid_mesg *mesg[], struct timespec *time)
-{
+bool WiimoteDevice::getMesgStruct(int *count, union cwiid_mesg *mesg[], struct timespec *time) {
   if (isDisconnected())
     return false;
 
@@ -82,10 +78,8 @@ bool WiiremoteDevice::getMesgStruct(int *count, union cwiid_mesg *mesg[], struct
   return true;
 }
 
-bool WiiremoteDevice::setLedStatus(quint8 led)
-{
-  if (isDisconnected())
-      return false;
+bool WiimoteDevice::setLedStatus(quint8 led) {
+  if (isDisconnected()) return false;
 
   if (cwiid_set_led(device, switchOnLeds = led)) {
     disconnectFromDevice(false);
@@ -95,10 +89,8 @@ bool WiiremoteDevice::setLedStatus(quint8 led)
   return true;
 }
 
-bool WiiremoteDevice::setRumbleStatus(bool rumble)
-{
-  if (isDisconnected())
-    return false;
+bool WiimoteDevice::setRumbleStatus(bool rumble) {
+  if (isDisconnected()) return false;
 
   if (cwiid_set_rumble(device, isRumble = rumble)) {
     disconnectFromDevice(false);
@@ -108,10 +100,8 @@ bool WiiremoteDevice::setRumbleStatus(bool rumble)
   return true;
 }
 
-bool WiiremoteDevice::setReportMode(quint8 mode)
-{
-  if (isDisconnected())
-    return false;
+bool WiimoteDevice::setReportMode(quint8 mode) {
+  if (isDisconnected()) return false;
 
   if (cwiid_set_rpt_mode(device, reportMode = mode)) {
     disconnectFromDevice(false);
@@ -121,46 +111,38 @@ bool WiiremoteDevice::setReportMode(quint8 mode)
   return true;
 }
 
-quint8 WiiremoteDevice::getLedStatus()
-{
-  if (isDisconnected())
-    return 0;
+quint8 WiimoteDevice::getLedStatus() {
+  if (isDisconnected()) return 0;
 
   return switchOnLeds;
 }
 
-bool WiiremoteDevice::getRumbleStatus()
-{
+bool WiimoteDevice::getRumbleStatus() {
   if (isDisconnected())
     return false;
 
   return isRumble;
 }
 
-quint8 WiiremoteDevice::getReportMode()
-{
+quint8 WiimoteDevice::getReportMode() {
   if (isDisconnected())
     return 0;
 
   return reportMode;
 }
 
-QString WiiremoteDevice::getWiimoteSAddr()
-{
+QString WiimoteDevice::getWiimoteSAddr() {
   char addr[17];
   ba2str(&bdaddr, addr);
   return QString::fromAscii(addr, 17);
 }
 
-bdaddr_t WiiremoteDevice::getWiimoteAddr()
-{
+bdaddr_t WiimoteDevice::getWiimoteAddr() {
   return bdaddr;
 }
 
-bool WiiremoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal)
-{
-  if (isDisconnected())
-    return false;
+bool WiimoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal) {
+  if (isDisconnected()) return false;
 
   if (cwiid_get_acc_cal(device, ext_type, acc_cal)) {
     disconnectFromDevice(false);
@@ -170,10 +152,8 @@ bool WiiremoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct
   return true;
 }
 
-bool WiiremoteDevice::getWiimoteState(struct cwiid_state &state)
-{
-  if (isDisconnected())
-    return false;
+bool WiimoteDevice::getWiimoteState(struct cwiid_state &state) {
+  if (isDisconnected()) return false;
 
   if (cwiid_get_state(device, &state)){
     disconnectFromDevice(false);

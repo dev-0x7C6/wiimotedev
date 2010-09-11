@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIREMOTE_H
-#define WIIREMOTE_H
+#ifndef WIIMOTE_DEVICE_H
+#define WIIMOTE_DEVICE_H
 
 // This is wrapper class, for changes in cwiid API or when wiimotedev-daemon will use
 // other library like *libwiimotedev (when is done)
@@ -28,14 +28,15 @@
 
 #include "include/wiimotedev/consts.h"
 
-#define defaultReportFlags CWIID_RPT_STATUS | \
-                           CWIID_RPT_BTN | \
-                           CWIID_RPT_IR | \
-                           CWIID_RPT_NUNCHUK | \
-                           CWIID_RPT_CLASSIC | \
-                           CWIID_RPT_ACC
+#define defaultReportFlags \
+  CWIID_RPT_STATUS | \
+  CWIID_RPT_BTN | \
+  CWIID_RPT_IR | \
+  CWIID_RPT_NUNCHUK | \
+  CWIID_RPT_CLASSIC | \
+  CWIID_RPT_ACC
 
-class WiiremoteDevice : public QObject
+class WiimoteDevice : public QObject
 {
 private:
   bdaddr_t bdaddr;
@@ -48,8 +49,8 @@ private:
   quint8 reportMode;
 
 public:
-  explicit WiiremoteDevice(QObject *parent = 0);
-  virtual ~WiiremoteDevice();
+  explicit WiimoteDevice(QObject *parent = 0);
+  virtual ~WiimoteDevice();
 
   bool connectToDevice(const quint32 timeout = 3);
   bool disconnectFromDevice(const bool switchOfReport = true);
@@ -75,4 +76,4 @@ public:
 
 };
 
-#endif // WIIREMOTE_H
+#endif // WIIMOTE_DEVICE_H

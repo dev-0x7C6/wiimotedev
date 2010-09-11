@@ -20,17 +20,17 @@
 #include "network/support.h"
 #include "syslog/syslog.h"
 
-MessageServerThread::MessageServerThread(QObject *manager, WiimotedevSettings* settings, quint16 port,  QObject *parent):
+MessageServerThread::MessageServerThread(WiimotedevSettings* settings, quint16 port,  QObject *parent):
   QThread(parent),
   settings(settings),
   port(port),
-  manager(manager)
+  manager(parent)
 {
   connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
 void MessageServerThread::run() {
-  MessageServer *server = new MessageServer(manager, settings, port);
+  MessageServer *server = new MessageServer(settings, port, manager);
   if (server->listen(QHostAddress::Any, port)) {
     systemlog::information(QString("listening on %1").arg(QString::number(port, 10)));
     exec();
@@ -39,16 +39,12 @@ void MessageServerThread::run() {
     systemlog::information(QString("can't listen on %1, tcp service halted").arg(QString::number(port, 10)));
 }
 
-MessageServer::MessageServer(QObject *manager, WiimotedevSettings* settings, quint16 port, QObject *parent) : QTcpServer(parent), settings(settings), manager(manager), port(port)
+MessageServer::MessageServer(WiimotedevSettings* settings, quint16 port, QObject *parent):
+  QTcpServer(parent),
+  settings(settings),
+  manager(parent),
+  port(port)
 {
-  qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
-  qRegisterMetaType< QList< accdata> >("QList< accdata>");
-  qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
-
-  qRegisterMetaType< irpoint>("irpoint");
-  qRegisterMetaType< accdata>("accdata");
-  qRegisterMetaType< stickdata>("stickdata");
-
   connect(manager, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::QueuedConnection);
 
   connect(manager, SIGNAL(dbusWiimoteConnected(quint32)), this, SLOT(dbusWiimoteConnected(quint32)), Qt::QueuedConnection);
