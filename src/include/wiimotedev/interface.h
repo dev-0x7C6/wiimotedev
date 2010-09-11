@@ -20,7 +20,7 @@
 #ifndef WIIMOTEDEV_INTERFACE_H
 #define WIIMOTEDEV_INTERFACE_H
 
-#include <wiimotedev/consts.h>
+#include "include/wiimotedev/consts.h"
 
 #include <QDBusAbstractAdaptor>
 #include <QDBusAbstractInterface>

@@ -30,8 +30,8 @@
 #include <QTimer>
 #include <QTcpSocket>
 
-#include <wiimotedev.h>
-#include <wiimotedevproto.h>
+#include "include/wiimotedev/consts.h"
+#include "include/wiimotedev/proto.h"
 
 #include "dbus/deviceevents.h"
 #include "dbus/service.h"

@@ -37,7 +37,7 @@ Car::Car(quint32 id) : color(Qt::green), wiimoteId(id), wheelsAngle(0), speed(0)
 
   // Connect DeviceEventsClass to DBUS !
     iface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
-                                          WIIMOTEDEV_DBUS_EVENTS_OBJECT,
+                                          WIIMOTEDEV_DBUS_OBJECT_EVENTS,
                                           QDBusConnection::systemBus(), this);
 
   // Make connections between iface and this class
