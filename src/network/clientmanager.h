@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef CONNECTIONMANAGER_H
-#define CONNECTIONMANAGER_H
+#ifndef CLIENT_MANAGER_H
+#define CLIENT_MANAGER_H
 
 #include <QDBusAbstractAdaptor>
 #include <QDBusArgument>
@@ -47,60 +47,59 @@ const QString confFile("/etc/wiimotedev/client.conf");
 
 class ConnectionManager : public QThread
 {
-    Q_OBJECT
+  Q_OBJECT
 private:     
-    DBusDeviceEventsAdaptorWrapper *dbusDeviceEventsAdaptor;
-    DBusServiceAdaptorWrapper *dbusServiceAdaptor;
+  DBusDeviceEventsAdaptorWrapper *dbusDeviceEventsAdaptor;
+  DBusServiceAdaptorWrapper *dbusServiceAdaptor;
 
-    quint32 tcpTimeout;
-    QString tcpHostname;
-    quint16 tcpPort;
+  quint32 tcpTimeout;
+  QString tcpHostname;
+  quint16 tcpPort;
 
-    QTcpSocket *socket;
-    QTimer *timer;
+  QTcpSocket *socket;
 
-    bool terminateReq;
+  bool terminateReq;
 
 public:
-    ConnectionManager();
-   ~ConnectionManager();
+  ConnectionManager();
+ ~ConnectionManager();
 
-   void terminateRequest();
+ void terminateRequest();
 
 protected:
-    void run();  
+  void run();
 
 private slots:
-    void readyRead();
+  void readyRead();
 
 public slots:
-    bool dbusWiimoteGetRumbleStatus(quint32 id);
-    bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
-    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
-    quint8 dbusWiimoteGetLedStatus(quint32 id);
+  bool dbusWiimoteGetRumbleStatus(quint32 id);
+  bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
+  bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
+  quint8 dbusWiimoteGetLedStatus(quint32 id);
 
 signals:
-    void dbusWiimoteGeneralButtons(quint32, quint64);
+  void dbusWiimoteGeneralButtons(quint32, quint64);
 
-    void dbusWiimoteConnected(quint32);
-    void dbusWiimoteDisconnected(quint32);
-    void dbusWiimoteBatteryLife(quint32, quint8);
-    void dbusWiimoteButtons(quint32, quint64);
-    void dbusWiimoteStatus(quint32, quint8);
-    void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
-    void dbusWiimoteAcc(quint32, struct accdata);
+  void dbusWiimoteConnected(quint32);
+  void dbusWiimoteDisconnected(quint32);
+  void dbusWiimoteBatteryLife(quint32, quint8);
+  void dbusWiimoteButtons(quint32, quint64);
+  void dbusWiimoteStatus(quint32, quint8);
+  void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
+  void dbusWiimoteAcc(quint32, struct accdata);
 
-    void dbusNunchukPlugged(quint32);
-    void dbusNunchukUnplugged(quint32);
-    void dbusNunchukButtons(quint32, quint64);
-    void dbusNunchukStick(quint32, struct stickdata);
-    void dbusNunchukAcc(quint32, struct accdata);
+  void dbusNunchukPlugged(quint32);
+  void dbusNunchukUnplugged(quint32);
+  void dbusNunchukButtons(quint32, quint64);
+  void dbusNunchukStick(quint32, struct stickdata);
+  void dbusNunchukAcc(quint32, struct accdata);
 
-    void dbusClassicControllerPlugged(quint32);
-    void dbusClassicControllerUnplugged(quint32);
-    void dbusClassicControllerButtons(quint32, quint64);
-    void dbusClassicControllerLStick(quint32, struct stickdata);
-    void dbusClassicControllerRStick(quint32, struct stickdata);
+  void dbusClassicControllerPlugged(quint32);
+  void dbusClassicControllerUnplugged(quint32);
+  void dbusClassicControllerButtons(quint32, quint64);
+  void dbusClassicControllerLStick(quint32, struct stickdata);
+  void dbusClassicControllerRStick(quint32, struct stickdata);
 };
 
-#endif // CONNECTIONMANAGER_H
+#endif // CLIENT_MANAGER_H

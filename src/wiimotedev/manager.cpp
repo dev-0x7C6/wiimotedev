@@ -16,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public               *
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
+#include <QCoreApplication>
 #include <QList>
 #include <QTime>
 
@@ -30,22 +31,13 @@ ConnectionManager::ConnectionManager(QObject *parent):
   dbusServiceAdaptor(0),
   terminateReq(false)
 {
-// Setup ------------------------------------------------------------ /
   memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
   setTerminationEnabled(true);
 
-  if (additional_debug)
-    systemlog::notice(QString("loading rules from %1").arg(WIIMOTEDEV_CONFIG_FILE));
+  systemlog::notice(QString("loading rules from %1").arg(WIIMOTEDEV_CONFIG_FILE));
 
   wiimotedevSettings = new WiimotedevSettings(WIIMOTEDEV_CONFIG_FILE, this);
   sequence = wiimotedevSettings->getWiiremoteSequence();
-
-  if (additional_debug) {
-    systemlog::debug(QString("dbus interface - %1").arg(wiimotedevSettings->dbusInterfaceSupport() ? "enabled" : "disabled"));
-    systemlog::debug(QString("tcp/ip interface - %1").arg(wiimotedevSettings->tcpInterfaceSupport() ? "enabled" : "disabled"));
-  }
-
-// DBus interface --------------------------------------------------- /
 
   if (wiimotedevSettings->dbusInterfaceSupport()) {
     QDBusConnection connection = QDBusConnection::systemBus();
@@ -56,24 +48,14 @@ ConnectionManager::ConnectionManager(QObject *parent):
 
     connect(this, SIGNAL(dbusReportUnregistredWiimote(QString)), dbusDeviceEventsAdaptor, SIGNAL(dbusReportUnregistredWiimote(QString)));
 
-    if (additional_debug) {
-      systemlog::debug(QString("register %1 object %2").arg(WIIMOTEDEV_DBUS_OBJECT_EVENTS, dbusDeviceEventsAdaptor->isRegistred() ? "done" : "failed"));
-      systemlog::debug(QString("register %1 object %2").arg(WIIMOTEDEV_DBUS_OBJECT_SERVICE, dbusServiceAdaptor->isRegistred() ? "done" : "failed"));
-      systemlog::debug(QString("register %1 service %2").arg(WIIMOTEDEV_DBUS_SERVICE_NAME, registred ? "done" : "failed"));
-    }
-
     if (!(dbusDeviceEventsAdaptor->isRegistred() &&
           dbusServiceAdaptor->isRegistred() && registred))
       systemlog::error("can not register dbus service");
   }
 
-// TCP interface ---------------------------------------------------- /
-
   if (wiimotedevSettings->tcpInterfaceSupport()) {
-    tcpServerThread = new MessageServerThread(wiimotedevSettings, wiimotedevSettings->tcpGetPort(), this);
-    tcpServerThread->start();
-    if (additional_debug)
-      systemlog::debug(QString("starting tcp/ip thread at 0x%1").arg(QString::number(tcpServerThread->thread()->currentThreadId(), 0x10)));
+    networkServerThread = new NetworkServerThread(wiimotedevSettings->tcpGetAllowedHostList(), wiimotedevSettings->tcpGetPort());
+    networkServerThread->start();
   }
 
   if (!(wiimotedevSettings->tcpInterfaceSupport() || wiimotedevSettings->dbusInterfaceSupport())) {
@@ -82,46 +64,51 @@ ConnectionManager::ConnectionManager(QObject *parent):
   }
 }
 
-bool ConnectionManager::dbusReloadSequenceList() {
-  if (additional_debug)
-    systemlog::notice(QString("loading sequences from %1").arg(WIIMOTEDEV_CONFIG_FILE));
-
-  wiimotedevSettings->reload();
-  sequence = wiimotedevSettings->getWiiremoteSequence();
-
-  return !sequence.isEmpty();
-}
-
-void ConnectionManager::terminateRequest()
-{
+void ConnectionManager::terminateRequest() {
   terminateReq = true;
-  connections.last()->wait();
 }
 
 void ConnectionManager::run() {
+  connections << (new WiimoteConnection());
   QTime clock;
-
-  connections << (new WiimoteConnection(dbusDeviceEventsAdaptor));
-
   while (!terminateReq) {
     clock.start();
     if (connections.last()->wiimote->connectToDevice(1)) {
-      if (!registerConnection(connections.last())) {
-        qDebug() << ":)";
-        delete connections.last();
-        connections.removeLast();
-      }
-      connections << (new WiimoteConnection(dbusDeviceEventsAdaptor));
+      registerConnection(connections.last());
+      connections << (new WiimoteConnection());
       continue;
     }
-
     msleep((clock.elapsed() < 100 && !terminateReq) ? 1000 : 0);
   }
 
-  if (additional_debug) {
-    systemlog::notice("pepare to shutdown");
-    systemlog::debug(QString("active connections count = %1").arg(QString::number(objectList.count())));
+  connections.last()->wiimote->disconnectFromDevice();
+  delete connections.last();
+  connections.removeLast();
+
+  freeAllConnections();
+
+  if (wiimotedevSettings->tcpInterfaceSupport()) {
+    networkServerThread->quit();
+    networkServerThread->wait();
+    delete networkServerThread;
   }
+
+  QCoreApplication::quit();
+}
+
+void ConnectionManager::freeConnection(WiimoteConnection *connection) {
+  register int index = connections.indexOf(connection, 0);
+  connection->quitThread();
+  connection->wait();
+  systemlog::information(QString("wiiremote %1 disconnected").arg(connection->wiimote->getWiimoteSAddr()));
+  delete connection;
+
+  connections.removeAt(index);
+}
+
+void ConnectionManager::freeAllConnections() {
+  if (connections.isEmpty())
+    return;
 
   foreach (WiimoteConnection* connection, connections) {
     connection->quitThread();
@@ -131,9 +118,6 @@ void ConnectionManager::run() {
   }
 
   connections.clear();
-
-  if (additional_debug)
-    systemlog::debug(QString("leaving main thread %1").arg(QString::number(currentThreadId())));
 }
 
 bool ConnectionManager::registerConnection(WiimoteConnection *connection)
@@ -142,77 +126,100 @@ bool ConnectionManager::registerConnection(WiimoteConnection *connection)
   quint32 id = sequence.value(addr, 0);
 
   if (!id) {
-    connection->wiimote->setLedStatus(0x0f); // special blink, but better some animation will be better ?
-    unregisterWiiremoteList[addr] = true;
-    connection->wiimote->disconnectFromDevice();
-    connection->wait();
-    systemlog::information(QString("wiiremote %1 is unregistred, disconnected").arg(addr));
+    connection->wiimote->setLedStatus(0x0f);
+    unregisterWiimoteList[addr] = true;
+    emit dbusReportUnregistredWiimote(addr);
+    freeConnection(connection);
+    systemlog::information(QString("note: wiiremote %1 is unregistred, use wiimotedev-register to register new wiiremote").arg(addr));
     return false;
   }
 
-  unregisterWiiremoteList[addr] = false; // if rules are changed, this remove unregistred wiiremote from this list
+  unregisterWiimoteList[addr] = false;
   connection->wiimote->setLedStatus(id);
   connection->setWiimoteSequence(id);
 
   systemlog::information(QString("wiiremote %1 connected, id %2").arg(addr, QString::number(id)));
 
-  if (wiimotedevSettings->tcpInterfaceSupport()) {
-    connect(connection, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusWiimoteConnected(quint32)), this, SIGNAL(dbusWiimoteConnected(quint32)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusWiimoteDisconnected(quint32)), this, SIGNAL(dbusWiimoteDisconnected(quint32)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), this, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusWiimoteButtons(quint32,quint64)), this, SIGNAL(dbusWiimoteButtons(quint32,quint64)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusWiimoteStatus(quint32,quint8)), this, SIGNAL(dbusWiimoteStatus(quint32,quint8)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), this, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), this, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusNunchukPlugged(quint32)), this, SIGNAL(dbusNunchukPlugged(quint32)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusNunchukUnplugged(quint32)), this, SIGNAL(dbusNunchukUnplugged(quint32)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), this, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusNunchukButtons(quint32,quint64)), this, SIGNAL(dbusNunchukButtons(quint32,quint64)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), this, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusClassicControllerPlugged(quint32)), this, SIGNAL(dbusClassicControllerPlugged(quint32)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusClassicControllerUnplugged(quint32)), this, SIGNAL(dbusClassicControllerUnplugged(quint32)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), this, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), this, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::QueuedConnection);
-    connect(connection, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), this, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::QueuedConnection);
+  if (wiimotedevSettings->dbusInterfaceSupport()) {
+    connect(connection, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteConnected(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteConnected(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteDisconnected(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteDisconnected(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteButtons(quint32,quint64)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteStatus(quint32,quint8)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteStatus(quint32,quint8)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukPlugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukPlugged(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukUnplugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukUnplugged(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukButtons(quint32,quint64)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusClassicControllerPlugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerPlugged(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusClassicControllerUnplugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerUnplugged(quint32)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::DirectConnection);
+    connect(connection, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::DirectConnection);
   }
 
-  connect(connection, SIGNAL(unregisterConnection(WiimoteConnection*)), this, SLOT(unregisterConnection(WiimoteConnection*)), Qt::QueuedConnection);
+  if (wiimotedevSettings->tcpInterfaceSupport()) {
+    connect(connection, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), networkServerThread->server, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusWiimoteConnected(quint32)), networkServerThread->server, SLOT(dbusWiimoteConnected(quint32)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusWiimoteDisconnected(quint32)), networkServerThread->server, SLOT(dbusWiimoteDisconnected(quint32)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), networkServerThread->server, SLOT(dbusWiimoteBatteryLife(quint32,quint8)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusWiimoteButtons(quint32,quint64)), networkServerThread->server, SLOT(dbusWiimoteButtons(quint32,quint64)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusWiimoteStatus(quint32,quint8)), networkServerThread->server, SLOT(dbusWiimoteStatus(quint32,quint8)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), networkServerThread->server, SLOT(dbusWiimoteInfrared(quint32,QList< struct irpoint>)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), networkServerThread->server, SLOT(dbusWiimoteAcc(quint32, struct accdata)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusNunchukPlugged(quint32)), networkServerThread->server, SLOT(dbusNunchukPlugged(quint32)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusNunchukUnplugged(quint32)), networkServerThread->server, SLOT(dbusNunchukUnplugged(quint32)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), networkServerThread->server, SLOT(dbusNunchukStick(quint32,struct stickdata)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusNunchukButtons(quint32,quint64)), networkServerThread->server, SLOT(dbusNunchukButtons(quint32,quint64)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), networkServerThread->server, SLOT(dbusNunchukAcc(quint32,struct accdata)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusClassicControllerPlugged(quint32)), networkServerThread->server, SLOT(dbusClassicControllerPlugged(quint32)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusClassicControllerUnplugged(quint32)), networkServerThread->server, SLOT(dbusClassicControllerUnplugged(quint32)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), networkServerThread->server, SLOT(dbusClassicControllerButtons(quint32,quint64)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), networkServerThread->server, SLOT(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), networkServerThread->server, SLOT(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::QueuedConnection);
+  }
+
+  connect(connection, SIGNAL(unregisterConnection(WiimoteConnection*)), this, SLOT(freeConnection(WiimoteConnection*)), Qt::QueuedConnection);
   connection->start();
 
   return true;
 }
 
-void ConnectionManager::unregisterConnection(WiimoteConnection *connection)
-{
-  systemlog::information(QString("wiiremote %1 disconnected, id %2").arg(connection->wiimote->getWiimoteSAddr(), QString::number(connection->getWiimoteSequence(), 10)));
+bool ConnectionManager::dbusReloadSequenceList() {
+  systemlog::notice(QString("loading sequences from %1").arg(WIIMOTEDEV_CONFIG_FILE));
 
-  connection->wait();
-  connections.removeAt(connections.indexOf(connection, 0));
-  delete connection;
+  wiimotedevSettings->reload();
+  sequence = wiimotedevSettings->getWiiremoteSequence();
 
-  qDebug() << connections.count();
-}
+  foreach(const QString &key, sequence.keys())
+    unregisterWiimoteList[key] = false;
 
-QList < uint> ConnectionManager::dbusGetWiimoteList()
-{
-  QList < uint> list;
-  for (register int i = 0; i < objectList.count(); ++i)
-    list << static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence();
-  return list;
+  return !sequence.isEmpty();
 }
 
 QStringList ConnectionManager::dbusGetUnregistredWiimoteList()
 {
   QStringList list;
 
-  QMapIterator <QString, bool> map(unregisterWiiremoteList);
+  QMapIterator <QString, bool> map(unregisterWiimoteList);
 
   while (map.hasNext()) {
     map.next();
     if (map.value()) list << map.key();
   }
 
+  return list;
+}
+
+
+QList < uint> ConnectionManager::dbusGetWiimoteList()
+{
+  QList < uint> list;
+  for (register int i = 0; i < objectList.count(); ++i)
+    list << static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence();
   return list;
 }
 
@@ -226,10 +233,9 @@ quint8 ConnectionManager::dbusWiimoteGetStatus(quint32 id)
 
 WiimoteConnection* ConnectionManager::findWiiremoteObject(quint32 id)
 {
-  for (register int i = 0; i < objectList.count(); ++i)
-    if (static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence() == id)
-      return static_cast< WiimoteConnection*>( objectList.at(i));
-  return static_cast< WiimoteConnection*>( 0);
+  foreach(WiimoteConnection *connection, connections)
+    if (connection->getWiimoteSequence() == id) return connection;
+  return 0;
 }
 
 quint8 ConnectionManager::dbusWiimoteGetLedStatus(quint32 id)

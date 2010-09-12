@@ -28,7 +28,7 @@ set(wiimotedev_sources
   dbus/support.cpp
   dbus/deviceevents.cpp
   dbus/service.cpp
-  network/support.cpp
+  network/servermanager.cpp
   syslog/syslog.cpp
   wiimotedev/connection.cpp
   wiimotedev/manager.cpp
@@ -40,7 +40,7 @@ set(wiimotedev_sources
 set(wiimotedev_headers_qt
   dbus/deviceevents.h
   dbus/service.h
-  network/support.h
+  network/servermanager.h
   wiimotedev/connection.h
   wiimotedev/manager.h
 )
@@ -58,7 +58,7 @@ set(client_sources
   dbus/support.cpp
   dbus/deviceevents.cpp
   dbus/service.cpp
-  network/manager.cpp
+  network/clientmanager.cpp
   syslog/syslog.cpp
   client.cpp
 )
@@ -66,7 +66,7 @@ set(client_sources
 set(client_headers_qt
   dbus/deviceevents.h
   dbus/service.h
-  network/manager.h
+  network/clientmanager.h
 )
 
 set(client_headers

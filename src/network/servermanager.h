@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef NETWORK_SUPPORT_H
-#define NETWORK_SUPPORT_H
+#ifndef SERVER_MANAGER_H
+#define SERVER_MANAGER_H
 
 #include "include/wiimotedev/proto.h"
 #include "include/wiimotedev/consts.h"
@@ -31,30 +31,25 @@
 #include <QTcpSocket>
 #include <QMutex>
 
-class MessageServer : public QTcpServer
+
+class NetworkServer : public QTcpServer
 {
-Q_OBJECT
+  Q_OBJECT
 private:
-  WiimotedevSettings *settings;
+  QList < QTcpSocket*> connections;
+  QStringList allowed;
+  QMutex mutex;
 
 public:
-  explicit MessageServer(WiimotedevSettings* settings, quint16 port, QObject *parent = 0);
-  virtual ~MessageServer();
+  NetworkServer(QStringList allowed, QObject *parent = 0);
+ ~NetworkServer();
 
 protected:
   void incomingConnection(int socketDescriptor);
-
-private:
-  QList < QTcpSocket*> connections;
   void tcpSendEvent(QByteArray &data);
-  QObject *manager;
 
-  quint16 port;
-  QMutex mutex;
-
-public slots:
+public Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
-
   void dbusWiimoteConnected(quint32 id);
   void dbusWiimoteDisconnected(quint32 id);
   void dbusWiimoteBatteryLife(quint32 id, quint8 life);
@@ -62,33 +57,34 @@ public slots:
   void dbusWiimoteStatus(quint32 id, quint8 status);
   void dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points);
   void dbusWiimoteAcc(quint32 id, struct accdata acc);
-
   void dbusNunchukPlugged(quint32 id);
   void dbusNunchukUnplugged(quint32 id);
   void dbusNunchukButtons(quint32 id, quint64 value);
   void dbusNunchukStick(quint32 id, struct stickdata stick);
   void dbusNunchukAcc(quint32 id, struct accdata acc);
-
   void dbusClassicControllerPlugged(quint32 id);
   void dbusClassicControllerUnplugged(quint32 id);
   void dbusClassicControllerButtons(quint32 id, quint64 value);
   void dbusClassicControllerLStick(quint32 id, struct stickdata stick);
   void dbusClassicControllerRStick(quint32 id, struct stickdata stick);
-
 };
 
-class MessageServerThread : public QThread
+
+
+class NetworkServerThread :public QThread
 {
-  Q_OBJECT
 private:
-  WiimotedevSettings *settings;
+  QStringList allowed;
   quint16 port;
-  QObject *manager;
 
 public:
-  explicit MessageServerThread(WiimotedevSettings* settings, quint16 port,  QObject *parent = 0);
+  NetworkServerThread(QStringList allowed, quint16 port);
+  NetworkServer *server;
+
+protected:
   void run();
 };
 
 
-#endif // NETWORK_SUPPORT_H
+
+#endif // SERVER_MANAGER_H

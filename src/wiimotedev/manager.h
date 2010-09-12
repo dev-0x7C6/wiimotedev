@@ -31,7 +31,7 @@
 #include "dbus/deviceevents.h"
 #include "dbus/service.h"
 #include "include/wiimotedev/consts.h"
-#include "network/support.h"
+#include "network/servermanager.h"
 #include "wiimotedev/connection.h"
 #include "wiimotedev/settings.h"
 
@@ -50,11 +50,11 @@ private:
 
 // Settings ------------------------------------------------- /
   WiimotedevSettings *wiimotedevSettings;
-  MessageServerThread *tcpServerThread;
+  NetworkServerThread *networkServerThread;
 
   QList< WiimoteConnection*> connections;
 
-  QMap< QString, bool> unregisterWiiremoteList;
+  QMap< QString, bool> unregisterWiimoteList;
 
 
   QMap< QString, quint32> sequence;
@@ -71,9 +71,10 @@ public:
 protected:
   void run();
 
-public Q_SLOTS:
+private Q_SLOTS:
+  void freeConnection(WiimoteConnection*);
+  void freeAllConnections();
   bool registerConnection(WiimoteConnection*);
-  void unregisterConnection(WiimoteConnection*);
 
 
 public Q_SLOTS:
@@ -99,24 +100,6 @@ public Q_SLOTS:
 
 Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
-  void dbusWiimoteGeneralButtons(quint32, quint64);
-  void dbusWiimoteConnected(quint32);
-  void dbusWiimoteDisconnected(quint32);
-  void dbusWiimoteBatteryLife(quint32, quint8);
-  void dbusWiimoteButtons(quint32, quint64);
-  void dbusWiimoteStatus(quint32, quint8);
-  void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
-  void dbusWiimoteAcc(quint32, struct accdata);
-  void dbusNunchukPlugged(quint32);
-  void dbusNunchukUnplugged(quint32);
-  void dbusNunchukButtons(quint32, quint64);
-  void dbusNunchukStick(quint32, struct stickdata);
-  void dbusNunchukAcc(quint32, struct accdata);
-  void dbusClassicControllerPlugged(quint32);
-  void dbusClassicControllerUnplugged(quint32);
-  void dbusClassicControllerButtons(quint32, quint64);
-  void dbusClassicControllerLStick(quint32, struct stickdata);
-  void dbusClassicControllerRStick(quint32, struct stickdata);
 };
 
 #endif // CONNECTIONMANAGER_H

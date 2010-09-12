@@ -34,7 +34,7 @@ class QThread;
 
 class WiimoteConnection : public QThread
 {
-    Q_OBJECT
+  Q_OBJECT
 private:
   DBusDeviceEventsAdaptorWrapper *adaptor;
 
@@ -59,7 +59,7 @@ private:
   quint8 status;
 
 public:
-  WiimoteConnection(DBusDeviceEventsAdaptorWrapper *adaptor, QObject *parent = 0);
+  WiimoteConnection();
  ~WiimoteConnection();
 
   void quitThread();

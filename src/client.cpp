@@ -40,7 +40,7 @@
 #include <string.h>
 
 #include "syslog/syslog.h"
-#include "network/manager.h"
+#include "network/clientmanager.h"
 
 #include <QCoreApplication>
 #include <QScopedPointer>
@@ -106,6 +106,14 @@ int main(int argc, char *argv[])
 
   if (additional_debug)
     systemlog::debug("additional debug mode switch-on");
+
+  qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
+  qRegisterMetaType< QList< accdata> >("QList< accdata>");
+  qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
+
+  qRegisterMetaType< irpoint>("irpoint");
+  qRegisterMetaType< accdata>("accdata");
+  qRegisterMetaType< stickdata>("stickdata");
 
   signal(SIGHUP, signal_handler);
   signal(SIGTERM, signal_handler);

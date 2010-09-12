@@ -128,7 +128,6 @@ int main(int argc, char *argv[])
   qRegisterMetaType< accdata>("accdata");
   qRegisterMetaType< stickdata>("stickdata");
 
-
   ConnectionManager *manager_thread = new ConnectionManager();
   manager_thread->start(QThread::HighPriority);
   application.take()->exec();

@@ -17,80 +17,69 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "network/support.h"
+#include "network/servermanager.h"
 #include "syslog/syslog.h"
 
-MessageServerThread::MessageServerThread(WiimotedevSettings* settings, quint16 port,  QObject *parent):
-  QThread(parent),
-  settings(settings),
-  port(port),
-  manager(parent)
+NetworkServerThread::NetworkServerThread(QStringList allowed, quint16 port)
+  :allowed(allowed),
+   port(port)
 {
-  connect(this, SIGNAL(finished()), this, SLOT(deleteLater()));
 }
 
-void MessageServerThread::run() {
-  MessageServer *server = new MessageServer(settings, port, manager);
+void NetworkServerThread::run() {
+  server = new NetworkServer(allowed);
   if (server->listen(QHostAddress::Any, port)) {
     systemlog::information(QString("listening on %1").arg(QString::number(port, 10)));
     exec();
-  }
-  else
+    server->close();
+    systemlog::information(QString("close port %1").arg(QString::number(port, 10)));
+  } else
     systemlog::information(QString("can't listen on %1, tcp service halted").arg(QString::number(port, 10)));
+
+  delete server;
 }
 
-MessageServer::MessageServer(WiimotedevSettings* settings, quint16 port, QObject *parent):
+NetworkServer::NetworkServer(QStringList allowed, QObject *parent):
   QTcpServer(parent),
-  settings(settings),
-  manager(parent),
-  port(port)
+  allowed(allowed)
 {
-  connect(manager, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::QueuedConnection);
-
-  connect(manager, SIGNAL(dbusWiimoteConnected(quint32)), this, SLOT(dbusWiimoteConnected(quint32)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusWiimoteDisconnected(quint32)), this, SLOT(dbusWiimoteDisconnected(quint32)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), this, SLOT(dbusWiimoteBatteryLife(quint32,quint8)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusWiimoteButtons(quint32,quint64)), this, SLOT(dbusWiimoteButtons(quint32,quint64)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusWiimoteStatus(quint32,quint8)), this, SLOT(dbusWiimoteStatus(quint32,quint8)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), this, SLOT(dbusWiimoteInfrared(quint32,QList< struct irpoint>)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), this, SLOT(dbusWiimoteAcc(quint32, struct accdata)), Qt::QueuedConnection);
-
-  connect(manager, SIGNAL(dbusNunchukPlugged(quint32)), this, SLOT(dbusNunchukPlugged(quint32)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusNunchukUnplugged(quint32)), this, SLOT(dbusNunchukUnplugged(quint32)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), this, SLOT(dbusNunchukStick(quint32,struct stickdata)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusNunchukButtons(quint32,quint64)), this, SLOT(dbusNunchukButtons(quint32,quint64)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), this, SLOT(dbusNunchukAcc(quint32,struct accdata)), Qt::QueuedConnection);
-
-  connect(manager, SIGNAL(dbusClassicControllerPlugged(quint32)), this, SLOT(dbusClassicControllerPlugged(quint32)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusClassicControllerUnplugged(quint32)), this, SLOT(dbusClassicControllerUnplugged(quint32)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), this, SLOT(dbusClassicControllerButtons(quint32,quint64)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), this, SLOT(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::QueuedConnection);
-  connect(manager, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), this, SLOT(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::QueuedConnection);
 }
 
-MessageServer::~MessageServer()
+NetworkServer::~NetworkServer()
 {
-  for (register int i = 0; i < connections.count(); ++i)
-    delete connections.at(i);
+  if (connections.isEmpty())
+    return;
+
+  foreach (QTcpSocket *socket, connections) {
+    if (socket->isValid())
+      socket->disconnectFromHost();
+    delete socket;
+  }
 }
 
-void MessageServer::tcpSendEvent(QByteArray &data)
+void NetworkServer::tcpSendEvent(QByteArray &data)
 {
   mutex.lock();
-  QList < void* > ptrs;
-  for (register int i = 0; i < connections.count(); ++i) {
-    if (connections.at(i)->isWritable())
-      connections.at(i)->write(data); else
-      ptrs << static_cast< void*>( connections.at(i));
+  QList < QTcpSocket*> brokenConnections;
+
+  foreach (QTcpSocket *socket, connections) {
+    if (!(socket->isWritable() && socket->isValid())) {
+      brokenConnections << socket;
+      continue;
+    }
+    socket->write(data);
+    socket->waitForBytesWritten();
   }
 
-  for (register int i = 0; i < ptrs.count(); ++i)
-    connections.removeAt(connections.indexOf(static_cast< QTcpSocket*>( ptrs.at(i))));
+  foreach (QTcpSocket *broken, brokenConnections) {
+    connections.removeAt(connections.indexOf(broken, 0));
+    delete broken;
+  }
 
   mutex.unlock();
 }
 
-void MessageServer::incomingConnection(int socketDescriptor)
+void NetworkServer::incomingConnection(int socketDescriptor)
 {
   QTcpSocket *tcpSocket  = new QTcpSocket();
 
@@ -99,20 +88,19 @@ void MessageServer::incomingConnection(int socketDescriptor)
     return;
   }
 
-  quint32 host = tcpSocket->peerAddress().toIPv4Address();
   systemlog::information(QString("Incoming connection from %1").arg(tcpSocket->peerAddress().toString()));
 
   bool accepted = false;
 
-  QStringList allowed = settings->tcpGetAllowedHostList();
-
-  for (register int i = 0; i < allowed.count(); ++i) if (QHostAddress(allowed.at(i)).toIPv4Address() == host) {
-    accepted = true;
-    break;
+  foreach (const QString& host, allowed) {
+    if (QHostAddress(host) == tcpSocket->peerAddress()) {
+      accepted = true;
+      break;
+    }
   }
 
   if (!accepted) {
-    systemlog::information(QString("Connection rejected %1, probably host is not allowed").arg(tcpSocket->peerAddress().toString()));
+    systemlog::information(QString("Connection rejected %1").arg(tcpSocket->peerAddress().toString()));
     tcpSocket->disconnectFromHost();
     delete tcpSocket;
     return;
@@ -122,7 +110,7 @@ void MessageServer::incomingConnection(int socketDescriptor)
   connections << tcpSocket;
 }
 
-void MessageServer::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
+void NetworkServer::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -136,7 +124,7 @@ void MessageServer::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusWiimoteConnected(quint32 id)
+void NetworkServer::dbusWiimoteConnected(quint32 id)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -149,7 +137,7 @@ void MessageServer::dbusWiimoteConnected(quint32 id)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusWiimoteDisconnected(quint32 id)
+void NetworkServer::dbusWiimoteDisconnected(quint32 id)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -162,7 +150,7 @@ void MessageServer::dbusWiimoteDisconnected(quint32 id)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusWiimoteBatteryLife(quint32 id, quint8 life)
+void NetworkServer::dbusWiimoteBatteryLife(quint32 id, quint8 life)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -176,7 +164,7 @@ void MessageServer::dbusWiimoteBatteryLife(quint32 id, quint8 life)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusWiimoteButtons(quint32 id, quint64 value)
+void NetworkServer::dbusWiimoteButtons(quint32 id, quint64 value)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -190,7 +178,7 @@ void MessageServer::dbusWiimoteButtons(quint32 id, quint64 value)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusWiimoteStatus(quint32 id, quint8 status)
+void NetworkServer::dbusWiimoteStatus(quint32 id, quint8 status)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -204,7 +192,7 @@ void MessageServer::dbusWiimoteStatus(quint32 id, quint8 status)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points)
+void NetworkServer::dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -225,7 +213,7 @@ void MessageServer::dbusWiimoteInfrared(quint32 id, QList< struct irpoint> point
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusWiimoteAcc(quint32 id, struct accdata acc)
+void NetworkServer::dbusWiimoteAcc(quint32 id, struct accdata acc)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -244,7 +232,7 @@ void MessageServer::dbusWiimoteAcc(quint32 id, struct accdata acc)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusNunchukPlugged(quint32 id)
+void NetworkServer::dbusNunchukPlugged(quint32 id)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -257,7 +245,7 @@ void MessageServer::dbusNunchukPlugged(quint32 id)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusNunchukUnplugged(quint32 id)
+void NetworkServer::dbusNunchukUnplugged(quint32 id)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -270,7 +258,7 @@ void MessageServer::dbusNunchukUnplugged(quint32 id)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusNunchukButtons(quint32 id, quint64 value)
+void NetworkServer::dbusNunchukButtons(quint32 id, quint64 value)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -284,7 +272,7 @@ void MessageServer::dbusNunchukButtons(quint32 id, quint64 value)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusNunchukStick(quint32 id, struct stickdata stick)
+void NetworkServer::dbusNunchukStick(quint32 id, struct stickdata stick)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -299,7 +287,7 @@ void MessageServer::dbusNunchukStick(quint32 id, struct stickdata stick)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusNunchukAcc(quint32 id, struct accdata acc)
+void NetworkServer::dbusNunchukAcc(quint32 id, struct accdata acc)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -318,7 +306,7 @@ void MessageServer::dbusNunchukAcc(quint32 id, struct accdata acc)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusClassicControllerPlugged(quint32 id)
+void NetworkServer::dbusClassicControllerPlugged(quint32 id)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -331,7 +319,7 @@ void MessageServer::dbusClassicControllerPlugged(quint32 id)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusClassicControllerUnplugged(quint32 id)
+void NetworkServer::dbusClassicControllerUnplugged(quint32 id)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -344,7 +332,7 @@ void MessageServer::dbusClassicControllerUnplugged(quint32 id)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusClassicControllerButtons(quint32 id, quint64 value)
+void NetworkServer::dbusClassicControllerButtons(quint32 id, quint64 value)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -358,7 +346,7 @@ void MessageServer::dbusClassicControllerButtons(quint32 id, quint64 value)
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusClassicControllerLStick(quint32 id, struct stickdata stick)
+void NetworkServer::dbusClassicControllerLStick(quint32 id, struct stickdata stick)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
@@ -373,7 +361,7 @@ void MessageServer::dbusClassicControllerLStick(quint32 id, struct stickdata sti
   tcpSendEvent(block);
 }
 
-void MessageServer::dbusClassicControllerRStick(quint32 id, struct stickdata stick)
+void NetworkServer::dbusClassicControllerRStick(quint32 id, struct stickdata stick)
 {
   QByteArray block;
   QDataStream out(&block, QIODevice::WriteOnly);
