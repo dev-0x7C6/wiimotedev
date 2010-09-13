@@ -24,13 +24,13 @@
 
 #include "include/wiimotedev/consts.h"
 #include "wiimotedev/connection.h"
-
-#define memory_checks
+#include "syslog/syslog.h"
 
 extern bool additional_debug;
 
-WiimoteConnection::WiimoteConnection()
- :wiimote(new WiimoteDevice(this))
+WiimoteConnection::WiimoteConnection(quint32 powersave)
+ :powersavevalue(powersave),
+  wiimote(new WiimoteDevice(this))
 {
   setTerminationEnabled(false);
 }
@@ -151,18 +151,29 @@ void WiimoteConnection::run()
 
   int batteryRequest = 0;
 
+  quint32 powersave = 0;
+  powersavevalue = powersavevalue * 6000;
+
+  latencyTimer.start();
   while (wiimote->getMesgStruct(&count, &mesg, &time) && !quitRequest) {
     currentLatency = latencyTimer.elapsed();
     latencyTimer.start();
 
+    powersave += currentLatency;
+
+    if (powersave > powersavevalue && powersavevalue) {
+      systemlog::notice(QString("wiiremote %1 going to powersave mode").arg(wiimote->getWiimoteSAddr()));
+      quitThread();
+    }
+
     if (!averageLatency)
-        averageLatency = currentLatency;
+      averageLatency = currentLatency;
 
     averageLatency = (averageLatency + currentLatency) >> 1;
 
     if (batteryRequest > 10000) {
-        batteryStatusRequest();
-        batteryRequest = 0;
+      batteryStatusRequest();
+      batteryRequest = 0;
     }
 
     batteryRequest += 1;
@@ -558,6 +569,7 @@ void WiimoteConnection::run()
     if (ButtonRequest){
       ButtonRequest = false;
       emit dbusWiimoteGeneralButtons(sequence, WiimoteButtons);
+      powersave = 0;
     }
 
     delete mesg;
@@ -615,7 +627,6 @@ void WiimoteConnection::wiimoteDeviceCleanup(QList< struct irpoint> &points, str
   emit dbusWiimoteButtons(sequence, 0);
 }
 
-void WiimoteConnection::quitThread()
-{
+void WiimoteConnection::quitThread() {
   quitRequest = true;
 }

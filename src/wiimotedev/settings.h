@@ -39,6 +39,8 @@ private:
 
   quint16 tcpPort;
 
+  quint32 powersave;
+
 public:
   WiimotedevSettings(QString file = WIIMOTEDEV_CONFIG_FILE, QObject *parent = 0);
 
@@ -52,6 +54,8 @@ public:
 
   inline QStringList tcpGetAllowedHostList() { return tcpAllowed; }
   inline quint16 tcpGetPort() { return tcpPort; }
+
+  inline quint32 getPowerSaveValue() { return powersave; }
 
   void setDBusInterfaceSupport(bool support);
   void setTcpInterfaceSupport(bool support);

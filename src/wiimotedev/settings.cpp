@@ -39,6 +39,7 @@ void WiimotedevSettings::reload()
   ifaceTcpSupport = settings->value(tcpSupportValue, false).toBool();
   tcpAllowed = settings->value("tcp/allowed", QStringList()).toStringList();
   tcpPort = settings->value("tcp/port", WIIMOTEDEV_TCP_PORT).toInt();
+  powersave = settings->value("features/powersave", 0).toUInt();
 
   sequence.clear();
 

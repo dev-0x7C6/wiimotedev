@@ -45,6 +45,7 @@ private:
   QList < double> wfZmotion; QList < double> nfZmotion;
 
   quint32 sequence;
+  quint32 powersavevalue;
 
 /*  Latency  *************************************************************/
   quint32 currentLatency;
@@ -59,10 +60,8 @@ private:
   quint8 status;
 
 public:
-  WiimoteConnection();
+  WiimoteConnection(quint32 powersave);
  ~WiimoteConnection();
-
-  void quitThread();
 
   WiimoteDevice *wiimote;
 
@@ -79,6 +78,9 @@ public:
   inline quint32 dbusWiimoteGetBatteryLife(){ return life; }
   inline quint32 dbusWiimoteGetCurrentLatency(){ return currentLatency; }
   inline quint8 getWiiremoteStatus() { return status; }
+
+public Q_SLOTS:
+  void quitThread();
 
 protected:
  void run();

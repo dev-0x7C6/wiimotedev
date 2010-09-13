@@ -28,6 +28,7 @@ NetworkServerThread::NetworkServerThread(QStringList allowed, quint16 port)
 
 void NetworkServerThread::run() {
   server = new NetworkServer(allowed);
+
   if (server->listen(QHostAddress::Any, port)) {
     systemlog::information(QString("listening on %1").arg(QString::number(port, 10)));
     exec();

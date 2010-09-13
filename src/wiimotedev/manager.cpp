@@ -69,13 +69,13 @@ void ConnectionManager::terminateRequest() {
 }
 
 void ConnectionManager::run() {
-  connections << (new WiimoteConnection());
+  connections << (new WiimoteConnection(1));
   QTime clock;
   while (!terminateReq) {
     clock.start();
-    if (connections.last()->wiimote->connectToDevice(1)) {
+    if (connections.last()->wiimote->connectToDevice(wiimotedevSettings->getPowerSaveValue())) {
       registerConnection(connections.last());
-      connections << (new WiimoteConnection());
+      connections << (new WiimoteConnection(wiimotedevSettings->getPowerSaveValue()));
       continue;
     }
     msleep((clock.elapsed() < 100 && !terminateReq) ? 1000 : 0);
@@ -87,11 +87,13 @@ void ConnectionManager::run() {
 
   freeAllConnections();
 
-  if (wiimotedevSettings->tcpInterfaceSupport()) {
+  if (wiimotedevSettings->tcpInterfaceSupport() && networkServerThread->isRunning()) {
     networkServerThread->quit();
     networkServerThread->wait();
-    delete networkServerThread;
   }
+
+  if (wiimotedevSettings->tcpInterfaceSupport())
+    delete networkServerThread;
 
   QCoreApplication::quit();
 }
@@ -161,7 +163,7 @@ bool ConnectionManager::registerConnection(WiimoteConnection *connection)
     connect(connection, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::DirectConnection);
   }
 
-  if (wiimotedevSettings->tcpInterfaceSupport()) {
+  if (wiimotedevSettings->tcpInterfaceSupport() && networkServerThread->isRunning()) {
     connect(connection, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), networkServerThread->server, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::QueuedConnection);
     connect(connection, SIGNAL(dbusWiimoteConnected(quint32)), networkServerThread->server, SLOT(dbusWiimoteConnected(quint32)), Qt::QueuedConnection);
     connect(connection, SIGNAL(dbusWiimoteDisconnected(quint32)), networkServerThread->server, SLOT(dbusWiimoteDisconnected(quint32)), Qt::QueuedConnection);

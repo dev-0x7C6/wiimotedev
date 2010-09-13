@@ -2,8 +2,61 @@ Wiimotedev Project Changelog
 ============================
 
 1.3
-- better integration between projects
-- include wiimotedev-register
-- include wiimotedev-toolkit
-- include wiimotedev-client
-- include examples
+- IS HIGHLY RECOMMENDED FOR ALL 1.2 USERS
+- added powersave mode feature
+- integration with wiimotedev-register
+- integration with wiimotedev-client
+- integration with wiimotedev-toolkit
+- integration with wiimotedev-examples
+- better compatibilty with wiimotedev-client
+- important cleanups and optimalisations in core code
+- fixed various bugs
+- process of registration new wiiremote(s) should be easier with wiimotedev-register
+
+1.2
+- First public release
+- Support for streaming wiiremote events by network
+- Support for local dbus interface (org.wiimotedev.daemon)
+- Added init.d script for debian, gentoo, slackware, ubuntu
+- Added to org.wiimotedev.deviceEvents
+
+Methods:
+  bool dbusIsClassicConnected(quint32 id)
+  bool dbusIsNunchukConnected(quint32 id)
+  bool dbusIsWiimoteConnected(quint32 id)
+  quint32 dbusWiimoteGetAverageLatency(quint32 id)
+  quint32 dbusWiimoteGetBatteryLife(quint32 id)
+  quint32 dbusWiimoteGetCurrentLatency(quint32 id)
+  quint8 dbusWiimoteGetLedStatus(quint32 id)
+  quint8 dbusWiimoteGetStatus(quint32 id)
+  QList < uint> dbusGetWiimoteList()
+  QStringList dbusGetUnregistredWiimoteList()
+  bool dbusWiimoteGetRumbleStatus(quint32 id)
+  bool dbusWiimoteSetLedStatus(quint32 id, quint32 status)
+  bool dbusWiimoteSetRumbleStatus(quint32 id, bool status)
+
+Signals:
+  void dbusReportUnregistredWiimote(QString)
+  void dbusWiimoteGeneralButtons(quint32, quint64)
+  void dbusWiimoteConnected(quint32)
+  void dbusWiimoteDisconnected(quint32)
+  void dbusWiimoteBatteryLife(quint32, quint8)
+  void dbusWiimoteButtons(quint32, quint64)
+  void dbusWiimoteStatus(quint32, quint8)
+  void dbusWiimoteInfrared(quint32, QList< struct irpoint>)
+  void dbusWiimoteAcc(quint32, struct accdata)
+  void dbusNunchukPlugged(quint32)
+  void dbusNunchukUnplugged(quint32)
+  void dbusNunchukButtons(quint32, quint64)
+  void dbusNunchukStick(quint32, struct stickdata)
+  void dbusNunchukAcc(quint32, struct accdata)
+  void dbusClassicControllerPlugged(quint32)
+  void dbusClassicControllerUnplugged(quint32)
+  void dbusClassicControllerButtons(quint32, quint64)
+  void dbusClassicControllerLStick(quint32, struct stickdata)
+  void dbusClassicControllerRStick(quint32, struct stickdata)
+
+- Added to org.wiimotedev.service
+
+Methods:
+  bool dbusReloadSequenceList();
