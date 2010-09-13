@@ -152,7 +152,7 @@ void WiimoteConnection::run()
   int batteryRequest = 0;
 
   quint32 powersave = 0;
-  powersavevalue = powersavevalue * 6000;
+  powersavevalue = powersavevalue * 60000;
 
   latencyTimer.start();
   while (wiimote->getMesgStruct(&count, &mesg, &time) && !quitRequest) {
