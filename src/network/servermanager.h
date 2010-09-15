@@ -31,22 +31,41 @@
 #include <QTcpSocket>
 #include <QMutex>
 
+class ConnectionManager;
+
+class NetworkSocket : public QTcpSocket
+{
+  Q_OBJECT
+public:
+  NetworkSocket(QObject *parent = 0);
+
+private Q_SLOTS:
+  void readyReadSlot();
+
+Q_SIGNALS:
+  void readyReadConnection(QTcpSocket*);
+};
+
 
 class NetworkServer : public QTcpServer
 {
   Q_OBJECT
 private:
-  QList < QTcpSocket*> connections;
+  QList < NetworkSocket*> connections;
   QStringList allowed;
   QMutex mutex;
+  ConnectionManager *manager;
 
 public:
-  NetworkServer(QStringList allowed, QObject *parent = 0);
+  NetworkServer(QStringList allowed, ConnectionManager *manager, QObject *parent = 0);
  ~NetworkServer();
 
 protected:
   void incomingConnection(int socketDescriptor);
   void tcpSendEvent(QByteArray &data);
+
+private Q_SLOTS:
+  void readyRead(QTcpSocket*);
 
 public Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
@@ -70,15 +89,15 @@ public Q_SLOTS:
 };
 
 
-
 class NetworkServerThread :public QThread
 {
 private:
   QStringList allowed;
   quint16 port;
+  ConnectionManager *manager;
 
 public:
-  NetworkServerThread(QStringList allowed, quint16 port);
+  NetworkServerThread(QStringList allowed, quint16 port, ConnectionManager *manager);
   NetworkServer *server;
 
 protected:

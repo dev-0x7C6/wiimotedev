@@ -29,6 +29,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QTcpSocket>
+#include <QEventLoop>
 
 #include "include/wiimotedev/consts.h"
 #include "include/wiimotedev/proto.h"
@@ -60,6 +61,9 @@ private:
 
   bool terminateReq;
 
+  QHash < qint32, QEventLoop*> waitMethod;
+  QHash < qint32, QVariant> outMethod;
+
 public:
   ConnectionManager();
  ~ConnectionManager();
@@ -69,18 +73,32 @@ public:
 protected:
   void run();
 
-private slots:
+private Q_SLOTS:
   void readyRead();
 
-public slots:
+public Q_SLOTS:
+  bool dbusIsClassicConnected(quint32 id);
+  bool dbusIsNunchukConnected(quint32 id);
+  bool dbusIsWiimoteConnected(quint32 id);
+
+  quint32 dbusWiimoteGetAverageLatency(quint32 id);
+  quint32 dbusWiimoteGetBatteryLife(quint32 id);
+  quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+
   bool dbusWiimoteGetRumbleStatus(quint32 id);
-  bool dbusWiimoteSetLedStatus(quint32 id, quint8 status);
+  bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
   bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
   quint8 dbusWiimoteGetLedStatus(quint32 id);
 
-signals:
-  void dbusWiimoteGeneralButtons(quint32, quint64);
+  quint8 dbusWiimoteGetStatus(quint32 id);
 
+  QList < uint> dbusGetWiimoteList();
+  QStringList dbusGetUnregistredWiimoteList();
+
+  bool dbusReloadSequenceList();
+
+Q_SIGNALS:
+  void dbusWiimoteGeneralButtons(quint32, quint64);
   void dbusWiimoteConnected(quint32);
   void dbusWiimoteDisconnected(quint32);
   void dbusWiimoteBatteryLife(quint32, quint8);
@@ -88,13 +106,11 @@ signals:
   void dbusWiimoteStatus(quint32, quint8);
   void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
   void dbusWiimoteAcc(quint32, struct accdata);
-
   void dbusNunchukPlugged(quint32);
   void dbusNunchukUnplugged(quint32);
   void dbusNunchukButtons(quint32, quint64);
   void dbusNunchukStick(quint32, struct stickdata);
   void dbusNunchukAcc(quint32, struct accdata);
-
   void dbusClassicControllerPlugged(quint32);
   void dbusClassicControllerUnplugged(quint32);
   void dbusClassicControllerButtons(quint32, quint64);

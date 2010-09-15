@@ -54,7 +54,7 @@ ConnectionManager::ConnectionManager(QObject *parent):
   }
 
   if (wiimotedevSettings->tcpInterfaceSupport()) {
-    networkServerThread = new NetworkServerThread(wiimotedevSettings->tcpGetAllowedHostList(), wiimotedevSettings->tcpGetPort());
+    networkServerThread = new NetworkServerThread(wiimotedevSettings->tcpGetAllowedHostList(), wiimotedevSettings->tcpGetPort(), this);
     networkServerThread->start();
   }
 

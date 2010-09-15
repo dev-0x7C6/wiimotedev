@@ -95,7 +95,7 @@ Q_SIGNALS:
  void registerConnection(WiimoteConnection*);
  void unregisterConnection(WiimoteConnection*);
 
-Q_SIGNALS:
+Q_SIGNALS: 
  void dbusWiimoteGeneralButtons(quint32, quint64);
  void dbusWiimoteConnected(quint32);
  void dbusWiimoteDisconnected(quint32);

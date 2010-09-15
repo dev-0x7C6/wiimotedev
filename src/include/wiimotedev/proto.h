@@ -44,12 +44,9 @@ const uint16 iddbusClassicControllerButtons = 0x10;
 const uint16 iddbusClassicControllerLStick = 0x11;
 const uint16 iddbusClassicControllerRStick = 0x12;
 
-const uint16 iddbusResponseBool = 0xF0;
-const uint16 iddbusResponseInt8 = 0xF1;
-
-const uint16 iddbusWiimoteGetRumbleStatus = 0x01;
-const uint16 iddbusWiimoteSetLedStatus = 0x02;
-const uint16 iddbusWiimoteSetRumbleStatus = 0x03;
-const uint16 iddbusWiimoteGetLedStatus = 0x04;
+const uint16 iddbusWiimoteGetRumbleStatus = 0xA1;
+const uint16 iddbusWiimoteSetLedStatus = 0xA2;
+const uint16 iddbusWiimoteSetRumbleStatus = 0xA3;
+const uint16 iddbusWiimoteGetLedStatus = 0xA4;
 
 #endif //WIIMOTEDEVPROTO_H

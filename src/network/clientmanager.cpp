@@ -21,6 +21,7 @@
 #include <QMapIterator>
 #include <QSettings>
 #include <QHostAddress>
+#include <QEventLoop>
 
 #include "network/clientmanager.h"
 
@@ -112,7 +113,7 @@ void ConnectionManager::terminateRequest()
 }
 
 void ConnectionManager::readyRead()
-{
+{  
   QDataStream stream(socket);
   stream.setVersion(QDataStream::Qt_4_0);
 
@@ -121,6 +122,8 @@ void ConnectionManager::readyRead()
   quint32 count;
   quint64 value;
   quint8 status;
+
+  bool boolean;
 
   struct stickdata stick;
   struct accdata acc;
@@ -233,23 +236,81 @@ void ConnectionManager::readyRead()
         stream >> stick.y;
         emit dbusClassicControllerRStick(id, stick);
         break;
+
+    case iddbusWiimoteSetLedStatus:
+        stream >> boolean;
+        waitMethod[iddbusWiimoteSetLedStatus]->quit();
+        outMethod[iddbusWiimoteSetLedStatus] = QVariant(boolean);
+        break;
     }
   } while (!stream.atEnd());
 }
 
-quint8 ConnectionManager::dbusWiimoteGetLedStatus(quint32 id) {
-  return 0;
+
+bool ConnectionManager::dbusIsClassicConnected(quint32 id) {
 }
 
+bool ConnectionManager::dbusIsNunchukConnected(quint32 id) {
+
+}
+
+bool ConnectionManager::dbusIsWiimoteConnected(quint32 id) {
+
+}
+
+quint32 ConnectionManager::dbusWiimoteGetAverageLatency(quint32 id) {
+
+}
+
+quint32 ConnectionManager::dbusWiimoteGetBatteryLife(quint32 id) {
+
+}
+
+quint32 ConnectionManager::dbusWiimoteGetCurrentLatency(quint32 id) {
+
+}
 
 bool ConnectionManager::dbusWiimoteGetRumbleStatus(quint32 id) {
-  return false;
 }
 
-bool ConnectionManager::dbusWiimoteSetLedStatus(quint32 id, quint8 status) {
-  return false;
+bool ConnectionManager::dbusWiimoteSetLedStatus(quint32 id, quint32 status) {
+
+  if (!socket->isValid())
+    return 0;
+
+  QDataStream stream(socket);
+  stream.setVersion(QDataStream::Qt_4_0);
+
+  stream << iddbusWiimoteSetLedStatus << id << status;
+
+  QEventLoop loop;
+  waitMethod[iddbusWiimoteSetLedStatus] = &loop;
+  loop.exec();
+
+  return outMethod[iddbusWiimoteSetLedStatus].toBool();
 }
 
 bool ConnectionManager::dbusWiimoteSetRumbleStatus(quint32 id, bool status) {
-  return false;
+
+}
+
+quint8 ConnectionManager::dbusWiimoteGetLedStatus(quint32 id) {
+
+}
+
+quint8 ConnectionManager::dbusWiimoteGetStatus(quint32 id) {
+
+}
+
+
+QList < uint> ConnectionManager::dbusGetWiimoteList() {
+
+}
+
+QStringList ConnectionManager::dbusGetUnregistredWiimoteList() {
+
+}
+
+bool ConnectionManager::dbusReloadSequenceList() {
+
 }

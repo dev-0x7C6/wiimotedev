@@ -20,14 +20,17 @@
 #include "network/servermanager.h"
 #include "syslog/syslog.h"
 
-NetworkServerThread::NetworkServerThread(QStringList allowed, quint16 port)
+#include "wiimotedev/manager.h"
+
+NetworkServerThread::NetworkServerThread(QStringList allowed, quint16 port, ConnectionManager *manager)
   :allowed(allowed),
-   port(port)
+   port(port),
+   manager(manager)
 {
 }
 
 void NetworkServerThread::run() {
-  server = new NetworkServer(allowed);
+  server = new NetworkServer(allowed, manager);
 
   if (server->listen(QHostAddress::Any, port)) {
     systemlog::information(QString("listening on %1").arg(QString::number(port, 10)));
@@ -40,9 +43,18 @@ void NetworkServerThread::run() {
   delete server;
 }
 
-NetworkServer::NetworkServer(QStringList allowed, QObject *parent):
+NetworkSocket::NetworkSocket(QObject *parent) : QTcpSocket(parent) {
+  connect(this, SIGNAL(readyRead()), this, SLOT(readyReadSlot()));
+}
+
+void NetworkSocket::readyReadSlot() {
+  emit readyReadConnection(this);
+}
+
+NetworkServer::NetworkServer(QStringList allowed, ConnectionManager *manager, QObject *parent):
   QTcpServer(parent),
-  allowed(allowed)
+  allowed(allowed),
+  manager(manager)
 {
 }
 
@@ -51,7 +63,7 @@ NetworkServer::~NetworkServer()
   if (connections.isEmpty())
     return;
 
-  foreach (QTcpSocket *socket, connections) {
+  foreach (NetworkSocket *socket, connections) {
     if (socket->isValid())
       socket->disconnectFromHost();
     delete socket;
@@ -61,9 +73,9 @@ NetworkServer::~NetworkServer()
 void NetworkServer::tcpSendEvent(QByteArray &data)
 {
   mutex.lock();
-  QList < QTcpSocket*> brokenConnections;
+  QList < NetworkSocket*> brokenConnections;
 
-  foreach (QTcpSocket *socket, connections) {
+  foreach (NetworkSocket *socket, connections) {
     if (!(socket->isWritable() && socket->isValid())) {
       brokenConnections << socket;
       continue;
@@ -72,7 +84,7 @@ void NetworkServer::tcpSendEvent(QByteArray &data)
     socket->waitForBytesWritten();
   }
 
-  foreach (QTcpSocket *broken, brokenConnections) {
+  foreach (NetworkSocket *broken, brokenConnections) {
     connections.removeAt(connections.indexOf(broken, 0));
     delete broken;
   }
@@ -82,7 +94,7 @@ void NetworkServer::tcpSendEvent(QByteArray &data)
 
 void NetworkServer::incomingConnection(int socketDescriptor)
 {
-  QTcpSocket *tcpSocket  = new QTcpSocket();
+  NetworkSocket *tcpSocket  = new NetworkSocket();
 
   if (!tcpSocket->setSocketDescriptor(socketDescriptor)) {
     delete tcpSocket;
@@ -109,7 +121,10 @@ void NetworkServer::incomingConnection(int socketDescriptor)
 
   systemlog::information(QString("Connection established with %1").arg(tcpSocket->peerAddress().toString()));
   connections << tcpSocket;
+
+  connect(connections.last(), SIGNAL(readyReadConnection(QTcpSocket*)), this, SLOT(readyRead(QTcpSocket*)), Qt::DirectConnection);
 }
+
 
 void NetworkServer::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
 {
@@ -375,4 +390,25 @@ void NetworkServer::dbusClassicControllerRStick(quint32 id, struct stickdata sti
   out.device()->seek(0);
 
   tcpSendEvent(block);
+}
+
+void NetworkServer::readyRead(QTcpSocket *socket) {
+  mutex.lock();
+  QDataStream stream(socket);
+  stream.setVersion(QDataStream::Qt_4_0);
+
+  quint16 signal;
+  quint32 id;
+
+  quint32 status;
+
+  stream >> signal >> id;
+  switch (signal) {
+    case iddbusWiimoteSetLedStatus:
+      stream >> status;
+      stream << iddbusWiimoteSetLedStatus << id << manager->dbusWiimoteSetLedStatus(id, status);
+      break;
+  }
+
+  mutex.unlock();
 }
