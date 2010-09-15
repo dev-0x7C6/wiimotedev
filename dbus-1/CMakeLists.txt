@@ -2,4 +2,10 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-install(FILES org.wiimotedev-daemon.conf DESTINATION ${dbus_directory} )
+if(BUILD_DAEMON)
+  install(FILES org.wiimotedev-daemon.conf DESTINATION ${dbus_directory} )
+endif(BUILD_DAEMON)
+
+if(BUILD_UINPUT)
+  install(FILES org.wiimotedev-uinput.conf DESTINATION ${dbus_directory} )
+endif(BUILD_UINPUT)

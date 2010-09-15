@@ -8,6 +8,8 @@ Wiimotedev Project Changelog
 - integration with wiimotedev-client
 - integration with wiimotedev-toolkit
 - integration with wiimotedev-examples
+- integration with wiimotedev-uinput
+- integration with qwiimotedev
 - better compatibilty with wiimotedev-client
 - important cleanups and optimalisations in core code
 - fixed various bugs
