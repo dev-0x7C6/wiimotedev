@@ -1,6 +1,6 @@
 # Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
 # Copyright (C) 2010 Jarek Bojko
-# Contact: vazir.pl@gmail.com      
+# Contact: vazir.pl@gmail.com     
 
 #! /bin/sh
 
@@ -10,13 +10,13 @@
 # Required-Stop:     bluetooth
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Wiimotedev client
+# Short-Description: Wiimotedev uinput
 ### END INIT INFO
 
-PIDFILE=/var/run/wiimotedev-client.pid
-SERVICE=/usr/sbin/wiimotedev-client
-GROUP=wiimotedev
-CONFIG=/etc/wiimotedev/client.conf
+PIDFILE=/var/run/wiimotedev-uinput.pid
+SERVICE=/usr/sbin/wiimotedev-uinput
+GROUP=uinput
+CONFIG=/etc/wiimotedev/uinput.conf
 
 # int wiimotedev_check_group()
 
@@ -57,20 +57,19 @@ wiimotedev_stop() {
   fi
 }
 
-
 # int wiimotedev_reload()
 
 case "$1" in
   start)
-    echo "Starting wiimotedev-client"
+    echo "Starting wiimotedev-uinput"
     wiimotedev_start
     ;;
   stop)
-    echo "Stopping wiimotedev-client"
+    echo "Stopping wiimotedev-uinput"
     wiimotedev_stop
     ;;
   restart)
-    echo "Restarting wiimotedev-client"
+    echo "Restarting wiimotedev-uinput"
     wiimotedev_stop
     wiimotedev_start
     ;;

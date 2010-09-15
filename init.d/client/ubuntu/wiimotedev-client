@@ -1,3 +1,7 @@
+# Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
+# Copyright (C) 2010 Jarek Bojko
+# Contact: vazir.pl@gmail.com      
+
 #! /bin/sh
 
 ### BEGIN INIT INFO
@@ -6,12 +10,8 @@
 # Required-Stop:     bluetooth
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Wiimotedev daemon
+# Short-Description: Wiimotedev client
 ### END INIT INFO
-
-# Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
-# Copyright (C) 2010 Jarek Bojko
-# Contact: vazir.pl@gmail.com      
 
 PIDFILE=/var/run/wiimotedev-client.pid
 SERVICE=/usr/sbin/wiimotedev-client

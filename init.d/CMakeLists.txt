@@ -2,6 +2,10 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
+if(BUILD_UINPUT)
+  add_subdirectory(uinput)
+endif(BUILD_UINPUT)
+
 if(BUILD_DAEMON) 
   add_subdirectory(daemon)
 endif(BUILD_DAEMON)
