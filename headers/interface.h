@@ -1,5 +1,5 @@
 /**********************************************************************************
- * Wiimotedev interface classes                                                   *
+ * Wiimotedev interface class                                                     *
  * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
  * Contact: dev.strikeu@gmail.com                                                 *
  *                                                                                *
@@ -20,7 +20,7 @@
 #ifndef WIIMOTEDEV_INTERFACE_H
 #define WIIMOTEDEV_INTERFACE_H
 
-#include "include/wiimotedev/consts.h"
+#include "consts.h"
 
 #include <QDBusAbstractAdaptor>
 #include <QDBusAbstractInterface>

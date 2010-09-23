@@ -20,8 +20,8 @@
 #include <QApplication>
 #include <QMessageBox>
 
-#include "include/wiimotedev/consts.h"
-#include "include/wiimotedev/interface.h"
+#include "consts.h"
+#include "interface.h"
 
 #include "toolkit/mainwindow.h"
 

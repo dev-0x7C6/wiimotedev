@@ -48,7 +48,6 @@ class DBusServiceAdaptor :public QDBusAbstractAdaptor
      "")
 public:
     DBusServiceAdaptor (QObject *parent): QDBusAbstractAdaptor(parent) {
-        QWIIMOTEDEV_REGISTER_META_TYPES;
         setAutoRelaySignals(true);
     }
 

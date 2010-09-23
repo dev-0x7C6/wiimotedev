@@ -30,7 +30,7 @@
 
 #include "dbus/deviceevents.h"
 #include "dbus/service.h"
-#include "include/wiimotedev/consts.h"
+#include "consts.h"
 #include "network/servermanager.h"
 #include "wiimotedev/connection.h"
 #include "wiimotedev/settings.h"

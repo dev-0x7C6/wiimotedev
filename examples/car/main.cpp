@@ -22,7 +22,7 @@
 #include <QGraphicsScene>
 #include <QDBusConnection>
 
-#include "examples/car/car.h"
+#include "car.h"
 
 int main(int argc, char *argv[])
 {

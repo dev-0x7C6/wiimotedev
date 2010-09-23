@@ -22,7 +22,7 @@
 #include <QDebug>
 #include <math.h>
 
-#include "include/wiimotedev/consts.h"
+#include "consts.h"
 #include "wiimotedev/connection.h"
 #include "syslog/syslog.h"
 

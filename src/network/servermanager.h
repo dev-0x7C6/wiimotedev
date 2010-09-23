@@ -20,8 +20,8 @@
 #ifndef SERVER_MANAGER_H
 #define SERVER_MANAGER_H
 
-#include "include/wiimotedev/proto.h"
-#include "include/wiimotedev/consts.h"
+#include "proto.h"
+#include "consts.h"
 #include "wiimotedev/settings.h"
 
 #include <QTcpServer>

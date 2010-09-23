@@ -12,7 +12,7 @@ include("cmake/Version.cmake")
 
 option(BUILD_DAEMON "Build wiimotedev-daemon, main wiiremote manager" ON)
 option(BUILD_CLIENT "Build wiimotedev-client, the tcp/ip client for wiimotedev-daemon" ON)
-option(BUILD_UINPUT "Build wiimotedev-uinput, input device emulator" ON)
+option(BUILD_UINPUT "Build wiimotedev-uinput, input device emulator" OFF)
 option(BUILD_REGISTER "Build wiimotedev-register tool" ON)
 option(BUILD_TOOLKIT "Build wiimotedev-toolkit tool" ON)
 option(BUILD_EXAMPLES "Build additional examples" ON)
@@ -24,9 +24,14 @@ set(bin_directory "${CMAKE_INSTALL_PREFIX}/bin")
 set(sbin_directory "${CMAKE_INSTALL_PREFIX}/sbin")
 set(include_directory "${CMAKE_INSTALL_PREFIX}/include")
 
+add_subdirectory(headers)
 add_subdirectory(src)
 add_subdirectory(config)
 add_subdirectory(dbus-1)
+
+if(BUILD_EXAMPLES)
+  add_subdirectory(examples)
+endif(BUILD_EXAMPLES)
 
 message("")
 message("===========================================")

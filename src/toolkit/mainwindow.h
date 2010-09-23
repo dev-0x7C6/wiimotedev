@@ -28,8 +28,8 @@
 
 #include "toolkit/selectwiimote.h"
 
-#include "include/wiimotedev/interface.h"
-#include "include/wiimotedev/consts.h"
+#include "interface.h"
+#include "consts.h"
 
 const double defaultPointMultiplier = 2.5;
 

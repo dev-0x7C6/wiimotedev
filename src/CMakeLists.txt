@@ -2,27 +2,21 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-include_directories(${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR}
+		    ${CMAKE_CURRENT_SOURCE_DIR}
+		    ${CMAKE_SOURCE_DIR}/headers
+		    ${QT_INCLUDE_DIR}
+		    ${QT_QTCORE_INCLUDE_DIR}
+		    ${QT_QTDBUS_INCLUDE_DIR}
+		    ${QT_QTGUI_INCLUDE_DIR}
+		    ${QT_QTNETWORK_INCLUDE_DIR}
+)
 
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
-#set(CMAKE_C_FLAGS "-Wall -g -oo -O0")
-#set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare -g -oo -O0")
-
 configure_file(config.h.in
                config.h)
-
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-INCLUDE_DIRECTORIES(
-   ${QT_INCLUDE_DIR}
-   ${QT_QTCORE_INCLUDE_DIR}
-   ${QT_QTDBUS_INCLUDE_DIR}
-   ${QT_QTGUI_INCLUDE_DIR}
-   ${QT_QTNETWORK_INCLUDE_DIR}
-)
-add_subdirectory(include)
 
 set(wiimotedev_sources
   dbus/support.cpp
@@ -47,8 +41,8 @@ set(wiimotedev_headers_qt
 
 set(wiimotedev_headers
   dbus/support.h
-  include/wiimotedev/consts.h
-  include/wiimotedev/proto.h
+  ${CMAKE_SOURCE_DIR}/headers/consts.h
+  ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
   wiimotedev/settings.h
   wiimotedev/wiiremote.h
@@ -71,10 +65,31 @@ set(client_headers_qt
 
 set(client_headers
   dbus/support.h
-  include/wiimotedev/consts.h
-  include/wiimotedev/proto.h
+  ${CMAKE_SOURCE_DIR}/headers/consts.h
+  ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
+)
 
+set(uinput_sources
+  dbus/customjobs.cpp
+  dbus/profilemanager.cpp
+  dbus/uinputservice.cpp
+  dbus/support.cpp
+  syslog/syslog.cpp
+  uinput.cpp
+)
+
+set(uinput_headers_qt
+  dbus/customjobs.h
+  dbus/profilemanager.h
+  dbus/uinputservice.h
+)
+
+set(uinput_headers
+  dbus/support.h
+  ${CMAKE_SOURCE_DIR}/headers/consts.h
+  ${CMAKE_SOURCE_DIR}/headers/proto.h
+  syslog/syslog.h
 )
 
 set(register_sources
@@ -82,7 +97,7 @@ set(register_sources
 )
 
 set(register_headers
-  include/wiimotedev/consts.h
+  ${CMAKE_SOURCE_DIR}/headers/consts.h
 )
 
 
@@ -93,11 +108,11 @@ set(toolkit_sources
 )
 
 set(toolkit_headers
-  include/wiimotedev/consts.h
+  ${CMAKE_SOURCE_DIR}/headers/consts.h
 )
 
 set(toolkit_headers_qt
-  include/wiimotedev/interface.h
+  ${CMAKE_SOURCE_DIR}/headers/interface.h
   toolkit/mainwindow.h
   toolkit/selectwiimote.h
 )
@@ -107,45 +122,21 @@ set(toolkit_uis
   toolkit/selectwiimote.ui
 )
 
-set(car_example_sources
-  examples/car/car.cpp
-  example-car.cpp
-)
-
-set(car_example_headers
-  include/wiimotedev/consts.h
-)
-
-set(car_example_headers_qt
-  examples/car/car.h
-  include/wiimotedev/interface.h
-)
-
-
 if(BUILD_DAEMON)
-  if(USE_SYSLOG)
-    list(APPEND wiimotedev_sources "syslog/syslog.cpp")
-    list(APPEND wiimotedev_headers "syslog/syslog.h")
-  endif(USE_SYSLOG)
-
   qt4_wrap_cpp(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
 
   add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers} ${wiimotedev_headers_qt})
-  target_link_libraries(wiimotedev-daemon ${CWIID_LIBRARY}
+  target_link_libraries(wiimotedev-daemon
     ${QT_QTCORE_LIBRARY}
     ${QT_QTDBUS_LIBRARY}
     ${QT_QTNETWORK_LIBRARY}
+    ${CWIID_LIBRARY}
   )
 
   install(TARGETS wiimotedev-daemon DESTINATION ${sbin_directory})
 endif(BUILD_DAEMON)
 
 if(BUILD_CLIENT)
-  if(USE_SYSLOG)
-    list(APPEND client_sources "syslog/syslog.cpp")
-    list(APPEND client_headers "syslog/syslog.h")
-  endif(USE_SYSLOG)
-
   qt4_wrap_cpp(client_sources ${client_headers_qt} )
 
   add_executable(wiimotedev-client ${client_sources} ${client_headers})
@@ -157,6 +148,18 @@ if(BUILD_CLIENT)
 
   install(TARGETS wiimotedev-client DESTINATION ${sbin_directory})
 endif(BUILD_CLIENT)
+
+if(BUILD_UINPUT)
+  qt4_wrap_cpp(uinput_sources ${uinput_headers_qt} )
+
+  add_executable(wiimotedev-uinput ${uinput_sources} ${uinput_headers})
+  target_link_libraries(wiimotedev-uinput
+    ${QT_QTCORE_LIBRARY}
+    ${QT_QTDBUS_LIBRARY}
+  )
+
+  install(TARGETS wiimotedev-client DESTINATION ${sbin_directory})
+endif(BUILD_UINPUT)
 
 if(BUILD_REGISTER)
   add_executable(wiimotedev-register ${register_sources} ${register_headers})
@@ -181,17 +184,3 @@ if(BUILD_TOOLKIT)
 
   install(TARGETS wiimotedev-toolkit DESTINATION ${bin_directory})
 endif(BUILD_TOOLKIT)
-
-
-if(BUILD_EXAMPLES)
-  qt4_wrap_cpp(car_example_sources ${car_example_headers_qt} )
-
-  add_executable(wiimotedev-car-example ${car_example_sources} ${car_example_headers})
-  target_link_libraries(wiimotedev-car-example
-    ${QT_QTCORE_LIBRARY}
-    ${QT_QTDBUS_LIBRARY}
-    ${QT_QTGUI_LIBRARY}
-  )
-
-  install(TARGETS wiimotedev-car-example DESTINATION ${bin_directory})
-endif(BUILD_EXAMPLES)

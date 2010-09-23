@@ -21,7 +21,7 @@
 #include <QDBusInterface>
 #include <QDBusReply>
 #include <QSettings>
-#include "include/wiimotedev/consts.h"
+#include "consts.h"
 
 #define APP_NAME "wiimotedev-register"
 #define APP_VERSION "1.3"

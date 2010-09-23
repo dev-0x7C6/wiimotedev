@@ -1,5 +1,0 @@
-consts.h - default consts, buttons, structs, paths and names 
-proto.h - it's only used by wiimotedev-client/daemon
-interface.h - copy this to your project in oder to support wiimotedev-daemon
-
- 

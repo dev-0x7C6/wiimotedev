@@ -26,7 +26,7 @@
 #include <QObject>
 #include <cwiid.h>
 
-#include "include/wiimotedev/consts.h"
+#include "consts.h"
 
 #define defaultReportFlags \
   CWIID_RPT_STATUS | \

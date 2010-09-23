@@ -31,8 +31,8 @@
 #include <QTcpSocket>
 #include <QEventLoop>
 
-#include "include/wiimotedev/consts.h"
-#include "include/wiimotedev/proto.h"
+#include "consts.h"
+#include "proto.h"
 
 #include "dbus/deviceevents.h"
 #include "dbus/service.h"

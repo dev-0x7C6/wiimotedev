@@ -26,13 +26,13 @@
 #include <QDBusConnection>
 
 #include <QList>
-#include "include/wiimotedev/consts.h"
+#include "consts.h"
 
 // Meta-types
 #include <QDBusMetaType>
 #include <QMetaType>
 
-#define QWIIMOTEDEV_REGISTER_META_TYPES                                      \
+#define QWIIMOTEDEV_REGISTER_META_TYPES                                    \
   qRegisterMetaType< QList< struct irpoint> >("QList< irpoint>");          \
   qRegisterMetaType< QList< struct accdata> >("QList< accdata>");          \
   qRegisterMetaType< QList< struct stickdata> >("QList< stickdata>");      \
