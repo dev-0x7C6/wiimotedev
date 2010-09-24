@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef DBUS_SUPPORT_H
-#define DBUS_SUPPORT_H
+#ifndef ADAPTORS_H
+#define ADAPTORS_H
 
 // Defaults
 #include <QDBusAbstractAdaptor>
@@ -74,4 +74,4 @@
 
 #endif
 
-#endif // DBUS_SUPPORT_H
+#endif // ADAPTORS_H

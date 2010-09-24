@@ -17,7 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "dbus/support.h"
+#include "adaptors.h"
 
 QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point)
 {

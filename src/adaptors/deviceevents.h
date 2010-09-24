@@ -20,7 +20,7 @@
 #ifndef DEVICE_EVENTS_H
 #define DEVICE_EVENTS_H
 
-#include "dbus/support.h"
+#include "adaptors.h"
 
 class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 {

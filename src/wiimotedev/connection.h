@@ -23,7 +23,7 @@
 #include <QThread>
 #include <QObject>
 
-#include "dbus/deviceevents.h"
+#include "deviceevents.h"
 #include "wiimotedev/wiiremote.h"
 
 class DBusDeviceEventsAdaptorWrapper;

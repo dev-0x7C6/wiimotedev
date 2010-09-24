@@ -17,30 +17,41 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "dbus/service.h"
+#ifndef DAEMONSERVICE_H
+#define DAEMONSERVICE_H
 
-DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent)
-{
-  QWIIMOTEDEV_REGISTER_META_TYPES;
-  setAutoRelaySignals(true);
-}
+#include "adaptors.h"
 
-bool DBusServiceAdaptor::dbusReloadSequenceList()
+class DBusServiceAdaptor : public QDBusAbstractAdaptor
 {
-  bool value;
-  QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-  return value;
-}
+  Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
+  Q_CLASSINFO("D-Bus Introspection", ""
+"<interface name=\"org.wiimotedev.service\">\n"
+"    <method name=\"dbusReloadSequenceList\">\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+"    </method>\n"
+"  </interface>");
 
-DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
-{
-  new DBusServiceAdaptor(this);
-  registred = connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_SERVICE, this);
-}
+public:
+  DBusServiceAdaptor(QObject *parent);
 
-bool DBusServiceAdaptorWrapper::dbusReloadSequenceList()
+public slots:
+  bool dbusReloadSequenceList();
+};
+
+class DBusServiceAdaptorWrapper : public QObject
 {
-  bool value;
-  QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-  return value;
-}
+  Q_OBJECT
+private:
+  bool registred;
+
+public:
+  DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection);
+  inline bool isRegistred() { return registred; }
+
+public Q_SLOTS:
+  bool dbusReloadSequenceList();
+};
+
+#endif //DAEMONSERVICE_H

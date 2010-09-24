@@ -28,8 +28,8 @@
 #include <cwiid.h>
 
 
-#include "dbus/deviceevents.h"
-#include "dbus/service.h"
+#include "deviceevents.h"
+#include "daemonservice.h"
 #include "consts.h"
 #include "network/servermanager.h"
 #include "wiimotedev/connection.h"

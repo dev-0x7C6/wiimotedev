@@ -4,6 +4,7 @@
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/adaptors
 		    ${CMAKE_SOURCE_DIR}/headers
 		    ${QT_INCLUDE_DIR}
 		    ${QT_QTCORE_INCLUDE_DIR}
@@ -19,9 +20,9 @@ configure_file(config.h.in
                config.h)
 
 set(wiimotedev_sources
-  dbus/support.cpp
-  dbus/deviceevents.cpp
-  dbus/service.cpp
+  adaptors/adaptors.cpp
+  adaptors/deviceevents.cpp
+  adaptors/daemonservice.cpp
   network/servermanager.cpp
   syslog/syslog.cpp
   wiimotedev/connection.cpp
@@ -32,15 +33,15 @@ set(wiimotedev_sources
 )
 
 set(wiimotedev_headers_qt
-  dbus/deviceevents.h
-  dbus/service.h
+  adaptors/deviceevents.h
+  adaptors/daemonservice.h
   network/servermanager.h
   wiimotedev/connection.h
   wiimotedev/manager.h
 )
 
 set(wiimotedev_headers
-  dbus/support.h
+  adaptors/adaptors.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
@@ -49,44 +50,44 @@ set(wiimotedev_headers
 )
 
 set(client_sources
-  dbus/support.cpp
-  dbus/deviceevents.cpp
-  dbus/service.cpp
+  adaptors/adaptors.cpp
+  adaptors/deviceevents.cpp
+  adaptors/daemonservice.cpp
   network/clientmanager.cpp
   syslog/syslog.cpp
   client.cpp
 )
 
 set(client_headers_qt
-  dbus/deviceevents.h
-  dbus/service.h
+  adaptors/deviceevents.h
+  adaptors/daemonservice.h
   network/clientmanager.h
 )
 
 set(client_headers
-  dbus/support.h
+  adaptors/adaptors.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
 )
 
 set(uinput_sources
-  dbus/customjobs.cpp
-  dbus/profilemanager.cpp
-  dbus/uinputservice.cpp
-  dbus/support.cpp
+  adaptors/customjobs.cpp
+  adaptors/profilemanager.cpp
+  adaptors/uinputservice.cpp
+  adaptors/adaptors.cpp
   syslog/syslog.cpp
   uinput.cpp
 )
 
 set(uinput_headers_qt
-  dbus/customjobs.h
-  dbus/profilemanager.h
-  dbus/uinputservice.h
+  adaptors/customjobs.h
+  adaptors/profilemanager.h
+  adaptors/uinputservice.h
 )
 
 set(uinput_headers
-  dbus/support.h
+  adaptors/adaptors.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
