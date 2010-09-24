@@ -17,31 +17,32 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include <QApplication>
-#include <QMessageBox>
 
-#include "consts.h"
-#include "interface.h"
+#include "selectwiimote.h"
+#include "ui_selectwiimote.h"
 
-#include "toolkit/mainwindow.h"
+SelectWiimote::SelectWiimote(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::SelectWiimote)
+{
+    ui->setupUi(this);
+    wiimoteid = 0;
+    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(selectButtonPushed()));
+}
 
-int main(int argc, char *argv[])
-{  
-    QApplication application(argc, argv);
+SelectWiimote::~SelectWiimote()
+{
+    delete ui;
+}
 
-    DBusDeviceEventsInterface *iface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
-                                                                     WIIMOTEDEV_DBUS_OBJECT_EVENTS,
-                                                                     QDBusConnection::systemBus(),
-                                                                     &application);
-    if (!iface->isValid()) {
-        QMessageBox::critical(application.activeWindow(), QString("Critical"), QString("Wiimotedev-daemon: service is not available"));
-        return 0;
-    }
+void SelectWiimote::selectButtonPushed()
+{
+    wiimoteid = ui->comboBox->currentText().toInt();
+    close();
+}
 
-    delete iface;
-
-    MainWindow window;
-    window.show();
-
-    return application.exec();
+void SelectWiimote::setWiimoteList(QList < uint> &list)
+{
+    for (register int i = 0; i < list.count(); ++i)
+        ui->comboBox->addItem(QString::number(list.at(i)));
 }

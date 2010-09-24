@@ -4,7 +4,8 @@
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_SOURCE_DIR}/adaptors
+		    ${CMAKE_CURRENT_SOURCE_DIR}/adaptors
+        ${CMAKE_CURRENT_SOURCE_DIR}/core
 		    ${CMAKE_SOURCE_DIR}/headers
 		    ${QT_INCLUDE_DIR}
 		    ${QT_QTCORE_INCLUDE_DIR}
@@ -25,10 +26,10 @@ set(wiimotedev_sources
   adaptors/daemonservice.cpp
   network/servermanager.cpp
   syslog/syslog.cpp
-  wiimotedev/connection.cpp
-  wiimotedev/manager.cpp
-  wiimotedev/settings.cpp
-  wiimotedev/wiiremote.cpp
+  core/connection.cpp
+  core/manager.cpp
+  core/settings.cpp
+  core/wiiremote.cpp
   daemon.cpp
 )
 
@@ -36,8 +37,8 @@ set(wiimotedev_headers_qt
   adaptors/deviceevents.h
   adaptors/daemonservice.h
   network/servermanager.h
-  wiimotedev/connection.h
-  wiimotedev/manager.h
+  core/connection.h
+  core/manager.h
 )
 
 set(wiimotedev_headers
@@ -45,8 +46,8 @@ set(wiimotedev_headers
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
-  wiimotedev/settings.h
-  wiimotedev/wiiremote.h
+  core/settings.h
+  core/wiiremote.h
 )
 
 set(client_sources
@@ -101,28 +102,6 @@ set(register_headers
   ${CMAKE_SOURCE_DIR}/headers/consts.h
 )
 
-
-set(toolkit_sources
-  toolkit/mainwindow.cpp
-  toolkit/selectwiimote.cpp
-  toolkit.cpp
-)
-
-set(toolkit_headers
-  ${CMAKE_SOURCE_DIR}/headers/consts.h
-)
-
-set(toolkit_headers_qt
-  ${CMAKE_SOURCE_DIR}/headers/interface.h
-  toolkit/mainwindow.h
-  toolkit/selectwiimote.h
-)
-
-set(toolkit_uis
-  toolkit/mainwindow.ui
-  toolkit/selectwiimote.ui
-)
-
 if(BUILD_DAEMON)
   qt4_wrap_cpp(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
 
@@ -172,16 +151,3 @@ if(BUILD_REGISTER)
   install(TARGETS wiimotedev-register DESTINATION ${bin_directory})
 endif(BUILD_REGISTER)
 
-if(BUILD_TOOLKIT)
-  qt4_wrap_ui(toolkit_sources ${toolkit_uis})
-  qt4_wrap_cpp(toolkit_sources ${toolkit_headers_qt} )
-
-  add_executable(wiimotedev-toolkit ${toolkit_sources} ${toolkit_headers})
-  target_link_libraries(wiimotedev-toolkit
-    ${QT_QTCORE_LIBRARY}
-    ${QT_QTDBUS_LIBRARY}
-    ${QT_QTGUI_LIBRARY}
-  )
-
-  install(TARGETS wiimotedev-toolkit DESTINATION ${bin_directory})
-endif(BUILD_TOOLKIT)

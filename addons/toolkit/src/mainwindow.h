@@ -26,7 +26,7 @@
 #include <QTimer>
 #include <QPainter>
 
-#include "toolkit/selectwiimote.h"
+#include "selectwiimote.h"
 
 #include "interface.h"
 #include "consts.h"

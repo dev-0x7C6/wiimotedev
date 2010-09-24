@@ -41,7 +41,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "wiimotedev/manager.h"
+#include "manager.h"
 #include "syslog/syslog.h"
 
 #include <QCoreApplication>

@@ -18,7 +18,7 @@
  **********************************************************************************/
 #include <math.h>
 
-#include "wiimotedev/wiiremote.h"
+#include "wiiremote.h"
 
 WiimoteDevice::WiimoteDevice(QObject *parent):
   QObject(parent),

@@ -24,7 +24,7 @@
 #include <QObject>
 
 #include "deviceevents.h"
-#include "wiimotedev/wiiremote.h"
+#include "wiiremote.h"
 
 class DBusDeviceEventsAdaptorWrapper;
 class WiimoteDevice;

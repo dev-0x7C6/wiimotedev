@@ -32,8 +32,8 @@
 #include "daemonservice.h"
 #include "consts.h"
 #include "network/servermanager.h"
-#include "wiimotedev/connection.h"
-#include "wiimotedev/settings.h"
+#include "connection.h"
+#include "settings.h"
 
 template class QList< void*>;
 

@@ -22,7 +22,7 @@
 
 #include "proto.h"
 #include "consts.h"
-#include "wiimotedev/settings.h"
+#include "settings.h"
 
 #include <QTcpServer>
 #include <QTcpSocket>

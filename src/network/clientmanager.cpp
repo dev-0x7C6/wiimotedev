@@ -248,69 +248,72 @@ void ConnectionManager::readyRead()
 
 
 bool ConnectionManager::dbusIsClassicConnected(quint32 id) {
+  return false;
 }
 
 bool ConnectionManager::dbusIsNunchukConnected(quint32 id) {
-
+  return false;
 }
 
 bool ConnectionManager::dbusIsWiimoteConnected(quint32 id) {
-
+  return false;
 }
 
 quint32 ConnectionManager::dbusWiimoteGetAverageLatency(quint32 id) {
-
+  return 0;
 }
 
 quint32 ConnectionManager::dbusWiimoteGetBatteryLife(quint32 id) {
-
+  return 0;
 }
 
 quint32 ConnectionManager::dbusWiimoteGetCurrentLatency(quint32 id) {
-
+  return 0;
 }
 
 bool ConnectionManager::dbusWiimoteGetRumbleStatus(quint32 id) {
+  return false;
 }
 
 bool ConnectionManager::dbusWiimoteSetLedStatus(quint32 id, quint32 status) {
 
-  if (!socket->isValid())
-    return 0;
+//  if (!socket->isValid())
+//    return 0;
 
-  QDataStream stream(socket);
-  stream.setVersion(QDataStream::Qt_4_0);
+//  QDataStream stream(socket);
+//  stream.setVersion(QDataStream::Qt_4_0);
 
-  stream << iddbusWiimoteSetLedStatus << id << status;
+//  stream << iddbusWiimoteSetLedStatus << id << status;
 
-  QEventLoop loop;
-  waitMethod[iddbusWiimoteSetLedStatus] = &loop;
-  loop.exec();
+//  QEventLoop loop;
+//  waitMethod[iddbusWiimoteSetLedStatus] = &loop;
+//  loop.exec();
 
-  return outMethod[iddbusWiimoteSetLedStatus].toBool();
+//  return outMethod[iddbusWiimoteSetLedStatus].toBool();
+  return false;
 }
 
 bool ConnectionManager::dbusWiimoteSetRumbleStatus(quint32 id, bool status) {
-
+  return false;
 }
 
 quint8 ConnectionManager::dbusWiimoteGetLedStatus(quint32 id) {
-
+  return 0;
 }
 
 quint8 ConnectionManager::dbusWiimoteGetStatus(quint32 id) {
-
+  return 0;
 }
 
 
 QList < uint> ConnectionManager::dbusGetWiimoteList() {
-
+  return QList < uint>();
 }
 
 QStringList ConnectionManager::dbusGetUnregistredWiimoteList() {
-
+  return QStringList();
 }
 
 bool ConnectionManager::dbusReloadSequenceList() {
-
+  return false;
 }

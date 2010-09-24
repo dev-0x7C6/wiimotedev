@@ -21,7 +21,7 @@
 #include <QTime>
 
 #include "syslog/syslog.h"
-#include "wiimotedev/manager.h"
+#include "manager.h"
 
 extern bool additional_debug;
 

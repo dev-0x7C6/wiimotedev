@@ -23,7 +23,7 @@
 #include <math.h>
 
 #include "consts.h"
-#include "wiimotedev/connection.h"
+#include "connection.h"
 #include "syslog/syslog.h"
 
 extern bool additional_debug;

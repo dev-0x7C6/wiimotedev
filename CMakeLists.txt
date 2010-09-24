@@ -24,14 +24,12 @@ set(bin_directory "${CMAKE_INSTALL_PREFIX}/bin")
 set(sbin_directory "${CMAKE_INSTALL_PREFIX}/sbin")
 set(include_directory "${CMAKE_INSTALL_PREFIX}/include")
 
-add_subdirectory(headers)
-add_subdirectory(src)
+add_subdirectory(addons)
 add_subdirectory(config)
 add_subdirectory(dbus-1)
-
-if(BUILD_EXAMPLES)
-  add_subdirectory(examples)
-endif(BUILD_EXAMPLES)
+add_subdirectory(examples)
+add_subdirectory(headers)
+add_subdirectory(src)
 
 message("")
 message("===========================================")
