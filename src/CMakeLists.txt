@@ -5,8 +5,9 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${CMAKE_CURRENT_SOURCE_DIR}
 		    ${CMAKE_CURRENT_SOURCE_DIR}/adaptors
-        ${CMAKE_CURRENT_SOURCE_DIR}/core
-		    ${CMAKE_SOURCE_DIR}/headers
+		    ${CMAKE_CURRENT_SOURCE_DIR}/core
+        ${CMAKE_CURRENT_SOURCE_DIR}/network
+        ${CMAKE_SOURCE_DIR}/headers
 		    ${QT_INCLUDE_DIR}
 		    ${QT_QTCORE_INCLUDE_DIR}
 		    ${QT_QTDBUS_INCLUDE_DIR}
@@ -78,6 +79,7 @@ set(uinput_sources
   adaptors/uinputservice.cpp
   adaptors/adaptors.cpp
   syslog/syslog.cpp
+  uinput/manager.cpp
   uinput.cpp
 )
 
@@ -85,6 +87,7 @@ set(uinput_headers_qt
   adaptors/customjobs.h
   adaptors/profilemanager.h
   adaptors/uinputservice.h
+  uinput/manager.h
 )
 
 set(uinput_headers
@@ -92,14 +95,6 @@ set(uinput_headers
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
-)
-
-set(register_sources
-  register.cpp
-)
-
-set(register_headers
-  ${CMAKE_SOURCE_DIR}/headers/consts.h
 )
 
 if(BUILD_DAEMON)
@@ -140,14 +135,3 @@ if(BUILD_UINPUT)
 
   install(TARGETS wiimotedev-client DESTINATION ${sbin_directory})
 endif(BUILD_UINPUT)
-
-if(BUILD_REGISTER)
-  add_executable(wiimotedev-register ${register_sources} ${register_headers})
-  target_link_libraries(wiimotedev-register
-    ${QT_QTCORE_LIBRARY}
-    ${QT_QTDBUS_LIBRARY}
-  )
-
-  install(TARGETS wiimotedev-register DESTINATION ${bin_directory})
-endif(BUILD_REGISTER)
-

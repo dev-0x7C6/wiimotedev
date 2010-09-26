@@ -6,6 +6,10 @@ if(BUILD_QWIIMOTEDEV)
   add_subdirectory(qwiimotedev)
 endif(BUILD_QWIIMOTEDEV)
 
+if(BUILD_REGISTER)
+  add_subdirectory(register)
+endif(BUILD_REGISTER)
+
 if(BUILD_TOOLKIT)
   add_subdirectory(toolkit)
 endif(BUILD_TOOLKIT)
