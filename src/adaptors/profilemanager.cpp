@@ -18,4 +18,45 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include "profilemanager.h"
+#include "adaptors/profilemanager.h"
+
+DBusProfileManagerAdaptor::DBusProfileManagerAdaptor(QObject *parent): QDBusAbstractAdaptor(parent) {
+  setAutoRelaySignals(true);
+}
+
+QString DBusProfileManagerAdaptor::currentProfile() {
+  QString value;
+  QMetaObject::invokeMethod(parent(), "currentProfile", Qt::DirectConnection, Q_RETURN_ARG(QString, value));
+  return value;
+}
+
+bool DBusProfileManagerAdaptor::loadProfile(QString file) {
+  bool value;
+  QMetaObject::invokeMethod(parent(), "loadProfile", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(QString, file));
+  return value;
+}
+
+void DBusProfileManagerAdaptor::unloadProfile() {
+  QMetaObject::invokeMethod(parent(), "unloadProfile", Qt::DirectConnection);
+}
+
+DBusProfileManagerAdaptorWrapper::DBusProfileManagerAdaptorWrapper (QObject *parent, QDBusConnection &connection): QObject(parent) {
+  new DBusProfileManagerAdaptor(this);
+  registred = connection.registerObject("/profileManager", this);
+}
+
+QString DBusProfileManagerAdaptorWrapper::currentProfile() {
+  QString value;
+  QMetaObject::invokeMethod(parent(), "currentProfile", Qt::DirectConnection, Q_RETURN_ARG(QString, value));
+  return value;
+}
+
+bool DBusProfileManagerAdaptorWrapper::loadProfile(QString file) {
+  bool value;
+  QMetaObject::invokeMethod(parent(), "loadProfile", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(QString, file));
+  return value;
+}
+
+void DBusProfileManagerAdaptorWrapper::unloadProfile() {
+  QMetaObject::invokeMethod(parent(), "unloadProfile", Qt::DirectConnection);
+}

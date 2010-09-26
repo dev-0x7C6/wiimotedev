@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef DEVICE_EVENTS_H
-#define DEVICE_EVENTS_H
+#ifndef ADAPTORS_DEVICEEVENTS_H
+#define ADAPTORS_DEVICEEVENTS_H
 
 #include "adaptors.h"
 
@@ -254,4 +254,4 @@ Q_SIGNALS:
   void dbusClassicControllerRStick(quint32, struct stickdata);
 };
 
-#endif //DEVICE_EVENTS_H
+#endif // ADAPTORS_DEVICEEVENTS_H

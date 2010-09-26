@@ -26,7 +26,7 @@
 #include <QObject>
 #include <cwiid.h>
 
-#include "consts.h"
+#include "headers/consts.h"
 
 #define defaultReportFlags \
   CWIID_RPT_STATUS | \

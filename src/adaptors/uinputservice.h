@@ -18,10 +18,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#ifndef UINPUTSERVICE_H
-#define UINPUTSERVICE_H
+#ifndef ADAPTORS_UINPUTSERVICE_H
+#define ADAPTORS_UINPUTSERVICE_H
 
-// Defaults
 #include <QDBusAbstractAdaptor>
 #include <QDBusAbstractInterface>
 #include <QDBusArgument>
@@ -29,11 +28,11 @@
 #include <QDBusReply>
 
 #include <QList>
-#include <wiimotedev.h>
 
-// Meta-types
 #include <QDBusMetaType>
 #include <QMetaType>
+
+#include "adaptors/adaptors.h"
 
 class DBusServiceAdaptor :public QDBusAbstractAdaptor
 {
@@ -82,4 +81,4 @@ public slots:
     }
 };
 
-#endif // UINPUTSERVICE_H
+#endif // ADAPTORS_UINPUTSERVICE_H

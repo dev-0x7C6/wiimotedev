@@ -17,20 +17,19 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef ADAPTORS_H
-#define ADAPTORS_H
+#ifndef ADAPTORS_ADAPTORS_H
+#define ADAPTORS_ADAPTORS_H
 
-// Defaults
 #include <QDBusAbstractAdaptor>
 #include <QDBusArgument>
 #include <QDBusConnection>
 
 #include <QList>
-#include "consts.h"
 
-// Meta-types
 #include <QDBusMetaType>
 #include <QMetaType>
+
+#include "headers/consts.h"
 
 #define QWIIMOTEDEV_REGISTER_META_TYPES                                    \
   qRegisterMetaType< QList< struct irpoint> >("QList< irpoint>");          \
@@ -74,4 +73,4 @@
 
 #endif
 
-#endif // ADAPTORS_H
+#endif // ADAPTORS_ADAPTORS_H

@@ -18,10 +18,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#ifndef CUSTOMJOBS_H
-#define CUSTOMJOBS_H
+#ifndef ADAPTORS_CUSTOMJOBS_H
+#define ADAPTORS_CUSTOMJOBS_H
 
-// Defaults
 #include <QDBusAbstractAdaptor>
 #include <QDBusAbstractInterface>
 #include <QDBusArgument>
@@ -29,11 +28,8 @@
 #include <QDBusReply>
 
 #include <QList>
-#include <wiimotedev.h>
 
-// Meta-types
-#include <QDBusMetaType>
-#include <QMetaType>
+#include "adaptors/adaptors.h"
 
 
 class DBusCustomJobsAdaptor :public QDBusAbstractAdaptor
@@ -78,4 +74,4 @@ Q_SIGNALS:
   void executeRequest(QStringList);
 };
 
-#endif // CUSTOMJOBS_H
+#endif // ADAPTORS_CUSTOMJOBS_H

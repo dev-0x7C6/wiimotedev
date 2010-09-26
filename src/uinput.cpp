@@ -42,10 +42,9 @@
 #include <string.h>
 
 #include "adaptors/adaptors.h"
+#include "headers/consts.h"
 #include "syslog/syslog.h"
-
-
-#include "consts.h"
+#include "uinput/manager.h"
 
 #include <QCoreApplication>
 #include <QFile>

@@ -41,7 +41,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "manager.h"
+#include "core/manager.h"
 #include "syslog/syslog.h"
 
 #include <QCoreApplication>

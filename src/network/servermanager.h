@@ -19,17 +19,16 @@
 
 #ifndef SERVER_MANAGER_H
 #define SERVER_MANAGER_H
-
-#include "proto.h"
-#include "consts.h"
-#include "settings.h"
-
 #include <QTcpServer>
 #include <QTcpSocket>
 #include <QStringList>
 #include <QThread>
 #include <QTcpSocket>
 #include <QMutex>
+
+#include "core/settings.h"
+#include "headers/proto.h"
+#include "headers/consts.h"
 
 class ConnectionManager;
 

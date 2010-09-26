@@ -23,7 +23,7 @@
 #include <QSettings>
 #include <QStringList>
 
-#include "consts.h"
+#include "headers/consts.h"
 
 class WiimotedevSettings : public QObject
 {

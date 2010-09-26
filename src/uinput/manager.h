@@ -21,18 +21,17 @@
 #ifndef PROFILEMANAGER_H
 #define PROFILEMANAGER_H
 
-#include <QtCore/QObject>
-#include <QtCore/QMetaType>
-#include <QRegExp>
-#include <Qt/QtDBus>
+#include <QObject>
+#include <QTimer>
 
-#include <cwiid.h>
-#include "consts.h"
+#include "adaptors/customjobs.h"
+#include "adaptors/profilemanager.h"
+#include "adaptors/uinputservice.h"
+#include "adaptors/adaptors.h"
+#include "headers/consts.h"
+#include "headers/interface.h"
+#include "devices/keyboard.h"
 
-#include "customjobs.h"
-#include "profilemanager.h"
-#include "uinputservice.h"
-#include "adaptors.h"
 
 /*
 class VirtualDeviceManager :public QObject

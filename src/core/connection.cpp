@@ -22,8 +22,8 @@
 #include <QDebug>
 #include <math.h>
 
-#include "consts.h"
-#include "connection.h"
+#include "core/connection.h"
+#include "headers/consts.h"
 #include "syslog/syslog.h"
 
 extern bool additional_debug;

@@ -26,10 +26,10 @@
 #include <QTimer>
 #include <QPainter>
 
-#include "selectwiimote.h"
+#include "src/selectwiimote.h"
 
-#include "interface.h"
-#include "consts.h"
+#include "headers/interface.h"
+#include "headers/consts.h"
 
 const double defaultPointMultiplier = 2.5;
 

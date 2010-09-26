@@ -4,8 +4,7 @@
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${CMAKE_CURRENT_SOURCE_DIR}
-		    ${CMAKE_CURRENT_SOURCE_DIR}/src
-		    ${CMAKE_SOURCE_DIR}/headers
+        ${CMAKE_SOURCE_DIR}
 		    ${QT_INCLUDE_DIR}
 		    ${QT_QTCORE_INCLUDE_DIR}
 		    ${QT_QTDBUS_INCLUDE_DIR}

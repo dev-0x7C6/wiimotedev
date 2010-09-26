@@ -18,10 +18,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#ifndef PROFILEMANAGER_H
-#define PROFILEMANAGER_H
+#ifndef ADAPTORS_PROFILEMANAGER_H
+#define ADAPTORS_PROFILEMANAGER_H
 
-// Defaults
 #include <QDBusAbstractAdaptor>
 #include <QDBusAbstractInterface>
 #include <QDBusArgument>
@@ -29,11 +28,8 @@
 #include <QDBusReply>
 
 #include <QList>
-#include <wiimotedev.h>
 
-// Meta-types
-#include <QDBusMetaType>
-#include <QMetaType>
+#include "adaptors/adaptors.h"
 
 class DBusProfileManagerAdaptor :public QDBusAbstractAdaptor
 {
@@ -52,26 +48,12 @@ class DBusProfileManagerAdaptor :public QDBusAbstractAdaptor
     "  </interface>\n"
     "")
 public:
-  DBusProfileManagerAdaptor (QObject *parent): QDBusAbstractAdaptor(parent) {
-    setAutoRelaySignals(true);
-  }
+  DBusProfileManagerAdaptor (QObject *parent);
 
-public slots:
-  inline bool loadProfile(QString file){
-    bool value;
-    QMetaObject::invokeMethod(parent(), "loadProfile", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(QString, file));
-    return value;
-  }
-
-  inline void unloadProfile() {
-    QMetaObject::invokeMethod(parent(), "unloadProfile", Qt::DirectConnection);
-  }
-
-  inline QString currentProfile(){
-    QString value;
-    QMetaObject::invokeMethod(parent(), "currentProfile", Qt::DirectConnection, Q_RETURN_ARG(QString, value));
-    return value;
-  }
+public Q_SLOTS:
+  QString currentProfile();
+  bool loadProfile(QString);
+  void unloadProfile();
 };
 
 
@@ -82,30 +64,14 @@ private:
   bool registred;
 
 public:
-  DBusProfileManagerAdaptorWrapper (QObject *parent, QDBusConnection &connection): QObject(parent) {
-    new DBusProfileManagerAdaptor(this);
-    registred = connection.registerObject("/profileManager", this);
-  }
-
+  DBusProfileManagerAdaptorWrapper (QObject *parent, QDBusConnection &connection);
   inline bool isRegistred() { return registred; }
 
-public slots:
-  inline bool loadProfile(QString file){
-    bool value;
-    QMetaObject::invokeMethod(parent(), "loadProfile", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(QString, file));
-    return value;
-  }
-
-  inline void unloadProfile() {
-    QMetaObject::invokeMethod(parent(), "unloadProfile", Qt::DirectConnection);
-  }
-
-  inline QString currentProfile(){
-    QString value;
-    QMetaObject::invokeMethod(parent(), "currentProfile", Qt::DirectConnection, Q_RETURN_ARG(QString, value));
-    return value;
-  }
+public Q_SLOTS:
+  QString currentProfile();
+  bool loadProfile(QString);
+  void unloadProfile();
 
 };
 
-#endif // PROFILEMANAGER_H
+#endif // ADAPTORS_PROFILEMANAGER_H

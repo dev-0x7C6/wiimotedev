@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef DAEMONSERVICE_H
-#define DAEMONSERVICE_H
+#ifndef ADAPTORS_DAEMONSERVICE_H
+#define ADAPTORS_DAEMONSERVICE_H
 
 #include "adaptors.h"
 
@@ -54,4 +54,4 @@ public Q_SLOTS:
   bool dbusReloadSequenceList();
 };
 
-#endif //DAEMONSERVICE_H
+#endif // ADAPTORS_DAEMONSERVICE_H

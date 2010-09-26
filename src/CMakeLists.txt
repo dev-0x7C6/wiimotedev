@@ -4,10 +4,7 @@
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${CMAKE_CURRENT_SOURCE_DIR}
-		    ${CMAKE_CURRENT_SOURCE_DIR}/adaptors
-		    ${CMAKE_CURRENT_SOURCE_DIR}/core
-        ${CMAKE_CURRENT_SOURCE_DIR}/network
-        ${CMAKE_SOURCE_DIR}/headers
+        ${CMAKE_SOURCE_DIR}
 		    ${QT_INCLUDE_DIR}
 		    ${QT_QTCORE_INCLUDE_DIR}
 		    ${QT_QTDBUS_INCLUDE_DIR}
@@ -22,6 +19,13 @@ configure_file(config.h.in
                config.h)
 
 set(wiimotedev_sources
+  adaptors/adaptors.h
+  ${CMAKE_SOURCE_DIR}/headers/consts.h
+  ${CMAKE_SOURCE_DIR}/headers/proto.h
+  syslog/syslog.h
+  core/settings.h
+  core/wiiremote.h
+
   adaptors/adaptors.cpp
   adaptors/deviceevents.cpp
   adaptors/daemonservice.cpp
@@ -34,7 +38,7 @@ set(wiimotedev_sources
   daemon.cpp
 )
 
-set(wiimotedev_headers_qt
+set(wiimotedev_headers
   adaptors/deviceevents.h
   adaptors/daemonservice.h
   network/servermanager.h
@@ -42,16 +46,12 @@ set(wiimotedev_headers_qt
   core/manager.h
 )
 
-set(wiimotedev_headers
+set(client_sources
   adaptors/adaptors.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
-  core/settings.h
-  core/wiiremote.h
-)
 
-set(client_sources
   adaptors/adaptors.cpp
   adaptors/deviceevents.cpp
   adaptors/daemonservice.cpp
@@ -60,47 +60,52 @@ set(client_sources
   client.cpp
 )
 
-set(client_headers_qt
+set(client_headers
   adaptors/deviceevents.h
   adaptors/daemonservice.h
   network/clientmanager.h
 )
 
-set(client_headers
+set(uinput_sources
   adaptors/adaptors.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/headers/proto.h
+  devices/classicgamepad.h
+  devices/mouse.h
+  devices/nunchukgamepad.h
+  devices/touchscreen.h
+  devices/wiiremotegamepad.h
   syslog/syslog.h
-)
 
-set(uinput_sources
   adaptors/customjobs.cpp
   adaptors/profilemanager.cpp
   adaptors/uinputservice.cpp
   adaptors/adaptors.cpp
+  devices/classicgamepad.cpp
+  devices/keyboard.cpp
+  devices/mouse.cpp
+  devices/nunchukgamepad.cpp
+  devices/touchscreen.cpp
+  devices/wiiremotegamepad.cpp
   syslog/syslog.cpp
   uinput/manager.cpp
   uinput.cpp
 )
 
-set(uinput_headers_qt
+set(uinput_headers
   adaptors/customjobs.h
   adaptors/profilemanager.h
   adaptors/uinputservice.h
+  adaptors/adaptors.h
+  ${CMAKE_SOURCE_DIR}/headers/interface.h
+  devices/keyboard.h
   uinput/manager.h
 )
 
-set(uinput_headers
-  adaptors/adaptors.h
-  ${CMAKE_SOURCE_DIR}/headers/consts.h
-  ${CMAKE_SOURCE_DIR}/headers/proto.h
-  syslog/syslog.h
-)
-
 if(BUILD_DAEMON)
-  qt4_wrap_cpp(wiimotedev_headers_qt ${wiimotedev_headers_qt} )
+  qt4_wrap_cpp(wiimotedev_sources ${wiimotedev_headers})
 
-  add_executable(wiimotedev-daemon ${wiimotedev_sources} ${wiimotedev_headers} ${wiimotedev_headers_qt})
+  add_executable(wiimotedev-daemon ${wiimotedev_sources})
   target_link_libraries(wiimotedev-daemon
     ${QT_QTCORE_LIBRARY}
     ${QT_QTDBUS_LIBRARY}
@@ -112,9 +117,9 @@ if(BUILD_DAEMON)
 endif(BUILD_DAEMON)
 
 if(BUILD_CLIENT)
-  qt4_wrap_cpp(client_sources ${client_headers_qt} )
+  qt4_wrap_cpp(client_sources ${client_headers} )
 
-  add_executable(wiimotedev-client ${client_sources} ${client_headers})
+  add_executable(wiimotedev-client ${client_sources})
   target_link_libraries(wiimotedev-client
     ${QT_QTCORE_LIBRARY}
     ${QT_QTDBUS_LIBRARY}
@@ -125,9 +130,9 @@ if(BUILD_CLIENT)
 endif(BUILD_CLIENT)
 
 if(BUILD_UINPUT)
-  qt4_wrap_cpp(uinput_sources ${uinput_headers_qt} )
+  qt4_wrap_cpp(uinput_sources ${uinput_headers})
 
-  add_executable(wiimotedev-uinput ${uinput_sources} ${uinput_headers})
+  add_executable(wiimotedev-uinput ${uinput_sources})
   target_link_libraries(wiimotedev-uinput
     ${QT_QTCORE_LIBRARY}
     ${QT_QTDBUS_LIBRARY}

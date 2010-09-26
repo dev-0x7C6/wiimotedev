@@ -27,13 +27,12 @@
 
 #include <cwiid.h>
 
-
-#include "deviceevents.h"
-#include "daemonservice.h"
-#include "consts.h"
+#include "adaptors/deviceevents.h"
+#include "adaptors/daemonservice.h"
+#include "core/connection.h"
+#include "core/settings.h"
+#include "headers/consts.h"
 #include "network/servermanager.h"
-#include "connection.h"
-#include "settings.h"
 
 template class QList< void*>;
 

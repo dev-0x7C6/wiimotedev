@@ -18,7 +18,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include "manager.h"
+#include <QSettings>
+
+#include "uinput/manager.h"
 
 extern QMap < QString, quint64> devicebuttons;
 extern QMap < QString, quint16> scancodes;
@@ -34,7 +36,7 @@ ProfileManager::ProfileManager(QObject *object) : QObject(object)
 
     dbusDeviceEventsIface =
             new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
-                                          WIIMOTEDEV_DBUS_EVENTS_OBJECT,
+                                          WIIMOTEDEV_DBUS_OBJECT_EVENTS,
                                           QDBusConnection::systemBus(), this);
 
     virtualClassicGamepad = new UInputClassicGamepad();

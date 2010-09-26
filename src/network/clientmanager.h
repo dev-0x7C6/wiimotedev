@@ -31,12 +31,10 @@
 #include <QTcpSocket>
 #include <QEventLoop>
 
-#include "consts.h"
-#include "proto.h"
-
-#include "deviceevents.h"
-#include "daemonservice.h"
-
+#include "adaptors/deviceevents.h"
+#include "adaptors/daemonservice.h"
+#include "headers/consts.h"
+#include "headers/proto.h"
 #include "syslog/syslog.h"
 
 const QString clientSection("client/");

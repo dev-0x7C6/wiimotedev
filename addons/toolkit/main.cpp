@@ -20,10 +20,10 @@
 #include <QApplication>
 #include <QMessageBox>
 
-#include "consts.h"
-#include "interface.h"
+#include "headers/consts.h"
+#include "headers/interface.h"
 
-#include "mainwindow.h"
+#include "src/mainwindow.h"
 
 int main(int argc, char *argv[])
 {  

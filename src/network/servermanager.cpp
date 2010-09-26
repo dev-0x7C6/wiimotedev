@@ -20,7 +20,7 @@
 #include "network/servermanager.h"
 #include "syslog/syslog.h"
 
-#include "manager.h"
+#include "core/manager.h"
 
 NetworkServerThread::NetworkServerThread(QStringList allowed, quint16 port, ConnectionManager *manager)
   :allowed(allowed),

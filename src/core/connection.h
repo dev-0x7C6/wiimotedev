@@ -23,8 +23,8 @@
 #include <QThread>
 #include <QObject>
 
-#include "deviceevents.h"
-#include "wiiremote.h"
+#include "adaptors/deviceevents.h"
+#include "core/wiiremote.h"
 
 class DBusDeviceEventsAdaptorWrapper;
 class WiimoteDevice;
