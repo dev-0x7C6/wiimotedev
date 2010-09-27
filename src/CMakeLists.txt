@@ -91,6 +91,7 @@ set(uinput_sources
   devices/wiiremotegamepad.cpp
   syslog/syslog.cpp
   uinput/keyboard.cpp
+  uinput/infrared.cpp
   uinput/manager.cpp
   uinput.cpp
 )

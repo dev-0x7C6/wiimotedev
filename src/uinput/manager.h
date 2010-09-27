@@ -24,7 +24,9 @@
 #include <QObject>
 #include <QTimer>
 
+
 #include <QScopedPointer>
+#include <QSettings>
 
 #include "adaptors/customjobs.h"
 #include "adaptors/profilemanager.h"
@@ -199,12 +201,16 @@ private:
   QString version;
 
 //Settings
+
   bool disableNunchukExtShift;
   bool disableNunchukExtShake;
   bool disableNunchukExtTilt;
   bool disableWiiremoteShift;
   bool disableWiiremoteShake;
   bool disableWiiremoteTilt;
+
+  bool disableKeyboardModule;
+
   bool enableWiiremoteInfraredMouse;
 
 //Infrared
@@ -266,7 +272,13 @@ private:
   QHash < quint32, quint64> extractDeviceEvent(QString);
   QList < quint16> extractScancodes(QStringList);
 
+  void loadKeyboardEvents(QSettings&);
+  void unloadKeyboardEvents();
+
   void processKeyboardEvents();
+  void pressKeyboardButtons(QList < quint16>&);
+  void releaseKeyboardButtons(QList < quint16>&);
+
 
 private Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32, quint64);

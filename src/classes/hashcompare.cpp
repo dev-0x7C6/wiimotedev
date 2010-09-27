@@ -38,13 +38,13 @@ bool HashCompare::isCompare(QHash < quint32, quint64> *first, QHash < quint32, q
 
     switch (style) {
     case HashCompare::BitCompare:
-      matched &= ((map.value() & second->value(map.value(), 0)) == map.value());
+      matched &= ((map.value() & second->value(map.key(), 0)) == map.value());
       break;
     case HashCompare::EqualCompare:
-      matched &= (map.value() == second->value(map.value(), 0));
+      matched &= (map.value() == second->value(map.key(), 0));
       break;
     case HashCompare::NotEqualCompare:
-      matched &= (map.value() != second->value(map.value(), 0));
+      matched &= (map.value() != second->value(map.key(), 0));
       break;
     }
 

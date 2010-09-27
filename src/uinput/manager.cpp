@@ -21,6 +21,7 @@
 #include <QSettings>
 #include <QDebug>
 
+#include "classes/hashcompare.h"
 #include "uinput/manager.h"
 
 extern QMap < QString, quint64> devicebuttons;
@@ -50,29 +51,6 @@ QHash < quint32, quint64> UInputProfileManager::extractDeviceEvent(QString input
     return values;
 }
 
-QList < quint16> UInputProfileManager::extractScancodes(QStringList list)
-{
-  QList < quint16> values;
-  for (register int i = 0; i < list.count(); ++i)
-    values << scancodes.value(list.at(i), 0);
-  return values;
-}
-
-double acc_plus(int min, int max, int value, double sensitivy)
-{
-    if ((value <= min) || (value >= max))
-        return 0.0;
-    return ((value - min) / (double)(max - min)) * sensitivy;
-}
-
-
-double acc_minus(int max, int min, int value, double sensitivy)
-{
-    if ((value <= min) || (value >= max))
-        return 0.0;
-    return ((value - max) / (double)(min - max)) * -sensitivy;
-}
-
 UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   dbusDeviceEventsIface(new DBusDeviceEventsInterface(
       WIIMOTEDEV_DBUS_SERVICE_NAME,
@@ -87,6 +65,7 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   disableWiiremoteShift(false),
   disableWiiremoteShake(false),
   disableWiiremoteTilt(false),
+  disableKeyboardModule(true), // only for init state
   enableWiiremoteInfraredMouse(false),
   virtualClassicGamepad(new UInputClassicGamepad()),
   virtualWiimoteGamepad(new UInputWiimoteGamepad()),
@@ -105,7 +84,9 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
 
   QDBusConnection::systemBus().registerService("org.wiimotedev.uinput");
 
-  this->loadProfile("/root/uinput.ini");
+  loadProfile("/root/uinput.ini");
+
+  dbusWiimoteGeneralButtons(1, 0);
 }
 
 void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons) {
@@ -116,60 +97,12 @@ void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons
   if (disableWiiremoteShake) buttons &= ~WIIMOTE_BTN_SHIFT_SHAKE;
   if (disableWiiremoteTilt) buttons &= ~WIIMOTE_TILT_MASK;
 
-  if (lastWiiremoteButtons.value(id, 0) == buttons)
+  if (lastWiiremoteButtons.value(id, -1) == buttons)
     return;
 
   lastWiiremoteButtons[id] = buttons;
 
   processKeyboardEvents();
-}
-
-void UInputProfileManager::dbusWiimoteInfrared(quint32 id, QList< irpoint> points) {
-  if (id != irWiimoteId)
-      return;
-
-  timeout = false;
-
-  if (irAlghoritm == mouseEmulationAlghoritm2points) {
-    switch (points.count()) {
-    case 4:
-    case 3:
-    case 2:
-      x = (points.at(0).x + points.at(1).x) >> 1;
-      y = (points.at(0).y + points.at(1).y) >> 1;
-      break;
-    case 1:
-      break;
-
-    }
-  } else
-    if (irAlghoritm == mouseEmulationAlghoritm1point) {
-      x = points.at(0).x;
-      y = points.at(0).y;
-    }
-
-
-  switch (irMode)
-  {
-  case mouseEmulationModeAbs:
-    virtualAbsoluteMouse->moveMousePointerAbs(-(x - 0x0200), y - 0x0180);
-    break;
-
-  case mouseEmulationModeAcc:
-    if (cursor.x() == 0) cursor.setX(x);
-    if (cursor.y() == 0) cursor.setY(y);
-
-    moveX = -((x) - cursor.x());
-    moveY = (y) - cursor.y();
-
-    cursor.setX(x);
-    cursor.setY(y);
-
-    moveX -= acc_plus(512 + irXFreeZone, 1024, cursor.x(), irXSensitivity);
-    moveX -= acc_minus(512 - irXFreeZone, 0, cursor.x(), irXSensitivity);
-    moveY += acc_plus(384 + irYFreeZone, 768, cursor.y(), irYSensitivity);
-    moveY += acc_minus(384 - irYFreeZone, 0, cursor.y(), irYSensitivity);
-  }
 }
 
 bool UInputProfileManager::loadProfile(QString file) {
@@ -204,21 +137,12 @@ bool UInputProfileManager::loadProfile(QString file) {
   settings.endGroup();
 
 
-  settings.beginGroup("keyboard");
+  loadKeyboardEvents(settings);
 
-  foreach (const QString &string, settings.allKeys()) {
-    KeyboardAction *action = new KeyboardAction;
-    action->event = extractDeviceEvent(string);
-    action->keys = extractScancodes(settings.value(string, QStringList()).toStringList());
-    action->pushed = false;
-    keyboardActions << action;
-  }
-
-  settings.endGroup();
 }
 
 bool UInputProfileManager::unloadProfile() {
-
+  unloadKeyboardEvents();
 }
 
 
@@ -237,10 +161,6 @@ UInputProfileManager::~UInputProfileManager()
     delete virtualWiimoteGamepad;
     delete virtualEvent;
     delete virtualAbsoluteMouse;
-
-    delete dbusProfileManager;
-    delete dbusService;
-    delete dbusCustomJobs;
 }
 
 //bool ProfileManager::loadProfile(QString file)
@@ -640,10 +560,3 @@ UInputProfileManager::~UInputProfileManager()
 
 //}
 
-void UInputProfileManager::infraredAccSection()
-{
-  if (timeout)
-    return;
-
-  virtualEvent->moveMousePointerRel(moveX, moveY);
-}

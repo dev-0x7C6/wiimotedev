@@ -21,8 +21,59 @@
 #include "classes/hashcompare.h"
 #include "uinput/manager.h"
 
-void UInputProfileManager::processKeyboardEvents() {
+extern QMap < QString, quint16> scancodes;
+
+QList < quint16> UInputProfileManager::extractScancodes(QStringList list)
+{
+  QList < quint16> values;
+  for (register int i = 0; i < list.count(); ++i)
+    if (scancodes.value(list.at(i), 0))
+      values << scancodes.value(list.at(i), 0);
+  return values;
+}
+
+void UInputProfileManager::loadKeyboardEvents(QSettings &settings) {
+  unloadKeyboardEvents();
+
+  QMap < QString, quint8> keyboardConfigList;
+  keyboardConfigList["keyboard-bit"] = HashCompare::BitCompare;
+  keyboardConfigList["keyboard"] = HashCompare::BitCompare;
+  keyboardConfigList["keyboard-equal"] = HashCompare::EqualCompare;
+  keyboardConfigList["keyboard-notequal"] = HashCompare::NotEqualCompare;
+
+  QMapIterator < QString, quint8> map(keyboardConfigList);
+
+  while (map.hasNext()) {
+    map.next();
+    settings.beginGroup(map.key());
+    foreach (const QString &string, settings.allKeys()) {
+      KeyboardAction *action = new KeyboardAction;
+      action->event = extractDeviceEvent(string);
+      action->keys = extractScancodes(settings.value(string, QStringList()).toStringList());
+      action->pushed = false;
+      action->alghoritm = map.value();
+      keyboardActions << action;
+    }
+    settings.endGroup();
+  }
+
+  disableKeyboardModule = keyboardActions.isEmpty();
+}
+
+void UInputProfileManager::unloadKeyboardEvents() {
+  disableKeyboardModule = true;
+
   if (keyboardActions.isEmpty())
+    return;
+
+  foreach (KeyboardAction *action, keyboardActions)
+    delete action;
+
+  keyboardActions.clear();
+}
+
+void UInputProfileManager::processKeyboardEvents() {
+  if (keyboardActions.isEmpty() || disableKeyboardModule)
     return;
 
   HashCompare compare;
@@ -34,15 +85,31 @@ void UInputProfileManager::processKeyboardEvents() {
     bool matched = compare.isCompare(&action->event, &lastWiiremoteButtons, action->alghoritm);
 
     if (matched && !action->pushed) {
-      action->pushed = true;
-      qDebug("pushed");
+      action->pushed = !action->pushed;
+      pressKeyboardButtons(action->keys);
+    } else
+    if (!matched && action->pushed) {
+      action->pushed = !action->pushed;
+      releaseKeyboardButtons(action->keys);
     }
 
-    if (!matched && action->pushed) {
-      action->pushed = false;
-      qDebug("released");
-    }
   }
+}
+
+void UInputProfileManager::pressKeyboardButtons(QList < quint16> &list) {
+  if (list.isEmpty())
+    return;
+
+  foreach (const quint16 key, list)
+    virtualEvent->pressKeyboardButton(key);
+}
+
+void UInputProfileManager::releaseKeyboardButtons(QList < quint16> &list) {
+  if (list.isEmpty())
+    return;
+
+  foreach (const quint16 key, list)
+    virtualEvent->releaseKeyboardButton(key);
 }
 
 
