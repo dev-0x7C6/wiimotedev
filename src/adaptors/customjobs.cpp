@@ -19,3 +19,15 @@
  **********************************************************************************/
 
 #include "adaptors/customjobs.h"
+
+DBusCustomJobsAdaptorWrapper::DBusCustomJobsAdaptorWrapper(QObject *parent, QDBusConnection connection):
+    QObject(parent)
+{
+  new DBusCustomJobsAdaptor(this);
+  registred = connection.registerObject("/customJobs", this);
+}
+
+DBusCustomJobsAdaptor::DBusCustomJobsAdaptor(QObject *parent): QDBusAbstractAdaptor(parent)
+{
+  setAutoRelaySignals(true);
+}

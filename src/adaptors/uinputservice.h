@@ -36,49 +36,37 @@
 
 class DBusServiceAdaptor :public QDBusAbstractAdaptor
 {
-    Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
-    Q_CLASSINFO("D-Bus Introspection", ""
-     "  <interface name=\"org.wiimotedev.service\">\n"
-     "    <method name=\"isWiimotedevServiceAvailable\">\n"
-     "      <arg type=\"y\" direction=\"out\"/>\n"
-     "    </method>\n"
-     "  </interface>\n"
-     "")
+  Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
+  Q_CLASSINFO("D-Bus Introspection", ""
+   "  <interface name=\"org.wiimotedev.service\">\n"
+   "    <method name=\"isWiimotedevServiceAvailable\">\n"
+   "      <arg type=\"y\" direction=\"out\"/>\n"
+   "    </method>\n"
+   "  </interface>\n"
+   "")
 public:
-    DBusServiceAdaptor (QObject *parent): QDBusAbstractAdaptor(parent) {
-        setAutoRelaySignals(true);
-    }
+  DBusServiceAdaptor (QObject *parent = 0);
 
 public slots:
-    inline bool isWiimotedevServiceAvailable() {
-        bool value;
-        QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-        return value;
-    }
+  bool isWiimotedevServiceAvailable();
 
 };
 
 class DBusServiceAdaptorWrapper :public QObject
 {
-    Q_OBJECT
+  Q_OBJECT
 private:
-    bool registred;
+  bool registred;
 
 public:
-    DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent) {
-        new DBusServiceAdaptor(this);
-        registred = connection.registerObject("/service", this);
-    }
+  DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection connection);
 
-    inline bool isRegistred() { return registred; }
+  inline bool isRegistred() { return registred; }
 
 public slots:
-    inline bool isWiimotedevServiceAvailable() {
-        bool value;
-        QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-        return value;
-    }
+  bool isWiimotedevServiceAvailable();
+
 };
 
 #endif // ADAPTORS_UINPUTSERVICE_H

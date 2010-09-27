@@ -19,3 +19,26 @@
  **********************************************************************************/
 
 #include "adaptors/uinputservice.h"
+
+DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent): QDBusAbstractAdaptor(parent)
+{
+  setAutoRelaySignals(true);
+}
+
+bool DBusServiceAdaptor::isWiimotedevServiceAvailable() {
+  bool value;
+  QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+  return value;
+}
+
+DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection connection) : QObject(parent)
+{
+  new DBusServiceAdaptor(this);
+  registred = connection.registerObject("/service", this);
+}
+
+bool DBusServiceAdaptorWrapper::isWiimotedevServiceAvailable() {
+  bool value;
+  QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+  return value;
+}

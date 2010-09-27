@@ -64,6 +64,9 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
       WIIMOTEDEV_DBUS_SERVICE_NAME,
       WIIMOTEDEV_DBUS_OBJECT_EVENTS,
       QDBusConnection::systemBus(), this)),
+  dbusProfileManager(new DBusProfileManagerAdaptorWrapper(this, QDBusConnection::systemBus())),
+  dbusService(new DBusServiceAdaptorWrapper(this, QDBusConnection::systemBus())),
+  dbusCustomJobs(new DBusCustomJobsAdaptorWrapper(this, QDBusConnection::systemBus())),
   disableNunchukExtShift(false),
   disableNunchukExtShake(false),
   disableNunchukExtTilt(false),
@@ -74,6 +77,7 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   virtualEvent(new UInputEvent())
 {
   connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteInfrared(quint32,QList<irpoint>)), this, SLOT(dbusWiimoteInfrared(quint32,QList<irpoint>)));
 
   virtualEvent->uinput_open();
 
@@ -94,6 +98,10 @@ void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons
   lastWiiremoteButtons[id] = buttons;
 
   processKeyboardEvents();
+}
+
+void UInputProfileManager::dbusWiimoteInfrared(quint32 id, QList< irpoint> table) {
+  qDebug() << table.count();
 }
 
 void UInputProfileManager::processKeyboardEvents() {
@@ -143,11 +151,6 @@ bool UInputProfileManager::loadProfile(QString file) {
 bool UInputProfileManager::unloadProfile() {
 
 }
-
-
-
-
-
 
 
 ProfileManager::ProfileManager(QObject *object) : QObject(object)

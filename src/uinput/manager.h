@@ -183,6 +183,11 @@ private:
 //Interfaces
   DBusDeviceEventsInterface *dbusDeviceEventsIface;
 
+//Adaptors
+  DBusProfileManagerAdaptorWrapper *dbusProfileManager;
+  DBusServiceAdaptorWrapper *dbusService;
+  DBusCustomJobsAdaptorWrapper *dbusCustomJobs;
+
 //Profile section
   QString author;
   QString email;
@@ -213,6 +218,7 @@ private:
   QHash< quint32, quint64> lastWiiremoteButtons;
   UInputEvent *virtualEvent;
 
+
 public:
   UInputProfileManager(QObject *parent = 0);
 
@@ -224,6 +230,7 @@ private:
 
 private Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
+  void dbusWiimoteInfrared(quint32, QList< irpoint>);
 
 public Q_SLOTS:
   inline bool isWiimotedevServiceAvailable(){ return dbusDeviceEventsIface->isValid(); }

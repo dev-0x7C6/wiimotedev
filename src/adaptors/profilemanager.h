@@ -64,7 +64,7 @@ private:
   bool registred;
 
 public:
-  DBusProfileManagerAdaptorWrapper (QObject *parent, QDBusConnection &connection);
+  DBusProfileManagerAdaptorWrapper (QObject *parent, QDBusConnection connection);
   inline bool isRegistred() { return registred; }
 
 public Q_SLOTS:

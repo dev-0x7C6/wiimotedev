@@ -44,9 +44,7 @@ class DBusCustomJobsAdaptor :public QDBusAbstractAdaptor
     "  </interface>\n"
     "")
 public:
-  DBusCustomJobsAdaptor (QObject *parent): QDBusAbstractAdaptor(parent) {
-    setAutoRelaySignals(true);
-  }
+  DBusCustomJobsAdaptor (QObject *parent);
 
 Q_SIGNALS:
   void executeRequest(QStringList);
@@ -61,10 +59,7 @@ private:
   bool registred;
 
 public:
-  DBusCustomJobsAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent) {
-    new DBusCustomJobsAdaptor(this);
-    registred = connection.registerObject("/customJobs", this);
-  }
+  DBusCustomJobsAdaptorWrapper(QObject *parent, QDBusConnection connection);
 
   inline bool isRegistred() { return registred; }
 

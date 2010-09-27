@@ -40,7 +40,7 @@ void DBusProfileManagerAdaptor::unloadProfile() {
   QMetaObject::invokeMethod(parent(), "unloadProfile", Qt::DirectConnection);
 }
 
-DBusProfileManagerAdaptorWrapper::DBusProfileManagerAdaptorWrapper (QObject *parent, QDBusConnection &connection): QObject(parent) {
+DBusProfileManagerAdaptorWrapper::DBusProfileManagerAdaptorWrapper (QObject *parent, QDBusConnection connection): QObject(parent) {
   new DBusProfileManagerAdaptor(this);
   registred = connection.registerObject("/profileManager", this);
 }

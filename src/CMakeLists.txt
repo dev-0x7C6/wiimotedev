@@ -20,11 +20,11 @@ configure_file(config.h.in
 
 set(wiimotedev_sources
   adaptors/adaptors.h
+  core/settings.h
+  core/wiiremote.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
-  core/settings.h
-  core/wiiremote.h
 
   adaptors/adaptors.cpp
   adaptors/deviceevents.cpp
@@ -68,13 +68,13 @@ set(client_headers
 
 set(uinput_sources
   adaptors/adaptors.h
-  ${CMAKE_SOURCE_DIR}/headers/consts.h
-  ${CMAKE_SOURCE_DIR}/headers/proto.h
   devices/classicgamepad.h
   devices/mouse.h
   devices/nunchukgamepad.h
   devices/touchscreen.h
   devices/wiiremotegamepad.h
+  ${CMAKE_SOURCE_DIR}/headers/consts.h
+  ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
 
   adaptors/customjobs.cpp
@@ -96,9 +96,8 @@ set(uinput_headers
   adaptors/customjobs.h
   adaptors/profilemanager.h
   adaptors/uinputservice.h
-  adaptors/adaptors.h
-  ${CMAKE_SOURCE_DIR}/headers/interface.h
   devices/keyboard.h
+  ${CMAKE_SOURCE_DIR}/headers/interface.h
   uinput/manager.h
 )
 
