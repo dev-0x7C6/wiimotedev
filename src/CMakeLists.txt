@@ -90,8 +90,9 @@ set(uinput_sources
   devices/touchscreen.cpp
   devices/wiiremotegamepad.cpp
   syslog/syslog.cpp
-  uinput/keyboard.cpp
+  uinput/gamepads.cpp
   uinput/infrared.cpp
+  uinput/keyboard.cpp
   uinput/manager.cpp
   uinput.cpp
 )

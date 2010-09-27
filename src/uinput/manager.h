@@ -209,8 +209,10 @@ private:
   bool disableWiiremoteShake;
   bool disableWiiremoteTilt;
 
-  bool disableKeyboardModule;
+  bool disableWiimoteGamepadModule;
+  bool disableClassicGamepadModule;
 
+  bool disableKeyboardModule;
   bool enableWiiremoteInfraredMouse;
 
 //Infrared
@@ -272,6 +274,9 @@ private:
   QHash < quint32, quint64> extractDeviceEvent(QString);
   QList < quint16> extractScancodes(QStringList);
 
+  void loadGamepadEvents(QSettings&);
+  void unloadGamepadEvents();
+
   void loadKeyboardEvents(QSettings&);
   void unloadKeyboardEvents();
 
@@ -284,37 +289,14 @@ private Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
   void dbusWiimoteInfrared(quint32, QList< irpoint>);
 
-  inline void slotDBusClassicControllerButtons(quint32 id, quint64 buttons) {
-    virtualClassicGamepad->classicButtons(id, buttons);
-  }
-
-  inline void slotDBusWiimoteAcc(quint32 id, struct accdata acc) {
-    virtualWiimoteGamepad->wiimoteAcc(id, acc);
-  }
-
-  inline void slotDBusWiimoteButtons(quint32 id, quint64 buttons) {
-    virtualWiimoteGamepad->wiimoteButtons(id, buttons);
-  }
-
-  inline void slotDBusNunchukAcc(quint32 id, struct accdata acc) {
-    virtualWiimoteGamepad->nunchukAcc(id, acc);
-  }
-
-  inline void slotDBusNunchukButtons(quint32 id, quint64 buttons) {
-    virtualWiimoteGamepad->nunchukButtons(id, buttons);
-  }
-
-  inline void slotDBusNunchukStick(quint32 id, struct stickdata stick) {
-    virtualWiimoteGamepad->nunchukStick(id, stick.x, 0xFF - stick.y);
-  }
-
-  inline void slotDBusClassicControllerLStick(quint32 id, struct stickdata stick) {
-    virtualClassicGamepad->classicLStick(id, stick.x, 0x3F - stick.y);
-  }
-
-  inline void slotDBusClassicControllerRStick(quint32 id, struct stickdata stick) {
-    virtualClassicGamepad->classicRStick(id, stick.x, 0x1F - stick.y);
-  }
+  void dbusClassicControllerButtons(quint32, quint64);
+  void dbusWiimoteAcc(quint32, accdata);
+  void dbusWiimoteButtons(quint32, quint64);
+  void dbusNunchukAcc(quint32, accdata);
+  void dbusNunchukButtons(quint32, quint64);
+  void dbusNunchukStick(quint32, stickdata);
+  void dbusClassicControllerLStick(quint32, stickdata);
+  void dbusClassicControllerRStick(quint32, stickdata);
 
   bool dbusWiimoteGetRumbleStatus(quint32 id){}
   bool dbusWiimoteSetLedStatus(quint32 id, quint8 status){}
