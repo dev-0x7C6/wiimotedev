@@ -206,7 +206,7 @@ int main(int argc, char *argv[])
   qRegisterMetaType< accdata>("accdata");
   qRegisterMetaType< stickdata>("stickdata");
 
-  ProfileManager profileManager;
+  UInputProfileManager profileManager;
 
   application.take()->exec();
 

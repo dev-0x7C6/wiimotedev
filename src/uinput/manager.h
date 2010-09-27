@@ -24,6 +24,8 @@
 #include <QObject>
 #include <QTimer>
 
+#include <QScopedPointer>
+
 #include "adaptors/customjobs.h"
 #include "adaptors/profilemanager.h"
 #include "adaptors/uinputservice.h"
@@ -31,6 +33,9 @@
 #include "headers/consts.h"
 #include "headers/interface.h"
 #include "devices/keyboard.h"
+
+
+
 
 
 /*
@@ -168,6 +173,67 @@ namespace profiles
         const QString range("range");
     }
 }
+
+
+
+class UInputProfileManager :public QObject
+{
+  Q_OBJECT
+private:
+//Interfaces
+  DBusDeviceEventsInterface *dbusDeviceEventsIface;
+
+//Profile section
+  QString author;
+  QString email;
+  QString name;
+  QString path;
+  QString version;
+
+//Settings
+  bool disableNunchukExtShift;
+  bool disableNunchukExtShake;
+  bool disableNunchukExtTilt;
+  bool disableWiiremoteShift;
+  bool disableWiiremoteShake;
+  bool disableWiiremoteTilt;
+  bool enableWiiremoteInfraredMouse;
+
+//Keyboard section
+  const static char *keyboardSection;
+
+  struct KeyboardAction {
+    QHash< quint32, quint64> event;
+    QList< uint16> keys;
+    bool pushed;
+  };
+
+  QList < KeyboardAction*> keyboardActions;
+
+  QHash< quint32, quint64> lastWiiremoteButtons;
+  UInputEvent *virtualEvent;
+
+public:
+  UInputProfileManager(QObject *parent = 0);
+
+private:
+  QHash < quint32, quint64> extractDeviceEvent(QString);
+  QList < quint16> extractScancodes(QStringList);
+
+  void processKeyboardEvents();
+
+private Q_SLOTS:
+  void dbusWiimoteGeneralButtons(quint32, quint64);
+
+public Q_SLOTS:
+  inline bool isWiimotedevServiceAvailable(){ return dbusDeviceEventsIface->isValid(); }
+
+  bool loadProfile(QString);
+  bool unloadProfile();
+
+
+};
+
 
 class ProfileManager : public QObject
 {

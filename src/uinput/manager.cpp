@@ -19,6 +19,7 @@
  **********************************************************************************/
 
 #include <QSettings>
+#include <QDebug>
 
 #include "uinput/manager.h"
 
@@ -27,6 +28,128 @@ extern QMap < QString, quint16> scancodes;
 
 const QRegExp deviceEventRegExp(".*(\\[.*(\\d+)\\])");
 
+QHash < quint32, quint64> UInputProfileManager::extractDeviceEvent(QString input)
+{
+  QStringList list = input.remove(QRegExp("[ ]")).toLower().split('+');
+  QHash < quint32, quint64> values;
+  bool result = false;
+
+  quint32 index;
+  quint64 value;
+
+  foreach (const QString &item, list) {
+    deviceEventRegExp.exactMatch(item);
+    index = deviceEventRegExp.cap(2).toUInt();
+    value = devicebuttons.value(deviceEventRegExp.cap(0).remove(deviceEventRegExp.cap(1)), 0);
+    values.insert(index, values.value(index, 0) | value);
+    result = result || (value);
+  }
+
+  if (!result)
+    return (QHash < quint32, quint64>()); else
+    return values;
+}
+
+QList < quint16> UInputProfileManager::extractScancodes(QStringList list)
+{
+  QList < quint16> values;
+  for (register int i = 0; i < list.count(); ++i)
+    values << scancodes.value(list.at(i), 0);
+  return values;
+}
+
+
+UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
+  dbusDeviceEventsIface(new DBusDeviceEventsInterface(
+      WIIMOTEDEV_DBUS_SERVICE_NAME,
+      WIIMOTEDEV_DBUS_OBJECT_EVENTS,
+      QDBusConnection::systemBus(), this)),
+  disableNunchukExtShift(false),
+  disableNunchukExtShake(false),
+  disableNunchukExtTilt(false),
+  disableWiiremoteShift(false),
+  disableWiiremoteShake(false),
+  disableWiiremoteTilt(false),
+  enableWiiremoteInfraredMouse(false),
+  virtualEvent(new UInputEvent())
+{
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
+
+  virtualEvent->uinput_open();
+
+  this->loadProfile("/root/uinput.ini");
+}
+
+void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons) {
+  if (disableNunchukExtShift) buttons &= ~NUNCHUK_SHIFT_MASK;
+  if (disableNunchukExtShake) buttons &= ~NUNCHUK_BTN_SHIFT_SHAKE;
+  if (disableNunchukExtTilt) buttons &= ~NUNCHUK_TILT_MASK;
+  if (disableWiiremoteShift) buttons &= ~WIIMOTE_SHIFT_MASK;
+  if (disableWiiremoteShake) buttons &= ~WIIMOTE_BTN_SHIFT_SHAKE;
+  if (disableWiiremoteTilt) buttons &= ~WIIMOTE_TILT_MASK;
+
+  if (lastWiiremoteButtons.value(id, 0) == buttons)
+    return;
+
+  lastWiiremoteButtons[id] = buttons;
+
+  processKeyboardEvents();
+}
+
+void UInputProfileManager::processKeyboardEvents() {
+  if (keyboardActions.isEmpty())
+    return;
+
+  foreach (KeyboardAction *action, keyboardActions) {
+    if (action->event.isEmpty())
+      continue;
+
+    bool matched = true;
+
+    QHashIterator < quint32, quint64> map(action->event);
+    while (map.hasNext()) {
+      map.next();
+      if (!(matched &= ((map.value() & lastWiiremoteButtons[map.key()]) == map.value())))
+        break;
+    }
+
+    if (matched && !action->pushed) {
+      action->pushed = true;
+      qDebug() << "pushed";
+    }
+
+    if (!matched && action->pushed) {
+      action->pushed = false;
+      qDebug() << "released";
+    }
+  }
+}
+
+bool UInputProfileManager::loadProfile(QString file) {
+  QSettings settings(file, QSettings::IniFormat);
+  settings.beginGroup("keyboard");
+
+  foreach (const QString &string, settings.allKeys()) {
+    KeyboardAction *action = new KeyboardAction;
+    action->event = extractDeviceEvent(string);
+    action->keys = extractScancodes(settings.value(string, QStringList()).toStringList());
+    action->pushed = false;
+    keyboardActions << action;
+  }
+
+  settings.endGroup();
+}
+
+bool UInputProfileManager::unloadProfile() {
+
+}
+
+
+
+
+
+
+
 ProfileManager::ProfileManager(QObject *object) : QObject(object)
 {
     QWIIMOTEDEV_REGISTER_META_TYPES;
@@ -34,11 +157,11 @@ ProfileManager::ProfileManager(QObject *object) : QObject(object)
     connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredTimeoutSection()));
     connect(&infraredTimer, SIGNAL(timeout()), this, SLOT(infraredAccSection()));
 
+
     dbusDeviceEventsIface =
             new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
                                           WIIMOTEDEV_DBUS_OBJECT_EVENTS,
                                           QDBusConnection::systemBus(), this);
-
     virtualClassicGamepad = new UInputClassicGamepad();
     virtualWiimoteGamepad = new UInputWiimoteGamepad();
 
