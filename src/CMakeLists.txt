@@ -68,6 +68,7 @@ set(client_headers
 
 set(uinput_sources
   adaptors/adaptors.h
+  classes/hashcompare.h
   devices/classicgamepad.h
   devices/mouse.h
   devices/nunchukgamepad.h
@@ -81,6 +82,7 @@ set(uinput_sources
   adaptors/profilemanager.cpp
   adaptors/uinputservice.cpp
   adaptors/adaptors.cpp
+  classes/hashcompare.cpp
   devices/classicgamepad.cpp
   devices/keyboard.cpp
   devices/mouse.cpp
@@ -88,6 +90,7 @@ set(uinput_sources
   devices/touchscreen.cpp
   devices/wiiremotegamepad.cpp
   syslog/syslog.cpp
+  uinput/keyboard.cpp
   uinput/manager.cpp
   uinput.cpp
 )

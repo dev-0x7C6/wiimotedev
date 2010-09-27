@@ -35,9 +35,6 @@
 #include "devices/keyboard.h"
 
 
-
-
-
 /*
 class VirtualDeviceManager :public QObject
 {
@@ -102,58 +99,58 @@ public:
 class itemTemplate
 {
 private:
-    bool actived;
+  bool actived;
 
 public:
-    inline void setActivedValue(bool status) { actived = status; };
-    inline bool getActivedValue() { return actived; };
+  inline void setActivedValue(bool status) { actived = status; };
+  inline bool getActivedValue() { return actived; };
 };
 
 class eventItem: public itemTemplate
 {  
 public:
-    QMap < qint32, quint64> event;
-    QList < quint16> scancodes;
+  QMap < qint32, quint64> event;
+  QList < quint16> scancodes;
 };
 
 class execItem: public itemTemplate
 {
 public:
-    QMap < qint32, quint64> event;
-    QString exec;
+  QMap < qint32, quint64> event;
+  QString exec;
 };
 
 class actionItem: public itemTemplate
 {
 public:
-    QMap < qint32, quint64> event;
-    QString action;
+  QMap < qint32, quint64> event;
+  QString action;
 };
 
 
 
 enum {
-    mouseEmulationModeNone = 0,
-    mouseEmulationModeAbs,
-    mouseEmulationModeAcc
+  mouseEmulationModeNone = 0,
+  mouseEmulationModeAbs,
+  mouseEmulationModeAcc
 };
 
 enum {
-    mouseEmulationAlghoritm1point = 1,
-    mouseEmulationAlghoritm2points,
-    mouseEmulationAlghoritm3points,
-    mouseEmulationAlghoritm4points
+  mouseEmulationAlghoritm1point = 1,
+  mouseEmulationAlghoritm2points,
+  mouseEmulationAlghoritm3points,
+  mouseEmulationAlghoritm4points
 };
 
 struct mouseEmulationStruct {
-    quint8 mode;
-    quint8 alghoritm;
+  quint8 mode;
+  quint8 alghoritm;
 };
 
 
 struct InfraredConfigurationStruct {
-    quint8 mode;
-    quint8 alghoritm;
+  quint8 mode;
+  quint8 alghoritm;
 };
 
 namespace profiles
@@ -174,6 +171,11 @@ namespace profiles
     }
 }
 
+enum KeyboardActionAlghortim {
+  keyboardBitCompare,
+  keyboardEqual,
+  keyboardNotEqual
+};
 
 
 class UInputProfileManager :public QObject
@@ -234,6 +236,7 @@ private:
     QHash< quint32, quint64> event;
     QList< uint16> keys;
     bool pushed;
+    quint8 alghoritm;
   };
 
   QList < KeyboardAction*> keyboardActions;
