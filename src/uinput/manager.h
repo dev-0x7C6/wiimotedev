@@ -188,6 +188,7 @@ private:
   DBusServiceAdaptorWrapper *dbusService;
   DBusCustomJobsAdaptorWrapper *dbusCustomJobs;
 
+
 //Profile section
   QString author;
   QString email;
@@ -204,6 +205,28 @@ private:
   bool disableWiiremoteTilt;
   bool enableWiiremoteInfraredMouse;
 
+//Infrared
+  qint32 x;
+  qint32 y;
+
+  quint32 irWiimoteId;
+  quint8 irMode;
+  quint8 irAlghoritm;
+  double irXSensitivity;
+  double irYSensitivity;
+  quint32 irXFreeZone;
+  quint32 irYFreeZone;
+  quint32 irTimeout;
+  quint32 irLatency;
+
+  qint32 moveX;
+  qint32 moveY;
+  QTimer infraredTimer;
+  QTimer infraredTimeout;
+  QRect irRange;
+
+  bool timeout;
+
 //Keyboard section
   const static char *keyboardSection;
 
@@ -216,11 +239,25 @@ private:
   QList < KeyboardAction*> keyboardActions;
 
   QHash< quint32, quint64> lastWiiremoteButtons;
-  UInputEvent *virtualEvent;
 
+
+  UInputClassicGamepad *virtualClassicGamepad;
+  UInputWiimoteGamepad *virtualWiimoteGamepad;
+
+  UInputEvent *virtualEvent;
+  UInputMouse *virtualAbsoluteMouse;
+
+/* General variables --------------------------------------------- */
+
+  QString profileName;
+
+  qint32 lastX;
+  qint32 lastY;
+  QPoint cursor;
 
 public:
   UInputProfileManager(QObject *parent = 0);
+ ~UInputProfileManager();
 
 private:
   QHash < quint32, quint64> extractDeviceEvent(QString);
@@ -232,6 +269,46 @@ private Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
   void dbusWiimoteInfrared(quint32, QList< irpoint>);
 
+  inline void slotDBusClassicControllerButtons(quint32 id, quint64 buttons) {
+    virtualClassicGamepad->classicButtons(id, buttons);
+  }
+
+  inline void slotDBusWiimoteAcc(quint32 id, struct accdata acc) {
+    virtualWiimoteGamepad->wiimoteAcc(id, acc);
+  }
+
+  inline void slotDBusWiimoteButtons(quint32 id, quint64 buttons) {
+    virtualWiimoteGamepad->wiimoteButtons(id, buttons);
+  }
+
+  inline void slotDBusNunchukAcc(quint32 id, struct accdata acc) {
+    virtualWiimoteGamepad->nunchukAcc(id, acc);
+  }
+
+  inline void slotDBusNunchukButtons(quint32 id, quint64 buttons) {
+    virtualWiimoteGamepad->nunchukButtons(id, buttons);
+  }
+
+  inline void slotDBusNunchukStick(quint32 id, struct stickdata stick) {
+    virtualWiimoteGamepad->nunchukStick(id, stick.x, 0xFF - stick.y);
+  }
+
+  inline void slotDBusClassicControllerLStick(quint32 id, struct stickdata stick) {
+    virtualClassicGamepad->classicLStick(id, stick.x, 0x3F - stick.y);
+  }
+
+  inline void slotDBusClassicControllerRStick(quint32 id, struct stickdata stick) {
+    virtualClassicGamepad->classicRStick(id, stick.x, 0x1F - stick.y);
+  }
+
+  bool dbusWiimoteGetRumbleStatus(quint32 id){}
+  bool dbusWiimoteSetLedStatus(quint32 id, quint8 status){}
+  bool dbusWiimoteSetRumbleStatus(quint32 id, bool status){}
+  quint8 dbusWiimoteGetLedStatus(quint32 id){}
+
+  void infraredTimeoutSection(){ timeout = true; }
+  void infraredAccSection();
+
 public Q_SLOTS:
   inline bool isWiimotedevServiceAvailable(){ return dbusDeviceEventsIface->isValid(); }
 
@@ -239,130 +316,6 @@ public Q_SLOTS:
   bool unloadProfile();
 
 
-};
-
-
-class ProfileManager : public QObject
-{
-    Q_OBJECT
-public:
-    ProfileManager(QObject *parent = 0);
-   ~ProfileManager();
-
-private:          
-
-/* Infrared section ---------------------------------------------- */
-
-    qint32 x;
-    qint32 y;
-
-    quint32 irWiimoteId;
-    quint8 irMode;
-    quint8 irAlghoritm;
-    double irXSensitivity;
-    double irYSensitivity;
-    quint32 irXFreeZone;
-    quint32 irYFreeZone;
-    quint32 irTimeout;
-    quint32 irLatency;
-
-    qint32 moveX;
-    qint32 moveY;
-    QTimer infraredTimer;
-    QTimer infraredTimeout;
-    QRect irRange;
-
-    bool timeout;
-
-/* DBus section -------------------------------------------------- */
-
-    DBusProfileManagerAdaptorWrapper *dbusProfileManager;
-    DBusServiceAdaptorWrapper *dbusService;
-    DBusCustomJobsAdaptorWrapper *dbusCustomJobs;
-
-    DBusDeviceEventsInterface *dbusDeviceEventsIface;
-
-/* Uinput section ------------------------------------------------ */
-
-    UInputClassicGamepad *virtualClassicGamepad;
-    UInputWiimoteGamepad *virtualWiimoteGamepad;
-
-    UInputEvent *virtualEvent;
-    UInputMouse *virtualAbsoluteMouse;
-
-/* Execute section ----------------------------------------------- */
-
-    QList < eventItem*> events;
-    QList < eventItem*> eventsOnce;
-    QList < execItem*> execs;
-    QList < execItem*> execsReleased;
-    QList < actionItem*> actions;
-    QList < actionItem*> actionsRelease;
-
-/* General variables --------------------------------------------- */
-
-    QString profileName;
-    QMap < quint32, quint64> buttons;
-
-    qint32 lastX;
-    qint32 lastY;
-    QPoint cursor;
-
-private:
-    QMap < qint32, quint64> extractDeviceEvent(QString str);
-    QList < quint16> extractScancodes(QStringList list);
-
-public slots:
-    inline bool isWiimotedevServiceAvailable(){ return dbusDeviceEventsIface->isValid(); }
-    inline QString currentProfile(){ return profileName; }
-
-    bool loadProfile(QString file);
-    bool unloadProfile();
-
-private slots:
-    inline void slotDBusClassicControllerButtons(quint32 id, quint64 buttons) {
-        virtualClassicGamepad->classicButtons(id, buttons);
-    }
-
-    inline void slotDBusWiimoteAcc(quint32 id, struct accdata acc) {
-        virtualWiimoteGamepad->wiimoteAcc(id, acc);
-    }
-
-    inline void slotDBusWiimoteButtons(quint32 id, quint64 buttons) {
-        virtualWiimoteGamepad->wiimoteButtons(id, buttons);
-    }
-
-    inline void slotDBusNunchukAcc(quint32 id, struct accdata acc) {
-        virtualWiimoteGamepad->nunchukAcc(id, acc);
-    }
-
-    inline void slotDBusNunchukButtons(quint32 id, quint64 buttons) {
-        virtualWiimoteGamepad->nunchukButtons(id, buttons);
-    }
-
-    inline void slotDBusNunchukStick(quint32 id, struct stickdata stick) {
-        virtualWiimoteGamepad->nunchukStick(id, stick.x, 0xFF - stick.y);
-    }
-
-    inline void slotDBusClassicControllerLStick(quint32 id, struct stickdata stick) {
-        virtualClassicGamepad->classicLStick(id, stick.x, 0x3F - stick.y);
-    }
-
-    inline void slotDBusClassicControllerRStick(quint32 id, struct stickdata stick) {
-        virtualClassicGamepad->classicRStick(id, stick.x, 0x1F - stick.y);
-    }
-
-
-    bool dbusWiimoteGetRumbleStatus(quint32 id){};
-    bool dbusWiimoteSetLedStatus(quint32 id, quint8 status){};
-    bool dbusWiimoteSetRumbleStatus(quint32 id, bool status){};
-    quint8 dbusWiimoteGetLedStatus(quint32 id){};
-
-    void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
-    void dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points);
-
-    void infraredTimeoutSection(){ timeout = true; };
-    void infraredAccSection();
 };
 
 #endif // PROFILEMANAGER_H
