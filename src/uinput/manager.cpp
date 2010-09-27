@@ -65,12 +65,8 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   disableWiiremoteShift(false),
   disableWiiremoteShake(false),
   disableWiiremoteTilt(false),
-  disableWiimoteGamepadModule(true),
-  disableClassicGamepadModule(true),
   disableKeyboardModule(true),
   enableWiiremoteInfraredMouse(false),
-  virtualClassicGamepad(new UInputClassicGamepad()),
-  virtualWiimoteGamepad(new UInputWiimoteGamepad()),
   virtualEvent(new UInputEvent()),
   virtualAbsoluteMouse(new UInputMouse())
 {
@@ -161,13 +157,9 @@ UInputProfileManager::~UInputProfileManager()
     disconnect(&infraredTimeout, 0, 0, 0);
     disconnect(&infraredTimer, 0, 0, 0);
 
-    virtualClassicGamepad->uinput_close(false);
-    virtualWiimoteGamepad->uinput_close(false);
     virtualAbsoluteMouse->uinput_close(false);
     virtualEvent->uinput_close(false);
 
-    delete virtualClassicGamepad;
-    delete virtualWiimoteGamepad;
     delete virtualEvent;
     delete virtualAbsoluteMouse;
 }

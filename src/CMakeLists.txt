@@ -73,7 +73,7 @@ set(uinput_sources
   devices/mouse.h
   devices/nunchukgamepad.h
   devices/touchscreen.h
-  devices/wiiremotegamepad.h
+  devices/wiimotegamepad.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
@@ -88,7 +88,7 @@ set(uinput_sources
   devices/mouse.cpp
   devices/nunchukgamepad.cpp
   devices/touchscreen.cpp
-  devices/wiiremotegamepad.cpp
+  devices/wiimotegamepad.cpp
   syslog/syslog.cpp
   uinput/gamepads.cpp
   uinput/infrared.cpp

@@ -21,77 +21,99 @@
 #include "uinput/manager.h"
 
 void UInputProfileManager::loadGamepadEvents(QSettings &settings) {
-  settings.beginGroup("gamepad");
-  disableWiimoteGamepadModule = !settings.value("configureWiimoteAsGamepad", false).toBool();
-  disableClassicGamepadModule = !settings.value("configureClassicAsGamepad", false).toBool();
+  unloadGamepadEvents();
 
-  if (!disableWiimoteGamepadModule)
-    virtualWiimoteGamepad->uinput_open();
+  settings.beginGroup("wiimote-gamepads");
 
-  if (!disableClassicGamepadModule)
-    virtualClassicGamepad->uinput_open();
+  foreach (const QString key, settings.allKeys()) {
+    bool valid;
+    quint32 id = key.toUInt(&valid);
+    if (!valid)
+      continue;
+
+    WiimoteGamepadDevice *device = new WiimoteGamepadDevice(settings.value(key, QString("noname")).toString());
+
+    wiimoteGamepads[id] = device;
+    device->uinput_open();
+  }
+
+  settings.endGroup();
+
+  settings.beginGroup("classic-gamepads");
+
+  foreach (const QString key, settings.allKeys()) {
+    bool valid;
+    quint32 id = key.toUInt(&valid);
+    if (!valid)
+      continue;
+
+    ClassicGamepadDevice *device = new ClassicGamepadDevice(settings.value(key, QString("noname")).toString());
+    classicGamepads[id] = device;
+    device->uinput_open();
+  }
+
+  settings.endGroup();
 }
 
 void UInputProfileManager::unloadGamepadEvents() {
-  if (!disableWiimoteGamepadModule)
-    virtualWiimoteGamepad->uinput_close();
+  foreach (ClassicGamepadDevice *device, classicGamepads) {
+    device->uinput_close();
+    delete device;
+  }
 
-  if (!disableClassicGamepadModule)
-    virtualClassicGamepad->uinput_close();
+  foreach (WiimoteGamepadDevice *device, wiimoteGamepads) {
+    device->uinput_close();
+    delete device;
+  }
+
+  classicGamepads.clear();
+  wiimoteGamepads.clear();
 }
 
 void UInputProfileManager::dbusWiimoteAcc(quint32 id, struct accdata acc) {
-  if (disableWiimoteGamepadModule)
-    return;
-
-  virtualWiimoteGamepad->wiimoteAcc(id, acc);
+  WiimoteGamepadDevice *device = 0;
+  if (device = wiimoteGamepads.value(id, device))
+    device->setWiimoteTilts(acc.pitch, acc.roll);
 }
 
 void UInputProfileManager::dbusWiimoteButtons(quint32 id, quint64 buttons) {
-  if (disableWiimoteGamepadModule)
-    return;
-
-  virtualWiimoteGamepad->wiimoteButtons(id, buttons);
+  WiimoteGamepadDevice *device = 0;
+  if (device = wiimoteGamepads.value(id, device))
+    device->setWiimoteButtons(buttons);
 }
 
 void UInputProfileManager::dbusNunchukAcc(quint32 id, struct accdata acc) {
-  if (disableWiimoteGamepadModule)
-    return;
-
-  virtualWiimoteGamepad->nunchukAcc(id, acc);
+  WiimoteGamepadDevice *device = 0;
+  if (device = wiimoteGamepads.value(id, device))
+    device->setNunchukTilts(acc.pitch, acc.roll);
 }
 
 void UInputProfileManager::dbusNunchukButtons(quint32 id, quint64 buttons) {
-  if (disableWiimoteGamepadModule)
-    return;
-
-  virtualWiimoteGamepad->nunchukButtons(id, buttons);
+  WiimoteGamepadDevice *device = 0;
+  if (device = wiimoteGamepads.value(id, device))
+    device->setNunchukButtons(buttons);
 }
 
 void UInputProfileManager::dbusNunchukStick(quint32 id, struct stickdata stick) {
-  if (disableWiimoteGamepadModule)
-    return;
-
-  virtualWiimoteGamepad->nunchukStick(id, stick.x, 0xFF - stick.y);
+  WiimoteGamepadDevice *device = 0;
+  if (device = wiimoteGamepads.value(id, device))
+    device->setNunchukStick(stick.x, 0xFF - stick.y);
 }
 
 void UInputProfileManager::dbusClassicControllerButtons(quint32 id, quint64 buttons) {
-  if (disableClassicGamepadModule)
-    return;
-
-  virtualClassicGamepad->classicButtons(id, buttons);
+  ClassicGamepadDevice *device = 0;
+  if (device = classicGamepads.value(id, device))
+    device->setButtons(buttons);
 }
 
 void UInputProfileManager::dbusClassicControllerLStick(quint32 id, struct stickdata stick) {
-  if (disableClassicGamepadModule)
-    return;
-
-  virtualClassicGamepad->classicLStick(id, stick.x, 0x3F - stick.y);
+  ClassicGamepadDevice *device = 0;
+  if (device = classicGamepads.value(id, device))
+    device->setLeftStick(stick.x, 0x3F - stick.y);
 }
 
 void UInputProfileManager::dbusClassicControllerRStick(quint32 id, struct stickdata stick) {
-  if (disableClassicGamepadModule)
-    return;
-
-  virtualClassicGamepad->classicRStick(id, stick.x, 0x1F - stick.y);
+  ClassicGamepadDevice *device = 0;
+  if (device = classicGamepads.value(id, device))
+    device->setRightStick(stick.x, 0x1F - stick.y);
 }

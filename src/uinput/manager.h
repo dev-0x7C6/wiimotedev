@@ -35,6 +35,8 @@
 #include "headers/consts.h"
 #include "headers/interface.h"
 #include "devices/keyboard.h"
+#include "devices/classicgamepad.h"
+#include "devices/wiimotegamepad.h"
 
 
 /*
@@ -208,10 +210,6 @@ private:
   bool disableWiiremoteShift;
   bool disableWiiremoteShake;
   bool disableWiiremoteTilt;
-
-  bool disableWiimoteGamepadModule;
-  bool disableClassicGamepadModule;
-
   bool disableKeyboardModule;
   bool enableWiiremoteInfraredMouse;
 
@@ -252,8 +250,10 @@ private:
   QHash< quint32, quint64> lastWiiremoteButtons;
 
 
-  UInputClassicGamepad *virtualClassicGamepad;
-  UInputWiimoteGamepad *virtualWiimoteGamepad;
+  QHash < quint32, ClassicGamepadDevice*> classicGamepads;
+  QHash < quint32, WiimoteGamepadDevice*> wiimoteGamepads;
+
+
 
   UInputEvent *virtualEvent;
   UInputMouse *virtualAbsoluteMouse;
