@@ -83,7 +83,6 @@ set(uinput_sources
   adaptors/profilemanager.cpp
   adaptors/uinputservice.cpp
   adaptors/adaptors.cpp
-  classes/hashcompare.cpp
   devices/classicgamepad.cpp
   devices/general.cpp
   devices/mouse.cpp

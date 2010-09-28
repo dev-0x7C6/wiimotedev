@@ -36,10 +36,10 @@ void UInputProfileManager::loadKeyboardEvents(QSettings &settings) {
   unloadKeyboardEvents();
 
   QMap < QString, quint8> keyboardConfigList;
-  keyboardConfigList["keyboard-bit"] = HashCompare::BitCompare;
-  keyboardConfigList["keyboard"] = HashCompare::BitCompare;
-  keyboardConfigList["keyboard-equal"] = HashCompare::EqualCompare;
-  keyboardConfigList["keyboard-notequal"] = HashCompare::NotEqualCompare;
+  keyboardConfigList["keyboard-bit"] = HashCompare<QString, quint8>::BitCompare;
+  keyboardConfigList["keyboard"] = HashCompare<QString, quint8>::BitCompare;
+  keyboardConfigList["keyboard-equal"] = HashCompare<QString, quint8>::EqualCompare;
+  keyboardConfigList["keyboard-notequal"] = HashCompare<QString, quint8>::NotEqualCompare;
 
   QMapIterator < QString, quint8> map(keyboardConfigList);
 
@@ -76,13 +76,13 @@ void UInputProfileManager::processKeyboardEvents() {
   if (keyboardActions.isEmpty() || disableKeyboardModule)
     return;
 
-  HashCompare compare;
+  HashCompare<quint32, quint64> compare;
 
   foreach (KeyboardAction *action, keyboardActions) {
     if (action->event.isEmpty())
       continue;
 
-    bool matched = compare.isCompare(&action->event, &lastWiiremoteButtons, action->alghoritm);
+    bool matched = compare.compare(&action->event, &lastWiiremoteButtons, action->alghoritm);
 
     if (matched && !action->pushed) {
       action->pushed = !action->pushed;
