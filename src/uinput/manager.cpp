@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
+#include <QFile>
 #include <QSettings>
-#include <QDebug>
 
 #include "classes/hashcompare.h"
 #include "uinput/manager.h"
@@ -67,6 +67,7 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   disableWiiremoteTilt(false),
   disableKeyboardModule(true),
   enableWiiremoteInfraredMouse(false),
+  rumbleStatus(false),
   virtualEvent(new UInputEvent()),
   virtualAbsoluteMouse(new UInputMouse())
 {
@@ -110,44 +111,24 @@ void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons
 }
 
 bool UInputProfileManager::loadProfile(QString file) {
+  if (!QFile::exists(file))
+    return false;
+
   QSettings settings(file, QSettings::IniFormat);
 
-
-  settings.beginGroup(profiles::infrared::section);
-
-  moveX = 0;
-  moveY = 0;
-  timeout = false;
-
-  irWiimoteId = settings.value(profiles::infrared::wiimoteid, 0).toInt();
-  irMode = settings.value(profiles::infrared::mode, 0).toInt();
-  irAlghoritm = settings.value(profiles::infrared::alghoritm, 0).toInt();
-  irXSensitivity = settings.value(profiles::infrared::sensx, 0).toDouble();
-  irYSensitivity = settings.value(profiles::infrared::sensy, 0).toDouble();
-  irXFreeZone = settings.value(profiles::infrared::freezonex, 0).toInt();
-  irYFreeZone = settings.value(profiles::infrared::freezoney, 0).toInt();
-  irTimeout = settings.value(profiles::infrared::timeout, 2000).toInt();
-  irLatency = settings.value(profiles::infrared::latency, 8).toInt();
-  irRange = settings.value(profiles::infrared::range, QRect(-512, -384, 1024, 768)).toRect();
-
-  if (irWiimoteId) {
-    infraredTimer.setInterval(irLatency);
-    infraredTimer.start();
-    infraredTimeout.setInterval(irTimeout);
-    infraredTimeout.start();
-    virtualAbsoluteMouse->uinput_open(irRange, true);
-  }
-
-  settings.endGroup();
-
-
+  loadInfraredEvents(settings);
   loadGamepadEvents(settings);
   loadKeyboardEvents(settings);
+
+  return true;
 }
 
 bool UInputProfileManager::unloadProfile() {
+  unloadInfraredEvents();
   unloadGamepadEvents();
   unloadKeyboardEvents();
+
+  return true;
 }
 
 
@@ -175,35 +156,6 @@ UInputProfileManager::~UInputProfileManager()
 //    QSettings settings((profileName = file), QSettings::IniFormat);
 //    QMap < qint32, quint64> event;
 //    QList < quint16> scancodes;
-
-///* Infrared section ------------------------------------------------ */
-
-//    settings.beginGroup(profiles::infrared::section);
-
-//    moveX = 0;
-//    moveY = 0;
-//    timeout = false;
-
-//    irWiimoteId = settings.value(profiles::infrared::wiimoteid, 0).toInt();
-//    irMode = settings.value(profiles::infrared::mode, 0).toInt();
-//    irAlghoritm = settings.value(profiles::infrared::alghoritm, 0).toInt();
-//    irXSensitivity = settings.value(profiles::infrared::sensx, 0).toDouble();
-//    irYSensitivity = settings.value(profiles::infrared::sensy, 0).toDouble();
-//    irXFreeZone = settings.value(profiles::infrared::freezonex, 0).toInt();
-//    irYFreeZone = settings.value(profiles::infrared::freezoney, 0).toInt();
-//    irTimeout = settings.value(profiles::infrared::timeout, 2000).toInt();
-//    irLatency = settings.value(profiles::infrared::latency, 8).toInt();
-//    irRange = settings.value(profiles::infrared::range, QRect(-512, -384, 1024, 768)).toRect();
-
-//    if (irWiimoteId) {
-//        infraredTimer.setInterval(irLatency);
-//        infraredTimer.start();
-//        infraredTimeout.setInterval(irTimeout);
-//        infraredTimeout.start();
-//        virtualAbsoluteMouse->uinput_open(irRange, true);
-//    }
-
-//    settings.endGroup();
 
 ///* Action section -------------------------------------------------- */
 
@@ -319,43 +271,6 @@ UInputProfileManager::~UInputProfileManager()
 
 //    settings.endGroup();
 
-///* Connect section ------------------------------------------------- */
-//    connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
-//    connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteInfrared(quint32,QList<irpoint>)), this, SLOT(dbusWiimoteInfrared(quint32,QList<irpoint>)));
-
-//    connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteButtons(quint32,quint64)), this, SLOT(dbusWiimoteButtons(quint32,quint64)));
-//    connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), this, SLOT(dbusWiimoteAcc(quint32,accdata)));
-
-//    connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukButtons(quint32,quint64)), this, SLOT(dbusNunchukButtons(quint32,quint64)));
-//    connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukStick(quint32,stickdata)), this, SLOT(dbusNunchukStick(quint32,stickdata)));
-//    connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukAcc(quint32,accdata)), this, SLOT(dbusNunchukAcc(quint32,accdata)));
-
-//    connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), this, SLOT(dbusClassicControllerButtons(quint32,quint64)));
-//    connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerLStick(quint32,stickdata)), this, SLOT(dbusClassicControllerLStick(quint32,stickdata)));
-//    connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerRStick(quint32,stickdata)), this, SLOT(dbusClassicControllerRStick(quint32,stickdata)));
-
-//    return true;
-//}
-
-//bool ProfileManager::unloadProfile()
-//{
-
-//    virtualAbsoluteMouse->uinput_close(false);
-
-///* Disconnect section ---------------------------------------------- */
-//    disconnect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
-//    disconnect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteInfrared(quint32,QList<irpoint>)), this, SLOT(dbusWiimoteInfrared(quint32,QList<irpoint>)));
-
-//    disconnect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteButtons(quint32,quint64)), this, SLOT(dbusWiimoteButtons(quint32,quint64)));
-//    disconnect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), this, SLOT(dbusWiimoteAcc(quint32,accdata)));
-
-//    disconnect(dbusDeviceEventsIface, SIGNAL(dbusNunchukButtons(quint32,quint64)), this, SLOT(dbusNunchukButtons(quint32,quint64)));
-//    disconnect(dbusDeviceEventsIface, SIGNAL(dbusNunchukStick(quint32,stickdata)), this, SLOT(dbusNunchukStick(quint32,stickdata)));
-//    disconnect(dbusDeviceEventsIface, SIGNAL(dbusNunchukAcc(quint32,accdata)), this, SLOT(dbusNunchukAcc(quint32,accdata)));
-
-//    disconnect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), this, SLOT(dbusClassicControllerButtons(quint32,quint64)));
-//    disconnect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerLStick(quint32,stickdata)), this, SLOT(dbusClassicControllerLStick(quint32,stickdata)));
-//    disconnect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerRStick(quint32,stickdata)), this, SLOT(dbusClassicControllerRStick(quint32,stickdata)));
 
 ///* Release all actions Hack --------------------------------------- */
 

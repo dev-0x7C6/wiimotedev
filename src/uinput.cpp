@@ -58,7 +58,7 @@ const QString scancodeFile("/etc/wiimotedev/scancode.conf");
 
 QScopedPointer <QCoreApplication> application;
 QMap < QString, quint64> devicebuttons;
-QMap < QString, quint16> scancodes;
+QMap < QString, quint32> scancodes;
 
 
 bool additional_debug = false;
@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
     qDebug("  --help\t\tprint help page");
     qDebug("  --no-daemon\t\tdo not run in background");
     qDebug("  --no-quiet\t\tdo not block stdout messages");
-    qDebug("");
+    qDebug(" ");
     exit(EXIT_SUCCESS);
   }
 

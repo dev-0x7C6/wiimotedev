@@ -72,48 +72,48 @@ void UInputProfileManager::unloadGamepadEvents() {
 
 void UInputProfileManager::dbusWiimoteAcc(quint32 id, struct accdata acc) {
   WiimoteGamepadDevice *device = 0;
-  if (device = wiimoteGamepads.value(id, device))
+  if ((device = wiimoteGamepads.value(id, device)))
     device->setWiimoteTilts(acc.pitch, acc.roll);
 }
 
 void UInputProfileManager::dbusWiimoteButtons(quint32 id, quint64 buttons) {
   WiimoteGamepadDevice *device = 0;
-  if (device = wiimoteGamepads.value(id, device))
+  if ((device = wiimoteGamepads.value(id, device)))
     device->setWiimoteButtons(buttons);
 }
 
 void UInputProfileManager::dbusNunchukAcc(quint32 id, struct accdata acc) {
   WiimoteGamepadDevice *device = 0;
-  if (device = wiimoteGamepads.value(id, device))
+  if ((device = wiimoteGamepads.value(id, device)))
     device->setNunchukTilts(acc.pitch, acc.roll);
 }
 
 void UInputProfileManager::dbusNunchukButtons(quint32 id, quint64 buttons) {
   WiimoteGamepadDevice *device = 0;
-  if (device = wiimoteGamepads.value(id, device))
+  if ((device = wiimoteGamepads.value(id, device)))
     device->setNunchukButtons(buttons);
 }
 
 void UInputProfileManager::dbusNunchukStick(quint32 id, struct stickdata stick) {
   WiimoteGamepadDevice *device = 0;
-  if (device = wiimoteGamepads.value(id, device))
+  if ((device = wiimoteGamepads.value(id, device)))
     device->setNunchukStick(stick.x, 0xFF - stick.y);
 }
 
 void UInputProfileManager::dbusClassicControllerButtons(quint32 id, quint64 buttons) {
   ClassicGamepadDevice *device = 0;
-  if (device = classicGamepads.value(id, device))
+  if ((device = classicGamepads.value(id, device)))
     device->setButtons(buttons);
 }
 
 void UInputProfileManager::dbusClassicControllerLStick(quint32 id, struct stickdata stick) {
   ClassicGamepadDevice *device = 0;
-  if (device = classicGamepads.value(id, device))
+  if ((device = classicGamepads.value(id, device)))
     device->setLeftStick(stick.x, 0x3F - stick.y);
 }
 
 void UInputProfileManager::dbusClassicControllerRStick(quint32 id, struct stickdata stick) {
   ClassicGamepadDevice *device = 0;
-  if (device = classicGamepads.value(id, device))
+  if ((device = classicGamepads.value(id, device)))
     device->setRightStick(stick.x, 0x1F - stick.y);
 }

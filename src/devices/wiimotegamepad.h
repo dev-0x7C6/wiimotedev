@@ -21,7 +21,7 @@
 #ifndef UINPUT_WIIMOTEGAMEPAD_H
 #define UINPUT_WIIMOTEGAMEPAD_H
 
-#include "devices/keyboard.h"
+#include "devices/general.h"
 
 const qint16 NUNCHUK_STICK_MAX = (0xFF >> 1) + (0xFF >> 2);
 const qint16 NUNCHUK_STICK_MIN = (0xFF >> 1) - (0xFF >> 2);
@@ -51,10 +51,9 @@ private:
   QString deviceName;
 
 public:
-  WiimoteGamepadDevice(QString deviceName, QObject *parent = 0);
+  WiimoteGamepadDevice(QString deviceName);
   bool uinput_open();
 
-public:
   void setWiimoteButtons(quint64);
   void setWiimoteTilts(double, double);
   void setNunchukButtons(quint64);

@@ -21,7 +21,7 @@
 #ifndef UINPUT_CLASSICGAMEPAD_H
 #define UINPUT_CLASSICGAMEPAD_H
 
-#include "devices/keyboard.h"
+#include "devices/general.h"
 
 const qint16 CLASSIC_LEFT_STICK_MAX = (0x3F >> 1) + (0x3F >> 2) + 4;
 const qint16 CLASSIC_LEFT_STICK_MIN = (0x3F >> 1) - (0x3F >> 2) - 4;
@@ -39,10 +39,9 @@ private:
   QString deviceName;
 
 public:
-  ClassicGamepadDevice(QString deviceName, QObject *parent = 0);
+  ClassicGamepadDevice(QString deviceName);
   bool uinput_open();
 
-public:
   void setButtons(quint64);
   void setLeftStick(qint32, qint32);
   void setRightStick(qint32, qint32);

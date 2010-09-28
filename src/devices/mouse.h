@@ -17,3 +17,27 @@
  * License along with this library; if not, write to the Free Software            *
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/ 
+
+#ifndef UINPUT_MOUSE_H
+#define UINPUT_MOUSE_H
+
+#include "devices/general.h"
+
+#include <QRect>
+
+class UInputMouse: public UInputObject
+{
+public:
+  UInputMouse() :UInputObject() {}
+
+  bool uinput_open(QRect absRect = QRect(-512, -384, 1024, 768), bool abs = false);
+
+  void moveMousePointerRel(qint32 x, qint32 y);
+  void moveMousePointerAbs(qint32 x, qint32 y);
+  void moveMouseVWheel(qint32 direction);
+  void moveMouseHWheel(qint32 direction);
+  void pressMouseButton(quint16 button);
+  void releaseMouseButton(quint16 button);
+};
+
+#endif // UINPUT_MOUSE_H

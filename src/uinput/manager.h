@@ -34,71 +34,11 @@
 #include "adaptors/adaptors.h"
 #include "headers/consts.h"
 #include "headers/interface.h"
-#include "devices/keyboard.h"
 #include "devices/classicgamepad.h"
+#include "devices/eventdevice.h"
+#include "devices/mouse.h"
+#include "devices/touchscreen.h"
 #include "devices/wiimotegamepad.h"
-
-
-/*
-class VirtualDeviceManager :public QObject
-{
-    Q_OBJECT
-private:
-// Standard devices -----------------------------------------------
-    UInputKeyboard *keyboard;
-    UInputMouse *relativeMouse;
-    UInputMouse *absoluteMouse;
-
-// Gamepads devices -----------------------------------------------
-    QMap < quint32, *UInputClassicGamepad> virtualClassicGamepads;
-    QMap < quint32, *UInputWiimoteGamepad> virtualWiimoteGamepads;
-
-public:
-    VirtualDeviceManager(QObject *parent = 0) :QObject(parent){
-        keyboard = new UInputKeyboard;
-        relativeMouse = new UInputMouse();
-        absoluteMouse = new UInputMouse();
-
-        keyboard->uinput_open();
-        relativeMouse->uinput_open();
-        absoluteMouse->uinput_open(QRect(-512, -384, 1024, 768), true);
-    };
-
-    ~VirtualDeviceManager(){
-        disconnect(this, 0, 0, 0);
-
-        keyboard->uinput_close();
-        relativeMouse->uinput_close();
-        absoluteMouse->uinput_close();
-
-        QMapIterator < quint32, *UInputClassicGamepad> classicIterator(virtualClassicGamepads);
-        QMapIterator < quint32, *UInputWiimoteGamepad> wiimoteIterator(virtualWiimoteGamepads);
-
-        while (classicIterator.hasNext()){
-            static_cast< UInputClassicGamepad*>( classicIterator.value())->uinput_close();
-            delete classicIterator.value();
-        }
-
-        while (wiimoteIterator.hasNext()){
-            static_cast< UInputWiimoteGamepad*>( wiimoteIterator.value())->uinput_close();
-            delete wiimoteIterator.value();
-        }
-
-        delete keyboard;
-        delete relativeMouse;
-        delete absoluteMouse;
-    }
-
-    void initVirtualClassicGamepad(QList < quint32> &devices);
-    void freeVirtualClassicGamepad(QList < quint32> &devices);
-    void freeAllVirtualClassicGamepad();
-
-    void initVirtualWiimoteGamepad(QList < quint32> &devices);
-    void freeVirtualWiimoteGamepad(QList < quint32> &devices);
-    void freeAllVirtualWiimoteGamepad();
-
-};
-*/
 
 class itemTemplate
 {
@@ -212,6 +152,8 @@ private:
   bool disableWiiremoteTilt;
   bool disableKeyboardModule;
   bool enableWiiremoteInfraredMouse;
+  bool rumbleStatus;
+
 
 //Infrared
   qint32 x;
@@ -240,7 +182,7 @@ private:
 
   struct KeyboardAction {
     QHash< quint32, quint64> event;
-    QList< uint16> keys;
+    QList< quint32> keys;
     bool pushed;
     quint8 alghoritm;
   };
@@ -272,7 +214,7 @@ public:
 
 private:
   QHash < quint32, quint64> extractDeviceEvent(QString);
-  QList < quint16> extractScancodes(QStringList);
+  QList < quint32> extractScancodes(QStringList);
 
   void loadGamepadEvents(QSettings&);
   void unloadGamepadEvents();
@@ -280,10 +222,12 @@ private:
   void loadKeyboardEvents(QSettings&);
   void unloadKeyboardEvents();
 
-  void processKeyboardEvents();
-  void pressKeyboardButtons(QList < quint16>&);
-  void releaseKeyboardButtons(QList < quint16>&);
+  void loadInfraredEvents(QSettings&);
+  void unloadInfraredEvents();
 
+  void processKeyboardEvents();
+  void pressKeyboardButtons(QList < quint32>&);
+  void releaseKeyboardButtons(QList < quint32>&);
 
 private Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
@@ -297,11 +241,6 @@ private Q_SLOTS:
   void dbusNunchukStick(quint32, stickdata);
   void dbusClassicControllerLStick(quint32, stickdata);
   void dbusClassicControllerRStick(quint32, stickdata);
-
-  bool dbusWiimoteGetRumbleStatus(quint32 id){}
-  bool dbusWiimoteSetLedStatus(quint32 id, quint8 status){}
-  bool dbusWiimoteSetRumbleStatus(quint32 id, bool status){}
-  quint8 dbusWiimoteGetLedStatus(quint32 id){}
 
   void infraredTimeoutSection(){ timeout = true; }
   void infraredAccSection();

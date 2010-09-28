@@ -17,3 +17,21 @@
  * License along with this library; if not, write to the Free Software            *
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/ 
+
+#ifndef UINPUT_EVENTDEVICE_H
+#define UINPUT_EVENTDEVICE_H
+
+#include "devices/general.h"
+
+class UInputEvent: public UInputObject
+{
+public:
+  bool uinput_open(bool replay = true);
+
+  void pressKeyboardButton(quint16 button);
+  void releaseKeyboardButton(quint16 button);
+  void pressKeyboardButtonOnce(quint16 button);
+  void moveMousePointerRel(qint32 x, qint32 y);
+};
+
+#endif // UINPUT_EVENTDEVICE_H

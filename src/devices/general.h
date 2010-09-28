@@ -18,9 +18,51 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/ 
 
-#ifndef UINPUT_TOUCHSCREEN_H
-#define UINPUT_TOUCHSCREEN_H
+#ifndef UINPUT_GENERAL_H
+#define UINPUT_GENERAL_H
 
-#include "devices/general.h"
+#include <QObject>
 
-#endif // UINPUT_TOUCHSCREEN_H
+#include <fcntl.h>
+#include <linux/input.h>
+#include <linux/uinput.h>
+
+#include "headers/consts.h"
+
+#define linux_register_evbit(x) ioctl(uinput_fd, UI_SET_EVBIT, x);
+#define linux_register_keybit(x) ioctl(uinput_fd, UI_SET_KEYBIT, x);
+#define linux_register_relbit(x) ioctl(uinput_fd, UI_SET_RELBIT, x);
+#define linux_register_absbit(x) ioctl(uinput_fd, UI_SET_ABSBIT, x);
+
+#define linux_abs_set_range(abs, max, min) dev.absmax[abs] = max; \
+                                           dev.absmin[abs] = min; \
+                                           dev.absflat[abs] = 0; \
+                                           dev.absfuzz[abs] = 0;
+
+#define UINPUT_PRODUCT_ID 0x01
+#define UINPUT_VENDOR_ID 0x01
+#define UINPUT_VERSION_ID 0x01
+#define UINPUT_BUSTYPE_ID BUS_USB
+
+class UInputObject
+{
+protected:
+  QString uinputFile;
+  bool alreadyOpened;
+
+  int uinput_fd;
+  struct uinput_user_dev dev;
+
+public:
+  UInputObject();
+
+  virtual void uinput_close(bool force = true);
+
+  QString path(){ return uinputFile; }
+
+  void sendEvent(quint16 type, quint16 code, qint32 value);
+  void sendEventSync();
+
+};
+
+#endif // UINPUT_GENERAL_H

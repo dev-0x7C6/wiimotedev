@@ -70,8 +70,9 @@ set(uinput_sources
   adaptors/adaptors.h
   classes/hashcompare.h
   devices/classicgamepad.h
+  devices/general.h
   devices/mouse.h
-  devices/nunchukgamepad.h
+  devices/eventdevice.h
   devices/touchscreen.h
   devices/wiimotegamepad.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
@@ -84,9 +85,9 @@ set(uinput_sources
   adaptors/adaptors.cpp
   classes/hashcompare.cpp
   devices/classicgamepad.cpp
-  devices/keyboard.cpp
+  devices/general.cpp
   devices/mouse.cpp
-  devices/nunchukgamepad.cpp
+  devices/eventdevice.cpp
   devices/touchscreen.cpp
   devices/wiimotegamepad.cpp
   syslog/syslog.cpp
@@ -94,6 +95,7 @@ set(uinput_sources
   uinput/infrared.cpp
   uinput/keyboard.cpp
   uinput/manager.cpp
+  uinput/actions.cpp
   uinput.cpp
 )
 
@@ -101,7 +103,6 @@ set(uinput_headers
   adaptors/customjobs.h
   adaptors/profilemanager.h
   adaptors/uinputservice.h
-  devices/keyboard.h
   ${CMAKE_SOURCE_DIR}/headers/interface.h
   uinput/manager.h
 )

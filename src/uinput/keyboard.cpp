@@ -21,14 +21,14 @@
 #include "classes/hashcompare.h"
 #include "uinput/manager.h"
 
-extern QMap < QString, quint16> scancodes;
+extern QMap < QString, quint32> scancodes;
 
-QList < quint16> UInputProfileManager::extractScancodes(QStringList list)
+QList < quint32> UInputProfileManager::extractScancodes(QStringList list)
 {
-  QList < quint16> values;
+  QList < quint32> values;
   for (register int i = 0; i < list.count(); ++i)
-    if (scancodes.value(list.at(i), 0))
-      values << scancodes.value(list.at(i), 0);
+    if (scancodes.value(list.at(i), QString(list.at(i)).toUInt()))
+      values << scancodes.value(list.at(i), QString(list.at(i)).toUInt());
   return values;
 }
 
@@ -96,19 +96,19 @@ void UInputProfileManager::processKeyboardEvents() {
   }
 }
 
-void UInputProfileManager::pressKeyboardButtons(QList < quint16> &list) {
+void UInputProfileManager::pressKeyboardButtons(QList < quint32> &list) {
   if (list.isEmpty())
     return;
 
-  foreach (const quint16 key, list)
+  foreach (const quint32 key, list)
     virtualEvent->pressKeyboardButton(key);
 }
 
-void UInputProfileManager::releaseKeyboardButtons(QList < quint16> &list) {
+void UInputProfileManager::releaseKeyboardButtons(QList < quint32> &list) {
   if (list.isEmpty())
     return;
 
-  foreach (const quint16 key, list)
+  foreach (const quint32 key, list)
     virtualEvent->releaseKeyboardButton(key);
 }
 

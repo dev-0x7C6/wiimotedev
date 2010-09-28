@@ -20,8 +20,8 @@
 
 #include "devices/classicgamepad.h"
 
-ClassicGamepadDevice::ClassicGamepadDevice(QString deviceName, QObject *parent) :
-  UInputObject(parent),
+ClassicGamepadDevice::ClassicGamepadDevice(QString deviceName) :
+  UInputObject(),
   deviceName(deviceName)
 {
   if (deviceName.isEmpty())
@@ -33,7 +33,7 @@ bool ClassicGamepadDevice::uinput_open() {
     uinput_close();
 
   if (!(uinput_fd = open(uinputFile.toAscii().constData(), O_WRONLY | O_NDELAY))) {
-    qWarning("%s: Unable to open %s", staticInterfaceName(), uinputFile.toAscii().constData());
+    qWarning("%s: Unable to open %s", deviceName.toAscii().constData(), uinputFile.toAscii().constData());
     return false;
   }
 
@@ -85,7 +85,7 @@ bool ClassicGamepadDevice::uinput_open() {
 
   write(uinput_fd, &dev, sizeof(dev));
   if (ioctl(uinput_fd, UI_DEV_CREATE)) {
-    qWarning("%s: Unable to create virtual input device", staticInterfaceName());
+    qWarning("%s: Unable to create virtual input device", deviceName.toAscii().constData());
     uinput_close();
     return false;
   }

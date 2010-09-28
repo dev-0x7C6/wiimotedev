@@ -20,8 +20,8 @@
 
 #include "devices/wiimotegamepad.h"
 
-WiimoteGamepadDevice::WiimoteGamepadDevice(QString deviceName, QObject *parent) :
-  UInputObject(parent),
+WiimoteGamepadDevice::WiimoteGamepadDevice(QString deviceName) :
+  UInputObject(),
   deviceName(deviceName)
 {
   if (deviceName.isEmpty())
@@ -88,7 +88,7 @@ bool WiimoteGamepadDevice::uinput_open() {
 
   write(uinput_fd, &dev, sizeof(dev));
   if (ioctl(uinput_fd, UI_DEV_CREATE)) {
-    qWarning("%s: Unable to create virtual input device", staticInterfaceName());
+    qWarning("%s: Unable to create virtual input device", deviceName.toAscii().constData());
     uinput_close();
     return false;
   }
