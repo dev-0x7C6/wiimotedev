@@ -40,38 +40,6 @@
 #include "devices/touchscreen.h"
 #include "devices/wiimotegamepad.h"
 
-class itemTemplate
-{
-private:
-  bool actived;
-
-public:
-  inline void setActivedValue(bool status) { actived = status; };
-  inline bool getActivedValue() { return actived; };
-};
-
-class eventItem: public itemTemplate
-{  
-public:
-  QMap < qint32, quint64> event;
-  QList < quint16> scancodes;
-};
-
-class execItem: public itemTemplate
-{
-public:
-  QMap < qint32, quint64> event;
-  QString exec;
-};
-
-class actionItem: public itemTemplate
-{
-public:
-  QMap < qint32, quint64> event;
-  QString action;
-};
-
-
 
 enum {
   mouseEmulationModeNone = 0,
@@ -187,7 +155,20 @@ private:
     quint8 alghoritm;
   };
 
+  struct CommandAction {
+    QHash< quint32, quint64> event;
+    QStringList params;
+    bool actived;
+    quint8 alghoritm;
+  };
+
+  enum CommandList {
+    executeAction = 1,
+    rumbleAction
+  };
+
   QList < KeyboardAction*> keyboardActions;
+  QList < CommandAction*> commandActions;
 
   QHash< quint32, quint64> lastWiiremoteButtons;
 
@@ -216,16 +197,28 @@ private:
   QHash < quint32, quint64> extractDeviceEvent(QString);
   QList < quint32> extractScancodes(QStringList);
 
+  QMap < QString, quint32> commandIds;
+
+  void initializeCommandEvents();
+
   void loadGamepadEvents(QSettings&);
   void unloadGamepadEvents();
 
   void loadKeyboardEvents(QSettings&);
   void unloadKeyboardEvents();
 
+  void loadCommandEvents(QSettings&);
+  void unloadCommandEvents();
+
   void loadInfraredEvents(QSettings&);
   void unloadInfraredEvents();
 
   void processKeyboardEvents();
+  void processCommandEvents();
+
+  void activeCommandEvent(QStringList&);
+  void deactiveCommandEvent(QStringList&);
+
   void pressKeyboardButtons(QList < quint32>&);
   void releaseKeyboardButtons(QList < quint32>&);
 

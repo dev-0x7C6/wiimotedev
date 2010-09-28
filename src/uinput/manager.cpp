@@ -87,6 +87,8 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
 
   virtualEvent->uinput_open();
 
+  initializeCommandEvents();
+
   QDBusConnection::systemBus().registerService("org.wiimotedev.uinput");
 
   loadProfile("/root/uinput.ini");
@@ -107,6 +109,7 @@ void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons
 
   lastWiiremoteButtons[id] = buttons;
 
+  processCommandEvents();
   processKeyboardEvents();
 }
 
@@ -116,16 +119,18 @@ bool UInputProfileManager::loadProfile(QString file) {
 
   QSettings settings(file, QSettings::IniFormat);
 
-  loadInfraredEvents(settings);
+  loadCommandEvents(settings);
   loadGamepadEvents(settings);
+  loadInfraredEvents(settings);
   loadKeyboardEvents(settings);
 
   return true;
 }
 
 bool UInputProfileManager::unloadProfile() {
-  unloadInfraredEvents();
+  unloadCommandEvents();
   unloadGamepadEvents();
+  unloadInfraredEvents();
   unloadKeyboardEvents();
 
   return true;
@@ -134,15 +139,15 @@ bool UInputProfileManager::unloadProfile() {
 
 UInputProfileManager::~UInputProfileManager()
 {
-    unloadProfile();
-    disconnect(&infraredTimeout, 0, 0, 0);
-    disconnect(&infraredTimer, 0, 0, 0);
+  unloadProfile();
+  disconnect(&infraredTimeout, 0, 0, 0);
+  disconnect(&infraredTimer, 0, 0, 0);
 
-    virtualAbsoluteMouse->uinput_close(false);
-    virtualEvent->uinput_close(false);
+  virtualAbsoluteMouse->uinput_close(false);
+  virtualEvent->uinput_close(false);
 
-    delete virtualEvent;
-    delete virtualAbsoluteMouse;
+  delete virtualEvent;
+  delete virtualAbsoluteMouse;
 }
 
 //bool ProfileManager::loadProfile(QString file)
@@ -438,41 +443,5 @@ UInputProfileManager::~UInputProfileManager()
 //             execsReleased.at(i)->setActivedValue(false);
 //         }
 //     }
-//}
-
-//QMap < qint32, quint64> ProfileManager::extractDeviceEvent(QString str)
-//{
-//    QStringList list = str.remove(QRegExp("[ ]")).toLower().split('+');
-//    QMap < qint32, quint64> values;
-//    bool result = false;
-
-//    qint32 index;
-//    quint64 value;
-
-//    for (register int i = 0; i < list.count(); ++i)
-//    {
-//        deviceEventRegExp.exactMatch(list.at(i));
-//        index = deviceEventRegExp.cap(2).toInt();
-//        value = devicebuttons.value(deviceEventRegExp.cap(0).remove(deviceEventRegExp.cap(1)), 0);
-//        values.insert(index, values.value(index, 0) | value);
-//        result = result || (value);
-//    }
-
-//    if (!result)
-//        return (QMap < qint32, quint64>()); else
-//        return values;
-//}
-
-//QList < quint16> ProfileManager::extractScancodes(QStringList list)
-//{
-//    QList < quint16> values;
-//    for (register int i = 0; i < list.count(); ++i)
-//        values << scancodes.value(list.at(i), 0);
-//    return values;
-//}
-
-//void ProfileManager::dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points)
-//{
-
 //}
 
