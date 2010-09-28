@@ -27,10 +27,10 @@ void UInputProfileManager::loadCommandEvents(QSettings &settings) {
   unloadCommandEvents();
 
   QMap < QString, quint8> actionConfigList;
-  actionConfigList["actions-bit"] = HashCompare::BitCompare;
-  actionConfigList["actions"] = HashCompare::BitCompare;
-  actionConfigList["actions-equal"] = HashCompare::EqualCompare;
-  actionConfigList["actions-notequal"] = HashCompare::NotEqualCompare;
+  actionConfigList["actions-bit"] = HashCompare<QString, quint8>::BitCompare;
+  actionConfigList["actions"] = HashCompare<QString, quint8>::BitCompare;
+  actionConfigList["actions-equal"] = HashCompare<QString, quint8>::EqualCompare;
+  actionConfigList["actions-notequal"] = HashCompare<QString, quint8>::NotEqualCompare;
 
   QMapIterator < QString, quint8> map(actionConfigList);
 
@@ -73,13 +73,13 @@ void UInputProfileManager::processCommandEvents() {
   if (commandActions.isEmpty())
     return;
 
-  HashCompare compare;
+  HashCompare<quint32, quint64> compare;
 
   foreach (CommandAction *action, commandActions) {
     if (action->event.isEmpty())
       continue;
 
-    bool matched = compare.isCompare(&action->event, &lastWiiremoteButtons, action->alghoritm);
+    bool matched = compare.compare(&action->event, &lastWiiremoteButtons, action->alghoritm);
 
     if (matched && !action->actived) {
       action->actived = !action->actived;
