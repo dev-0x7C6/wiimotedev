@@ -98,6 +98,9 @@ void UInputProfileManager::activeCommandEvent(QStringList &params) {
   switch (commandIds.value(params.at(0))) {
   case rumbleAction:
     dbusDeviceEventsIface->dbusWiimoteSetRumbleStatus(QString(params.value(1, "1")).toUInt(), true);
+    break;
+  case executeAction:
+    emit executeRequest(params);
   }
 }
 

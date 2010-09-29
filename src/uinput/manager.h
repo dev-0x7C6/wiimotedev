@@ -102,7 +102,6 @@ private:
   DBusServiceAdaptorWrapper *dbusService;
   DBusCustomJobsAdaptorWrapper *dbusCustomJobs;
 
-
 //Profile section
   QString author;
   QString email;
@@ -244,6 +243,8 @@ public Q_SLOTS:
   bool loadProfile(QString);
   bool unloadProfile();
 
+Q_SIGNALS:
+  void executeRequest(QStringList);
 
 };
 
