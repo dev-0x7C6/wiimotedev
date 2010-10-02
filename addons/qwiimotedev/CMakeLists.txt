@@ -18,8 +18,37 @@ add_subdirectory(icons)
 
 
 set(qwiimotedev_sources
-
+  ${CMAKE_SOURCE_DIR}/src/interfaces/customjobs.cpp
+  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.cpp
+  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
+  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/src/interfaces/profilemanager.cpp
+  src/mainwindow.cpp
+  main.cpp
 )
 
 set(qwiimotedev_headers
+  ${CMAKE_SOURCE_DIR}/src/interfaces/customjobs.h
+  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/src/interfaces/profilemanager.h
+  src/mainwindow.h
+
 )
+
+set(qwiimotedev_uis
+  ui/mainwindow.ui
+)
+
+if(BUILD_QWIIMOTEDEV)
+  qt4_wrap_ui(qwiimotedev_sources ${qwiimotedev_uis})
+  qt4_wrap_cpp(qwiimotedev_sources ${qwiimotedev_headers})
+
+  add_executable(qwiimotedev ${qwiimotedev_sources})
+  target_link_libraries(qwiimotedev
+    ${QT_QTCORE_LIBRARY}
+    ${QT_QTGUI_LIBRARY}
+    ${QT_QTDBUS_LIBRARY}
+  )
+
+  install(TARGETS qwiimotedev DESTINATION ${bin_directory})
+endif(BUILD_QWIIMOTEDEV)

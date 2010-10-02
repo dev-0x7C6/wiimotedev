@@ -5,7 +5,6 @@
 set (wiimotedev_headers
   consts.h
   proto.h
-  interface.h
 )
 
 install(FILES ${wiimotedev_headers} DESTINATION ${include_directory}/wiimotedev)

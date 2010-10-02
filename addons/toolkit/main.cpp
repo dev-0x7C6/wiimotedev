@@ -21,7 +21,7 @@
 #include <QMessageBox>
 
 #include "headers/consts.h"
-#include "headers/interface.h"
+#include "src/interfaces/deviceevents.h"
 
 #include "src/mainwindow.h"
 

@@ -24,7 +24,7 @@
 #include <QObject>
 #include <QBrush>
 
-#include "interface.h"
+#include "src/interfaces/deviceevents.h"
 
 class Car : public QObject, public QGraphicsItem
 {

@@ -265,7 +265,9 @@ void MainWindow::wiimoteGeneralButtons(quint32 id, quint64 value)
 
     if (value & WIIMOTE_BTN_HOME)
         if (isVisible())
-            hide(); else
+      {
+            hide();
+          } else
             {
                 moveToCenter();
                 show();

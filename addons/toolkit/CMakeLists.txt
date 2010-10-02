@@ -15,6 +15,9 @@ set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(toolkit_sources
+  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.cpp
+  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
   src/mainwindow.cpp
   src/selectwiimote.cpp
   main.cpp
@@ -25,7 +28,7 @@ set(toolkit_headers
 )
 
 set(toolkit_headers_qt
-  ${CMAKE_SOURCE_DIR}/headers/interface.h
+  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
   src/mainwindow.h
   src/selectwiimote.h
 )

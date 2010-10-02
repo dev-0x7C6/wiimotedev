@@ -28,7 +28,7 @@
 
 #include "src/selectwiimote.h"
 
-#include "headers/interface.h"
+#include "src/interfaces/deviceevents.h"
 #include "headers/consts.h"
 
 const double defaultPointMultiplier = 2.5;

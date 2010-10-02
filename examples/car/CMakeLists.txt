@@ -4,7 +4,7 @@
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/headers
+        ${CMAKE_SOURCE_DIR}
         ${QT_INCLUDE_DIR}
         ${QT_QTCORE_INCLUDE_DIR}
         ${QT_QTDBUS_INCLUDE_DIR}
@@ -18,6 +18,9 @@ set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(car_example_sources
+  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.cpp
+  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
   car.cpp
   main.cpp
 )
@@ -27,7 +30,7 @@ set(car_example_headers
 )
 
 set(car_example_headers_qt
-  ${CMAKE_SOURCE_DIR}/headers/interface.h
+  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
   car.h
 )
 

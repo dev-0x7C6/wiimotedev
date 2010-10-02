@@ -18,12 +18,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <QtGui/QApplication>
-#include "src/mainwindow.h"
+#ifndef PROFILEMANAGER_INTERFACE_H
+#define PROFILEMANAGER_INTERFACE_H
 
-int main(int argc, char *argv[])
+#include "interfaces.h"
+
+class DBusProfileManagerInterface : public QDBusAbstractInterface
 {
-    QApplication a(argc, argv);
-    MainWindow window;
-    return a.exec();
-}
+  Q_OBJECT
+public:
+  static inline const char *staticInterfaceName() { return "org.wiimotedev.profileManager"; }
+
+public:
+  DBusProfileManagerInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0)
+      :QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent){
+	QWIIMOTEDEV_REGISTER_META_TYPES;
+  }
+
+public slots:
+  QDBusReply< void> loadProfile(QString file);
+  QDBusReply< void> unloadProfile();
+  QDBusReply< QString> currentProfile();
+
+signals:
+  void executeRequest(QStringList);
+
+};
+
+
+#endif // PROFILEMANAGER_INTERFACE_H

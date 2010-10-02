@@ -32,14 +32,13 @@
 #include "adaptors/profilemanager.h"
 #include "adaptors/uinputservice.h"
 #include "adaptors/adaptors.h"
-#include "headers/consts.h"
-#include "headers/interface.h"
 #include "devices/classicgamepad.h"
 #include "devices/eventdevice.h"
 #include "devices/mouse.h"
 #include "devices/touchscreen.h"
 #include "devices/wiimotegamepad.h"
-
+#include "headers/consts.h"
+#include "interfaces/deviceevents.h"
 
 enum {
   mouseEmulationModeNone = 0,

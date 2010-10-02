@@ -27,8 +27,10 @@
 #include <QMenu>
 #include <QTimer>
 
-#include "dbus_support.h"
-#include <wiimotedev.h>
+#include "headers/consts.h"
+#include "src/interfaces/customjobs.h"
+#include "src/interfaces/deviceevents.h"
+#include "src/interfaces/profilemanager.h"
 
 namespace Ui {
     class MainWindow;

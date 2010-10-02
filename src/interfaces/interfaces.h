@@ -17,12 +17,13 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef ADAPTORS_ADAPTORS_H
-#define ADAPTORS_ADAPTORS_H
+#ifndef INTERFACES_INTERFACES_H
+#define INTERFACES_INTERFACES_H
 
-#include <QDBusAbstractAdaptor>
+#include <QDBusAbstractInterface>
 #include <QDBusArgument>
 #include <QDBusConnection>
+#include <QDBusReply>
 
 #include <QList>
 
@@ -120,4 +121,4 @@
 
 #endif
 
-#endif // ADAPTORS_ADAPTORS_H
+#endif // INTERFACES_INTERFACES_H

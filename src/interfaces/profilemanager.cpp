@@ -18,12 +18,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA *
  **********************************************************************************/
 
-#include <QtGui/QApplication>
-#include "src/mainwindow.h"
+#include "profilemanager.h"
 
-int main(int argc, char *argv[])
+QDBusReply< void> DBusProfileManagerInterface::loadProfile(QString file)
 {
-    QApplication a(argc, argv);
-    MainWindow window;
-    return a.exec();
+  QList<QVariant> argumentList;
+  argumentList << file;
+  return callWithArgumentList(QDBus::Block, "loadProfile", argumentList);
 }
+
+QDBusReply< void> DBusProfileManagerInterface::unloadProfile()
+{
+  QList<QVariant> argumentList;
+  return callWithArgumentList(QDBus::Block, "unloadProfile", argumentList);
+}
+
+QDBusReply< QString> DBusProfileManagerInterface::currentProfile()
+{
+  QList<QVariant> argumentList;
+  return callWithArgumentList(QDBus::Block, "currentProfile", argumentList);
+}
+
