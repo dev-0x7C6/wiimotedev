@@ -4,6 +4,9 @@
 # Contact: public@santyago.pl
 
 PIDFILE=/var/run/wiimotedev-daemon.pid
+SERVICE=/usr/sbin/wiimotedev-daemon
+GROUP=wiimotedev
+CONFIG=/etc/wiimotedev/wiimotedev.conf
 
 wiimotedev_start() {
   if [ -x /usr/sbin/wiimotedev-daemon ]; then
@@ -72,6 +75,7 @@ case "$1" in
     reload)
 	echo "Reloading Wiimotedev-daemon"
 	wiimotedev_reload
+        ;;
     *)
         echo $"Usage: $0 {start | stop | reload | restart }"
         ;;
