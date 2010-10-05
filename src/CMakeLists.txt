@@ -145,5 +145,5 @@ if(BUILD_UINPUT)
     ${QT_QTDBUS_LIBRARY}
   )
 
-  install(TARGETS wiimotedev-client DESTINATION ${sbin_directory})
+  install(TARGETS wiimotedev-uinput DESTINATION ${sbin_directory})
 endif(BUILD_UINPUT)
