@@ -70,6 +70,8 @@ void UInputProfileManager::initializeCommandEvents() {
   commandIds["exec"] = executeAction;
   commandIds["execute"] = executeAction;
   commandIds["rumble"] = rumbleAction;
+  commandIds["hwheel"] = hwheelAction;
+  commandIds["vwheel"] = vwheelAction;
 }
 
 void UInputProfileManager::processCommandEvents() {
@@ -103,6 +105,13 @@ void UInputProfileManager::activeCommandEvent(QStringList &params) {
     break;
   case executeAction:
     emit executeRequest(params);
+    break;
+  case hwheelAction:
+    virtualEvent->moveMouseHWheel(QString(params.value(1, "0")).toUInt());
+    break;
+  case vwheelAction:
+    virtualEvent->moveMouseVWheel(QString(params.value(1, "0")).toUInt());
+    break;
   }
 }
 

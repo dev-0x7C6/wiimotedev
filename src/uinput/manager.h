@@ -161,7 +161,9 @@ private:
 
   enum CommandList {
     executeAction = 1,
-    rumbleAction
+    rumbleAction,
+    hwheelAction,
+    vwheelAction
   };
 
   QList < KeyboardAction*> keyboardActions;

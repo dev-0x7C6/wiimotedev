@@ -123,7 +123,7 @@ void UInputProfileManager::pressKeyboardExtendedButton(quint32 key) {
 }
 
 void UInputProfileManager::releaseKeyboardExtendedButton(quint32 key) {
-
+  Q_UNUSED(key);
 }
 
 void UInputProfileManager::pressKeyboardButtons(QList < quint32> &list) {
