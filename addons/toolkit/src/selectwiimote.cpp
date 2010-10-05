@@ -1,5 +1,5 @@
 /**********************************************************************************
- * Wiimotedev toolkit                                                             *
+ * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
  * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
  * Contact: dev.strikeu@gmail.com                                                 *
  *                                                                                *
@@ -16,7 +16,6 @@
  * You should have received a copy of the GNU Lesser General Public               *
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
-
 
 #include "selectwiimote.h"
 #include "ui_selectwiimote.h"

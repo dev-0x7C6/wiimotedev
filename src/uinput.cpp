@@ -1,5 +1,5 @@
 /**********************************************************************************
- * Wiimotedev uinput, wiiremote system service                                    *
+ * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
  * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
  * Contact: dev.strikeu@gmail.com                                                 *
  *                                                                                *
