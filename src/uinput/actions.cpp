@@ -60,7 +60,10 @@ void UInputProfileManager::loadCommandEvents(QSettings &settings) {
 }
 
 void UInputProfileManager::unloadCommandEvents() {
+  foreach (CommandAction *action, commandActions)
+    delete action;
 
+  commandActions.clear();
 }
 
 void UInputProfileManager::initializeCommandEvents() {
