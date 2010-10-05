@@ -24,7 +24,6 @@
 #include <QObject>
 #include <QTimer>
 
-
 #include <QScopedPointer>
 #include <QSettings>
 
@@ -219,6 +218,8 @@ private:
 
   void pressKeyboardButtons(QList < quint32>&);
   void releaseKeyboardButtons(QList < quint32>&);
+  void pressKeyboardExtendedButton(quint32);
+  void releaseKeyboardExtendedButton(quint32);
 
 private Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32, quint64);

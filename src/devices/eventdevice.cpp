@@ -74,10 +74,25 @@ void UInputEvent::releaseKeyboardButton(quint16 button) {
 }
 
 void UInputEvent::pressKeyboardButtonOnce(quint16 button) {
-
   sendEvent(EV_KEY, button, true);
   sendEventSync();
   sendEvent(EV_KEY, button, false);
+  sendEventSync();
+}
+
+void UInputEvent::moveMouseVWheel(qint32 direction) {
+  if (direction)
+      return;
+
+  sendEvent(EV_REL, REL_WHEEL, direction);
+  sendEventSync();
+}
+
+void UInputEvent::moveMouseHWheel(qint32 direction) {
+  if (direction)
+      return;
+
+  sendEvent(EV_REL, REL_HWHEEL, direction);
   sendEventSync();
 }
 

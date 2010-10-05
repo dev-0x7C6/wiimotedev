@@ -15,7 +15,5 @@ if(BUILD_CLIENT)
 endif(BUILD_CLIENT)
 
 if(BUILD_UINPUT)
-  if( NOT EXISTS  "/etc/wiimotedev/scancode.conf" )
-    install(FILES scancode.conf DESTINATION /etc/wiimotedev/ )
-  endif()
+  install(FILES scancode.conf DESTINATION /etc/wiimotedev/ )
 endif(BUILD_UINPUT)

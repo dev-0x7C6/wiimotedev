@@ -96,7 +96,6 @@ void UInputProfileManager::processCommandEvents() {
   }
 }
 
-
 void UInputProfileManager::activeCommandEvent(QStringList &params) {
   switch (commandIds.value(params.at(0))) {
   case rumbleAction:

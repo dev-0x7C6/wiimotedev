@@ -100,7 +100,7 @@ void UInputMouse::moveMouseHWheel(qint32 direction) {
   if (direction)
       return;
 
-  sendEvent(EV_REL, REL_WHEEL, direction);
+  sendEvent(EV_REL, REL_HWHEEL, direction);
   sendEventSync();
 }
 

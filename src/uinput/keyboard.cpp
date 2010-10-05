@@ -23,6 +23,15 @@
 
 extern QMap < QString, quint32> scancodes;
 
+enum KeyboardExtension {
+  keyboardExt = 0xFFFF,
+  keyboardExtMouseHWheelUp,
+  keyboardExtMouseHWheelDown,
+  keyboardExtMouseVWheelUp,
+  keyboardExtMouseVWheelDown
+};
+
+
 QList < quint32> UInputProfileManager::extractScancodes(QStringList list)
 {
   QList < quint32> values;
@@ -96,12 +105,35 @@ void UInputProfileManager::processKeyboardEvents() {
   }
 }
 
+void UInputProfileManager::pressKeyboardExtendedButton(quint32 key) {
+  switch (key) {
+  case keyboardExtMouseHWheelUp:
+    virtualEvent->moveMouseHWheel(1);
+    break;
+  case keyboardExtMouseHWheelDown:
+    virtualEvent->moveMouseHWheel(-1);
+    break;
+  case keyboardExtMouseVWheelUp:
+    virtualEvent->moveMouseVWheel(1);
+    break;
+  case keyboardExtMouseVWheelDown:
+    virtualEvent->moveMouseVWheel(-1);
+    break;
+  }
+}
+
+void UInputProfileManager::releaseKeyboardExtendedButton(quint32 key) {
+
+}
+
 void UInputProfileManager::pressKeyboardButtons(QList < quint32> &list) {
   if (list.isEmpty())
     return;
 
   foreach (const quint32 key, list)
-    virtualEvent->pressKeyboardButton(key);
+    if (key <= keyboardExt)
+      virtualEvent->pressKeyboardButton(key); else
+      pressKeyboardExtendedButton(key);
 }
 
 void UInputProfileManager::releaseKeyboardButtons(QList < quint32> &list) {
@@ -109,7 +141,9 @@ void UInputProfileManager::releaseKeyboardButtons(QList < quint32> &list) {
     return;
 
   foreach (const quint32 key, list)
-    virtualEvent->releaseKeyboardButton(key);
+    if (key <= keyboardExt)
+      virtualEvent->releaseKeyboardButton(key); else
+      releaseKeyboardExtendedButton(key);
 }
 
 
