@@ -7,7 +7,7 @@ set(CURRENT "ubuntu")
 STRING(COMPARE EQUAL "${DISTRO}" "${CURRENT}" valid)
 
 if (valid) 
-  message( "-- Init.d script for ${DISTRO}  is available [wiimotedev-uinput]" )
+  message( "-- Init.d script for ${DISTRO} is available [wiimotedev-uinput]" )
   install(FILES wiimotedev-uinput DESTINATION /etc/init.d
 	    PERMISSIONS
 	      OWNER_READ  OWNER_WRITE  OWNER_EXECUTE
