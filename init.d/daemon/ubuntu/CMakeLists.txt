@@ -11,7 +11,7 @@ if (valid)
   install(FILES wiimotedev-daemon DESTINATION ${init_directory}
 	    PERMISSIONS
 	      OWNER_READ  OWNER_WRITE  OWNER_EXECUTE
-	      GROUP_READ  GROUP_EXECUTE
-	      WORLD_READ  WORLD_EXECUTE
+	      GROUP_READ
+	      WORLD_READ
   )
 endif (valid)

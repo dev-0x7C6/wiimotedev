@@ -3,7 +3,7 @@
 # Contact: dev.strikeu@gmail.com
 
 add_subdirectory(debian)	
-add_subdirectory(ubuntu)	
-add_subdirectory(gentoo)
+add_subdirectory(gentoo)	
 add_subdirectory(slackware)
+add_subdirectory(ubuntu)
 
