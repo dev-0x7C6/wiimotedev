@@ -200,7 +200,7 @@ bool ConnectionManager::dbusReloadSequenceList() {
   foreach(const QString &key, sequence.keys())
     unregisterWiimoteList[key] = false;
 
-  return !sequence.isEmpty();
+  return true;
 }
 
 QStringList ConnectionManager::dbusGetUnregistredWiimoteList()
