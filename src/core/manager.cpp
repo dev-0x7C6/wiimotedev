@@ -20,6 +20,7 @@
 #include <QCoreApplication>
 #include <QList>
 #include <QTime>
+#include <QFile>
 
 #include "syslog/syslog.h"
 #include "manager.h"
@@ -30,10 +31,20 @@ ConnectionManager::ConnectionManager(QObject *parent):
   QThread(parent),
   dbusDeviceEventsAdaptor(0),
   dbusServiceAdaptor(0),
-  terminateReq(false)
+  terminateReq(false),
+  criticalError(false)
 {
   memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
   setTerminationEnabled(true);
+
+
+  if (!QFile::exists(WIIMOTEDEV_CONFIG_FILE)) {
+    systemlog::error(QString("Missing configuration file %1").arg(WIIMOTEDEV_CONFIG_FILE));
+    systemlog::notice("checkout wiimotedev-project installation");
+    terminateReq = true;
+    criticalError = true;
+    return;
+  }
 
   systemlog::notice(QString("loading rules from %1").arg(WIIMOTEDEV_CONFIG_FILE));
 
@@ -70,6 +81,9 @@ void ConnectionManager::terminateRequest() {
 }
 
 void ConnectionManager::run() {
+  if (criticalError)
+    return;
+
   connections << (new WiimoteConnection(1));
   QTime clock;
   while (!terminateReq) {

@@ -46,6 +46,7 @@ private:
 
 //
   bool terminateReq;
+  bool criticalError;
 
 // Settings ------------------------------------------------- /
   WiimotedevSettings *wiimotedevSettings;
