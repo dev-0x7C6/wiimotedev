@@ -22,7 +22,7 @@
 
 void systemlog::open(const char *name) {
   openlog(name, LOG_PID, LOG_DAEMON);
-  setlogmask(LOG_UPTO(LOG_CRIT));
+  setlogmask(LOG_UPTO(LOG_DEBUG));
 }
 
 void systemlog::close() {
