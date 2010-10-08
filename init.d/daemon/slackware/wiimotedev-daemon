@@ -9,34 +9,41 @@ GROUP=wiimotedev
 CONFIG=/etc/wiimotedev/wiimotedev.conf
 
 wiimotedev_start() {
-  if [ -x /usr/sbin/wiimotedev-daemon ]; then
-    /usr/sbin/wiimotedev-daemon
+  if [ -f "$PIDFILE" ]; then
+    echo "Already running. Please remove $PIDFILE to force start."
+    exit 1  
+  fi
+  
+  if [ -x "$SERVICE" ]; then
+    ($SERVICE)
   fi
 }
 
 wiimotedev_stop() {
   if [ -e "$PIDFILE" ]; then
-    kill $(cat $PIDFILE)
-    rm -f $PIDFILE
-  fi
-  killall wiimotedev-daemon 1> /dev/null 2> /dev/null
+    kill -s QUIT $(cat $PIDFILE) &> /dev/null
+    rm -f $PIDFILE &> /dev/null
+  else
+    echo "Please start service first."
+    exit 1
+  fi 
 }
 
 wiimotedev_reload() {
   if [ ! -f "$PIDFILE" ]; then
     echo " -- \"${PIDFILE}\" file does not exist"
-    return 1
+    exit 1
   fi
 
   if [ ! -f "$CONFIG" ]; then
     echo " -- \"${CONFIG}\" configuration does not exist"
-    return 1
+    exit 1
   fi
 
 
   if [ $(cat /proc/$(cat /var/run/wiimotedev-daemon.pid)/cmdline) != $SERVICE ]; then
     echo " -- Unable to find service"
-    return 1
+    exit 1
   fi
 
   S1=$(dbus-send \
@@ -52,7 +59,7 @@ wiimotedev_reload() {
     echo " -- Configuration reloaded successful"
   else
     echo " -- Cannot reload configuration, dbus fail?"
-    return 1
+    exit 1
   fi
   
 }
@@ -69,7 +76,6 @@ case "$1" in
     restart)
 	echo "Restarting Wiimotedev-daemon"
         wiimotedev_stop
-        sleep 1
         wiimotedev_start
         ;;
     reload)
