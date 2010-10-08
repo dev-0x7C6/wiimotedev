@@ -22,6 +22,7 @@
 
 void systemlog::open(const char *name) {
   openlog(name, LOG_PID, LOG_DAEMON);
+  setlogmask(LOG_UPTO(LOG_CRIT));
 }
 
 void systemlog::close() {
@@ -47,7 +48,6 @@ void systemlog::information(const QString message) {
 void systemlog::notice(const QString message) {
   syslog(LOG_NOTICE, "%s", message.toAscii().constData());
 }
-
 
 void systemlog::warning(const QString message) {
   syslog(LOG_WARNING, "%s", message.toAscii().constData());
