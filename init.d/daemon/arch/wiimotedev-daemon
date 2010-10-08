@@ -1,7 +1,7 @@
 #!/bin/sh
 # Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
-# Copyright (C) 2010 Korneliusz Jarzębski
-# Contact: public@santyago.pl
+# Copyright (C) 2010 Bartlomiej Burdukiewicz
+# Contact: dev.strikeu@gmail.com
 
 PIDFILE=/var/run/wiimotedev-daemon.pid
 SERVICE=/usr/sbin/wiimotedev-daemon
@@ -10,12 +10,14 @@ CONFIG=/etc/wiimotedev/wiimotedev.conf
 
 wiimotedev_start() {
   if [ -f "$PIDFILE" ]; then
+    stat_fail
     echo "Already running. Please remove $PIDFILE to force start."
     exit 1  
   fi
   
   if [ -x "$SERVICE" ]; then
     ($SERVICE)
+    stat_done
   fi
 }
 
@@ -23,7 +25,9 @@ wiimotedev_stop() {
   if [ -e "$PIDFILE" ]; then
     kill -s QUIT $(cat $PIDFILE) &> /dev/null
     rm -f $PIDFILE &> /dev/null
+    stat_done
   else
+    stat_fail
     echo "Please start service first."
     exit 1
   fi 
@@ -31,17 +35,20 @@ wiimotedev_stop() {
 
 wiimotedev_reload() {
   if [ ! -f "$PIDFILE" ]; then
+    stat_fail
     echo " -- \"${PIDFILE}\" file does not exist"
     exit 1
   fi
 
   if [ ! -f "$CONFIG" ]; then
+    stat_fail
     echo " -- \"${CONFIG}\" configuration does not exist"
     exit 1
   fi
 
 
   if [ $(cat /proc/$(cat /var/run/wiimotedev-daemon.pid)/cmdline) != $SERVICE ]; then
+    stat_fail
     echo " -- Unable to find service"
     exit 1
   fi
@@ -56,8 +63,10 @@ wiimotedev_reload() {
 	    org.wiimotedev.service.dbusReloadSequenceList)
 
   if [ -n "$(echo ${S1} | grep "boolean true")" ]; then
+    stat_done  
     echo " -- Configuration reloaded successful"
   else
+    stat_fail
     echo " -- Cannot reload configuration, dbus fail?"
     exit 1
   fi
@@ -66,20 +75,20 @@ wiimotedev_reload() {
 
 case "$1" in
     start)
-	echo "Starting Wiimotedev-daemon"
+	stat_busy "Starting Wiimotedev-daemon"
         wiimotedev_start
         ;;
     stop)
-	echo "Stopping Wiimotedev-daemon"
+	stat_busy "Stopping Wiimotedev-daemon"
         wiimotedev_stop
         ;;
     restart)
-	echo "Restarting Wiimotedev-daemon"
+	stat_busy "Restarting Wiimotedev-daemon"
         wiimotedev_stop
         wiimotedev_start
         ;;
     reload)
-	echo "Reloading Wiimotedev-daemon"
+	stat_busy "Reloading Wiimotedev-daemon"
 	wiimotedev_reload
         ;;
     *)
