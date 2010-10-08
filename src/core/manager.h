@@ -95,7 +95,7 @@ public Q_SLOTS:
   QList < uint> dbusGetWiimoteList();
   QStringList dbusGetUnregistredWiimoteList();
 
-  bool dbusReloadSequenceList();
+  uchar dbusReloadSequenceList();
 
 Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
