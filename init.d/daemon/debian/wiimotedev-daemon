@@ -4,12 +4,12 @@
 # Contact: vazir.pl@gmail.com
 
 ### BEGIN INIT INFO
-# Provides:          Wiimotedev
+# Provides:          wiimotedev-daemon
 # Required-Start:    bluetooth
 # Required-Stop:     bluetooth
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Wiimotedev daemon
+# Short-Description: wiimotedev daemon
 ### END INIT INFO
 
 PIDFILE=/var/run/wiimotedev-daemon.pid
