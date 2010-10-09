@@ -8,7 +8,20 @@ SERVICE=/usr/sbin/wiimotedev-daemon
 GROUP=wiimotedev
 CONFIG=/etc/wiimotedev/wiimotedev.conf
 
-wiimotedev_start() {
+
+start() {
+
+  if [ -z $(cat /etc/group | grep $GROUP) ]; then
+    groupadd $GROUP &> /dev/null
+
+    if [ ! -n $(cat /etc/group | grep $GROUP) ]; then
+      stat_fail
+      echo "Cannot add new group $GROUP"
+      exit 1
+    fi
+
+  fi
+
   if [ -f "$PIDFILE" ]; then
     stat_fail
     echo "Already running. Please remove $PIDFILE to force start."
@@ -18,10 +31,14 @@ wiimotedev_start() {
   if [ -x "$SERVICE" ]; then
     ($SERVICE)
     stat_done
+  else
+    stat_fail
   fi
+
 }
 
-wiimotedev_stop() {
+stop() {
+
   if [ -e "$PIDFILE" ]; then
     kill -s QUIT $(cat $PIDFILE) &> /dev/null
     rm -f $PIDFILE &> /dev/null
@@ -30,68 +47,53 @@ wiimotedev_stop() {
     stat_fail
     echo "Please start service first."
     exit 1
-  fi 
+  fi
+
 }
 
-wiimotedev_reload() {
+reload() {
+
   if [ ! -f "$PIDFILE" ]; then
     stat_fail
-    echo " -- \"${PIDFILE}\" file does not exist"
-    exit 1
+    echo "Please run service first."
+    exit 1  
   fi
 
-  if [ ! -f "$CONFIG" ]; then
-    stat_fail
-    echo " -- \"${CONFIG}\" configuration does not exist"
-    exit 1
-  fi
-
-
-  if [ $(cat /proc/$(cat /var/run/wiimotedev-daemon.pid)/cmdline) != $SERVICE ]; then
-    stat_fail
-    echo " -- Unable to find service"
-    exit 1
-  fi
-
-  S1=$(dbus-send \
-            --system \
-            --dest=org.wiimotedev.daemon \
-	    --type=method_call \
-	    --print-reply \
-	    --reply-timeout=3000 \
-	    /service \
-	    org.wiimotedev.service.dbusReloadSequenceList)
-
-  if [ -n "$(echo ${S1} | grep "boolean true")" ]; then
+  if [ -n "$(echo $(dbus-send \
+       --system \
+       --dest=org.wiimotedev.daemon \
+       --type=method_call \
+       --print-reply \
+       --reply-timeout=3000 \
+       /service \
+       org.wiimotedev.service.dbusReloadSequenceList) | grep "boolean true")" ]; then
     stat_done  
-    echo " -- Configuration reloaded successful"
   else
     stat_fail
-    echo " -- Cannot reload configuration, dbus fail?"
     exit 1
   fi
   
 }
 
 case "$1" in
-    start)
-	stat_busy "Starting Wiimotedev-daemon"
-        wiimotedev_start
-        ;;
-    stop)
-	stat_busy "Stopping Wiimotedev-daemon"
-        wiimotedev_stop
-        ;;
-    restart)
-	stat_busy "Restarting Wiimotedev-daemon"
-        wiimotedev_stop
-        wiimotedev_start
-        ;;
-    reload)
-	stat_busy "Reloading Wiimotedev-daemon"
-	wiimotedev_reload
-        ;;
-    *)
-        echo $"Usage: $0 {start | stop | reload | restart }"
-        ;;
+  start)
+    stat_busy "Starting Wiimotedev-daemon"
+    start
+    ;;
+  stop)
+    stat_busy "Stopping Wiimotedev-daemon"
+    stop
+    ;;
+  restart)
+    stat_busy "Restarting Wiimotedev-daemon"
+    stop
+    start
+    ;;
+  reload)
+    stat_busy "Reloading Wiimotedev-daemon"
+    reload
+    ;;
+  *)
+    echo $"Usage: $0 {start | stop | reload | restart }"
+    ;;
 esac
