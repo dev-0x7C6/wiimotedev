@@ -8,6 +8,8 @@ SERVICE=/usr/sbin/wiimotedev-daemon
 GROUP=wiimotedev
 CONFIG=/etc/wiimotedev/wiimotedev.conf
 
+. /etc/rc.conf
+. /etc/rc.d/functions
 
 start() {
 
@@ -59,14 +61,11 @@ reload() {
     exit 1  
   fi
 
-  if [ -n "$(echo $(dbus-send \
-       --system \
-       --dest=org.wiimotedev.daemon \
-       --type=method_call \
-       --print-reply \
-       --reply-timeout=3000 \
-       /service \
-       org.wiimotedev.service.dbusReloadSequenceList) | grep "boolean true")" ]; then
+  S1=$(dbus-send --system --dest=org.wiimotedev.daemon \
+       --type=method_call --print-reply --reply-timeout=3000 \
+       /service org.wiimotedev.service.dbusReloadSequenceList)
+
+  if [ -n "$(echo ${S1} | grep "boolean true")" ]; then
     stat_done  
   else
     stat_fail
@@ -85,8 +84,9 @@ case "$1" in
     stop
     ;;
   restart)
-    stat_busy "Restarting Wiimotedev-daemon"
+    stat_busy "Stopping Wiimotedev-daemon"
     stop
+    stat_busy "Starting Wiimotedev-daemon"
     start
     ;;
   reload)
