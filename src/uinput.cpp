@@ -19,7 +19,7 @@
 
 #define DAEMON_NAME "wiimotedev[uinput]"
 #define DAEMON_VERSION "1.3.0"
-#define PID_FILE "/var/run/wiimotedev-daemon.pid"
+#define PID_FILE "/var/run/wiimotedev-uinput.pid"
 #define PID_MODE 0644
 
 #include "config.h"
