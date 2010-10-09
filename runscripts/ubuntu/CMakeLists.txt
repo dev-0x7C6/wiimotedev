@@ -2,7 +2,7 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-set(CURRENT "arch")
+set(CURRENT "ubuntu")
 set(INSTALL "/etc/init.d/")
 
 STRING(COMPARE EQUAL "${DISTRO}" "${CURRENT}" valid)
