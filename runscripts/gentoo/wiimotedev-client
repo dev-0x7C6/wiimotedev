@@ -3,20 +3,18 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com   
 
-PIDFILE=/var/run/wiimotedev-daemon.pid
-SERVICE=/usr/sbin/wiimotedev-daemon
+PIDFILE=/var/run/wiimotedev-client.pid
+SERVICE=/usr/sbin/wiimotedev-client
 GROUP=wiimotedev
-CONFIG=/etc/wiimotedev/wiimotedev.conf
-
-opts="reload"
+CONFIG=/etc/wiimotedev/client.conf
 
 depend() {
 	need dbus 
-	after bluetooth
+	after wiimotedev-daemon
 }
 
 start() {
-  ebegin "Starting Wiimotedev-daemon"
+  ebegin "Starting Wiimotedev-client"
 
   if [ -z $(cat /etc/group | grep $GROUP) ]; then
     groupadd $GROUP &> /dev/null
@@ -43,10 +41,10 @@ start() {
 }
 
 stop() {
-  ebegin "Stopping Wiimotedev-daemon"
+  ebegin "Stopping Wiimotedev-client"
 
   if [ -f "$PIDFILE" ]; then
-    kill -s 3 $(cat $PIDFILE) &> /dev/null
+    start-stop-daemon --stop --quiet --pidfile "$PIDFILE"
     rm -f $PIDFILE &> /dev/null
   else
     eend 1
@@ -63,24 +61,4 @@ restart() {
 	start
 }
 
-reload() {
-  ebegin "Reloading Wiimotedev-daemon"
-
-  if [ ! -f "$PIDFILE" ]; then
-    eend 1
-    echo "Please run service first."
-    exit 1  
-  fi
-
-  S1=$(dbus-send --system --dest=org.wiimotedev.daemon \
-       --type=method_call --print-reply --reply-timeout=3000 \
-       /service org.wiimotedev.service.dbusReloadSequenceList)
-
-  if [ ! -n "$(echo ${S1} | grep "boolean true")" ]; then
-    eend 1
-    exit 1
-  fi
-
-  eend 0  
-}
 

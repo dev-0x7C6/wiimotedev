@@ -3,9 +3,9 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com   
 
-PIDFILE=/var/run/wiimotedev-client.pid
-SERVICE=/usr/sbin/wiimotedev-client
-GROUP=wiimotedev
+PIDFILE=/var/run/wiimotedev-uinput.pid
+SERVICE=/usr/sbin/wiimotedev-uinput
+GROUP=uinput
 CONFIG=/etc/wiimotedev/client.conf
 
 depend() {
@@ -14,7 +14,7 @@ depend() {
 }
 
 start() {
-  ebegin "Starting Wiimotedev-client"
+  ebegin "Starting Wiimotedev-uinput"
 
   if [ -z $(cat /etc/group | grep $GROUP) ]; then
     groupadd $GROUP &> /dev/null
@@ -34,17 +34,17 @@ start() {
   fi
   
   if [ -x "$SERVICE" ]; then
-    start-stop-client --start -q -x "$SERVICE" --group "$GROUP"
+    start-stop-daemon --start -q -x "$SERVICE" --group "$GROUP"
   fi
 
   eend 0
 }
 
 stop() {
-  ebegin "Stopping Wiimotedev-client"
+  ebegin "Stopping Wiimotedev-uinput"
 
   if [ -f "$PIDFILE" ]; then
-    kill -s 3 $(cat $PIDFILE) &> /dev/null
+    start-stop-daemon --stop --quiet --pidfile "$PIDFILE"
     rm -f $PIDFILE &> /dev/null
   else
     eend 1
