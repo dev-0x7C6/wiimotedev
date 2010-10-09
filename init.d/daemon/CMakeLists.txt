@@ -2,6 +2,7 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
+add_subdirectory(arch)
 add_subdirectory(debian)	
 add_subdirectory(gentoo)	
 add_subdirectory(slackware)
