@@ -72,6 +72,7 @@ case "$1" in
   restart)
     echo "Stopping Wiimotedev-daemon"
     stop
+    sleep 1
     echo "Starting Wiimotedev-daemon"
     start
     ;;

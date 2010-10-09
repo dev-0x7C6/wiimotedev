@@ -86,6 +86,7 @@ case "$1" in
   restart)
     stat_busy "Stopping Wiimotedev-daemon"
     stop
+    sleep 1
     stat_busy "Starting Wiimotedev-daemon"
     start
     ;;
