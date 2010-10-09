@@ -8,66 +8,57 @@ SERVICE=/usr/sbin/wiimotedev-client
 GROUP=wiimotedev
 CONFIG=/etc/wiimotedev/client.conf
 
-opts="reload"
-
-# int wiimotedev_check_group()
-
-function wiimotedev_check_group {
-  if [ -z $(cat /etc/group | grep "$GROUP") ]; then
-    echo " -- Adding new group \"${GROUP}\""
-    groupadd $GROUP
-
-    if [ -n $(cat /etc/group | grep "$GROUP") ]; then
-      echo " -- Group \"${GROUP}\" added successful"
-    else
-      echo " -- Cannot add new group \"${GROUP}\""
-      return 1
-    fi
-  fi
-}
-
-# int wiimotedev_start()
-
-function wiimotedev_start() {
-  wiimotedev_check_group
-
-  if [ ! -x $SERVICE ]; then
-    echo " -- ${SERVICE} file is not executable"
-    return 1
-  fi
-
-  start-stop-daemon --start -q -x "$SERVICE" --group "$GROUP"
-}
-
-# int wiimotedev_stop()
-
-function wiimotedev_stop() {
-  wiimotedev_check_group
-
-  if [ -f "$PIDFILE" ]; then
-    start-stop-daemon --stop -q -p "$PIDFILE" --group "$GROUP"
-  fi
-}
-
 depend() {
 	need dbus 
+	after wiimotedev-daemon
 }
 
 start() {
-	ebegin "Starting wiimotedev-client"
-	wiimotedev_start
-	eend $?
-}
+  ebegin "Starting Wiimotedev-client"
 
-restart() {
-	ebegin "Restarting wiimotedev-client"
-	wiimotedev_start
-	wiimotedev_stop
-	eend $?
+  if [ -z $(cat /etc/group | grep $GROUP) ]; then
+    groupadd $GROUP &> /dev/null
+
+    if [ ! -n $(cat /etc/group | grep $GROUP) ]; then
+      eend 1
+      echo "Cannot add new group $GROUP"
+      exit 1
+    fi
+
+  fi
+
+  if [ -f "$PIDFILE" ]; then
+    eend 1
+    echo "Already running. Please remove $PIDFILE to force start."
+    exit 1  
+  fi
+  
+  if [ -x "$SERVICE" ]; then
+    start-stop-client --start -q -x "$SERVICE" --group "$GROUP"
+  fi
+
+  eend 0
 }
 
 stop() {
-	ebegin "Stopping wiimotedev-client"
-	wiimotedev_stop
-	eend $?
+  ebegin "Stopping Wiimotedev-client"
+
+  if [ -f "$PIDFILE" ]; then
+    kill -s 3 $(cat $PIDFILE) &> /dev/null
+    rm -f $PIDFILE &> /dev/null
+  else
+    eend 1
+    echo "Please start service first."
+    exit 1
+  fi
+
+  eend 0
 }
+
+restart() {
+	stop
+        sleep 1
+	start
+}
+
+

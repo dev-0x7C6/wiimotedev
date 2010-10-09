@@ -7,8 +7,8 @@ set(CURRENT "slackware")
 STRING(COMPARE EQUAL "${DISTRO}" "${CURRENT}" valid)
 
 if (valid) 
-  message( "-- Init.d script for ${DISTRO}  is available [wiimotedev-client]" )
-  install(FILES wiimotedev-client DESTINATION /etc/init.d
+  message( "-- Init.d script for ${DISTRO} is available [wiimotedev-client]" )
+  install(FILES wiimotedev-client DESTINATION "/etc/init.d/"
 	    PERMISSIONS
 	      OWNER_READ  OWNER_WRITE  OWNER_EXECUTE
 	      GROUP_READ

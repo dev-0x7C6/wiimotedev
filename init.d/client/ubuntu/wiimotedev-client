@@ -1,16 +1,15 @@
+#! /bin/sh
 # Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
 # Copyright (C) 2010 Jarek Bojko
-# Contact: vazir.pl@gmail.com      
-
-#! /bin/sh
+# Contact: vazir.pl@gmail.com
 
 ### BEGIN INIT INFO
-# Provides:          Wiimotedev
+# Provides:          wiimotedev-client
 # Required-Start:    bluetooth
 # Required-Stop:     bluetooth
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: Wiimotedev client
+# Short-Description: wiimotedev client
 ### END INIT INFO
 
 PIDFILE=/var/run/wiimotedev-client.pid
@@ -18,64 +17,59 @@ SERVICE=/usr/sbin/wiimotedev-client
 GROUP=wiimotedev
 CONFIG=/etc/wiimotedev/client.conf
 
-# int wiimotedev_check_group()
+start() {
 
-wiimotedev_check_group() {
-  if [ -z $(cat /etc/group | grep "$GROUP") ]; then
-    echo " -- Adding new group \"${GROUP}\""
-    groupadd $GROUP
+  if [ -z $(cat /etc/group | grep $GROUP) ]; then
+    groupadd $GROUP &> /dev/null
 
-    if [ -n $(cat /etc/group | grep "$GROUP") ]; then
-      echo " -- Group \"${GROUP}\" added successful"
-    else
-      echo " -- Cannot add new group \"${GROUP}\""
-      return 1
+    if [ ! -n $(cat /etc/group | grep $GROUP) ]; then
+      echo "Cannot add new group $GROUP"
+      exit 1
     fi
+
   fi
-}
-
-# int wiimotedev_start()
-
-wiimotedev_start() {
-  wiimotedev_check_group
-
-  if [ ! -x $SERVICE ]; then
-    echo " -- ${SERVICE} file is not executable"
-    return 1
-  fi
-
-  start-stop-daemon --start -q -x "$SERVICE" --group "$GROUP"
-}
-
-# int wiimotedev_stop()
-
-wiimotedev_stop() {
-  wiimotedev_check_group
 
   if [ -f "$PIDFILE" ]; then
-    start-stop-daemon --stop -q -p "$PIDFILE" --group "$GROUP"
+    echo "Already running. Please remove $PIDFILE to force start."
+    exit 1
   fi
+
+  if [ -x "$SERVICE" ]; then
+    start-stop-client --start -q -x "$SERVICE" --group "$GROUP"
+  fi
+
 }
 
+stop() {
 
-# int wiimotedev_reload()
+  if [ -f "$PIDFILE" ]; then
+    start-stop-client --stop -q -p "$PIDFILE" --group "$GROUP"
+    rm -f $PIDFILE &> /dev/null
+  else
+    echo "Please start service first."
+    exit 1
+  fi
+
+}
 
 case "$1" in
   start)
-    echo "Starting wiimotedev-client"
-    wiimotedev_start
+    echo "Starting Wiimotedev-client"
+    start
     ;;
   stop)
-    echo "Stopping wiimotedev-client"
-    wiimotedev_stop
+    echo "Stopping Wiimotedev-client"
+    stop
     ;;
   restart)
-    echo "Restarting wiimotedev-client"
-    wiimotedev_stop
-    wiimotedev_start
+    echo "Stopping Wiimotedev-client"
+    stop
+    sleep 1
+    echo "Starting Wiimotedev-client"
+    start
     ;;
   *)
-    echo "Usage (start | stop | restart)"
+    echo $"Usage: $0 {start | stop | restart }"
     ;;
 esac
 

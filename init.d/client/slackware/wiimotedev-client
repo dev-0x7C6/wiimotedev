@@ -4,37 +4,62 @@
 # Contact: public@santyago.pl
 
 PIDFILE=/var/run/wiimotedev-client.pid
+SERVICE=/usr/sbin/wiimotedev-client
+GROUP=wiimotedev
+CONFIG=/etc/wiimotedev/client.conf
 
-wiimotedev_start() {
-  if [ -x /usr/sbin/wiimotedev-client ]; then
-    /usr/sbin/wiimotedev-client
+start() {
+
+  if [ -z $(cat /etc/group | grep $GROUP) ]; then
+    groupadd $GROUP &> /dev/null
+
+    if [ ! -n $(cat /etc/group | grep $GROUP) ]; then
+      echo "Cannot add new group $GROUP"
+      exit 1
+    fi
+
   fi
+
+  if [ -f "$PIDFILE" ]; then
+    echo "Already running. Please remove $PIDFILE to force start."
+    exit 1
+  fi
+
+  if [ -x "$SERVICE" ]; then
+    ($SERVICE)
+  fi
+
 }
 
-wiimotedev_stop() {
-  if [ -e "$PIDFILE" ]; then
-    kill $(cat $PIDFILE)
-    rm -f $PIDFILE
+stop() {
+
+  if [ -f "$PIDFILE" ]; then
+    kill -s 3 $(cat $PIDFILE) &> /dev/null
+    rm -f $PIDFILE &> /dev/null
+  else
+    echo "Please start service first."
+    exit 1
   fi
-  killall wiimotedev-client 1> /dev/null 2> /dev/null
+
 }
 
 case "$1" in
-    start)
-	echo "Starting wiimotedev-client"
-        wiimotedev_start
-        ;;
-    stop)
-	echo "Stopping wiimotedev-client"
-        wiimotedev_stop
-        ;;
-    restart)
-	echo "Restarting wiimotedev-client"
-        wiimotedev_stop
-        sleep 1
-        wiimotedev_start
-        ;;
-    *)
-        echo $"Usage: $0 {start | stop | restart }"
-        ;;
+  start)
+    echo "Starting Wiimotedev-client"
+    start
+    ;;
+  stop)
+    echo "Stopping Wiimotedev-client"
+    stop
+    ;;
+  restart)
+    echo "Stopping Wiimotedev-client"
+    stop
+    sleep 1
+    echo "Starting Wiimotedev-client"
+    start
+    ;;
+  *)
+    echo $"Usage: $0 {start | stop | restart }"
+    ;;
 esac

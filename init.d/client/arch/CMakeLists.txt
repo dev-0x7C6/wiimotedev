@@ -2,13 +2,13 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-set(CURRENT "gentoo")
+set(CURRENT "arch")
 
 STRING(COMPARE EQUAL "${DISTRO}" "${CURRENT}" valid)
 
 if (valid) 
   message( "-- Init.d script for ${DISTRO} is available [wiimotedev-client]" )
-  install(FILES wiimotedev-client DESTINATION "/etc/init.d/"
+  install(FILES wiimotedev-client DESTINATION "/etc/rc.d/"
 	    PERMISSIONS
 	      OWNER_READ  OWNER_WRITE  OWNER_EXECUTE
 	      GROUP_READ
