@@ -42,7 +42,7 @@ start() {
 stop() {
 
   if [ -e "$PIDFILE" ]; then
-    kill -s QUIT $(cat $PIDFILE) &> /dev/null
+    kill -s 3 $(cat $PIDFILE) &> /dev/null
     rm -f $PIDFILE &> /dev/null
     stat_done
   else
