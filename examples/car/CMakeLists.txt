@@ -2,6 +2,11 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
+cmake_minimum_required(VERSION 2.6)
+project( WiimotedevProjectExamples )
+
+find_package(Qt4 REQUIRED QtCore QtDbus QtNetwork QtGui QtOpenGL)
+
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}
@@ -9,10 +14,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
         ${QT_QTCORE_INCLUDE_DIR}
         ${QT_QTDBUS_INCLUDE_DIR}
         ${QT_QTGUI_INCLUDE_DIR}
-        ${QT_QTNETWORK_INCLUDE_DIR}
 )
-
-message(${CMAKE_SOURCE_DIR})
 
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
@@ -43,4 +45,27 @@ target_link_libraries(wiimotedev-car-example
   ${QT_QTGUI_LIBRARY}
 )
 
-install(TARGETS wiimotedev-car-example DESTINATION ${bin_directory})
+set(DIRECTORY "${CMAKE_INSTALL_PREFIX}/share/wiimotedev/examples/car/")
+set(SOURCE_COPY
+  CMakeLists.txt
+  car.cpp
+  car.h
+  main.cpp
+)
+
+set(IFACES_COPY
+  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.cpp
+  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
+)
+
+set(HEADER_COPY
+  ${CMAKE_SOURCE_DIR}/headers/consts.h
+)
+
+install(FILES ${SOURCE_COPY} DESTINATION ${DIRECTORY} )
+install(FILES ${IFACES_COPY} DESTINATION ${DIRECTORY}/src/interfaces )
+install(FILES ${HEADER_COPY} DESTINATION ${DIRECTORY}/headers/ )
+
+install(TARGETS wiimotedev-car-example DESTINATION ${DIRECTORY})
