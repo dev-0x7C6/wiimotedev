@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
   application.setApplicationName(APP_NAME);
   application.setApplicationVersion(APP_VERSION);
 
-
   QDBusInterface devices(WIIMOTEDEV_DBUS_SERVICE_NAME,
                          WIIMOTEDEV_DBUS_OBJECT_EVENTS,
                          WIIMOTEDEV_DBUS_IFACE_EVENTS,

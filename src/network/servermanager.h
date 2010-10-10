@@ -19,11 +19,10 @@
 
 #ifndef SERVER_MANAGER_H
 #define SERVER_MANAGER_H
+
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QStringList>
 #include <QThread>
-#include <QTcpSocket>
 #include <QMutex>
 
 #include "core/settings.h"

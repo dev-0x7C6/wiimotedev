@@ -17,7 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "settings.h"
+#include "core/settings.h"
 
 const QString dbusSupportValue("wiimotedev/DBusInterface");
 const QString tcpSupportValue("wiimotedev/TCPInterface");

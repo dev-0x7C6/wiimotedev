@@ -20,14 +20,6 @@
 #ifndef ADAPTORS_PROFILEMANAGER_H
 #define ADAPTORS_PROFILEMANAGER_H
 
-#include <QDBusAbstractAdaptor>
-#include <QDBusAbstractInterface>
-#include <QDBusArgument>
-#include <QDBusConnection>
-#include <QDBusReply>
-
-#include <QList>
-
 #include "adaptors/adaptors.h"
 
 class DBusProfileManagerAdaptor :public QDBusAbstractAdaptor

@@ -20,22 +20,15 @@
 #ifndef CLIENT_MANAGER_H
 #define CLIENT_MANAGER_H
 
-#include <QDBusAbstractAdaptor>
-#include <QDBusArgument>
-#include <QDBusConnection>
-#include <QMetaType>
-#include <QDBusMetaType>
-
-#include <QThread>
-#include <QTimer>
-#include <QTcpSocket>
-#include <QEventLoop>
-
 #include "adaptors/deviceevents.h"
 #include "adaptors/daemonservice.h"
 #include "headers/consts.h"
 #include "headers/proto.h"
 #include "syslog/syslog.h"
+
+#include <QThread>
+#include <QTcpSocket>
+#include <QEventLoop>
 
 const QString clientSection("client/");
 const QString deftcpTimeout("timeout");

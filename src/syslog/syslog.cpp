@@ -19,6 +19,7 @@
 
 #include "syslog.h"
 #include <syslog.h>
+#include <QString>
 
 void systemlog::open(const char *name) {
   openlog(name, LOG_PID, LOG_DAEMON);

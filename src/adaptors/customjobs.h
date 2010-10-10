@@ -20,16 +20,7 @@
 #ifndef ADAPTORS_CUSTOMJOBS_H
 #define ADAPTORS_CUSTOMJOBS_H
 
-#include <QDBusAbstractAdaptor>
-#include <QDBusAbstractInterface>
-#include <QDBusArgument>
-#include <QDBusConnection>
-#include <QDBusReply>
-
-#include <QList>
-
 #include "adaptors/adaptors.h"
-
 
 class DBusCustomJobsAdaptor :public QDBusAbstractAdaptor
 {

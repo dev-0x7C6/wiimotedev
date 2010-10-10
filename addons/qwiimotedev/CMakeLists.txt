@@ -39,16 +39,14 @@ set(qwiimotedev_uis
   ui/mainwindow.ui
 )
 
-if(BUILD_QWIIMOTEDEV)
-  qt4_wrap_ui(qwiimotedev_sources ${qwiimotedev_uis})
-  qt4_wrap_cpp(qwiimotedev_sources ${qwiimotedev_headers})
+qt4_wrap_ui(qwiimotedev_sources ${qwiimotedev_uis})
+qt4_wrap_cpp(qwiimotedev_sources ${qwiimotedev_headers})
 
-  add_executable(qwiimotedev ${qwiimotedev_sources})
-  target_link_libraries(qwiimotedev
-    ${QT_QTCORE_LIBRARY}
-    ${QT_QTGUI_LIBRARY}
-    ${QT_QTDBUS_LIBRARY}
-  )
+add_executable(qwiimotedev ${qwiimotedev_sources})
+target_link_libraries(qwiimotedev
+  ${QT_QTCORE_LIBRARY}
+  ${QT_QTGUI_LIBRARY}
+  ${QT_QTDBUS_LIBRARY}
+)
 
-  install(TARGETS qwiimotedev DESTINATION ${bin_directory})
-endif(BUILD_QWIIMOTEDEV)
+install(TARGETS qwiimotedev DESTINATION ${bin_directory})

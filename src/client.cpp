@@ -29,15 +29,9 @@
 // --no-daemon -> do not run in daemon mode
 // --no-quiet -> do not block stdout messages
 
+#include <fcntl.h>
 #include <signal.h>
 #include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <unistd.h>
-#include <string.h>
 
 #include "syslog/syslog.h"
 #include "network/clientmanager.h"

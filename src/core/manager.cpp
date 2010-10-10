@@ -18,12 +18,11 @@
  **********************************************************************************/
 
 #include <QCoreApplication>
-#include <QList>
-#include <QTime>
 #include <QFile>
+#include <QTime>
 
 #include "syslog/syslog.h"
-#include "manager.h"
+#include "core/manager.h"
 
 extern bool additional_debug;
 

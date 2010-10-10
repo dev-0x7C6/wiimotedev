@@ -31,7 +31,7 @@ public:
 
 public:
   DBusDeviceEventsInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0)
-      :QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent) { QWIIMOTEDEV_REGISTER_META_TYPES }
+    :QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent) { QWIIMOTEDEV_REGISTER_META_TYPES }
 
 public Q_SLOTS:
   QDBusReply < QList <uint> > dbusGetWiimoteList();

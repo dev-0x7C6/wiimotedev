@@ -22,8 +22,6 @@
 
 #include <QHash>
 #include <QHashIterator>
-#include <QObject>
-
 
 template <class typeKey, class typeValue>
 class HashCompare : public QObject

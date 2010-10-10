@@ -20,9 +20,7 @@
 #include <QDesktopWidget>
 #include <QSettings>
 #include <QDir>
-#include <QFileInfoList>
 #include <QFileInfo>
-#include <QtDebug>
 #include <QPointer>
 #include <QCursor>
 

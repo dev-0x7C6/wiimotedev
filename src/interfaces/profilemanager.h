@@ -30,16 +30,16 @@ public:
 
 public:
   DBusProfileManagerInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0)
-      :QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent){
+    :QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent){
 	QWIIMOTEDEV_REGISTER_META_TYPES;
   }
 
-public slots:
+public Q_SLOTS:
   QDBusReply< void> loadProfile(QString file);
   QDBusReply< void> unloadProfile();
   QDBusReply< QString> currentProfile();
 
-signals:
+Q_SIGNALS:
   void executeRequest(QStringList);
 
 };

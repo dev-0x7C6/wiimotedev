@@ -21,7 +21,6 @@
 #define WIIMOTECONNECTION_H
 
 #include <QThread>
-#include <QObject>
 
 #include "adaptors/deviceevents.h"
 #include "core/wiiremote.h"
@@ -29,8 +28,6 @@
 class DBusDeviceEventsAdaptorWrapper;
 class WiimoteDevice;
 class WiimoteConnection;
-
-class QThread;
 
 class WiimoteConnection : public QThread
 {

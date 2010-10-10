@@ -174,7 +174,7 @@ public Q_SLOTS:
   bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
   bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
 
-signals:
+Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
   void dbusWiimoteGeneralButtons(quint32, quint64);
 

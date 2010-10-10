@@ -20,17 +20,6 @@
 #ifndef ADAPTORS_UINPUTSERVICE_H
 #define ADAPTORS_UINPUTSERVICE_H
 
-#include <QDBusAbstractAdaptor>
-#include <QDBusAbstractInterface>
-#include <QDBusArgument>
-#include <QDBusConnection>
-#include <QDBusReply>
-
-#include <QList>
-
-#include <QDBusMetaType>
-#include <QMetaType>
-
 #include "adaptors/adaptors.h"
 
 class DBusServiceAdaptor :public QDBusAbstractAdaptor
@@ -46,9 +35,7 @@ class DBusServiceAdaptor :public QDBusAbstractAdaptor
    "")
 public:
   DBusServiceAdaptor (QObject *parent = 0);
-
-public slots:
-  bool isWiimotedevServiceAvailable();
+  Q_SLOT bool isWiimotedevServiceAvailable();
 
 };
 
@@ -62,9 +49,7 @@ public:
   DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection connection);
 
   inline bool isRegistred() { return registred; }
-
-public slots:
-  bool isWiimotedevServiceAvailable();
+  Q_SLOT bool isWiimotedevServiceAvailable();
 
 };
 

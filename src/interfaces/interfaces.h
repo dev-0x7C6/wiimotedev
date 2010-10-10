@@ -21,14 +21,12 @@
 #define INTERFACES_INTERFACES_H
 
 #include <QDBusAbstractInterface>
-#include <QDBusArgument>
-#include <QDBusConnection>
 #include <QDBusReply>
-
-#include <QList>
-
 #include <QDBusMetaType>
-#include <QMetaType>
+
+#ifndef QWIIMOTEDEV_MARSHALL
+#include <QDBusArgument>
+#endif
 
 #include "headers/consts.h"
 

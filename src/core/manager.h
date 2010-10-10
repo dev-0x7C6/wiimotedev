@@ -21,11 +21,6 @@
 #define CONNECTIONMANAGER_H
 
 #include <QThread>
-#include <QMap>
-#include <QStringList>
-#include <QScopedPointer>
-
-#include <cwiid.h>
 
 #include "adaptors/deviceevents.h"
 #include "adaptors/daemonservice.h"

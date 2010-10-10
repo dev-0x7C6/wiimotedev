@@ -18,10 +18,8 @@
  **********************************************************************************/
 
 #include <QCoreApplication>
-#include <QMapIterator>
+#include <QTimer>
 #include <QSettings>
-#include <QHostAddress>
-#include <QEventLoop>
 
 #include "network/clientmanager.h"
 

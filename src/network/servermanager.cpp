@@ -17,10 +17,9 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
+#include "core/manager.h"
 #include "network/servermanager.h"
 #include "syslog/syslog.h"
-
-#include "core/manager.h"
 
 NetworkServerThread::NetworkServerThread(QStringList allowed, quint16 port, ConnectionManager *manager)
   :allowed(allowed),

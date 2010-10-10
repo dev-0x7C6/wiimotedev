@@ -35,9 +35,7 @@ class DBusServiceAdaptor : public QDBusAbstractAdaptor
 
 public:
   DBusServiceAdaptor(QObject *parent);
-
-public slots:
-  bool dbusReloadSequenceList();
+  Q_SLOT bool dbusReloadSequenceList();
 };
 
 class DBusServiceAdaptorWrapper : public QObject
@@ -49,9 +47,7 @@ private:
 public:
   DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection);
   inline bool isRegistred() { return registred; }
-
-public Q_SLOTS:
-  bool dbusReloadSequenceList();
+  Q_SLOT bool dbusReloadSequenceList();
 };
 
 #endif // ADAPTORS_DAEMONSERVICE_H

@@ -31,15 +31,9 @@
 // --no-daemon -> do not run in daemon mode
 // --no-quiet -> do not block stdout messages
 
-#include <stdlib.h>
-#include <signal.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdio.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <unistd.h>
-#include <string.h>
+#include <signal.h>
+#include <stdlib.h>
 
 #include "adaptors/adaptors.h"
 #include "headers/consts.h"

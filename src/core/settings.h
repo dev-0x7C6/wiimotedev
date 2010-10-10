@@ -25,6 +25,8 @@
 
 #include "headers/consts.h"
 
+class QStringList;
+
 class WiimotedevSettings : public QObject
 {
 private:

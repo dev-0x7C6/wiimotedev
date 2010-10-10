@@ -17,10 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include <QThread>
-#include <QTimer>
 #include <QTime>
-#include <QDebug>
 #include <math.h>
 
 #include "core/connection.h"

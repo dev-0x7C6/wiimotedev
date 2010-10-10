@@ -21,13 +21,12 @@
 #define ADAPTORS_ADAPTORS_H
 
 #include <QDBusAbstractAdaptor>
-#include <QDBusArgument>
 #include <QDBusConnection>
-
-#include <QList>
-
 #include <QDBusMetaType>
-#include <QMetaType>
+
+#ifndef QWIIMOTEDEV_MARSHALL
+#include <QDBusArgument>
+#endif
 
 #include "headers/consts.h"
 

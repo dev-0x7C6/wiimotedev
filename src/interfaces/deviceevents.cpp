@@ -20,77 +20,77 @@
 #include "deviceevents.h"
 
 QDBusReply < bool> DBusDeviceEventsInterface::dbusWiimoteGetRumbleStatus(quint32 id) {
-    QList<QVariant> argumentList;
-    argumentList << id;
-    return callWithArgumentList(QDBus::Block, "dbusWiimoteGetRumbleStatus", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id;
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteGetRumbleStatus", argumentList);
 }
 
 QDBusReply < bool> DBusDeviceEventsInterface::dbusWiimoteSetLedStatus(quint32 id, quint32 status) {
-    QList<QVariant> argumentList;
-    argumentList << id;
-    argumentList << status;
-    return callWithArgumentList(QDBus::Block, "dbusWiimoteSetLedStatus", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id;
+  argumentList << status;
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteSetLedStatus", argumentList);
 }
 
 QDBusReply < bool> DBusDeviceEventsInterface::dbusWiimoteSetRumbleStatus(quint32 id, bool status) {
-    QList<QVariant> argumentList;
-    argumentList << id << status;
-    return callWithArgumentList(QDBus::Block, "dbusWiimoteSetRumbleStatus", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id << status;
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteSetRumbleStatus", argumentList);
 }
 
 QDBusReply < QList <uint> > DBusDeviceEventsInterface::dbusGetWiimoteList() {
-    return call(QDBus::Block, "dbusGetWiimoteList");
+  return call(QDBus::Block, "dbusGetWiimoteList");
 }
 
 QDBusReply < QStringList> DBusDeviceEventsInterface::dbusGetUnregistredWiimoteList() {
-    return call(QDBus::Block, "dbusGetUnregistredWiimoteList");
+  return call(QDBus::Block, "dbusGetUnregistredWiimoteList");
 }
 
 QDBusReply < bool> DBusDeviceEventsInterface::dbusIsClassicConnected(quint32 id) {
-    QList<QVariant> argumentList;
-    argumentList << id;
-    return callWithArgumentList(QDBus::Block, "dbusIsClassicConnected", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id;
+  return callWithArgumentList(QDBus::Block, "dbusIsClassicConnected", argumentList);
 }
 
 QDBusReply < bool> DBusDeviceEventsInterface::dbusIsNunchukConnected(quint32 id) {
-    QList<QVariant> argumentList;
-    argumentList << id;
-    return callWithArgumentList(QDBus::Block, "dbusIsNunchukConnected", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id;
+  return callWithArgumentList(QDBus::Block, "dbusIsNunchukConnected", argumentList);
 }
 
 QDBusReply < bool> DBusDeviceEventsInterface::dbusIsWiimoteConnected(quint32 id) {
-    QList<QVariant> argumentList;
-    argumentList << id;
-    return callWithArgumentList(QDBus::Block, "dbusIsWiimoteConnected", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id;
+  return callWithArgumentList(QDBus::Block, "dbusIsWiimoteConnected", argumentList);
 }
 
 QDBusReply < quint8> DBusDeviceEventsInterface::dbusWiimoteAverageLatency(quint32 id) {
-    QList<QVariant> argumentList;
-    argumentList << id;
-    return callWithArgumentList(QDBus::Block, "dbusWiimoteAverageLatency", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id;
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteAverageLatency", argumentList);
 }
 
 QDBusReply < quint8> DBusDeviceEventsInterface::dbusWiimoteCurrentLatency(quint32 id) {
-    QList<QVariant> argumentList;
-    argumentList << id;
-    return callWithArgumentList(QDBus::Block, "dbusWiimoteCurrentLatency", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id;
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteCurrentLatency", argumentList);
 }
 
 QDBusReply < quint8> DBusDeviceEventsInterface::dbusWiimoteGetStatus(quint32 id) {
-    QList<QVariant> argumentList;
-    argumentList << id;
-    return callWithArgumentList(QDBus::Block, "dbusWiimoteGetStatus", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id;
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteGetStatus", argumentList);
 }
 
 
 QDBusReply < quint8> DBusDeviceEventsInterface::dbusWiimoteGetLedStatus(quint32 id) {
-    QList<QVariant> argumentList;
-    argumentList << id;
-    return callWithArgumentList(QDBus::Block, "dbusWiimoteGetLedStatus", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id;
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteGetLedStatus", argumentList);
 }
 
 QDBusReply < quint32> DBusDeviceEventsInterface::dbusWiimoteGetBatteryLife(quint32 id) {
-    QList<QVariant> argumentList;
-    argumentList << id;
-    return callWithArgumentList(QDBus::Block, "dbusWiimoteGetBatteryLife", argumentList);
+  QList<QVariant> argumentList;
+  argumentList << id;
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteGetBatteryLife", argumentList);
 }

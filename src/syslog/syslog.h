@@ -20,8 +20,9 @@
 #ifndef SYSLOG_H
 #define SYSLOG_H
 
-#include <QString>
 #include "config.h"
+
+class QString;
 
 namespace systemlog {
   void open(const char *name);
