@@ -33,7 +33,7 @@ start() {
 
 stop() {
 
-  if [ -e "$PIDFILE" ]; then
+  if [ -f "$PIDFILE" ]; then
     kill -s 3 $(cat $PIDFILE) &> /dev/null
     rm -f $PIDFILE &> /dev/null
   else

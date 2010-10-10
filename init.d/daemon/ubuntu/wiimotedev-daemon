@@ -42,8 +42,8 @@ start() {
 
 stop() {
 
-  if [ -e "$PIDFILE" ]; then
-    kill -s 3 $(cat $PIDFILE) &> /dev/null
+  if [ -f "$PIDFILE" ]; then
+    start-stop-daemon --stop -q -p "$PIDFILE" --group "$GROUP"
     rm -f $PIDFILE &> /dev/null
   else
     echo "Please start service first."
