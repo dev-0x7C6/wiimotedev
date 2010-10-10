@@ -1,4 +1,7 @@
 #! /bin/sh
+# Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
+# Copyright (C) 2010 Jarek Bojko
+# Contact: vazir.pl@gmail.com
 
 ### BEGIN INIT INFO
 # Provides:          Wiimotedev
@@ -9,112 +12,85 @@
 # Short-Description: Wiimotedev daemon
 ### END INIT INFO
 
-# Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
-# Copyright (C) 2010 Jarek Bojko
-# Contact: vazir.pl@gmail.com
-
 PIDFILE=/var/run/wiimotedev-daemon.pid
 SERVICE=/usr/sbin/wiimotedev-daemon
 GROUP=wiimotedev
 CONFIG=/etc/wiimotedev/wiimotedev.conf
 
-# int wiimotedev_check_group()
+start() {
 
-wiimotedev_check_group() {
-  if [ -z $(cat /etc/group | grep "$GROUP") ]; then
-    echo " -- Adding new group \"${GROUP}\""
-    groupadd $GROUP
+  if [ -z $(cat /etc/group | grep $GROUP) ]; then
+    groupadd $GROUP &> /dev/null
 
-    if [ -n $(cat /etc/group | grep "$GROUP") ]; then
-      echo " -- Group \"${GROUP}\" added successful"
-    else
-      echo " -- Cannot add new group \"${GROUP}\""
-      return 1
+    if [ ! -n $(cat /etc/group | grep $GROUP) ]; then
+      echo "Cannot add new group $GROUP"
+      exit 1
     fi
+
   fi
-}
-
-# int wiimotedev_start()
-
-wiimotedev_start() {
-  wiimotedev_check_group
-
-  if [ ! -x $SERVICE ]; then
-    echo " -- ${SERVICE} file is not executable"
-    return 1
-  fi
-
-  start-stop-daemon --start -q -x "$SERVICE" --group "$GROUP"
-}
-
-# int wiimotedev_stop()
-
-wiimotedev_stop() {
-  wiimotedev_check_group
 
   if [ -f "$PIDFILE" ]; then
-    start-stop-daemon --stop -q -p "$PIDFILE" --group "$GROUP"
+    echo "Already running. Please remove $PIDFILE to force start."
+    exit 1
   fi
+
+  if [ -x "$SERVICE" ]; then
+    start-stop-daemon --start -q -x "$SERVICE" --group "$GROUP"
+  fi
+
 }
 
+stop() {
 
-# int wiimotedev_reload()
-
-wiimotedev_reload() {
-  if [ ! -f "$PIDFILE" ]; then
-    echo " -- \"${PIDFILE}\" file does not exist"
-    return 1
-  fi
-
-  if [ ! -f "$CONFIG" ]; then
-    echo " -- \"${CONFIG}\" configuration does not exist"
-    return 1
-  fi
-
-
-  if [ $(cat /proc/$(cat /var/run/wiimotedev-daemon.pid)/cmdline) != $SERVICE ]; then
-    echo " -- Unable to find service"
-    return 1
-  fi
-
-  S1=$(dbus-send \
-            --system \
-            --dest=org.wiimotedev.daemon \
-	    --type=method_call \
-	    --print-reply \
-	    --reply-timeout=3000 \
-	    /service \
-	    org.wiimotedev.service.dbusReloadSequenceList)
-
-  if [ -n "$(echo ${S1} | grep "boolean true")" ]; then
-    echo " -- Configuration reloaded successful"
+  if [ -e "$PIDFILE" ]; then
+    kill -s QUIT $(cat $PIDFILE) &> /dev/null
+    rm -f $PIDFILE &> /dev/null
   else
-    echo " -- Cannot reload configuration, dbus fail?"
-    return 1
+    echo "Please start service first."
+    exit 1
+  fi
+
+}
+
+reload() {
+
+  if [ ! -f "$PIDFILE" ]; then
+    echo "Please run service first."
+    exit 1
+  fi
+
+  S1=$(dbus-send --system --dest=org.wiimotedev.daemon \
+       --type=method_call --print-reply --reply-timeout=3000 \
+       /service org.wiimotedev.service.dbusReloadSequenceList)
+
+  if [ ! -n "$(echo ${S1} | grep "boolean true")" ]; then
+    echo "Failed."
+    exit 1
   fi
 
 }
 
 case "$1" in
   start)
-    echo "Starting Wiimotedev-daemon"
-    wiimotedev_start
+    stat_busy "Starting Wiimotedev-daemon"
+    start
     ;;
   stop)
-    echo "Stopping Wiimotedev-daemon"
-    wiimotedev_stop
-    ;;
-  reload)
-    echo "Reloading Wiimotedev-daemon"
-    wiimotedev_reload
+    stat_busy "Stopping Wiimotedev-daemon"
+    stop
     ;;
   restart)
-    echo "Restarting Wiimotedev-daemon"
-    wiimotedev_stop
-    wiimotedev_start
+    stat_busy "Stopping Wiimotedev-daemon"
+    stop
+    stat_busy "Starting Wiimotedev-daemon"
+    start
+    ;;
+  reload)
+    stat_busy "Reloading Wiimotedev-daemon"
+    reload
     ;;
   *)
-    echo "Usage (start | stop | reload | restart)"
+    echo $"Usage: $0 {start | stop | reload | restart }"
     ;;
 esac
 

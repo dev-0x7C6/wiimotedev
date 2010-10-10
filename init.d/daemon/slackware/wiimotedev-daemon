@@ -22,9 +22,9 @@ start() {
 
   if [ -f "$PIDFILE" ]; then
     echo "Already running. Please remove $PIDFILE to force start."
-    exit 1  
+    exit 1
   fi
-  
+
   if [ -x "$SERVICE" ]; then
     ($SERVICE)
   fi
@@ -47,7 +47,7 @@ reload() {
 
   if [ ! -f "$PIDFILE" ]; then
     echo "Please run service first."
-    exit 1  
+    exit 1
   fi
 
   S1=$(dbus-send --system --dest=org.wiimotedev.daemon \
@@ -57,7 +57,7 @@ reload() {
   if [ ! -n "$(echo ${S1} | grep "boolean true")" ]; then
     exit 1
   fi
-  
+
 }
 
 case "$1" in

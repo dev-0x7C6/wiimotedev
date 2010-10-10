@@ -8,7 +8,7 @@ STRING(COMPARE EQUAL "${DISTRO}" "${CURRENT}" valid)
 
 if (valid) 
   message( "-- Init.d script for ${DISTRO} is available [wiimotedev-daemon]" )
-  install(FILES wiimotedev-daemon DESTINATION ${init_directory}
+  install(FILES wiimotedev-daemon DESTINATION "/etc/init.d/"
 	    PERMISSIONS
 	      OWNER_READ  OWNER_WRITE  OWNER_EXECUTE
 	      GROUP_READ

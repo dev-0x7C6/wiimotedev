@@ -10,109 +10,76 @@ CONFIG=/etc/wiimotedev/wiimotedev.conf
 
 opts="reload"
 
-# int wiimotedev_check_group()
-
-function wiimotedev_check_group {
-  if [ -z $(cat /etc/group | grep "$GROUP") ]; then
-    echo " -- Adding new group \"${GROUP}\""
-    groupadd $GROUP
-
-    if [ -n $(cat /etc/group | grep "$GROUP") ]; then
-      echo " -- Group \"${GROUP}\" added successful"
-    else
-      echo " -- Cannot add new group \"${GROUP}\""
-      return 1
-    fi
-  fi
-}
-
-# int wiimotedev_start()
-
-function wiimotedev_start() {
-  wiimotedev_check_group
-
-  if [ ! -x $SERVICE ]; then
-    echo " -- ${SERVICE} file is not executable"
-    return 1
-  fi
-
-  start-stop-daemon --start -q -x "$SERVICE" --group "$GROUP"
-}
-
-# int wiimotedev_stop()
-
-function wiimotedev_stop() {
-  wiimotedev_check_group
-
-  if [ -f "$PIDFILE" ]; then
-    start-stop-daemon --stop -q -p "$PIDFILE" --group "$GROUP"
-  fi
-}
-
-
-# int wiimotedev_reload()
-
-function wiimotedev_reload() {
-  if [ ! -f "$PIDFILE" ]; then
-    echo " -- \"${PIDFILE}\" file does not exist"
-    return 1
-  fi
-
-  if [ ! -f "$CONFIG" ]; then
-    echo " -- \"${CONFIG}\" configuration does not exist"
-    return 1
-  fi
-
-
-  if [ $(cat /proc/$(cat /var/run/wiimotedev-daemon.pid)/cmdline) != $SERVICE ]; then
-    echo " -- Unable to find service"
-    return 1
-  fi
-
-  S1=$(dbus-send \
-            --system \
-            --dest=org.wiimotedev.daemon \
-	    --type=method_call \
-	    --print-reply \
-	    --reply-timeout=3000 \
-	    /service \
-	    org.wiimotedev.service.dbusReloadSequenceList)
-
-  if [ -n "$(echo ${S1} | grep "boolean true")" ]; then
-    echo " -- Configuration reloaded successful"
-  else
-    echo " -- Cannot reload configuration, dbus fail?"
-    return 1
-  fi
-  
-}
-
 depend() {
 	need dbus 
 	after bluetooth
 }
 
 start() {
-	ebegin "Starting Wiimotedev-daemon"
-	wiimotedev_start
-	eend $?
-}
+  ebegin "Starting Wiimotedev-daemon"
 
-restart() {
-	ebegin "Restarting Wiimotedev-daemon"
-	wiimotedev_start
-	wiimotedev_stop
-	eend $?
-}
+  if [ -z $(cat /etc/group | grep $GROUP) ]; then
+    groupadd $GROUP &> /dev/null
 
-reload() {
-	ebegin "Reloading Wiimotedev-daemon"
-	wiimotedev_reload
-	eend $?
+    if [ ! -n $(cat /etc/group | grep $GROUP) ]; then
+      eend 1
+      echo "Cannot add new group $GROUP"
+      exit 1
+    fi
+
+  fi
+
+  if [ -f "$PIDFILE" ]; then
+    eend 1
+    echo "Already running. Please remove $PIDFILE to force start."
+    exit 1  
+  fi
+  
+  if [ -x "$SERVICE" ]; then
+    start-stop-daemon --start -q -x "$SERVICE" --group "$GROUP"
+  fi
+
+  eend 0
 }
 
 stop() {
-	ebegin "Stopping Wiimotedev-daemon"
-	wiimotedev_stop
-	eend $?
+  ebegin "Stopping Wiimotedev-daemon"
+
+  if [ -e "$PIDFILE" ]; then
+    kill -s QUIT $(cat $PIDFILE) &> /dev/null
+    rm -f $PIDFILE &> /dev/null
+  else
+    eend 1
+    echo "Please start service first."
+    exit 1
+  fi
+
+  eend 0
 }
+
+restart() {
+	stop
+	start
+}
+
+reload() {
+  ebegin "Reloading Wiimotedev-daemon"
+
+  if [ ! -f "$PIDFILE" ]; then
+    eend 1
+    echo "Please run service first."
+    exit 1  
+  fi
+
+  S1=$(dbus-send --system --dest=org.wiimotedev.daemon \
+       --type=method_call --print-reply --reply-timeout=3000 \
+       /service org.wiimotedev.service.dbusReloadSequenceList)
+
+  if [ ! -n "$(echo ${S1} | grep "boolean true")" ]; then
+    eend 1
+    exit 1
+  fi
+
+  eend 0  
+}
+
