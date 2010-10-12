@@ -1,7 +1,7 @@
-set( sources
+set(sources
 	arrow-left.png
 	arrow-right.png
 	tray.png
 )
 
-install(FILES ${sources} DESTINATION /usr/share/qwiimotedev/)
+install(FILES ${sources} DESTINATION "${CMAKE_INSTALL_PREFIX}/share/qwiimotedev/")

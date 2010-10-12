@@ -18,11 +18,18 @@
  **********************************************************************************/
 
 #include <QtGui/QApplication>
+#include <QtSingleApplication>
 #include "src/mainwindow.h"
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    MainWindow window;
-    return a.exec();
+  QtSingleApplication application(argc, argv);
+
+  if (application.isRunning())
+       return 0;
+
+  MainWindow window;
+  application.setActivationWindow(&window);
+
+  return application.exec();
 }

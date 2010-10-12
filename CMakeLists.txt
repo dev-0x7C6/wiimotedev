@@ -24,6 +24,11 @@ set(bin_directory "${CMAKE_INSTALL_PREFIX}/bin")
 set(sbin_directory "${CMAKE_INSTALL_PREFIX}/sbin")
 set(include_directory "${CMAKE_INSTALL_PREFIX}/include")
 
+add_subdirectory(3rdparty)
+
+set(QTSINGLEAPPLICATION_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/qtsingleapplication)
+set(QTSINGLEAPPLICATION_LIBRARIES qtsingleapplication)
+
 add_subdirectory(addons)
 add_subdirectory(config)
 add_subdirectory(dbus-1)

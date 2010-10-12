@@ -1,5 +1,16 @@
 cmake_minimum_required(VERSION 2.6)
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR}
+                    ${CMAKE_CURRENT_SOURCE_DIR}
+                    ${CMAKE_SOURCE_DIR}
+                    ${QT_INCLUDE_DIR}
+                    ${QT_QTCORE_INCLUDE_DIR}
+                    ${QT_QTDBUS_INCLUDE_DIR}
+                    ${QT_QTGUI_INCLUDE_DIR}
+                    ${QT_QTNETWORK_INCLUDE_DIR}
+)
+
+
 set(SINGLEAPP-SOURCES
     qtlocalpeer.cpp
     qtlockedfile.cpp
