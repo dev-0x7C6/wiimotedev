@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
   ConnectionManager *manager_thread = new ConnectionManager();
   manager_thread->start(QThread::HighPriority);
   application.take()->exec();
-  manager_thread->terminateRequest();
+  manager_thread->setTerminateRequest(true);
   manager_thread->wait();
 
   delete manager_thread;

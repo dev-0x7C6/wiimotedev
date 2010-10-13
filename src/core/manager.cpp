@@ -31,7 +31,9 @@ ConnectionManager::ConnectionManager(QObject *parent):
   dbusDeviceEventsAdaptor(0),
   dbusServiceAdaptor(0),
   terminateReq(false),
-  criticalError(false)
+  criticalError(false),
+  mutex(new QMutex()),
+  rwlock(new QReadWriteLock())
 {
   memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
   setTerminationEnabled(true);
@@ -75,25 +77,43 @@ ConnectionManager::ConnectionManager(QObject *parent):
   }
 }
 
-void ConnectionManager::terminateRequest() {
-  terminateReq = true;
+ConnectionManager::~ConnectionManager() {
+  delete mutex;
+  delete rwlock;
+}
+
+bool ConnectionManager::getTerminateRequest() {
+  rwlock->lockForRead();
+  bool value = terminateReq;
+  rwlock->unlock();
+  return value;
+}
+
+void ConnectionManager::setTerminateRequest(bool value) {
+  rwlock->lockForWrite();
+  terminateReq = value;
+  mutex->unlock();
+  rwlock->unlock();
 }
 
 void ConnectionManager::run() {
   if (criticalError)
     return;
 
-  connections << (new WiimoteConnection(1));
+  connections << (new WiimoteConnection(wiimotedevSettings->getPowerSaveValue()));
   QTime clock;
-  while (!terminateReq) {
+  mutex->lock();
+  while (!getTerminateRequest()) {
     clock.start();
     if (connections.last()->wiimote->connectToDevice(wiimotedevSettings->getPowerSaveValue())) {
       registerConnection(connections.last());
       connections << (new WiimoteConnection(wiimotedevSettings->getPowerSaveValue()));
       continue;
     }
-    msleep((clock.elapsed() < 100 && !terminateReq) ? 1000 : 0);
-  }
+
+    if (clock.elapsed() < 100 && !getTerminateRequest())
+      mutex->tryLock(ConnectionManager::WaitForBluetooth);
+  }  
 
   connections.last()->wiimote->disconnectFromDevice();
   delete connections.last();

@@ -21,6 +21,8 @@
 #define CONNECTIONMANAGER_H
 
 #include <QThread>
+#include <QMutex>
+#include <QReadWriteLock>
 
 #include "adaptors/deviceevents.h"
 #include "adaptors/daemonservice.h"
@@ -58,10 +60,17 @@ private:
   bdaddr_t bdaddr_any;
 
   WiimoteConnection* findWiiremoteObject(quint32 id);
+  QMutex *mutex;
+  QReadWriteLock *rwlock;
 
 public:
   ConnectionManager(QObject *parent = 0);
-  void terminateRequest();
+ ~ConnectionManager();
+
+  bool getTerminateRequest();
+  void setTerminateRequest(bool);
+
+  static const int WaitForBluetooth = 3000;
 
 protected:
   void run();
