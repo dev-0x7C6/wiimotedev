@@ -43,7 +43,9 @@ private:
 
 //
   bool terminateReq;
-  bool criticalError;
+
+  bool dbusInterfaceCreated;
+  bool tcpInterfaceCreated;
 
 // Settings ------------------------------------------------- /
   WiimotedevSettings *wiimotedevSettings;
@@ -52,7 +54,6 @@ private:
   QList< WiimoteConnection*> connections;
 
   QMap< QString, bool> unregisterWiimoteList;
-
 
   QMap< QString, quint32> sequence;
 
@@ -69,6 +70,8 @@ public:
 
   bool getTerminateRequest();
   void setTerminateRequest(bool);
+
+  quint32 result;
 
   static const int WaitForBluetooth = 3000;
 

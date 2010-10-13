@@ -49,7 +49,6 @@ bool force_tcp = false;
 
 void signal_handler(int sig) {
   switch(sig) {
-    case SIGHUP:
     case SIGTERM:
     case SIGINT:
     case SIGQUIT: application.take()->quit(); break;
@@ -73,6 +72,11 @@ int main(int argc, char *argv[])
     qDebug("  --no-quiet\t\tdo not block stdout messages");
     qDebug(" ");
     exit(EXIT_SUCCESS);
+  }
+
+  if (getuid()) {
+    qDebug("root privilages needed.");
+    exit(EXIT_FAILURE);
   }
 
   additional_debug = (application.take()->arguments().indexOf("--debug") != -1);
@@ -127,6 +131,7 @@ int main(int argc, char *argv[])
   application.take()->exec();
   manager_thread->setTerminateRequest(true);
   manager_thread->wait();
+  int result = manager_thread->result;
 
   delete manager_thread;
 
@@ -134,5 +139,5 @@ int main(int argc, char *argv[])
   systemlog::close();
 
   application.reset();
-  exit(EXIT_SUCCESS);
+  exit(result);
 }

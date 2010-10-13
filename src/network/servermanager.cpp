@@ -32,12 +32,11 @@ void NetworkServerThread::run() {
   server = new NetworkServer(allowed, manager);
 
   if (server->listen(QHostAddress::Any, port)) {
-    systemlog::information(QString("listening on %1").arg(QString::number(port, 10)));
+    systemlog::notice(QString("listening on %1").arg(QString::number(port, 10)));
     exec();
     server->close();
-    systemlog::information(QString("close port %1").arg(QString::number(port, 10)));
   } else
-    systemlog::information(QString("can't listen on %1, tcp service halted").arg(QString::number(port, 10)));
+    systemlog::critical(QString("can't listen on %1, tcp service halted").arg(QString::number(port, 10)));
 
   delete server;
 }

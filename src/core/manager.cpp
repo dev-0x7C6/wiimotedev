@@ -21,8 +21,8 @@
 #include <QFile>
 #include <QTime>
 
-#include "syslog/syslog.h"
 #include "core/manager.h"
+#include "syslog/syslog.h"
 
 extern bool additional_debug;
 
@@ -31,25 +31,28 @@ ConnectionManager::ConnectionManager(QObject *parent):
   dbusDeviceEventsAdaptor(0),
   dbusServiceAdaptor(0),
   terminateReq(false),
-  criticalError(false),
   mutex(new QMutex()),
-  rwlock(new QReadWriteLock())
+  rwlock(new QReadWriteLock()),
+  result(EXIT_SUCCESS)
 {
   memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
-  setTerminationEnabled(true);
-
 
   if (!QFile::exists(WIIMOTEDEV_CONFIG_FILE)) {
-    systemlog::error(QString("Missing configuration file %1").arg(WIIMOTEDEV_CONFIG_FILE));
-    systemlog::notice("checkout wiimotedev-project installation");
-    terminateReq = true;
-    criticalError = true;
+    systemlog::critical(QString("missing configuration file %1").arg(WIIMOTEDEV_CONFIG_FILE));
+    result = EXIT_FAILURE;
     return;
   }
 
   systemlog::notice(QString("loading rules from %1").arg(WIIMOTEDEV_CONFIG_FILE));
-
   wiimotedevSettings = new WiimotedevSettings(WIIMOTEDEV_CONFIG_FILE, this);
+
+  if (!(wiimotedevSettings->dbusInterfaceSupport() ||
+        wiimotedevSettings->tcpInterfaceSupport())) {
+    systemlog::critical("invalid configuration");
+    result = EXIT_FAILURE;
+    return;
+  }
+
   sequence = wiimotedevSettings->getWiiremoteSequence();
 
   if (wiimotedevSettings->dbusInterfaceSupport()) {
@@ -62,18 +65,22 @@ ConnectionManager::ConnectionManager(QObject *parent):
     connect(this, SIGNAL(dbusReportUnregistredWiimote(QString)), dbusDeviceEventsAdaptor, SIGNAL(dbusReportUnregistredWiimote(QString)));
 
     if (!(dbusDeviceEventsAdaptor->isRegistred() &&
-          dbusServiceAdaptor->isRegistred() && registred))
-      systemlog::error("can not register dbus service");
+          dbusServiceAdaptor->isRegistred() && registred)) {
+      systemlog::critical("dbus registration fail");
+      result = EXIT_FAILURE;
+      return;
+    }
   }
 
   if (wiimotedevSettings->tcpInterfaceSupport()) {
     networkServerThread = new NetworkServerThread(wiimotedevSettings->tcpGetAllowedHostList(), wiimotedevSettings->tcpGetPort(), this);
     networkServerThread->start();
-  }
-
-  if (!(wiimotedevSettings->tcpInterfaceSupport() || wiimotedevSettings->dbusInterfaceSupport())) {
-    systemlog::error("dbus/tcp disabled, stoping wiimotedev");
-    terminateReq = true;
+    networkServerThread->wait(50);
+    if (networkServerThread->isFinished()) {
+      delete networkServerThread;
+      result = EXIT_FAILURE;
+      return;
+    }
   }
 }
 
@@ -97,7 +104,7 @@ void ConnectionManager::setTerminateRequest(bool value) {
 }
 
 void ConnectionManager::run() {
-  if (criticalError)
+  if (result == EXIT_FAILURE)
     return;
 
   connections << (new WiimoteConnection(wiimotedevSettings->getPowerSaveValue()));
