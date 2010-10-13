@@ -42,6 +42,7 @@ private:
   quint16 tcpPort;
 
   quint32 powersave;
+  quint32 timeout;
 
 public:
   WiimotedevSettings(QString file = WIIMOTEDEV_CONFIG_FILE, QObject *parent = 0);
@@ -58,6 +59,7 @@ public:
   inline quint16 tcpGetPort() { return tcpPort; }
 
   inline quint32 getPowerSaveValue() { return powersave; }
+  inline quint32 getConnectionTimeoutValue() { return timeout; }
 
   void setDBusInterfaceSupport(bool support);
   void setTcpInterfaceSupport(bool support);

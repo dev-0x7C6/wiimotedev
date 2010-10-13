@@ -112,7 +112,7 @@ void ConnectionManager::run() {
   mutex->lock();
   while (!getTerminateRequest()) {
     clock.start();
-    if (connections.last()->wiimote->connectToDevice(wiimotedevSettings->getPowerSaveValue())) {
+    if (connections.last()->wiimote->connectToDevice(wiimotedevSettings->getConnectionTimeoutValue())) {
       registerConnection(connections.last());
       connections << (new WiimoteConnection(wiimotedevSettings->getPowerSaveValue()));
       continue;
