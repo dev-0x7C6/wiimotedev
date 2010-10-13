@@ -26,7 +26,10 @@
 extern bool additional_debug;
 
 ConnectionManager::ConnectionManager()
-  :terminateReq(false)
+  :terminateReq(false),
+   mutex(new QMutex()),
+   reconnect(new QMutex()),
+   rwlock(new QReadWriteLock())
 {
   QSettings settings(confFile, QSettings::IniFormat);
 
@@ -71,50 +74,55 @@ ConnectionManager::ConnectionManager()
 
 ConnectionManager::~ConnectionManager()
 {
+  delete mutex;
+  delete reconnect;
+  delete rwlock;
 }
 
 void ConnectionManager::run()
 {
-  QTimer *timer = new QTimer();
-  socket = new QTcpSocket();
+  stream.setDevice(socket = new QTcpSocket());
+  stream.setVersion(QDataStream::Qt_4_0);
 
-  connect(timer, SIGNAL(timeout()), this, SLOT(quit()));
-  connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()), Qt::QueuedConnection);
+  connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
+  connect(socket, SIGNAL(disconnected()), this, SLOT(quit()));
 
-  timer->setInterval(tcpTimeout * 1000);
-
-  while (!terminateReq) {
-    if (!socket->isValid())
-      socket->connectToHost(tcpHostname, tcpPort);
-    timer->start();
+  reconnect->lock();
+  while (!getTerminateRequest()) {
+    socket->connectToHost(tcpHostname, tcpPort);
     exec();
-    timer->stop();
+    if (socket->isValid())
+      socket->disconnectFromHost();
+
+    reconnect->tryLock(tcpTimeout * 1000); // reconnect wait
   }
 
   if (socket->isValid())
       socket->disconnectFromHost();
 
   delete socket;
-  delete timer;
 
-  terminateReq = true;
+  setTerminateRequest(true);
   QCoreApplication::quit();
 }
 
-void ConnectionManager::terminateRequest()
-{
-  if (terminateReq)
-    return;
-
-  terminateReq = true;
-  quit();
+void ConnectionManager::setTerminateRequest(bool value) {
+  rwlock->lockForWrite();
+  terminateReq = value;
+  reconnect->unlock();
+  rwlock->unlock();
 }
+
+bool ConnectionManager::getTerminateRequest() {
+  rwlock->lockForRead();
+  bool value = terminateReq;
+  rwlock->unlock();
+  return value;
+}
+
 
 void ConnectionManager::readyRead()
 {  
-  QDataStream stream(socket);
-  stream.setVersion(QDataStream::Qt_4_0);
-
   quint16 signal;
   quint32 id;
   quint32 count;
@@ -127,119 +135,121 @@ void ConnectionManager::readyRead()
   struct accdata acc;
   QList < struct irpoint> irpoints;
 
-  do { stream >> signal >> id; switch (signal)
+  do {
+    stream >> signal >> id; switch (signal)
   {
     case iddbusWiimoteGeneralButtons:
-        stream >> value;
-        emit dbusWiimoteGeneralButtons(id, value);
-        break;
+      stream >> value;
+      emit dbusWiimoteGeneralButtons(id, value);
+      break;
 
     case iddbusWiimoteConnected:
-        emit dbusWiimoteConnected(id);
-        break;
+      emit dbusWiimoteConnected(id);
+      break;
 
     case iddbusWiimoteDisconnected:
-        emit dbusWiimoteDisconnected(id);
-        break;
+      emit dbusWiimoteDisconnected(id);
+      break;
 
     case iddbusWiimoteBatteryLife:
-        stream >> status;
-        emit dbusWiimoteBatteryLife(id, status);
-        break;
+      stream >> status;
+      emit dbusWiimoteBatteryLife(id, status);
+      break;
 
     case iddbusWiimoteButtons:
-        stream >> value;
-        emit dbusWiimoteButtons(id, value);
-        break;
+      stream >> value;
+      qDebug() << value;
+      emit dbusWiimoteButtons(id, value);
+      break;
 
     case iddbusWiimoteStatus:
-        stream >> status;
-        emit dbusWiimoteStatus(id, status);
-        break;
+      stream >> status;
+      emit dbusWiimoteStatus(id, status);
+      break;
 
     case iddbusWiimoteInfrared:
-        stream >> count;
+      stream >> count;
 
-        for (register int i = 0; i < count; ++i) {
-            struct irpoint ir;
-            stream >> ir.size;
-            stream >> ir.x;
-            stream >> ir.y;
-            irpoints << ir;
-        }
+      for (register int i = 0; i < count; ++i) {
+        struct irpoint ir;
+        stream >> ir.size;
+        stream >> ir.x;
+        stream >> ir.y;
+        irpoints << ir;
+      }
 
-        emit dbusWiimoteInfrared(id, irpoints);
-        break;
+      emit dbusWiimoteInfrared(id, irpoints);
+      break;
 
     case iddbusWiimoteAcc:
-        stream >> acc.pitch;
-        stream >> acc.roll;
-        stream >> acc.x;
-        stream >> acc.y;
-        stream >> acc.z;
+      stream >> acc.pitch;
+      stream >> acc.roll;
+      stream >> acc.x;
+      stream >> acc.y;
+      stream >> acc.z;
 
-        emit dbusWiimoteAcc(id, acc);
-        break;
+      emit dbusWiimoteAcc(id, acc);
+      break;
 
     case iddbusNunchukPlugged:
-        emit dbusNunchukPlugged(id);
-        break;
+      emit dbusNunchukPlugged(id);
+      break;
 
     case iddbusNunchukUnplugged:
-        emit dbusNunchukUnplugged(id);
-        break;
+      emit dbusNunchukUnplugged(id);
+      break;
 
     case iddbusNunchukButtons:
-        stream >> value;
-        emit dbusNunchukButtons(id, value);
-        break;
+      stream >> value;
+      emit dbusNunchukButtons(id, value);
+      break;
 
     case iddbusNunchukStick:
-        stream >> stick.x;
-        stream >> stick.y;
-        emit dbusNunchukStick(id, stick);
-        break;
+      stream >> stick.x;
+      stream >> stick.y;
+      emit dbusNunchukStick(id, stick);
+      break;
 
     case iddbusNunchukAcc:
-        stream >> acc.pitch;
-        stream >> acc.roll;
-        stream >> acc.x;
-        stream >> acc.y;
-        stream >> acc.z;
+      stream >> acc.pitch;
+      stream >> acc.roll;
+      stream >> acc.x;
+      stream >> acc.y;
+      stream >> acc.z;
 
-        emit dbusNunchukAcc(id, acc);
-        break;
+      emit dbusNunchukAcc(id, acc);
+      break;
 
     case iddbusClassicControllerPlugged:
-        emit dbusClassicControllerPlugged(id);
-        break;
+      emit dbusClassicControllerPlugged(id);
+      break;
 
     case iddbusClassicControllerUnplugged:
-        emit dbusClassicControllerUnplugged(id);
-        break;
+      emit dbusClassicControllerUnplugged(id);
+      break;
 
     case iddbusClassicControllerButtons:
-        stream >> value;
-        emit dbusClassicControllerButtons(id, value);
-        break;
+      stream >> value;
+      emit dbusClassicControllerButtons(id, value);
+      break;
 
     case iddbusClassicControllerLStick:
-        stream >> stick.x;
-        stream >> stick.y;
-        emit dbusClassicControllerLStick(id, stick);
-        break;
+      stream >> stick.x;
+      stream >> stick.y;
+      emit dbusClassicControllerLStick(id, stick);
+      break;
 
     case iddbusClassicControllerRStick:
-        stream >> stick.x;
-        stream >> stick.y;
-        emit dbusClassicControllerRStick(id, stick);
-        break;
+      stream >> stick.x;
+      stream >> stick.y;
+      emit dbusClassicControllerRStick(id, stick);
+      break;
 
     case iddbusWiimoteSetLedStatus:
-        stream >> boolean;
-        waitMethod[iddbusWiimoteSetLedStatus]->quit();
-        outMethod[iddbusWiimoteSetLedStatus] = QVariant(boolean);
-        break;
+      stream >> boolean;
+      waitMethod[iddbusWiimoteSetLedStatus]->quit();
+      outMethod[iddbusWiimoteSetLedStatus] = QVariant(boolean);
+      break;
     }
   } while (!stream.atEnd());
 }

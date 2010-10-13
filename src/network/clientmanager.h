@@ -27,6 +27,8 @@
 #include "syslog/syslog.h"
 
 #include <QThread>
+#include <QMutex>
+#include <QReadWriteLock>
 #include <QTcpSocket>
 #include <QEventLoop>
 
@@ -49,8 +51,13 @@ private:
   quint16 tcpPort;
 
   QTcpSocket *socket;
+  QMutex *mutex;
+  QMutex *reconnect;
+  QReadWriteLock *rwlock;
 
   bool terminateReq;
+
+  QDataStream stream;
 
   QHash < qint32, QEventLoop*> waitMethod;
   QHash < qint32, QVariant> outMethod;
@@ -59,7 +66,10 @@ public:
   ConnectionManager();
  ~ConnectionManager();
 
- void terminateRequest();
+  void setTerminateRequest(bool);
+  bool getTerminateRequest();
+
+  quint32 result;
 
 protected:
   void run();

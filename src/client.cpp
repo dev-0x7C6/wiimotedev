@@ -45,7 +45,6 @@ bool additional_debug = false;
 
 void signal_handler(int sig) {
   switch(sig) {
-    case SIGHUP:
     case SIGTERM:
     case SIGINT:
     case SIGQUIT: application.take()->quit(); break;
@@ -67,6 +66,11 @@ int main(int argc, char *argv[])
     qDebug("  --no-quiet\t\tdo not block stdout messages");
     qDebug(" ");
     exit(EXIT_SUCCESS);
+  }
+
+  if (getuid()) {
+    qDebug("root privilages needed.");
+    exit(EXIT_FAILURE);
   }
 
   additional_debug = (application.take()->arguments().indexOf("--debug") != -1);
@@ -118,13 +122,14 @@ int main(int argc, char *argv[])
   ConnectionManager manager;
   manager.start();
   application.take()->exec();
-  manager.terminateRequest();
+  manager.setTerminateRequest(true);
   manager.wait();
+  int result = manager.result;
 
   systemlog::information("system service closed");
   systemlog::close();
 
   application.reset();
 
-  exit(EXIT_SUCCESS);
+  exit(result);
 }

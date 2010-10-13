@@ -83,6 +83,11 @@ int main(int argc, char *argv[])
     exit(EXIT_SUCCESS);
   }
 
+  if (getuid()) {
+    qDebug("root privilages needed.");
+    exit(EXIT_FAILURE);
+  }
+
   additional_debug = (application.take()->arguments().indexOf("--debug") != -1);
 
   if (application.take()->arguments().indexOf("--no-daemon") == -1) {

@@ -49,6 +49,7 @@ bool force_tcp = false;
 
 void signal_handler(int sig) {
   switch(sig) {
+    case SIGHUP:
     case SIGTERM:
     case SIGINT:
     case SIGQUIT: application.take()->quit(); break;
