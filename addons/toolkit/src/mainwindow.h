@@ -104,8 +104,22 @@ public:
     ~MainWindow();
 
 private:
-    QGraphicsTextItem *infraredTitle;
-    QHash < quint32, QGraphicsTextItem*> infraredPointsText;
+    QGraphicsItemGroup infraredGroup;
+    QGraphicsTextItem infraredTitle;
+    QGraphicsTextItem* infraredPointsText[4];
+
+    QGraphicsItemGroup wiimoteAccGroup;
+    QGraphicsTextItem wiimoteAccTitle;
+    QGraphicsTextItem* wiimoteAccPointsText[5];
+
+    QGraphicsItemGroup nunchukAccGroup;
+    QGraphicsTextItem nunchukAccTitle;
+    QGraphicsTextItem* nunchukAccPointsText[4];
+
+    QGraphicsTextItem wiimoteStdButtonText;
+    QGraphicsTextItem wiimoteExtButtonText;
+
+    QMap <quint64, QString> text_buttons_;
 
     quint32 wiimoteId;
     quint8 leds;
@@ -113,9 +127,6 @@ private:
     InfraredInfo *irInfo;
 
     SelectWiimote *selectWiimote;
-
-    struct accdata wiimoteAccTable;
-    struct accdata nunchukAccTable;
 
     DotItem *classicLStickDot;
     DotItem *classicRStickDot;
@@ -132,7 +143,11 @@ private:
     double heightMultiplier;
     double dotSizeMultiplier;
 
+    QString getReadableWiiremoteSequence(quint64);
+
+    void updateButtonInfo(quint64);
     void updateInfraredInfo(QList < struct irpoint>);
+    void updateWiimoteAccInfo(int, int, int, double, double);
 
 private slots:
     void changeDevicePushed();
@@ -146,15 +161,13 @@ private slots:
 
     void dbusNunchukPlugged(quint32 id);
     void dbusNunchukUnplugged(quint32 id);
-  //  void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
+    void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
 
   //  void dbusWiimoteBatteryLife(quint32 id, quint8 life);
-    void dbusWiimoteButtons(quint32 id, quint64 value);
   //  void dbusWiimoteStatus(quint32 id, quint8 status);
     void dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points);
     void dbusWiimoteAcc(quint32 id, struct accdata acc);
 
-    void dbusNunchukButtons(quint32 id, quint64 value);
     void dbusNunchukStick(quint32 id, struct stickdata stick);
     void dbusNunchukAcc(quint32 id, struct accdata acc);
 
