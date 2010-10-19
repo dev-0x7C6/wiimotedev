@@ -141,6 +141,8 @@ void WiimoteConnection::run()
   currentLatency = 0;
   averageLatency = 0;
 
+  bool sendEmptyInfraredTable = false;
+
   quitRequest = false;
   bool nunchukPlugged = false;
   bool classicPlugged = false;
@@ -259,7 +261,8 @@ void WiimoteConnection::run()
           wiimoteIrTable << wiimotePoint;
         }
 
-        if (sendIrSignal) {
+        if (sendIrSignal || sendEmptyInfraredTable) {
+          sendEmptyInfraredTable = sendIrSignal;
           emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
           sendIrSignal = false;
         }
