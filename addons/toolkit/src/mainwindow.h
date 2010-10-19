@@ -55,7 +55,7 @@ public:
 
     QRectF boundingRect() const
     {
-        qreal point = size*defaultPointMultiplier*1.5;
+        qreal point = size*defaultPointMultiplier*1.5*100;
         return QRectF(-point,-point,point,point);
     }
 
@@ -74,6 +74,29 @@ public:
     }
 };
 
+class InfraredInfo :public QGraphicsItem {
+public:
+  InfraredInfo() : QGraphicsItem() {};
+
+  QRectF boundingRect() const {
+    return QRectF(0, 0, 200, 200);
+  }
+
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+             QWidget *widget)
+  {
+    Q_UNUSED(option);
+    Q_UNUSED(widget);
+
+
+    painter->setBrush(Qt::white);
+    painter->setPen(Qt::white);
+    painter->drawText(0, 0, QString("Infrared info"));
+  }
+
+};
+
+
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
@@ -81,8 +104,13 @@ public:
     ~MainWindow();
 
 private:
+    QGraphicsTextItem *infraredTitle;
+    QHash < quint32, QGraphicsTextItem*> infraredPointsText;
+
     quint32 wiimoteId;
     quint8 leds;
+
+    InfraredInfo *irInfo;
 
     SelectWiimote *selectWiimote;
 
@@ -103,6 +131,8 @@ private:
     double widthMultiplier;
     double heightMultiplier;
     double dotSizeMultiplier;
+
+    void updateInfraredInfo(QList < struct irpoint>);
 
 private slots:
     void changeDevicePushed();

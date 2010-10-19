@@ -432,49 +432,31 @@
    <layout class="QGridLayout" name="gridLayout_2">
     <item row="0" column="0">
      <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0">
-       <widget class="QGroupBox" name="groupBox3">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
+      <item row="0" column="0">
+       <widget class="QGraphicsView" name="graphicsView">
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
         </property>
-        <property name="title">
-         <string>Wiiremote Infrared Camera</string>
+        <property name="verticalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
         </property>
-        <layout class="QGridLayout" name="gridLayout_3">
-         <item row="0" column="0">
-          <widget class="QGraphicsView" name="graphicsView">
-           <property name="frameShadow">
-            <enum>QFrame::Plain</enum>
-           </property>
-           <property name="verticalScrollBarPolicy">
-            <enum>Qt::ScrollBarAlwaysOff</enum>
-           </property>
-           <property name="horizontalScrollBarPolicy">
-            <enum>Qt::ScrollBarAlwaysOff</enum>
-           </property>
-           <property name="sceneRect">
-            <rectf>
-             <x>0.000000000000000</x>
-             <y>0.000000000000000</y>
-             <width>512.000000000000000</width>
-             <height>384.000000000000000</height>
-            </rectf>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-           </property>
-           <property name="cacheMode">
-            <set>QGraphicsView::CacheBackground</set>
-           </property>
-           <property name="transformationAnchor">
-            <enum>QGraphicsView::NoAnchor</enum>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <property name="horizontalScrollBarPolicy">
+         <enum>Qt::ScrollBarAlwaysOff</enum>
+        </property>
+        <property name="sceneRect">
+         <rectf>
+          <x>0.000000000000000</x>
+          <y>0.000000000000000</y>
+          <width>512.000000000000000</width>
+          <height>384.000000000000000</height>
+         </rectf>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        </property>
+        <property name="cacheMode">
+         <set>QGraphicsView::CacheBackground</set>
+        </property>
        </widget>
       </item>
      </layout>
@@ -494,15 +476,15 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="page">
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
+         <y>-318</y>
          <width>253</width>
-         <height>758</height>
+         <height>842</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -1585,9 +1567,9 @@
        <property name="geometry">
         <rect>
          <x>0</x>
-         <y>0</y>
-         <width>94</width>
-         <height>691</height>
+         <y>-237</y>
+         <width>253</width>
+         <height>761</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -2464,7 +2446,7 @@
          <x>0</x>
          <y>0</y>
          <width>270</width>
-         <height>552</height>
+         <height>524</height>
         </rect>
        </property>
        <property name="sizePolicy">
@@ -2772,7 +2754,7 @@
      <x>0</x>
      <y>0</y>
      <width>1146</width>
-     <height>19</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuDevices">

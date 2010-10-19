@@ -48,6 +48,33 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setScene(scene);
     ui->graphicsView->setRenderHint(QPainter::Antialiasing);
 
+
+    infraredTitle = new QGraphicsTextItem();
+    infraredTitle->setHtml("<font color=\"#aaaaaa\"> Infrared Informations</font>");
+    infraredTitle->setPos(0, 0);
+
+    infraredPointsText[0] = new QGraphicsTextItem();
+    infraredPointsText[1] = new QGraphicsTextItem();
+    infraredPointsText[2] = new QGraphicsTextItem();
+    infraredPointsText[3] = new QGraphicsTextItem();
+    infraredPointsText[0]->setY(25);
+    infraredPointsText[1]->setY(40);
+    infraredPointsText[2]->setY(55);
+    infraredPointsText[3]->setY(70);
+
+    updateInfraredInfo(QList < irpoint>() );
+
+
+    scene->addItem(infraredTitle);
+    scene->addItem(infraredPointsText[0]);
+    scene->addItem(infraredPointsText[1]);
+    scene->addItem(infraredPointsText[2]);
+    scene->addItem(infraredPointsText[3]);
+
+//    irInfo = new InfraredInfo;
+//    scene->addItem(irInfo);
+//    irInfo->setPos(100, 100);
+
     scene->addItem(dotItems[0] = new DotItem);
     scene->addItem(dotItems[1] = new DotItem);
     scene->addItem(dotItems[2] = new DotItem);
@@ -134,6 +161,24 @@ MainWindow::MainWindow(QWidget *parent) :
 
     getWiimoteStats() ;
 }
+
+void MainWindow::updateInfraredInfo(QList < irpoint> list)
+{
+  int i = 0;
+  for (; i < list.count(); ++i)
+    infraredPointsText[i]->setHtml(QString("<font color=\"#555555\">%1: </font>" \
+      "<font color=\"#ffffff\">%2</font><font color=\"#999999\">x</font>" \
+      "<font color=\"#ffffff\">%3</font><font color=\"#555555\"> size: </font>" \
+      "<font color=\"#ffffff\">%4</font>").arg(QString::number(i), QString::number(list.at(i).x)
+                                              , QString::number(list.at(i).y), QString::number(list.at(i).size)));
+  for (; i < 4; ++i)
+    infraredPointsText[i]->setHtml(QString("<font color=\"#555555\">%1: </font>" \
+      "<font color=\"#ffffff\">%2</font><font color=\"#999999\">x</font>" \
+      "<font color=\"#ffffff\">%3</font><font color=\"#555555\"> size: </font>" \
+      "<font color=\"#ffffff\">%4</font>").arg(QString::number(i), "0", "0", "-1"));
+
+}
+
 
 MainWindow::~MainWindow()
 {
@@ -259,6 +304,8 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
 {
     if (id != wiimoteId)
         return;
+
+    updateInfraredInfo(points);
 
     if (ui->graphicsView->sceneRect().width() != ui->graphicsView->width() ||
         ui->graphicsView->sceneRect().height() != ui->graphicsView->height())
