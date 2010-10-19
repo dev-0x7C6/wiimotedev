@@ -42,6 +42,7 @@
 
 #include <QCoreApplication>
 #include <QFile>
+#include <QFileInfo>
 #include <QMap>
 #include <QSettings>
 #include <QStringList>
@@ -91,6 +92,10 @@ int main(int argc, char *argv[])
   additional_debug = (application.take()->arguments().indexOf("--debug") != -1);
 
   if (application.take()->arguments().indexOf("--no-daemon") == -1) {
+    QFileInfo info(PID_FILE);
+    if (info.isFile())
+      exit(EXIT_FAILURE);
+
     pid_t pid = fork();
     if (pid < 0) exit(EXIT_FAILURE);
     if (pid > 0) exit(EXIT_SUCCESS);
