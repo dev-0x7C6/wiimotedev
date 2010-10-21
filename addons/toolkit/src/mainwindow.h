@@ -37,66 +37,6 @@ namespace Ui {
     class MainWindow;
 }
 
-
-class DotItem : public QGraphicsItem
-{
-public:
-
-    bool visible;
-    double size;
-
-    DotItem()
-    {
-        visible = false;
-        size = 0;
-        setFlag(QGraphicsItem::ItemIsMovable, true);
-        setFlag(QGraphicsItem::ItemIsFocusable, true);
-    }
-
-    QRectF boundingRect() const
-    {
-        qreal point = size*defaultPointMultiplier*1.5*100;
-        return QRectF(-point,-point,point,point);
-    }
-
-    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-               QWidget *widget)
-    {
-        Q_UNUSED(option);
-        Q_UNUSED(widget);
-
-        if (visible) {
-            painter->setBrush(Qt::white);
-            painter->setPen(Qt::white);
-            qreal point = size*defaultPointMultiplier;
-            painter->drawEllipse(-point,-point,point,point);
-        }
-    }
-};
-
-class InfraredInfo :public QGraphicsItem {
-public:
-  InfraredInfo() : QGraphicsItem() {};
-
-  QRectF boundingRect() const {
-    return QRectF(0, 0, 200, 200);
-  }
-
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
-             QWidget *widget)
-  {
-    Q_UNUSED(option);
-    Q_UNUSED(widget);
-
-
-    painter->setBrush(Qt::white);
-    painter->setPen(Qt::white);
-    painter->drawText(0, 0, QString("Infrared info"));
-  }
-
-};
-
-
 class MainWindow : public QMainWindow {
     Q_OBJECT
 public:
@@ -108,34 +48,34 @@ private:
     QGraphicsTextItem infraredTitle;
     QGraphicsTextItem* infraredPointsText[4];
 
-    QGraphicsItemGroup wiimoteAccGroup;
-    QGraphicsTextItem wiimoteAccTitle;
-    QGraphicsTextItem* wiimoteAccPointsText[5];
+    QGraphicsTextItem accelerometrTitle;
+    QGraphicsItemGroup accelerometrGroup;
+    QGraphicsTextItem* accelerometrPointsText[10];
 
-    QGraphicsItemGroup nunchukAccGroup;
-    QGraphicsTextItem nunchukAccTitle;
-    QGraphicsTextItem* nunchukAccPointsText[4];
+    QGraphicsLineItem line;
 
     QGraphicsTextItem wiimoteStdButtonText;
     QGraphicsTextItem wiimoteExtButtonText;
+
+    QGraphicsEllipseItem* infraredPoints[4];
+
+    struct accdata nunchuk_acc;
+    struct accdata wiimote_acc;
 
     QMap <quint64, QString> text_buttons_;
 
     quint32 wiimoteId;
     quint8 leds;
 
-    InfraredInfo *irInfo;
-
     SelectWiimote *selectWiimote;
 
-    DotItem *classicLStickDot;
-    DotItem *classicRStickDot;
-    DotItem *nunchukStickDot;
+//    DotItem *classicLStickDot;
+//    DotItem *classicRStickDot;
+//    DotItem *nunchukStickDot;
 
     Ui::MainWindow *ui;
     DBusDeviceEventsInterface  *iface;
     QGraphicsScene *scene;
-    DotItem *dotItems[4];
 
     QTimer infraredTimeout;
 
@@ -145,9 +85,13 @@ private:
 
     QString getReadableWiiremoteSequence(quint64);
 
+
+private slots:
+    void updateAccelerometrInfo(int, int, int, double, double,
+                                int, int, int, double, double);
     void updateButtonInfo(quint64);
     void updateInfraredInfo(QList < struct irpoint>);
-    void updateWiimoteAccInfo(int, int, int, double, double);
+
 
 private slots:
     void changeDevicePushed();

@@ -20,6 +20,8 @@
 #include <QMessageBox>
 #include <QDBusReply>
 #include <QDebug>
+#include <QMetaObject>
+#include <QtOpenGL/QtOpenGL>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -112,105 +114,116 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->graphicsView->setScene(scene);
 
-    ui->graphicsView->setRenderHint(QPainter::Antialiasing);
+
+    QGLFormat fmt = QGLFormat(QGL::DoubleBuffer | QGL::Rgba);
+    //fmt.setAlpha(true);
+    fmt.setDirectRendering(true);
+    QGLWidget *glWidget = new QGLWidget(fmt);
+
+    ui->graphicsView->setViewport(glWidget);
+
+    ui->graphicsView->setViewportUpdateMode(QGraphicsView::MinimalViewportUpdate);
+    ui->graphicsView->setCacheMode(QGraphicsView::CacheBackground);
 
 
-    infraredTitle.setHtml("<font color=\"#aaaaaa\">Infrared:</font>");
+    quint32 x = 0;
+
+    infraredTitle.setHtml("<font color=\"#ffffff\">Infrared:</font>");
     infraredTitle.setPos(0, 0);
 
-    infraredPointsText[0] = new QGraphicsTextItem();
-    infraredPointsText[1] = new QGraphicsTextItem();
-    infraredPointsText[2] = new QGraphicsTextItem();
-    infraredPointsText[3] = new QGraphicsTextItem();
-    infraredPointsText[0]->setY(25);
-    infraredPointsText[1]->setY(40);
-    infraredPointsText[2]->setY(55);
-    infraredPointsText[3]->setY(70);
+    x += 10;
+    for (register int i = 0; i < 4; ++i) {
+      infraredPointsText[i] = new QGraphicsTextItem();
+      infraredPointsText[i]->setY(x += 15);
+      infraredPointsText[i]->setX(5);
+      infraredGroup.addToGroup(infraredPointsText[i]);
+    }
 
     infraredGroup.addToGroup(&infraredTitle);
-    infraredGroup.addToGroup(infraredPointsText[0]);
-    infraredGroup.addToGroup(infraredPointsText[1]);
-    infraredGroup.addToGroup(infraredPointsText[2]);
-    infraredGroup.addToGroup(infraredPointsText[3]);
+
+    infraredGroup.setX(160);
 
     updateInfraredInfo(QList < irpoint>() );
 
-    wiimoteAccTitle.setHtml("<font color=\"#aaaaaa\">Accelerometer:</font>");
-    wiimoteAccTitle.setPos(0, 0);
+    x = 0;
 
-    wiimoteAccPointsText[0] = new QGraphicsTextItem();
-    wiimoteAccPointsText[1] = new QGraphicsTextItem();
-    wiimoteAccPointsText[2] = new QGraphicsTextItem();
-    wiimoteAccPointsText[3] = new QGraphicsTextItem();
-    wiimoteAccPointsText[4] = new QGraphicsTextItem();
-    wiimoteAccPointsText[0]->setY(25);
-    wiimoteAccPointsText[1]->setY(40);
-    wiimoteAccPointsText[2]->setY(55);
-    wiimoteAccPointsText[3]->setY(70);
-    wiimoteAccPointsText[4]->setY(85);
+    accelerometrTitle.setHtml("<font color=#ffffff>Accelerometer:</font>");
+    accelerometrTitle.setPos(0, x);
 
-    wiimoteAccGroup.addToGroup(&wiimoteAccTitle);
-    wiimoteAccGroup.addToGroup(wiimoteAccPointsText[0]);
-    wiimoteAccGroup.addToGroup(wiimoteAccPointsText[1]);
-    wiimoteAccGroup.addToGroup(wiimoteAccPointsText[2]);
-    wiimoteAccGroup.addToGroup(wiimoteAccPointsText[3]);
-    wiimoteAccGroup.addToGroup(wiimoteAccPointsText[4]);
+    x += 10;
+    for (register int i = 0; i < 10; ++i) {
+      accelerometrPointsText[i] = new QGraphicsTextItem();
+      accelerometrPointsText[i]->setY(x += 15);
+      accelerometrPointsText[i]->setX(5);
+      if (i == 4) x += 15;
+      accelerometrGroup.addToGroup(accelerometrPointsText[i]);
+    }
+    accelerometrGroup.addToGroup(&accelerometrTitle);
+    //accelerometrGroup.setY(95);
+    accelerometrGroup.setX(0);
 
-    wiimoteAccGroup.setY(95);
+    memset(&nunchuk_acc, 0, sizeof(struct accdata));
+    memset(&wiimote_acc, 0, sizeof(struct accdata));
 
-    updateWiimoteAccInfo(0, 0, 0, 0.0, 0.0);
+    updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch*-90, wiimote_acc.roll*-90,
+                           nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch*-90, nunchuk_acc.roll*-90);
 
     wiimoteStdButtonText.setY(512);
     wiimoteExtButtonText.setY(527);
 
-    updateButtonInfo(0);
+    QMetaObject::invokeMethod(this, "updateButtonInfo", Qt::QueuedConnection, Q_ARG(quint64, 0));
 
 
-    scene->addItem(dotItems[0] = new DotItem);
-    scene->addItem(dotItems[1] = new DotItem);
-    scene->addItem(dotItems[2] = new DotItem);
-    scene->addItem(dotItems[3] = new DotItem);
+    for (register int i = 0; i < 4; ++i) {
+      infraredPoints[i] = new QGraphicsEllipseItem();
+      infraredPoints[i]->setPen(QPen(Qt::white));
+      infraredPoints[i]->setRect(0, 0, 3, 3);
+      infraredPoints[i]->setPos(200,200);
+      //infraredPoints[i]->hide();
+      scene->addItem(infraredPoints[i]);
+    }
+
+
+    line.setPen(QPen(Qt::white));
 
     scene->addItem(&wiimoteStdButtonText);
     scene->addItem(&wiimoteExtButtonText);
     scene->addItem(&infraredGroup);
-    scene->addItem(&wiimoteAccGroup);
+    scene->addItem(&accelerometrGroup);
+    scene->addItem(&line);
 
-    scene = new QGraphicsScene();
-    scene->setSceneRect(-41, -41, 82, 82);
-    scene->addItem(nunchukStickDot = new DotItem);
-    nunchukStickDot->setX(0);
-    nunchukStickDot->setY(0);
-    nunchukStickDot->size = 1;
-    nunchukStickDot->visible = true;
-    ui->nunchukStickView->setScene(scene);
+//    scene = new QGraphicsScene();
+//    scene->setSceneRect(-41, -41, 82, 82);
+//    scene->addItem(nunchukStickDot = new DotItem);
+//    nunchukStickDot->setX(0);
+//    nunchukStickDot->setY(0);
+//    nunchukStickDot->size = 1;
+//    nunchukStickDot->visible = true;
+//    ui->nunchukStickView->setScene(scene);
 
-    scene = new QGraphicsScene();
-    scene->setSceneRect(-41, -41, 82, 82);
-    scene->addItem(classicLStickDot = new DotItem);
-    classicLStickDot->setX(0);
-    classicLStickDot->setY(0);
-    classicLStickDot->size = 1;
-    classicLStickDot->visible = true;
-    ui->classicLStickView->setScene(scene);
+//    scene = new QGraphicsScene();
+//    scene->setSceneRect(-41, -41, 82, 82);
+//    scene->addItem(classicLStickDot = new DotItem);
+//    classicLStickDot->setX(0);
+//    classicLStickDot->setY(0);
+//    classicLStickDot->size = 1;
+//    classicLStickDot->visible = true;
+//    ui->classicLStickView->setScene(scene);
 
-    scene = new QGraphicsScene();
-    scene->setSceneRect(-41, -41, 82, 82);
-    scene->addItem(classicRStickDot = new DotItem);
-    classicRStickDot->setX(0);
-    classicRStickDot->setY(0);
-    classicRStickDot->size = 1;
-    classicRStickDot->visible = true;
-    ui->classicRStickView->setScene(scene);
+//    scene = new QGraphicsScene();
+//    scene->setSceneRect(-41, -41, 82, 82);
+//    scene->addItem(classicRStickDot = new DotItem);
+//    classicRStickDot->setX(0);
+//    classicRStickDot->setY(0);
+//    classicRStickDot->size = 1;
+//    classicRStickDot->visible = true;
+//    ui->classicRStickView->setScene(scene);
 
 
     iface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
                                           WIIMOTEDEV_DBUS_OBJECT_EVENTS,
                                           QDBusConnection::systemBus(),
                                           this);
-
-    // this->setWindowState(Qt::WindowFullScreen);
-
 
     connect(ui->actionQuit, SIGNAL(triggered()), this, SLOT(close()));
 
@@ -294,17 +307,28 @@ void MainWindow::updateInfraredInfo(QList < irpoint> list)
 
 }
 
-void MainWindow::updateWiimoteAccInfo(int x, int y, int z, double p, double r) {
-  wiimoteAccPointsText[0]->setHtml(QString("<font color=#555555>x: " \
-    "</font><font color=#777777>%1</font>").arg(QString::number(x)));
-  wiimoteAccPointsText[1]->setHtml(QString("<font color=#555555>y: " \
-    "</font><font color=#777777>%1</font>").arg(QString::number(y)));
-  wiimoteAccPointsText[2]->setHtml(QString("<font color=#555555>z: " \
-    "</font><font color=#777777>%1</font>").arg(QString::number(z)));
-  wiimoteAccPointsText[3]->setHtml(QString("<font color=#555555>pitch: " \
-    "</font><font color=#777777>%1</font>").arg(QString::number(p, 'g', 4)));
-  wiimoteAccPointsText[4]->setHtml(QString("<font color=#555555>roll: " \
-    "</font><font color=#777777>%1</font>").arg(QString::number(r, 'g', 4)));
+void MainWindow::updateAccelerometrInfo(int x1, int y1, int z1, double p1, double r1,
+                                        int x2, int y2, int z2, double p2, double r2) {
+  accelerometrPointsText[0]->setHtml(QString("<font color=#555555> X-Axis: " \
+    "</font><font color=#ffffff>%1</font>").arg(QString::number(x1)));
+  accelerometrPointsText[1]->setHtml(QString("<font color=#555555> Y-Axis: " \
+    "</font><font color=#ffffff>%1</font>").arg(QString::number(y1)));
+  accelerometrPointsText[2]->setHtml(QString("<font color=#555555> Z-Axis: " \
+    "</font><font color=#ffffff>%1</font>").arg(QString::number(z1)));
+  accelerometrPointsText[3]->setHtml(QString("<font color=#555555> Pitch: " \
+    "</font><font color=#ffffff>%1</font>").arg(QString::number(p1, 'g', 4)));
+  accelerometrPointsText[4]->setHtml(QString("<font color=#555555> Roll: " \
+    "</font><font color=#ffffff>%1</font>").arg(QString::number(r1, 'g', 4)));
+  accelerometrPointsText[5]->setHtml(QString("<font color=#555555> X-Axis: " \
+    "</font><font color=#ffffff>%1</font>").arg(QString::number(x2)));
+  accelerometrPointsText[6]->setHtml(QString("<font color=#555555> Y-Axis: " \
+    "</font><font color=#ffffff>%1</font>").arg(QString::number(y2)));
+  accelerometrPointsText[7]->setHtml(QString("<font color=#555555> Z-Axis: " \
+    "</font><font color=#ffffff>%1</font>").arg(QString::number(z2)));
+  accelerometrPointsText[8]->setHtml(QString("<font color=#555555> Pitch: " \
+    "</font><font color=#ffffff>%1</font>").arg(QString::number(p2, 'g', 4)));
+  accelerometrPointsText[9]->setHtml(QString("<font color=#555555> Roll: " \
+    "</font><font color=#ffffff>%1</font>").arg(QString::number(r2, 'g', 4)));
 }
 
 QString MainWindow::getReadableWiiremoteSequence(quint64 value) {
@@ -404,7 +428,7 @@ void MainWindow::dbusNunchukStick(quint32 id, struct stickdata stick)
 
     register int x = ((0xFF >> 1) - stick.x) * 0.25;
     register int y = ((0xFF >> 1) - stick.y) * 0.25;
-    nunchukStickDot->setPos(-x, y);
+//    nunchukStickDot->setPos(-x, y);
 }
 
 void MainWindow::dbusClassicControllerLStick(quint32 id, struct stickdata stick)
@@ -414,7 +438,7 @@ void MainWindow::dbusClassicControllerLStick(quint32 id, struct stickdata stick)
 
     register int x = ((0x3F >> 1) - stick.x) * 1.2;
     register int y = ((0x3F >> 1) - stick.y) * 1.2;
-    classicLStickDot->setPos(-x, y);
+//    classicLStickDot->setPos(-x, y);
 }
 
 void MainWindow::dbusClassicControllerRStick(quint32 id, struct stickdata stick)
@@ -424,7 +448,7 @@ void MainWindow::dbusClassicControllerRStick(quint32 id, struct stickdata stick)
 
     register int x = ((0x1F >> 1) - stick.x) * 2.3;
     register int y = ((0x1F >> 1) - stick.y) * 2.3;
-    classicRStickDot->setPos(-x, y);
+//    classicRStickDot->setPos(-x, y);
 }
 
 void MainWindow::infraredCleanup()
@@ -432,9 +456,7 @@ void MainWindow::infraredCleanup()
     infraredTimeout.stop();
 
     for (register int i = 0; i < 4; ++i) {
-        dotItems[i]->visible = false;
-        dotItems[i]->size = 0;
-        dotItems[i]->setPos(-100, -100);
+      infraredPoints[i]->hide();
     }
 }
 
@@ -464,13 +486,15 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
     infraredTimeout.start();
     for (register int i = 0; i < 4; ++i) {
         if (i < points.count()) {
-            dotItems[i]->visible = (points.at(i).size != -1);
-            dotItems[i]->size = dotSizeMultiplier * points.at(i).size;
-            dotItems[i]->setPos(static_cast< double>( points.at(i).x) * widthMultiplier, static_cast< double>( points.at(i).y) * heightMultiplier);
+          if (!infraredPoints[i]->isVisible())
+            infraredPoints[i]->show();
+          infraredPoints[i]->setScale(points.at(i).size);
+          infraredPoints[i]->setPos(static_cast< double>( points.at(i).x) * widthMultiplier,
+                                    static_cast< double>( points.at(i).y) * heightMultiplier);
         } else {
-            dotItems[i]->visible = false;
-            dotItems[i]->size = 0;
-            dotItems[i]->setPos(-100, -100);
+          if (infraredPoints[i]->isVisible())
+            infraredPoints[i]->hide();
+          infraredPoints[i]->setScale(1.0);
         }
     }
 }
@@ -487,13 +511,27 @@ void MainWindow::dbusWiimoteAcc(quint32 id, struct accdata table)
     if (id != wiimoteId)
         return;
 
-    updateWiimoteAccInfo(table.x, table.y, table.z, table.pitch*-90, table.roll*-90);
+    memcpy(&wiimote_acc, &table, sizeof(table));
+
+    updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch*-90, wiimote_acc.roll*-90,
+                           nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch*-90, nunchuk_acc.roll*-90);
+
+    qint32 y = (ui->graphicsView->geometry().height()/2);
+
+   // line.setLine(ui->graphicsView->geometry().width()/2, y, ui->graphicsView->geometry().width(), y);
+   // line.setRotation(wiimote_acc.roll*-90);
+    line.setLine(0, y+(wiimote_acc.roll*360), ui->graphicsView->geometry().width(), y+(wiimote_acc.roll*-360));
 }
 
 void MainWindow::dbusNunchukAcc(quint32 id, struct accdata table)
 {
     if (id != wiimoteId)
         return;
+
+    memcpy(&nunchuk_acc, &table, sizeof(table));
+
+    updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch*-90, wiimote_acc.roll*-90,
+                           nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch*-90, nunchuk_acc.roll*-90);
 
 }
 
