@@ -56,8 +56,6 @@ private:
   QMap< QString, bool> unregisterWiimoteList;
 
   QMap< QString, quint32> sequence;
-
-  QList< void*> objectList;
   bdaddr_t bdaddr_any;
 
   WiimoteConnection* findWiiremoteObject(quint32 id);

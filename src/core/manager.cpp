@@ -261,8 +261,9 @@ QStringList ConnectionManager::dbusGetUnregistredWiimoteList()
 QList < uint> ConnectionManager::dbusGetWiimoteList()
 {
   QList < uint> list;
-  for (register int i = 0; i < objectList.count(); ++i)
-    list << static_cast< WiimoteConnection*>( objectList.at(i))->getWiimoteSequence();
+  foreach (WiimoteConnection *connection, connections)
+    if (connection->wiimote->isConnected())
+      list << connection->getWiimoteSequence();
   return list;
 }
 
