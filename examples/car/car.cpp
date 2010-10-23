@@ -71,12 +71,12 @@ void Car::dbusWiimoteAcc(quint32 id, struct accdata acc)
 {
     if (id != wiimoteId) return;
 
-    wheelsAngle = -(acc.pitch * 80);
+    wheelsAngle = acc.pitch;
     if ((wheelsAngle * Pi) >= 170) wheelsAngle = 170 / Pi; else
     if ((wheelsAngle * Pi) <= -170) wheelsAngle = -170 / Pi;
 
     if (carBreak) return;
-    if (useRoll) speed = -(acc.roll*4);
+    if (useRoll) speed = (acc.roll/35);
 }
 
 
