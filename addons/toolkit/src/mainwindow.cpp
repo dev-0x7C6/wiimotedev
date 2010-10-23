@@ -278,20 +278,20 @@ void MainWindow::updateAccelerometrInfo(int x1, int y1, int z1, double p1, doubl
     "</font><font color=#ffffff>%1</font>").arg(QString::number(y1)));
   accelerometrPointsText[2]->setHtml(QString("<font color=#555555> Z-Axis: " \
     "</font><font color=#ffffff>%1</font>").arg(QString::number(z1)));
-  accelerometrPointsText[3]->setHtml(QString("<font color=#555555> Pitch: " \
-    "</font><font color=#ffffff>%1</font>").arg(QString::number(static_cast< qint32>(p1))));
-  accelerometrPointsText[4]->setHtml(QString("<font color=#555555> Roll: " \
-    "</font><font color=#ffffff>%1</font>").arg(QString::number(static_cast< qint32>(r1))));
+  accelerometrPointsText[3]->setHtml(QString::fromUtf8("<font color=#555555> Pitch: " \
+    "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(p1))));
+  accelerometrPointsText[4]->setHtml(QString::fromUtf8("<font color=#555555> Roll: " \
+    "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(r1))));
   accelerometrPointsText[5]->setHtml(QString("<font color=#555555> X-Axis: " \
     "</font><font color=#ffffff>%1</font>").arg(QString::number(x2)));
   accelerometrPointsText[6]->setHtml(QString("<font color=#555555> Y-Axis: " \
     "</font><font color=#ffffff>%1</font>").arg(QString::number(y2)));
   accelerometrPointsText[7]->setHtml(QString("<font color=#555555> Z-Axis: " \
     "</font><font color=#ffffff>%1</font>").arg(QString::number(z2)));
-  accelerometrPointsText[8]->setHtml(QString("<font color=#555555> Pitch: " \
-    "</font><font color=#ffffff>%1</font>").arg(QString::number(static_cast< qint32>(p2))));
-  accelerometrPointsText[9]->setHtml(QString("<font color=#555555> Roll: " \
-    "</font><font color=#ffffff>%1</font>").arg(QString::number(static_cast< qint32>(r2))));
+  accelerometrPointsText[8]->setHtml(QString::fromUtf8("<font color=#555555> Pitch: " \
+    "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(p2))));
+  accelerometrPointsText[9]->setHtml(QString::fromUtf8("<font color=#555555> Roll: " \
+    "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(r2))));
 }
 
 QString MainWindow::getReadableWiiremoteSequence(quint64 value) {
@@ -518,12 +518,12 @@ void MainWindow::dbusWiimoteAcc(quint32 id, struct accdata table)
 
   memcpy(&wiimote_acc, &table, sizeof(table));
 
-  updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch*-59, wiimote_acc.roll*-59,
-                         nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch*-59, nunchuk_acc.roll*-59);
+  updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, wiimote_acc.roll,
+                         nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch, nunchuk_acc.roll);
 
   qint32 y = (ui->graphicsView->geometry().height()/2);
 
-  line.setLine(0, y-(wiimote_acc.roll*-59*5), ui->graphicsView->geometry().width(), y+(wiimote_acc.roll*-59*5));
+  line.setLine(0, y-(wiimote_acc.roll*4), ui->graphicsView->geometry().width(), y+(wiimote_acc.roll*4));
 }
 
 void MainWindow::dbusNunchukAcc(quint32 id, struct accdata table)
@@ -533,8 +533,8 @@ void MainWindow::dbusNunchukAcc(quint32 id, struct accdata table)
 
   memcpy(&nunchuk_acc, &table, sizeof(table));
 
-  updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch*-59, wiimote_acc.roll*-59,
-                         nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch*-59, nunchuk_acc.roll*-59);
+  updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, wiimote_acc.roll,
+                         nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch, nunchuk_acc.roll);
 
 }
 
