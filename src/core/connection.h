@@ -29,6 +29,14 @@ class DBusDeviceEventsAdaptorWrapper;
 class WiimoteDevice;
 class WiimoteConnection;
 
+struct accelerometr_data {
+  double x;
+  double y;
+  double z;
+  double roll;
+  double pitch;
+};
+
 class WiimoteConnection : public QThread
 {
   Q_OBJECT

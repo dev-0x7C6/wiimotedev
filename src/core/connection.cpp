@@ -18,6 +18,7 @@
  **********************************************************************************/
 
 #include <QTime>
+#include <QDebug>
 #include <math.h>
 
 #include "core/connection.h"
@@ -47,6 +48,12 @@ void WiimoteConnection::run()
   int count;
   union cwiid_mesg *mesg;
   struct timespec time;
+
+  struct accelerometr_data wiimoteAccData;
+  struct accelerometr_data nunchukAccData;
+
+ // memset(&wiimoteAccData, 0, sizeof(struct accelerometr_data));
+ // memset(&nunchukAccData, 0, sizeof(struct accelerometr_data));
 
   double x, y, z, roll, pitch, vacc;
 
@@ -140,8 +147,6 @@ void WiimoteConnection::run()
 
   currentLatency = 0;
   averageLatency = 0;
-
-  bool sendEmptyInfraredTable = false;
 
   quitRequest = false;
   bool nunchukPlugged = false;
@@ -261,8 +266,7 @@ void WiimoteConnection::run()
           wiimoteIrTable << wiimotePoint;
         }
 
-        if (sendIrSignal || sendEmptyInfraredTable) {
-          sendEmptyInfraredTable = sendIrSignal;
+        if (sendIrSignal) {
           emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
           sendIrSignal = false;
         }
@@ -289,31 +293,46 @@ void WiimoteConnection::run()
 
       case CWIID_MESG_ACC:
         x =  static_cast< double>((mesg[i].acc_mesg.acc[0] - wiimote_calibration.zero[0])) /
-             (wiimote_calibration.one[0] - wiimote_calibration.zero[0]);
+             static_cast< double>((wiimote_calibration.one[0] - wiimote_calibration.zero[0]));
         y =  static_cast< double>((mesg[i].acc_mesg.acc[1] - wiimote_calibration.zero[1])) /
-             (wiimote_calibration.one[1] - wiimote_calibration.zero[1]);
+             static_cast< double>((wiimote_calibration.one[1] - wiimote_calibration.zero[1]));
         z =  static_cast< double>((mesg[i].acc_mesg.acc[2] - wiimote_calibration.zero[2])) /
-             (wiimote_calibration.one[2] - wiimote_calibration.zero[2]);
+             static_cast< double>((wiimote_calibration.one[2] - wiimote_calibration.zero[2]));
 
-
-        if ((LastWiimoteAccX != x) || (LastWiimoteAccY != y) || (LastWiimoteAccZ != z))
+        if ((wiimoteAccData.x != x) || (wiimoteAccData.y != y) || (wiimoteAccData.z != z))
         {
-          LastWiimoteAccX = x;
-          LastWiimoteAccY = y;
-          LastWiimoteAccZ = z;
+          wiimoteAccData.x = x;
+          wiimoteAccData.y = y;
+          wiimoteAccData.z = z;
 
-          roll = atan(x / z);
-          if (z <= 0.0)
-             roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
-          roll *= -1;
-          if (z)
-              pitch = atan(y / z * cos(roll)); else pitch = 0.0;
+          if (z != 0.0) {
+            roll = atan(x / z);
+
+            if (z < 0.0)
+              roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1); //9265358979323
+
+            pitch = atan(y / z * cos(-roll))*-59.0;
+            roll = roll*58.8;
+
+            if (roll > 180.0) roll = 180.0;
+            if (roll < -180.0) roll = -180.0;
+
+            if (pitch > 90.0) pitch = 90.0;
+            if (pitch < -90.0) pitch = -90.0;
+
+          } else {
+            roll = wiimoteAccData.roll;
+            pitch = wiimoteAccData.pitch;
+          }
+
+          wiimoteAccData.roll = roll;
+          wiimoteAccData.pitch = pitch;
 
           acc.x = mesg[i].acc_mesg.acc[0];
           acc.y = mesg[i].acc_mesg.acc[1];
           acc.z = mesg[i].acc_mesg.acc[2];
-          acc.pitch = pitch;
-          acc.roll = roll;
+          acc.pitch = wiimoteAccData.pitch;
+          acc.roll = wiimoteAccData.roll;
 
           emit dbusWiimoteAcc(sequence, acc);
 
@@ -321,10 +340,23 @@ void WiimoteConnection::run()
           WiimoteButtons &= WIIMOTE_TILT_NOTMASK;
           WiimoteButtons &= WIIMOTE_SHIFT_NOTMASK;
 
-          if (pitch > 0.30) WiimoteButtons |= WIIMOTE_BTN_TILT_FRONT; else
-          if (pitch < -0.30) WiimoteButtons |= WIIMOTE_BTN_TILT_BACK;
-          if (roll < -0.45) WiimoteButtons |= WIIMOTE_BTN_TILT_RIGHT; else
-          if (roll > 0.45) WiimoteButtons |= WIIMOTE_BTN_TILT_LEFT;
+          if (pitch < -30.0) WiimoteButtons |= WIIMOTE_BTN_TILT_FRONT; else
+          if (pitch > 30.0) WiimoteButtons |= WIIMOTE_BTN_TILT_BACK;
+
+          if ((WiimoteButtonsTmp & WIIMOTE_BTN_TILT_FRONT) && pitch < -20.0)
+            WiimoteButtons |= WIIMOTE_BTN_TILT_FRONT;
+
+          if ((WiimoteButtonsTmp & WIIMOTE_BTN_TILT_BACK) && pitch > 20.0)
+            WiimoteButtons |= WIIMOTE_BTN_TILT_BACK;
+
+          if (roll > 45.0) WiimoteButtons |= WIIMOTE_BTN_TILT_RIGHT; else
+          if (roll < -45.0) WiimoteButtons |= WIIMOTE_BTN_TILT_LEFT;
+
+          if ((WiimoteButtonsTmp & WIIMOTE_BTN_TILT_RIGHT) && roll > 35.0)
+            WiimoteButtons |= WIIMOTE_BTN_TILT_RIGHT;
+
+          if ((WiimoteButtonsTmp & WIIMOTE_BTN_TILT_LEFT) && roll < -35.0)
+            WiimoteButtons |= WIIMOTE_BTN_TILT_LEFT;
 
           vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 
@@ -415,38 +447,81 @@ void WiimoteConnection::run()
         if (nunchukStickdata.y > nunchukStickMaxY) WiimoteButtons |= NUNCHUK_BTN_STICK_UP; else
         if (nunchukStickdata.y < nunchukStickMinY) WiimoteButtons |= NUNCHUK_BTN_STICK_DOWN;
 
-        x =  static_cast< double>((mesg[i].nunchuk_mesg.acc[0] - nunchuk_calibration.zero[0])) / (nunchuk_calibration.one[0] - nunchuk_calibration.zero[0]);
-        y =  static_cast< double>((mesg[i].nunchuk_mesg.acc[1] - nunchuk_calibration.zero[1])) / (nunchuk_calibration.one[1] - nunchuk_calibration.zero[1]);
-        z =  static_cast< double>((mesg[i].nunchuk_mesg.acc[2] - nunchuk_calibration.zero[2])) / (nunchuk_calibration.one[2] - nunchuk_calibration.zero[2]);
+        x =  static_cast< double>((mesg[i].nunchuk_mesg.acc[0] - nunchuk_calibration.zero[0])) /
+             static_cast< double>((nunchuk_calibration.one[0] - nunchuk_calibration.zero[0]));
+        y =  static_cast< double>((mesg[i].nunchuk_mesg.acc[1] - nunchuk_calibration.zero[1])) /
+             static_cast< double>((nunchuk_calibration.one[1] - nunchuk_calibration.zero[1]));
+        z =  static_cast< double>((mesg[i].nunchuk_mesg.acc[2] - nunchuk_calibration.zero[2])) /
+             static_cast< double>((nunchuk_calibration.one[2] - nunchuk_calibration.zero[2]));
 
-        if (nunchukAccX != x || nunchukAccY != y || nunchukAccZ != z)
+        if ((nunchukAccData.x != x) || (nunchukAccData.y != y) || (nunchukAccData.z != z))
         {
-          nunchukAccdata.x = mesg[i].nunchuk_mesg.acc[0];
-          nunchukAccdata.y = mesg[i].nunchuk_mesg.acc[1];
-          nunchukAccdata.z = mesg[i].nunchuk_mesg.acc[2];
-          nunchukAccX = x;
-          nunchukAccY = y;
-          nunchukAccZ = z;
-          nunchukAccdata.roll = atan(x / z);
-          if (z <= 0.0) nunchukAccdata.roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
-          nunchukAccdata.roll = -nunchukAccdata.roll;
-          if (z) nunchukAccdata.pitch = atan(y / z * cos(nunchukAccdata.roll)); else nunchukAccdata.pitch = 0.0;
+          nunchukAccData.x = x;
+          nunchukAccData.y = y;
+          nunchukAccData.z = z;
 
-          emit dbusNunchukAcc(sequence, nunchukAccdata);
+          if (z != 0.0) {
+            roll = atan(x / z);
+
+            if (z < 0.0)
+              roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1); //9265358979323
+
+            pitch = atan(y / z * cos(-roll))*-59.0;
+            roll = roll*58.8;
+
+            if (roll > 180.0) roll = 180.0;
+            if (roll < -180.0) roll = -180.0;
+
+            if (pitch > 90.0) pitch = 90.0;
+            if (pitch < -90.0) pitch = -90.0;
+
+          } else {
+            roll = nunchukAccData.roll;
+            pitch = nunchukAccData.pitch;
+          }
+
+          nunchukAccData.roll = roll;
+          nunchukAccData.pitch = pitch;
+
+          acc.x = mesg[i].nunchuk_mesg.acc[0];
+          acc.y = mesg[i].nunchuk_mesg.acc[1];
+          acc.z = mesg[i].nunchuk_mesg.acc[2];
+          acc.pitch = nunchukAccData.pitch;
+          acc.roll = nunchukAccData.roll;
+
+          emit dbusNunchukAcc(sequence, acc);
+
+          WiimoteButtons &= NUNCHUK_TILT_NOTMASK;
+          WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
+
+          if (nunchukAccData.pitch < -30.0) WiimoteButtons  |= NUNCHUK_BTN_TILT_FRONT; else
+          if (nunchukAccData.pitch > 30.0) WiimoteButtons |= NUNCHUK_BTN_TILT_BACK;
+
+          if ((WiimoteButtonsTmp & NUNCHUK_BTN_TILT_FRONT) && pitch < -20.0)
+            WiimoteButtons |= NUNCHUK_BTN_TILT_FRONT;
+
+          if ((WiimoteButtonsTmp & NUNCHUK_BTN_TILT_BACK) && pitch > 20.0)
+            WiimoteButtons |= NUNCHUK_BTN_TILT_BACK;
+
+          if (nunchukAccData.roll > 45.0) WiimoteButtons  |= NUNCHUK_BTN_TILT_RIGHT; else
+          if (nunchukAccData.roll < -45.0) WiimoteButtons   |= NUNCHUK_BTN_TILT_LEFT;
+
+          if ((WiimoteButtonsTmp & NUNCHUK_BTN_TILT_RIGHT) && roll > 35.0)
+            WiimoteButtons |= NUNCHUK_BTN_TILT_RIGHT;
+
+          if ((WiimoteButtonsTmp & NUNCHUK_BTN_TILT_LEFT) && roll < -35.0)
+            WiimoteButtons |= NUNCHUK_BTN_TILT_LEFT;
+
+
+          WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
+
+          vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+
+          if (vacc > 2.2) WiimoteButtons |= NUNCHUK_BTN_SHIFT_SHAKE;
+
         }
 
-        WiimoteButtons &= NUNCHUK_TILT_NOTMASK;
 
-        if (nunchukAccdata.pitch > 0.30) WiimoteButtons  |= NUNCHUK_BTN_TILT_FRONT; else
-        if (nunchukAccdata.pitch < -0.30) WiimoteButtons |= NUNCHUK_BTN_TILT_BACK;
-        if (nunchukAccdata.roll < -0.45) WiimoteButtons  |= NUNCHUK_BTN_TILT_RIGHT; else
-        if (nunchukAccdata.roll > 0.45) WiimoteButtons   |= NUNCHUK_BTN_TILT_LEFT;
-
-        WiimoteButtons &= NUNCHUK_SHIFT_NOTMASK;
-
-        vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-
-        if (vacc > 2.2) WiimoteButtons |= NUNCHUK_BTN_SHIFT_SHAKE;
 
         nxpow = sqrt(pow(x, 2));
         nypow = sqrt(pow(y, 2));
