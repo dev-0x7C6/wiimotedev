@@ -17,31 +17,33 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef SELECTWIIMOTE_H
-#define SELECTWIIMOTE_H
+#include "wiimotebatteryitem.h"
 
-#include <QDialog>
 
-namespace Ui {
-  class SelectWiimote;
+#include <QPainter>
+
+WiimoteBatteryItem::WiimoteBatteryItem(QObject *parent) :
+  QObject(parent),
+  QGraphicsItem(),
+  level(50)
+{
 }
 
-class SelectWiimote : public QDialog
+QRectF WiimoteBatteryItem::boundingRect() const
 {
-  Q_OBJECT
-public:
-  explicit SelectWiimote(QWidget *parent = 0);
-  ~SelectWiimote();
+  return QRectF(0, 0, 80, barHeight);
+}
 
-  void setWiimoteList(QList < uint> &list);
-  inline quint32 getSelectedWiimote() { return wiimoteid; }
+void WiimoteBatteryItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+  Q_UNUSED(option);
+  Q_UNUSED(widget);
 
-private slots:
-  void selectButtonPushed();
+  register double x = level*0.8;
 
-private:
-  Ui::SelectWiimote *ui;
-  quint32 wiimoteid;
-};
-
-#endif // SELECTWIIMOTE_H
+  painter->setPen(Qt::NoPen);
+  painter->setBrush(Qt::white);
+  painter->drawRect(0, 0, x, barHeight);
+  painter->setBrush(Qt::darkGray);
+  painter->drawRect(x-1, 0, 80-x, barHeight);
+}

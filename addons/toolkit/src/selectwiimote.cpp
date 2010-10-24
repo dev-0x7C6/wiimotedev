@@ -21,27 +21,27 @@
 #include "ui_selectwiimote.h"
 
 SelectWiimote::SelectWiimote(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::SelectWiimote)
+  QDialog(parent),
+  ui(new Ui::SelectWiimote)
 {
-    ui->setupUi(this);
-    wiimoteid = 0;
-    connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(selectButtonPushed()));
+  ui->setupUi(this);
+  wiimoteid = 0;
+  connect(ui->pushButton, SIGNAL(clicked()), this, SLOT(selectButtonPushed()));
 }
 
 SelectWiimote::~SelectWiimote()
 {
-    delete ui;
+  delete ui;
 }
 
 void SelectWiimote::selectButtonPushed()
 {
-    wiimoteid = ui->comboBox->currentText().toInt();
-    close();
+  wiimoteid = ui->comboBox->currentText().toInt();
+  close();
 }
 
 void SelectWiimote::setWiimoteList(QList < uint> &list)
 {
-    for (register int i = 0; i < list.count(); ++i)
-        ui->comboBox->addItem(QString::number(list.at(i)));
+  for (register int i = 0; i < list.count(); ++i)
+      ui->comboBox->addItem(QString::number(list.at(i)));
 }

@@ -209,8 +209,7 @@ MainWindow::MainWindow(QWidget *parent) :
   updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, wiimote_acc.roll,
                          nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch, nunchuk_acc.roll);
 
-  wiimoteStdButtonText.setY(512);
-  wiimoteExtButtonText.setY(527);
+  updateButtonInfo(0);
 
   for (register int i = 0; i < 4; ++i) {
     infraredPoints[i].setPen(QPen(Qt::white));
@@ -226,8 +225,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
   line.setPen(QPen(Qt::darkGray));
+
   scene->addItem(&wiimoteStdButtonText);
   scene->addItem(&wiimoteExtButtonText);
+  scene->addItem(&batteryItem);
   scene->addItem(&infraredGroup);
   scene->addItem(&accelerometrGroup);
   scene->addItem(&line);
@@ -274,6 +275,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
   getWiimoteStats() ;
 
+  batteryItem.setBatteryLevel(iface->dbusWiimoteGetBatteryLife(wiimoteId));
 
   for (register int i = 0; i < 4; ++i) {
     if ((leds >> i) & true)
@@ -289,12 +291,15 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
   quint32 x = rect.width() - 16;
   quint32 y = rect.height() - 32;
 
-  this->updateButtonInfo(0);
+  wiimoteStdButtonText.setY(geometry().height()-50);
+  wiimoteExtButtonText.setY(geometry().height()-35);
 
   for (register int i = 3; i >= 0; --i) {
     qDebug() << i;
     ledPixmaps[i].setPos(x -= (16 + 5), y);
   }
+
+  batteryItem.setPos(x, rect.height() - batteryItem.boundingRect().height() - 9);
 }
 
 void MainWindow::updateButtonInfo(quint64 value) {
@@ -312,8 +317,6 @@ void MainWindow::updateButtonInfo(quint64 value) {
   ext |= value & CLASSIC_LSTICK_MASK;
   ext |= value & CLASSIC_RSTICK_MASK;
 
-  wiimoteStdButtonText.setY(geometry().height()-50);
-  wiimoteExtButtonText.setY(geometry().height()-35);
   wiimoteStdButtonText.setHtml(QString("<font color=#999999>std: </font>%1").arg(getReadableWiiremoteSequence(std)));
   wiimoteExtButtonText.setHtml(QString("<font color=#999999>ext: </font>%1").arg(getReadableWiiremoteSequence(ext)));
 }
