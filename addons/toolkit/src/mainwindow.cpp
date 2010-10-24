@@ -188,9 +188,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
   accelerometrTitle = new QGraphicsTextItem();
   accelerometrTitle->setHtml("<font color=#ffffff>Accelerometer:</font>");
-  accelerometrTitle->setPos(0, x);
+  accelerometrTitle->setPos(0, 0);
   accelerometrGroup = new QGraphicsItemGroup();
-
+  accelerometrGroup->addToGroup(accelerometrTitle);
 
   x = 10;
   for (register int i = 0; i < 10; ++i) {
