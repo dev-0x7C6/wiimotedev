@@ -26,6 +26,7 @@
 class WiimoteBatteryItem : public QObject, public QGraphicsItem
 {
   Q_OBJECT
+  Q_INTERFACES(QGraphicsItem)
 private:
   quint32 level;
 

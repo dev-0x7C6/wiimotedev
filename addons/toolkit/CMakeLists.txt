@@ -9,7 +9,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${QT_QTCORE_INCLUDE_DIR}
 		    ${QT_QTDBUS_INCLUDE_DIR}
 		    ${QT_QTGUI_INCLUDE_DIR}
-        ${QT_QTOPENGL_INCLUDE_DIR}
 )
 
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
@@ -57,7 +56,6 @@ target_link_libraries(wiimotedev-toolkit
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${QT_QTGUI_LIBRARY}
-  ${QT_QTOPENGL_LIBRARY}
 )
 
 install(TARGETS wiimotedev-toolkit DESTINATION ${bin_directory})

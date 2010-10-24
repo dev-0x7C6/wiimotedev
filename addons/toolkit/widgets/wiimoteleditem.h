@@ -21,6 +21,7 @@
 #define WIIMOTELEDITEM_H
 
 #include <QGraphicsPixmapItem>
+#include <QObject>
 
 class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
 {

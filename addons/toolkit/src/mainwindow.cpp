@@ -19,9 +19,6 @@
 
 #include <QMessageBox>
 #include <QDBusReply>
-#include <QDebug>
-#include <QMetaObject>
-#include <QtOpenGL/QtOpenGL>
 
 #include "mainwindow.h"
 
@@ -162,46 +159,48 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredCleanup()));
   infraredTimeout.setInterval(30);
 
-  scene = new QGraphicsScene();
-  scene->setBackgroundBrush(QBrush(QColor(0x0A, 0x0A, 0x0A, 0xFF), Qt::SolidPattern));
+  scene.setBackgroundBrush(QBrush(QColor(0x0A, 0x0A, 0x0A, 0xFF), Qt::SolidPattern));
 
-  scene->setSceneRect(0, 0, 512, 384);
+  scene.setSceneRect(0, 0, 512, 384);
 
-  setScene(scene);
+  setScene(&scene);
 
   quint32 x = 0;
 
-  infraredTitle.setHtml("<font color=\"#ffffff\">Infrared:</font>");
-  infraredTitle.setPos(0, 0);
+  infraredTitle = new QGraphicsTextItem();
+  infraredTitle->setHtml("<font color=\"#ffffff\">Infrared:</font>");
+  infraredTitle->setPos(0, 0);
 
-  x += 10;
+  infraredGroup = new QGraphicsItemGroup();
+  infraredGroup->addToGroup(infraredTitle);
+
+  x = 10;
   for (register int i = 0; i < 4; ++i) {
-    infraredPointsText[i].setY(x += 15);
-    infraredPointsText[i].setX(5);
-    infraredGroup.addToGroup(&infraredPointsText[i]);
+    infraredPointsText[i] = new QGraphicsTextItem();
+    infraredPointsText[i]->setY(x += 15);
+    infraredPointsText[i]->setX(5);
+    infraredGroup->addToGroup(infraredPointsText[i]);
   }
 
-  infraredGroup.addToGroup(&infraredTitle);
-
-  infraredGroup.setX(160);
+  infraredGroup->setX(160);
 
   updateInfraredInfo(QList < irpoint>() );
 
-  x = 0;
+  accelerometrTitle = new QGraphicsTextItem();
+  accelerometrTitle->setHtml("<font color=#ffffff>Accelerometer:</font>");
+  accelerometrTitle->setPos(0, x);
+  accelerometrGroup = new QGraphicsItemGroup();
 
-  accelerometrTitle.setHtml("<font color=#ffffff>Accelerometer:</font>");
-  accelerometrTitle.setPos(0, x);
 
-  x += 10;
+  x = 10;
   for (register int i = 0; i < 10; ++i) {
-    accelerometrPointsText[i].setY(x += 15);
-    accelerometrPointsText[i].setX(5);
+    accelerometrPointsText[i] = new QGraphicsTextItem();
+    accelerometrPointsText[i]->setY(x += 15);
+    accelerometrPointsText[i]->setX(5);
     if (i == 4) x += 15;
-    accelerometrGroup.addToGroup(&accelerometrPointsText[i]);
+    accelerometrGroup->addToGroup(accelerometrPointsText[i]);
   }
-  accelerometrGroup.addToGroup(&accelerometrTitle);
-  //accelerometrGroup.setY(95);
-  accelerometrGroup.setX(0);
+  accelerometrGroup->setX(0);
 
   memset(&nunchuk_acc, 0, sizeof(struct accdata));
   memset(&wiimote_acc, 0, sizeof(struct accdata));
@@ -209,29 +208,40 @@ MainWindow::MainWindow(QWidget *parent) :
   updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, wiimote_acc.roll,
                          nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch, nunchuk_acc.roll);
 
+  wiimoteStdButtonText = new QGraphicsTextItem();
+  wiimoteExtButtonText = new QGraphicsTextItem();
+  batteryItem = new WiimoteBatteryItem();
+
+  for (register int i = 0; i < 4; ++i)
+    ledPixmaps[i] = new WiimoteLedItem();
+
+  line = new QGraphicsLineItem();
+
   updateButtonInfo(0);
 
   for (register int i = 0; i < 4; ++i) {
-    infraredPoints[i].setPen(QPen(Qt::white));
-    infraredPoints[i].setRect(0, 0, 3, 3);
-    infraredPoints[i].hide();
-    infraredPoints[i].setZValue(10.0);
-    infraredLine[i].setPen(QPen(Qt::darkGreen));
-    infraredLine[i].hide();
-    infraredLine[i].setZValue(5.0);
-    scene->addItem(&infraredPoints[i]);
-    scene->addItem(&infraredLine[i]);
+    infraredPoints[i] = new QGraphicsEllipseItem();
+    infraredPoints[i]->setPen(QPen(Qt::white));
+    infraredPoints[i]->setRect(0, 0, 3, 3);
+    infraredPoints[i]->hide();
+    infraredPoints[i]->setZValue(10.0);
+    infraredLine[i] = new QGraphicsLineItem();
+    infraredLine[i]->setPen(QPen(Qt::darkGreen));
+    infraredLine[i]->hide();
+    infraredLine[i]->setZValue(5.0);
+    scene.addItem(infraredPoints[i]);
+    scene.addItem(infraredLine[i]);
   }
 
 
-  line.setPen(QPen(Qt::darkGray));
+  line->setPen(QPen(Qt::darkGray));
 
-  scene->addItem(&wiimoteStdButtonText);
-  scene->addItem(&wiimoteExtButtonText);
-  scene->addItem(&batteryItem);
-  scene->addItem(&infraredGroup);
-  scene->addItem(&accelerometrGroup);
-  scene->addItem(&line);
+  scene.addItem(wiimoteStdButtonText);
+  scene.addItem(wiimoteExtButtonText);
+  scene.addItem(batteryItem);
+  scene.addItem(infraredGroup);
+  scene.addItem(accelerometrGroup);
+  scene.addItem(line);
 
   iface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
                                         WIIMOTEDEV_DBUS_OBJECT_EVENTS,
@@ -252,10 +262,10 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(iface, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), this, SLOT(dbusWiimoteAcc(quint32,struct accdata)));
   connect(iface, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), this, SLOT(dbusNunchukAcc(quint32,accdata)));
 
-  connect(&ledPixmaps[0], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed1(bool)));
-  connect(&ledPixmaps[1], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed2(bool)));
-  connect(&ledPixmaps[2], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed3(bool)));
-  connect(&ledPixmaps[3], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed4(bool)));
+  connect(ledPixmaps[0], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed1(bool)));
+  connect(ledPixmaps[1], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed2(bool)));
+  connect(ledPixmaps[2], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed3(bool)));
+  connect(ledPixmaps[3], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed4(bool)));
 
   QList <uint> list = iface->dbusGetWiimoteList();
 
@@ -276,13 +286,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
   getWiimoteStats() ;
 
-  batteryItem.setBatteryLevel(iface->dbusWiimoteGetBatteryLife(wiimoteId));
+  batteryItem->setBatteryLevel(iface->dbusWiimoteGetBatteryLife(wiimoteId));
 
   for (register int i = 0; i < 4; ++i) {
     if ((leds >> i) & true)
-      ledPixmaps[i].switchOn(); else
-      ledPixmaps[i].switchOff();
-    scene->addItem(&ledPixmaps[i]);
+      ledPixmaps[i]->switchOn(); else
+      ledPixmaps[i]->switchOff();
+    scene.addItem(ledPixmaps[i]);
   }
 }
 
@@ -292,15 +302,13 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
   quint32 x = rect.width() - 16;
   quint32 y = rect.height() - 32;
 
-  wiimoteStdButtonText.setY(geometry().height()-50);
-  wiimoteExtButtonText.setY(geometry().height()-35);
+  wiimoteStdButtonText->setY(geometry().height()-50);
+  wiimoteExtButtonText->setY(geometry().height()-35);
 
-  for (register int i = 3; i >= 0; --i) {
-    qDebug() << i;
-    ledPixmaps[i].setPos(x -= (16 + 5), y);
-  }
+  for (register int i = 3; i >= 0; --i)
+    ledPixmaps[i]->setPos(x -= (16 + 5), y);
 
-  batteryItem.setPos(x, rect.height() - batteryItem.boundingRect().height() - 9);
+  batteryItem->setPos(x, rect.height() - batteryItem->boundingRect().height() - 9);
 }
 
 void MainWindow::updateButtonInfo(quint64 value) {
@@ -318,21 +326,21 @@ void MainWindow::updateButtonInfo(quint64 value) {
   ext |= value & CLASSIC_LSTICK_MASK;
   ext |= value & CLASSIC_RSTICK_MASK;
 
-  wiimoteStdButtonText.setHtml(QString("<font color=#999999>std: </font>%1").arg(getReadableWiiremoteSequence(std)));
-  wiimoteExtButtonText.setHtml(QString("<font color=#999999>ext: </font>%1").arg(getReadableWiiremoteSequence(ext)));
+  wiimoteStdButtonText->setHtml(QString("<font color=#999999>std: </font>%1").arg(getReadableWiiremoteSequence(std)));
+  wiimoteExtButtonText->setHtml(QString("<font color=#999999>ext: </font>%1").arg(getReadableWiiremoteSequence(ext)));
 }
 
 void MainWindow::updateInfraredInfo(QList < irpoint> list)
 {
   int i = 0;
   for (; i < list.count(); ++i)
-    infraredPointsText[i].setHtml(QString("<font color=#555555>%1: </font>" \
+    infraredPointsText[i]->setHtml(QString("<font color=#555555>%1: </font>" \
       "<font color=#ffffff>%2</font><font color=#999999>x</font>" \
       "<font color=#ffffff>%3</font><font color=#555555> size: </font>" \
       "<font color=#ffffff>%4</font>").arg(QString::number(i), QString::number(list.at(i).x)
                                               , QString::number(list.at(i).y), QString::number(list.at(i).size)));
   for (; i < 4; ++i)
-    infraredPointsText[i].setHtml(QString("<font color=#555555>%1: </font>" \
+    infraredPointsText[i]->setHtml(QString("<font color=#555555>%1: </font>" \
       "<font color=#ffffff>%2</font><font color=#999999>x</font>" \
       "<font color=#ffffff>%3</font><font color=#555555> size: </font>" \
       "<font color=#ffffff>%4</font>").arg(QString::number(i), "0", "0", "-1"));
@@ -341,25 +349,25 @@ void MainWindow::updateInfraredInfo(QList < irpoint> list)
 
 void MainWindow::updateAccelerometrInfo(int x1, int y1, int z1, double p1, double r1,
                                         int x2, int y2, int z2, double p2, double r2) {
-  accelerometrPointsText[0].setHtml(QString("<font color=#555555> X-Axis: " \
+  accelerometrPointsText[0]->setHtml(QString("<font color=#555555> X-Axis: " \
     "</font><font color=#ffffff>%1</font>").arg(QString::number(x1)));
-  accelerometrPointsText[1].setHtml(QString("<font color=#555555> Y-Axis: " \
+  accelerometrPointsText[1]->setHtml(QString("<font color=#555555> Y-Axis: " \
     "</font><font color=#ffffff>%1</font>").arg(QString::number(y1)));
-  accelerometrPointsText[2].setHtml(QString("<font color=#555555> Z-Axis: " \
+  accelerometrPointsText[2]->setHtml(QString("<font color=#555555> Z-Axis: " \
     "</font><font color=#ffffff>%1</font>").arg(QString::number(z1)));
-  accelerometrPointsText[3].setHtml(QString::fromUtf8("<font color=#555555> Pitch: " \
+  accelerometrPointsText[3]->setHtml(QString::fromUtf8("<font color=#555555> Pitch: " \
     "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(p1))));
-  accelerometrPointsText[4].setHtml(QString::fromUtf8("<font color=#555555> Roll: " \
+  accelerometrPointsText[4]->setHtml(QString::fromUtf8("<font color=#555555> Roll: " \
     "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(r1))));
-  accelerometrPointsText[5].setHtml(QString("<font color=#555555> X-Axis: " \
+  accelerometrPointsText[5]->setHtml(QString("<font color=#555555> X-Axis: " \
     "</font><font color=#ffffff>%1</font>").arg(QString::number(x2)));
-  accelerometrPointsText[6].setHtml(QString("<font color=#555555> Y-Axis: " \
+  accelerometrPointsText[6]->setHtml(QString("<font color=#555555> Y-Axis: " \
     "</font><font color=#ffffff>%1</font>").arg(QString::number(y2)));
-  accelerometrPointsText[7].setHtml(QString("<font color=#555555> Z-Axis: " \
+  accelerometrPointsText[7]->setHtml(QString("<font color=#555555> Z-Axis: " \
     "</font><font color=#ffffff>%1</font>").arg(QString::number(z2)));
-  accelerometrPointsText[8].setHtml(QString::fromUtf8("<font color=#555555> Pitch: " \
+  accelerometrPointsText[8]->setHtml(QString::fromUtf8("<font color=#555555> Pitch: " \
     "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(p2))));
-  accelerometrPointsText[9].setHtml(QString::fromUtf8("<font color=#555555> Roll: " \
+  accelerometrPointsText[9]->setHtml(QString::fromUtf8("<font color=#555555> Roll: " \
     "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(r2))));
 }
 
@@ -389,7 +397,6 @@ QString MainWindow::getReadableWiiremoteSequence(quint64 value) {
 
 MainWindow::~MainWindow()
 {
-  delete scene;
 }
 
 void MainWindow::toggleRumble(bool rumble)
@@ -416,14 +423,13 @@ void MainWindow::dbusWiimoteBatteryLife(quint32 id, quint8 life) {
   if (id != wiimoteId)
     return;
 
-  batteryItem.setBatteryLevel(life);
+  batteryItem->setBatteryLevel(life);
 }
 
 void MainWindow::getWiimoteStats()
 {
   leds = iface->dbusWiimoteGetLedStatus(wiimoteId);
 //  ui->checkboxRumble->setChecked(iface->dbusWiimoteGetRumbleStatus(wiimoteId));
-//  ui->progressWiimoteBattery->setValue(iface->dbusWiimoteGetBatteryLife(wiimoteId));
 }
 
 void MainWindow::toggleLed1(bool toggled)
@@ -489,7 +495,7 @@ void MainWindow::infraredCleanup()
   infraredTimeout.stop();
 
   for (register int i = 0; i < 4; ++i) {
-    infraredPoints[i].hide();
+    infraredPoints[i]->hide();
   }
 }
 
@@ -520,16 +526,16 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
   for (register int i = 0; i < 4; ++i) {
     if (i < points.count()) {
       register int size = points.at(i).size * 2;
-      infraredPoints[i].setRect(-size, -size, size, size);
+      infraredPoints[i]->setRect(-size, -size, size, size);
 
-      if (!infraredPoints[i].isVisible())
-        infraredPoints[i].show();
+      if (!infraredPoints[i]->isVisible())
+        infraredPoints[i]->show();
 
-      infraredPoints[i].setPos((static_cast< double>( points.at(i).x) * widthMultiplier) - (size/2),
+      infraredPoints[i]->setPos((static_cast< double>( points.at(i).x) * widthMultiplier) - (size/2),
                                (static_cast< double>( points.at(i).y) * heightMultiplier) - (size/2));
     } else {
-      if (infraredPoints[i].isVisible())
-        infraredPoints[i].hide();
+      if (infraredPoints[i]->isVisible())
+        infraredPoints[i]->hide();
     }
   }
 
@@ -537,39 +543,39 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
   case ir0source:
   case ir1source:
     for (register int i = 0; i < 4; ++i)
-      if (infraredLine[i].isVisible()) infraredLine[i].hide();
+      if (infraredLine[i]->isVisible()) infraredLine[i]->hide();
     break;
 
   case ir2source:
     for (register int i = 1; i < 4; ++i)
-      if (infraredLine[i].isVisible()) infraredLine[i].hide();
+      if (infraredLine[i]->isVisible()) infraredLine[i]->hide();
 
-    infraredLine[0].setLine(infraredPoints[0].x(), infraredPoints[0].y(), infraredPoints[1].x(), infraredPoints[1].y());
-    if (!infraredLine[0].isVisible()) infraredLine[0].show();
+    infraredLine[0]->setLine(infraredPoints[0]->x(), infraredPoints[0]->y(), infraredPoints[1]->x(), infraredPoints[1]->y());
+    if (!infraredLine[0]->isVisible()) infraredLine[0]->show();
     break;
 
   case ir3source:
-    if (infraredLine[3].isVisible()) infraredLine[3].hide();
+    if (infraredLine[3]->isVisible()) infraredLine[3]->hide();
 
-    infraredLine[0].setLine(infraredPoints[0].x(), infraredPoints[0].y(), infraredPoints[1].x(), infraredPoints[1].y());
-    infraredLine[1].setLine(infraredPoints[1].x(), infraredPoints[1].y(), infraredPoints[2].x(), infraredPoints[2].y());
-    infraredLine[2].setLine(infraredPoints[2].x(), infraredPoints[2].y(), infraredPoints[0].x(), infraredPoints[0].y());
+    infraredLine[0]->setLine(infraredPoints[0]->x(), infraredPoints[0]->y(), infraredPoints[1]->x(), infraredPoints[1]->y());
+    infraredLine[1]->setLine(infraredPoints[1]->x(), infraredPoints[1]->y(), infraredPoints[2]->x(), infraredPoints[2]->y());
+    infraredLine[2]->setLine(infraredPoints[2]->x(), infraredPoints[2]->y(), infraredPoints[0]->x(), infraredPoints[0]->y());
 
-    if (!infraredLine[0].isVisible()) infraredLine[0].show();
-    if (!infraredLine[1].isVisible()) infraredLine[1].show();
-    if (!infraredLine[2].isVisible()) infraredLine[2].show();
+    if (!infraredLine[0]->isVisible()) infraredLine[0]->show();
+    if (!infraredLine[1]->isVisible()) infraredLine[1]->show();
+    if (!infraredLine[2]->isVisible()) infraredLine[2]->show();
     break;
 
   case ir4source:
-    infraredLine[0].setLine(infraredPoints[0].x(), infraredPoints[0].y(), infraredPoints[1].x(), infraredPoints[1].y());
-    infraredLine[1].setLine(infraredPoints[1].x(), infraredPoints[1].y(), infraredPoints[2].x(), infraredPoints[2].y());
-    infraredLine[2].setLine(infraredPoints[2].x(), infraredPoints[2].y(), infraredPoints[3].x(), infraredPoints[3].y());
-    infraredLine[3].setLine(infraredPoints[3].x(), infraredPoints[3].y(), infraredPoints[0].x(), infraredPoints[0].y());
+    infraredLine[0]->setLine(infraredPoints[0]->x(), infraredPoints[0]->y(), infraredPoints[1]->x(), infraredPoints[1]->y());
+    infraredLine[1]->setLine(infraredPoints[1]->x(), infraredPoints[1]->y(), infraredPoints[2]->x(), infraredPoints[2]->y());
+    infraredLine[2]->setLine(infraredPoints[2]->x(), infraredPoints[2]->y(), infraredPoints[3]->x(), infraredPoints[3]->y());
+    infraredLine[3]->setLine(infraredPoints[3]->x(), infraredPoints[3]->y(), infraredPoints[0]->x(), infraredPoints[0]->y());
 
-    if (!infraredLine[0].isVisible()) infraredLine[0].show();
-    if (!infraredLine[1].isVisible()) infraredLine[1].show();
-    if (!infraredLine[2].isVisible()) infraredLine[2].show();
-    if (!infraredLine[3].isVisible()) infraredLine[3].show();
+    if (!infraredLine[0]->isVisible()) infraredLine[0]->show();
+    if (!infraredLine[1]->isVisible()) infraredLine[1]->show();
+    if (!infraredLine[2]->isVisible()) infraredLine[2]->show();
+    if (!infraredLine[3]->isVisible()) infraredLine[3]->show();
   }
 
 }
@@ -593,7 +599,7 @@ void MainWindow::dbusWiimoteAcc(quint32 id, struct accdata table)
 
   qint32 y = (geometry().height()/2);
 
-  line.setLine(0, y-(wiimote_acc.roll*4), geometry().width(), y+(wiimote_acc.roll*4));
+  line->setLine(0, y-(wiimote_acc.roll*4), geometry().width(), y+(wiimote_acc.roll*4));
 }
 
 void MainWindow::dbusNunchukAcc(quint32 id, struct accdata table)

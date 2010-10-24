@@ -54,23 +54,23 @@ protected:
   virtual void resizeEvent(QResizeEvent*);
 
 private:
-  QGraphicsItemGroup infraredGroup;
-  QGraphicsTextItem infraredTitle;
-  QGraphicsTextItem infraredPointsText[4];
+  QGraphicsItemGroup *infraredGroup;
+  QGraphicsTextItem *infraredTitle;
+  QGraphicsTextItem *infraredPointsText[4];
 
-  QGraphicsTextItem accelerometrTitle;
-  QGraphicsItemGroup accelerometrGroup;
-  QGraphicsTextItem accelerometrPointsText[10];
+  QGraphicsTextItem *accelerometrTitle;
+  QGraphicsItemGroup *accelerometrGroup;
+  QGraphicsTextItem *accelerometrPointsText[10];
 
-  QGraphicsLineItem line;
+  QGraphicsLineItem *line;
 
-  QGraphicsTextItem wiimoteStdButtonText;
-  QGraphicsTextItem wiimoteExtButtonText;
+  QGraphicsTextItem *wiimoteStdButtonText;
+  QGraphicsTextItem *wiimoteExtButtonText;
 
-  QGraphicsEllipseItem infraredPoints[4];
-  QGraphicsLineItem infraredLine[4];
-  WiimoteLedItem ledPixmaps[4];
-  WiimoteBatteryItem batteryItem;
+  QGraphicsEllipseItem *infraredPoints[4];
+  QGraphicsLineItem *infraredLine[4];
+  WiimoteLedItem *ledPixmaps[4];
+  WiimoteBatteryItem *batteryItem;
 
   struct accdata nunchuk_acc;
   struct accdata wiimote_acc;
@@ -83,7 +83,7 @@ private:
   SelectWiimote *selectWiimote;
 
   DBusDeviceEventsInterface *iface;
-  QGraphicsScene *scene;
+  QGraphicsScene scene;
 
   QTimer infraredTimeout;
 
@@ -92,7 +92,6 @@ private:
   double dotSizeMultiplier;
 
   QString getReadableWiiremoteSequence(quint64);
-
 
 private slots:
   void updateAccelerometrInfo(int, int, int, double, double,
@@ -103,29 +102,28 @@ private slots:
 
 private slots:
   void changeDevicePushed();
+  void infraredCleanup();
   void getWiimoteStats();
 
-  void toggleRumble(bool rumble);
-  void toggleLed1(bool toggled);
-  void toggleLed2(bool toggled);
-  void toggleLed3(bool toggled);
-  void toggleLed4(bool toggled);
+  void toggleRumble(bool);
+  void toggleLed1(bool);
+  void toggleLed2(bool);
+  void toggleLed3(bool);
+  void toggleLed4(bool);
+
+  void dbusWiimoteAcc(quint32 id, struct accdata acc);
+  void dbusWiimoteBatteryLife(quint32 id, quint8 life);
+  void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
+  void dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points);
 
   void dbusNunchukPlugged(quint32 id);
   void dbusNunchukUnplugged(quint32 id);
-  void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
 
-  void dbusWiimoteBatteryLife(quint32 id, quint8 life);
-  void dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points);
-  void dbusWiimoteAcc(quint32 id, struct accdata acc);
-
-  void dbusNunchukStick(quint32 id, struct stickdata stick);
   void dbusNunchukAcc(quint32 id, struct accdata acc);
+  void dbusNunchukStick(quint32 id, struct stickdata stick);
 
   void dbusClassicControllerLStick(quint32 id, struct stickdata stick);
   void dbusClassicControllerRStick(quint32 id, struct stickdata stick);
-
-  void infraredCleanup();
 };
 
 #endif // MAINWINDOW_H
