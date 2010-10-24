@@ -226,7 +226,7 @@ MainWindow::MainWindow(QWidget *parent) :
     infraredPoints[i]->hide();
     infraredPoints[i]->setZValue(10.0);
     infraredLine[i] = new QGraphicsLineItem();
-    infraredLine[i]->setPen(QPen(Qt::darkGreen));
+    infraredLine[i]->setPen(QPen(Qt::yellow));
     infraredLine[i]->hide();
     infraredLine[i]->setZValue(5.0);
     scene.addItem(infraredPoints[i]);
@@ -304,6 +304,9 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
 
   wiimoteStdButtonText->setY(geometry().height()-50);
   wiimoteExtButtonText->setY(geometry().height()-35);
+
+  line->setLine(-(geometry().width()/10), geometry().height()/2, geometry().width()+(geometry().width()/10), geometry().height()/2);
+  line->setTransformOriginPoint(geometry().width()/2,geometry().height()/2);
 
   for (register int i = 3; i >= 0; --i)
     ledPixmaps[i]->setPos(x -= (16 + 5), y);
@@ -597,9 +600,7 @@ void MainWindow::dbusWiimoteAcc(quint32 id, struct accdata table)
   updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, wiimote_acc.roll,
                          nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch, nunchuk_acc.roll);
 
-  qint32 y = (geometry().height()/2);
-
-  line->setLine(0, y-(wiimote_acc.roll*4), geometry().width(), y+(wiimote_acc.roll*4));
+  line->setRotation(table.roll);
 }
 
 void MainWindow::dbusNunchukAcc(quint32 id, struct accdata table)
