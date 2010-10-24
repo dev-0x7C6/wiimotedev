@@ -28,9 +28,6 @@
 MainWindow::MainWindow(QWidget *parent) :
   QGraphicsView(parent)
 {
-  connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredCleanup()));
-  infraredTimeout.setInterval(30);
-
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
   brush.setStyle(Qt::SolidPattern);
@@ -162,6 +159,9 @@ MainWindow::MainWindow(QWidget *parent) :
   qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
 
 
+  connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredCleanup()));
+  infraredTimeout.setInterval(30);
+
   scene = new QGraphicsScene();
   scene->setBackgroundBrush(QBrush(QColor(0x0A, 0x0A, 0x0A, 0xFF), Qt::SolidPattern));
 
@@ -247,6 +247,7 @@ MainWindow::MainWindow(QWidget *parent) :
   connect(iface, SIGNAL(dbusClassicControllerRStick(quint32,stickdata)), this, SLOT(dbusClassicControllerRStick(quint32,stickdata)));
   connect(iface, SIGNAL(dbusClassicControllerLStick(quint32,stickdata)), this, SLOT(dbusClassicControllerLStick(quint32,stickdata)));
 
+  connect(iface, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), this, SLOT(dbusWiimoteBatteryLife(quint32,quint8)));
   connect(iface, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), this, SLOT(dbusWiimoteInfrared(quint32,QList<struct irpoint>)));
   connect(iface, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), this, SLOT(dbusWiimoteAcc(quint32,struct accdata)));
   connect(iface, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), this, SLOT(dbusNunchukAcc(quint32,accdata)));
@@ -411,6 +412,13 @@ void MainWindow::changeDevicePushed()
   getWiimoteStats();
 }
 
+void MainWindow::dbusWiimoteBatteryLife(quint32 id, quint8 life) {
+  if (id != wiimoteId)
+    return;
+
+  batteryItem.setBatteryLevel(life);
+}
+
 void MainWindow::getWiimoteStats()
 {
   leds = iface->dbusWiimoteGetLedStatus(wiimoteId);
@@ -469,7 +477,7 @@ void MainWindow::dbusClassicControllerLStick(quint32 id, struct stickdata stick)
 void MainWindow::dbusClassicControllerRStick(quint32 id, struct stickdata stick)
 {
   if (id != wiimoteId)
-      return;
+    return;
 
   register int x = ((0x1F >> 1) - stick.x) * 2.3;
   register int y = ((0x1F >> 1) - stick.y) * 2.3;

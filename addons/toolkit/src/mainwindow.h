@@ -79,13 +79,8 @@ private:
 
   quint32 wiimoteId;
   quint8 leds;
-  quint8 ledsOrginal;
 
   SelectWiimote *selectWiimote;
-
-//    DotItem *classicLStickDot;
-//    DotItem *classicRStickDot;
-//    DotItem *nunchukStickDot;
 
   DBusDeviceEventsInterface *iface;
   QGraphicsScene *scene;
@@ -120,15 +115,13 @@ private slots:
   void dbusNunchukUnplugged(quint32 id);
   void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
 
-//  void dbusWiimoteBatteryLife(quint32 id, quint8 life);
-//  void dbusWiimoteStatus(quint32 id, quint8 status);
+  void dbusWiimoteBatteryLife(quint32 id, quint8 life);
   void dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points);
   void dbusWiimoteAcc(quint32 id, struct accdata acc);
 
   void dbusNunchukStick(quint32 id, struct stickdata stick);
   void dbusNunchukAcc(quint32 id, struct accdata acc);
 
- // void dbusClassicControllerButtons(quint32 id, quint64 value);
   void dbusClassicControllerLStick(quint32 id, struct stickdata stick);
   void dbusClassicControllerRStick(quint32 id, struct stickdata stick);
 
