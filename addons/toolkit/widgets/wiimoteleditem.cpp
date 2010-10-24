@@ -22,7 +22,8 @@
 
 WiimoteLedItem::WiimoteLedItem(QObject *parent) :
   QObject(parent),
-  QGraphicsPixmapItem()
+  QGraphicsPixmapItem(),
+  status(false)
 {
   setPixmap(QPixmap(":/led_off.png"));
   switchOff();
