@@ -28,11 +28,17 @@ WiimoteLedItem::WiimoteLedItem(QObject *parent) :
 }
 
 void WiimoteLedItem::switchOn() {
+  if (status)
+    return;
+
   setPixmap(QPixmap(":/led_on.png"));
   status = true;
 }
 
 void WiimoteLedItem::switchOff() {
+  if (!status)
+    return;
+
   setPixmap(QPixmap(":/led_off.png"));
   status = false;
 }
