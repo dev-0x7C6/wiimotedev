@@ -20,12 +20,13 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
+#include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QPainter>
 
+#include "widgets/wiimoteleditem.h"
 #include "src/selectwiimote.h"
 
 #include "src/interfaces/deviceevents.h"
@@ -33,11 +34,8 @@
 
 const double defaultPointMultiplier = 2.5;
 
-namespace Ui {
-    class MainWindow;
-}
 
-class MainWindow : public QMainWindow {
+class MainWindow : public QGraphicsView {
   Q_OBJECT
 public:
   MainWindow(QWidget *parent = 0);
@@ -51,14 +49,17 @@ public:
     ir4source
   };
 
+protected:
+  virtual void resizeEvent(QResizeEvent*);
+
 private:
   QGraphicsItemGroup infraredGroup;
   QGraphicsTextItem infraredTitle;
-  QGraphicsTextItem* infraredPointsText[4];
+  QGraphicsTextItem infraredPointsText[4];
 
   QGraphicsTextItem accelerometrTitle;
   QGraphicsItemGroup accelerometrGroup;
-  QGraphicsTextItem* accelerometrPointsText[10];
+  QGraphicsTextItem accelerometrPointsText[10];
 
   QGraphicsLineItem line;
 
@@ -67,6 +68,7 @@ private:
 
   QGraphicsEllipseItem infraredPoints[4];
   QGraphicsLineItem infraredLine[4];
+  WiimoteLedItem ledPixmaps[4];
 
   struct accdata nunchuk_acc;
   struct accdata wiimote_acc;
@@ -75,6 +77,7 @@ private:
 
   quint32 wiimoteId;
   quint8 leds;
+  quint8 ledsOrginal;
 
   SelectWiimote *selectWiimote;
 
@@ -82,8 +85,7 @@ private:
 //    DotItem *classicRStickDot;
 //    DotItem *nunchukStickDot;
 
-  Ui::MainWindow *ui;
-  DBusDeviceEventsInterface  *iface;
+  DBusDeviceEventsInterface *iface;
   QGraphicsScene *scene;
 
   QTimer infraredTimeout;

@@ -21,6 +21,7 @@ set(toolkit_sources
   ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
   src/mainwindow.cpp
   src/selectwiimote.cpp
+  widgets/wiimoteleditem.cpp
   main.cpp
 )
 
@@ -32,12 +33,19 @@ set(toolkit_headers_qt
   ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
   src/mainwindow.h
   src/selectwiimote.h
+  widgets/wiimoteleditem.h
 )
 
 set(toolkit_uis
   ui/mainwindow.ui
   ui/selectwiimote.ui
 )
+
+set(resources
+  data/data.qrc
+)
+
+qt4_add_resources(toolkit_sources ${resources})
 
 qt4_wrap_ui(toolkit_sources ${toolkit_uis})
 qt4_wrap_cpp(toolkit_sources ${toolkit_headers_qt} )
