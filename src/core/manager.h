@@ -48,7 +48,7 @@ private:
   bool tcpInterfaceCreated;
 
 // Settings ------------------------------------------------- /
-  WiimotedevSettings *wiimotedevSettings;
+  WiimotedevSettings *settings;
   NetworkServerThread *networkServerThread;
 
   QList< WiimoteConnection*> connections;

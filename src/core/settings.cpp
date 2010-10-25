@@ -39,8 +39,11 @@ void WiimotedevSettings::reload()
   ifaceTcpSupport = settings->value(tcpSupportValue, false).toBool();
   tcpAllowed = settings->value("tcp/allowed", QStringList()).toStringList();
   tcpPort = settings->value("tcp/port", WIIMOTEDEV_TCP_PORT).toInt();
-  powersave = settings->value("features/powersave", 15).toUInt();
+
+  autoregister = settings->value("features/autoregister", true).toBool();
   timeout = settings->value("features/connectiontimeout", 1).toUInt();
+  powersave = settings->value("features/powersave", 15).toUInt();
+
   sequence.clear();
 
   settings->beginGroup("sequence");
@@ -48,6 +51,20 @@ void WiimotedevSettings::reload()
     sequence[settings->allKeys().at(i)] = settings->value(settings->allKeys().at(i), 0).toUInt();
 
   settings->endGroup();
+}
+
+quint32  WiimotedevSettings::registerWiiremote(QString mac) {
+  quint32 id = 1;
+
+  if (!sequence.values().isEmpty())
+    while(sequence.values().indexOf(id) != -1) id++;
+  sequence[mac] = id;
+
+  settings->beginGroup("sequence");
+  settings->setValue(mac, id);
+  settings->endGroup();
+
+  return id;
 }
 
 void WiimotedevSettings::setDBusInterfaceSupport(bool support)
