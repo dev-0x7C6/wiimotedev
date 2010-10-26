@@ -161,7 +161,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
   scene.setBackgroundBrush(QBrush(QColor(0x0A, 0x0A, 0x0A, 0xFF), Qt::SolidPattern));
 
-  scene.setSceneRect(0, 0, 512, 384);
+  scene.setSceneRect(0, 0, 1024/2, 768/2);
+  this->setGeometry(QRect(0, 0, 1024/2, 768/2));
 
   setScene(&scene);
 

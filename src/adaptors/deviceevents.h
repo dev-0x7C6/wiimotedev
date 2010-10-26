@@ -59,6 +59,10 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
 "      <arg direction=\"out\" type=\"u\" name=\"latency\" />\n"
 "    </method>\n"
+"    <method name=\"dbusWiimoteGetMacAddress\">\n"
+"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"s\" name=\"mac\" />\n"
+"    </method>\n"
 "    <method name=\"dbusWiimoteGetLedStatus\">\n"
 "      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
 "      <arg direction=\"out\" type=\"y\" name=\"led\" />\n"
@@ -163,6 +167,7 @@ public Q_SLOTS:
   quint32 dbusWiimoteGetAverageLatency(quint32 id);
   quint32 dbusWiimoteGetBatteryLife(quint32 id);
   quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+  QString dbusWiimoteGetMacAddress(quint32 id);
 
   quint8 dbusWiimoteGetLedStatus(quint32 id);
   quint8 dbusWiimoteGetStatus(quint32 id);
@@ -218,6 +223,7 @@ public Q_SLOTS:
   quint32 dbusWiimoteGetAverageLatency(quint32 id);
   quint32 dbusWiimoteGetBatteryLife(quint32 id);
   quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+  QString dbusWiimoteGetMacAddress(quint32 id);
 
   quint8 dbusWiimoteGetLedStatus(quint32 id);
   quint8 dbusWiimoteGetStatus(quint32 id);

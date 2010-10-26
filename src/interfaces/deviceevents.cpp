@@ -82,6 +82,12 @@ QDBusReply < quint8> DBusDeviceEventsInterface::dbusWiimoteGetStatus(quint32 id)
   return callWithArgumentList(QDBus::Block, "dbusWiimoteGetStatus", argumentList);
 }
 
+QDBusReply < QString> DBusDeviceEventsInterface::dbusWiimoteGetMacAddress(quint32 id) {
+  QList<QVariant> argumentList;
+  argumentList << id;
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteGetMacAddress", argumentList);
+}
+
 
 QDBusReply < quint8> DBusDeviceEventsInterface::dbusWiimoteGetLedStatus(quint32 id) {
   QList<QVariant> argumentList;

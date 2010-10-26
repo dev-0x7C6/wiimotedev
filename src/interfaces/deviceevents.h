@@ -44,11 +44,11 @@ public Q_SLOTS:
   QDBusReply < quint8> dbusWiimoteCurrentLatency(quint32 id);
   QDBusReply < quint8> dbusWiimoteGetStatus(quint32 id);
   QDBusReply < quint32> dbusWiimoteGetBatteryLife(quint32 id);
+  QDBusReply < QString> dbusWiimoteGetMacAddress(quint32 id);
   QDBusReply < bool> dbusWiimoteGetRumbleStatus(quint32 id);
   QDBusReply < quint8> dbusWiimoteGetLedStatus(quint32 id);
   QDBusReply < bool> dbusWiimoteSetLedStatus(quint32 id, quint32 status);
   QDBusReply < bool> dbusWiimoteSetRumbleStatus(quint32 id, bool status);
-
 
 Q_SIGNALS:
   void dbusWiimoteGeneralButtons(quint32, quint64);

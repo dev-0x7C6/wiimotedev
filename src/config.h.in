@@ -28,6 +28,4 @@
 #cmakedefine WIIMOTEDEV_VERSION_MINOR
 #cmakedefine WIIMOTEDEV_VERSION_PATCH
 
-
-
 #endif // CONFIG_H

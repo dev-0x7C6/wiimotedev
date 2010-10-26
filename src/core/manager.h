@@ -90,6 +90,7 @@ public Q_SLOTS:
   quint32 dbusWiimoteGetAverageLatency(quint32 id);
   quint32 dbusWiimoteGetBatteryLife(quint32 id);
   quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+  QString dbusWiimoteGetMacAddress(quint32 id);
 
   bool dbusWiimoteGetRumbleStatus(quint32 id);
   bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);

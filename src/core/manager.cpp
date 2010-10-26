@@ -299,7 +299,6 @@ quint8 ConnectionManager::dbusWiimoteGetLedStatus(quint32 id)
   return 0;
 }
 
-
 bool ConnectionManager::dbusWiimoteGetRumbleStatus(quint32 id)
 {
   WiimoteConnection *connection = findWiiremoteObject(id);
@@ -343,6 +342,14 @@ quint32 ConnectionManager::dbusWiimoteGetAverageLatency(quint32 id)
   if (connection)
     return connection->dbusWiimoteGetAverageLatency();
   return 0;
+}
+
+QString ConnectionManager::dbusWiimoteGetMacAddress(quint32 id)
+{
+  WiimoteConnection *connection = findWiiremoteObject(id);
+  if (connection)
+    return connection->wiimote->getWiimoteSAddr();
+  return QString();
 }
 
 bool ConnectionManager::dbusIsClassicConnected(quint32 id)

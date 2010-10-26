@@ -116,6 +116,13 @@ quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetAverageLatency(quint32 id)
   return latency;
 }
 
+QString DBusDeviceEventsAdaptor::dbusWiimoteGetMacAddress(quint32 id)
+{
+  QString macAddress;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetMacAddress", Qt::DirectConnection, Q_RETURN_ARG(QString, macAddress), Q_ARG(quint32, id));
+  return macAddress;
+}
+
 DBusDeviceEventsAdaptorWrapper::DBusDeviceEventsAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
 {
   new DBusDeviceEventsAdaptor(this);
@@ -133,6 +140,13 @@ quint32 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAverageLatency(quint32 id)
   quint32 latency;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAverageLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
   return latency;
+}
+
+QString DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetMacAddress(quint32 id)
+{
+  QString macAddress;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetMacAddress", Qt::DirectConnection, Q_RETURN_ARG(QString, macAddress), Q_ARG(quint32, id));
+  return macAddress;
 }
 
 bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetRumbleStatus(quint32 id){
