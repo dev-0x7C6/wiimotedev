@@ -7,7 +7,18 @@ project( WiimotedevProject )
 
 find_package(Qt4 REQUIRED QtCore QtDbus QtNetwork QtGui QtOpenGL)
 
-include("cmake/FindCWiiD.cmake")
+option(USE_STATIC_CWIID "Use static build-in cwiid library" ON)
+
+if(USE_STATIC_CWIID)
+  set(CWIID_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rdparty/libcwiid)
+  set(CWIID_LIBRARY
+    libcwiid
+    "-lbluetooth"
+  )
+else(USE_STATIC_CWIID)
+  include("cmake/FindCWiiD.cmake")
+endif(USE_STATIC_CWIID)
+
 include("cmake/Version.cmake")
 
 option(BUILD_DAEMON "Build wiimotedev-daemon, main wiiremote manager" ON)

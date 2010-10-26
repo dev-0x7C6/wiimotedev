@@ -2,4 +2,9 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
+# build static libcwiid
+if(USE_STATIC_CWIID)
+  add_subdirectory(libcwiid)
+endif(USE_STATIC_CWIID)
+
 add_subdirectory(qtsingleapplication)

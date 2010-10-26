@@ -23,8 +23,15 @@
 // This is wrapper class, for changes in cwiid API or when wiimotedev-daemon will use
 // other library like *libwiimotedev (when is done)
 
+#include "config.h"
+
 #include <QObject>
+
+#ifdef USE_STATIC_CWIID
+#include "3rdparty/libcwiid/cwiid.h"
+#else
 #include <cwiid.h>
+#endif
 
 #include "headers/consts.h"
 

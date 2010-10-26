@@ -12,6 +12,10 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${QT_QTNETWORK_INCLUDE_DIR}
 )
 
+if(USE_STATIC_CWIID)
+  include_directories(${CWIID_INCLUDE_DIR})
+endif(USE_STATIC_CWIID)
+
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
