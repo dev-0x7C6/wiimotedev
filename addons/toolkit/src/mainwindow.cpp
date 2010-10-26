@@ -295,6 +295,8 @@ MainWindow::MainWindow(QWidget *parent) :
       ledPixmaps[i]->switchOff();
     scene.addItem(ledPixmaps[i]);
   }
+
+  setWindowTitle(QString("Wiimotedev Toolkit :: Wiiremote[%2] %1").arg(iface->dbusWiimoteGetMacAddress(wiimoteId), QString::number(wiimoteId)));
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {

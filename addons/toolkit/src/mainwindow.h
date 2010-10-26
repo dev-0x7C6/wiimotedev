@@ -25,6 +25,7 @@
 #include <QGraphicsItem>
 #include <QTimer>
 #include <QPainter>
+#include <QMenu>
 
 #include "widgets/wiimotebatteryitem.h"
 #include "widgets/wiimoteleditem.h"
@@ -71,6 +72,8 @@ private:
   QGraphicsLineItem *infraredLine[4];
   WiimoteLedItem *ledPixmaps[4];
   WiimoteBatteryItem *batteryItem;
+
+  QMenu menu;
 
   struct accdata nunchuk_acc;
   struct accdata wiimote_acc;
