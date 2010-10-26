@@ -54,4 +54,4 @@ target_link_libraries(qwiimotedev
   ${QTSINGLEAPPLICATION_LIBRARIES}
 )
 
-install(TARGETS qwiimotedev DESTINATION ${bin_directory})
+install(TARGETS qwiimotedev DESTINATION ${WIIMOTEDEV_BIN_DIR})

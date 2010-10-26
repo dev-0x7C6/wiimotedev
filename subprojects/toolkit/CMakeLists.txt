@@ -60,4 +60,4 @@ target_link_libraries(wiimotedev-toolkit
   ${QT_QTGUI_LIBRARY}
 )
 
-install(TARGETS wiimotedev-toolkit DESTINATION ${bin_directory})
+install(TARGETS wiimotedev-toolkit DESTINATION  ${WIIMOTEDEV_BIN_DIR})

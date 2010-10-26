@@ -28,4 +28,4 @@ target_link_libraries(wiimotedev-register
   ${QT_QTDBUS_LIBRARY}
 )
 
-install(TARGETS wiimotedev-register DESTINATION ${bin_directory})
+install(TARGETS wiimotedev-register DESTINATION  ${WIIMOTEDEV_BIN_DIR})

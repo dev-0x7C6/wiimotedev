@@ -2,18 +2,10 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-if(BUILD_DAEMON) 
-  if( NOT EXISTS  "/etc/wiimotedev/wiimotedev.conf" ) 
-    install(FILES wiimotedev.conf DESTINATION /etc/wiimotedev/ )
-  endif()
-endif(BUILD_DAEMON)
+set(FILELIST
+  client.conf
+  scancode.conf
+  wiimotedev.conf
+)
 
-if(BUILD_CLIENT)
-  if( NOT EXISTS  "/etc/wiimotedev/client.conf" )
-    install(FILES client.conf DESTINATION /etc/wiimotedev/ )
-  endif()
-endif(BUILD_CLIENT)
-
-if(BUILD_UINPUT)
-  install(FILES scancode.conf DESTINATION /etc/wiimotedev/ )
-endif(BUILD_UINPUT)
+install(FILES ${FILELIST} DESTINATION ${WIIMOTEDEV_CONF_DIR})

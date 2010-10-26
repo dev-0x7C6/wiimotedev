@@ -125,7 +125,7 @@ if(BUILD_DAEMON)
     ${CWIID_LIBRARY}
   )
 
-  install(TARGETS wiimotedev-daemon DESTINATION ${sbin_directory})
+  install(TARGETS wiimotedev-daemon DESTINATION ${WIIMOTEDEV_SBIN_DIR})
 endif(BUILD_DAEMON)
 
 if(BUILD_CLIENT)
@@ -138,7 +138,7 @@ if(BUILD_CLIENT)
     ${QT_QTNETWORK_LIBRARY}
   )
 
-  install(TARGETS wiimotedev-client DESTINATION ${sbin_directory})
+  install(TARGETS wiimotedev-client DESTINATION ${WIIMOTEDEV_SBIN_DIR})
 endif(BUILD_CLIENT)
 
 if(BUILD_UINPUT)
@@ -150,5 +150,5 @@ if(BUILD_UINPUT)
     ${QT_QTDBUS_LIBRARY}
   )
 
-  install(TARGETS wiimotedev-uinput DESTINATION ${sbin_directory})
+  install(TARGETS wiimotedev-uinput DESTINATION ${WIIMOTEDEV_SBIN_DIR})
 endif(BUILD_UINPUT)
