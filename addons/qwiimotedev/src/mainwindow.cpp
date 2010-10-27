@@ -259,15 +259,15 @@ void MainWindow::wiimoteGeneralButtons(quint32 id, quint64 value)
     if ((id != 1) || (buttons == lastButtons)) return;
     lastButtons = buttons;
 
-    if (value & WIIMOTE_BTN_HOME)
-        if (isVisible())
+    if (value & WIIMOTE_BTN_HOME) {
+      if (isVisible()) {
+        hide();
+      } else
       {
-            hide();
-          } else
-            {
-                moveToCenter();
-                show();
-            }
+        moveToCenter();
+        show();
+      }
+    }
 
     if (isVisible())
     {

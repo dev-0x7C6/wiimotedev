@@ -471,9 +471,9 @@ void MainWindow::dbusNunchukStick(quint32 id, struct stickdata stick)
   if (id != wiimoteId)
       return;
 
-  register int x = ((0xFF >> 1) - stick.x) * 0.25;
-  register int y = ((0xFF >> 1) - stick.y) * 0.25;
-//    nunchukStickDot->setPos(-x, y);
+  //register int x = ((0xFF >> 1) - stick.x) * 0.25;
+  //register int y = ((0xFF >> 1) - stick.y) * 0.25;
+  //nunchukStickDot->setPos(-x, y);
 }
 
 void MainWindow::dbusClassicControllerLStick(quint32 id, struct stickdata stick)
@@ -481,9 +481,9 @@ void MainWindow::dbusClassicControllerLStick(quint32 id, struct stickdata stick)
   if (id != wiimoteId)
       return;
 
-  register int x = ((0x3F >> 1) - stick.x) * 1.2;
-  register int y = ((0x3F >> 1) - stick.y) * 1.2;
-//    classicLStickDot->setPos(-x, y);
+  //register int x = ((0x3F >> 1) - stick.x) * 1.2;
+  //register int y = ((0x3F >> 1) - stick.y) * 1.2;
+  //classicLStickDot->setPos(-x, y);
 }
 
 void MainWindow::dbusClassicControllerRStick(quint32 id, struct stickdata stick)
@@ -491,9 +491,9 @@ void MainWindow::dbusClassicControllerRStick(quint32 id, struct stickdata stick)
   if (id != wiimoteId)
     return;
 
-  register int x = ((0x1F >> 1) - stick.x) * 2.3;
-  register int y = ((0x1F >> 1) - stick.y) * 2.3;
-//    classicRStickDot->setPos(-x, y);
+  //register int x = ((0x1F >> 1) - stick.x) * 2.3;
+  //register int y = ((0x1F >> 1) - stick.y) * 2.3;
+  //classicRStickDot->setPos(-x, y);
 }
 
 void MainWindow::infraredCleanup()

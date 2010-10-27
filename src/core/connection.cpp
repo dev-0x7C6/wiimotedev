@@ -70,10 +70,6 @@ void WiimoteConnection::run()
 
   memset(&wiimote_calibration, 0, sizeof(struct acc_cal));
 
-  double LastWiimoteAccX = 0.0;
-  double LastWiimoteAccY = 0.0;
-  double LastWiimoteAccZ = 0.0;
-
   struct accdata acc;
 
 //  Wiimote temporary variables **************************************************** /
@@ -101,10 +97,6 @@ void WiimoteConnection::run()
   nunchukAccdata.z = 0xFF >> 1;
   nunchukAccdata.pitch = 0.0;
   nunchukAccdata.roll = 0.0;
-
-  double nunchukAccX = 0.0;
-  double nunchukAccY = 0.0;
-  double nunchukAccZ = 0.0;
 
   const quint8 nunchukToleranceValue = (0xFF >> 2);
 

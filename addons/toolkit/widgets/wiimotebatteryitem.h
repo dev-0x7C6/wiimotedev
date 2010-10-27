@@ -17,7 +17,6 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-
 #ifndef WIIMOTEBATTERYITEM_H
 #define WIIMOTEBATTERYITEM_H
 

@@ -26,10 +26,10 @@
 extern bool additional_debug;
 
 ConnectionManager::ConnectionManager()
-  :terminateReq(false),
-   mutex(new QMutex()),
+  :mutex(new QMutex()),
    reconnect(new QMutex()),
-   rwlock(new QReadWriteLock())
+   rwlock(new QReadWriteLock()),
+   terminateReq(false)
 {
   QSettings settings(confFile, QSettings::IniFormat);
 
