@@ -22,8 +22,14 @@
 
 #include "mainwindow.h"
 
+#include <math.h>
+#include <QDebug>
+
+#define PI 3.14159265
+
 MainWindow::MainWindow(QWidget *parent) :
-  QGraphicsView(parent)
+  QGraphicsView(parent),
+  cursor(new QGraphicsPixmapItem(QPixmap(":/cursor.png")))
 {
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
@@ -166,6 +172,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
   setScene(&scene);
 
+  cursor->setZValue(100);
+  cursor->setTransformOriginPoint(7, 2);
+  scene.addItem(cursor);
+
   quint32 x = 0;
 
   infraredTitle = new QGraphicsTextItem();
@@ -176,7 +186,7 @@ MainWindow::MainWindow(QWidget *parent) :
   infraredGroup->addToGroup(infraredTitle);
 
   x = 10;
-  for (register int i = 0; i < 4; ++i) {
+  for (register int i = 0; i < 5; ++i) {
     infraredPointsText[i] = new QGraphicsTextItem();
     infraredPointsText[i]->setY(x += 15);
     infraredPointsText[i]->setX(5);
@@ -350,6 +360,28 @@ void MainWindow::updateInfraredInfo(QList < irpoint> list)
       "<font color=#ffffff>%2</font><font color=#999999>x</font>" \
       "<font color=#ffffff>%3</font><font color=#555555> size: </font>" \
       "<font color=#ffffff>%4</font>").arg(QString::number(i), "0", "0", "-1"));
+
+  if (list.count() > 1) {
+    register int x = (list.at(0).y > list.at(1).y) ? list.at(0).x-list.at(1).x :  list.at(1).x-list.at(0).x;
+    register int y = (list.at(0).x > list.at(1).x) ? list.at(0).y-list.at(1).y :  list.at(1).y-list.at(0).y;
+
+    double p = (atan2(y, x)*180/PI);
+    infraredPointsText[4]->setHtml(QString::fromUtf8("<font color=#555555> Infrared roll: </font>" \
+                                         "<font color=#ffffff>%1°</font>").arg(
+    QString::number(int(p))));
+
+    x = (list.at(0).y > list.at(1).y) ? list.at(0).x-list.at(1).x :  list.at(1).x-list.at(0).x;
+    y = (list.at(0).x > list.at(1).x) ? list.at(0).y-list.at(1).y :  list.at(1).y-list.at(0).y;
+
+    p = atan2(list.at(0).y-list.at(1).y, list.at(0).x-list.at(1).x)*180/PI;
+    qDebug() << p;
+
+    cursor->setTransformationMode(Qt::SmoothTransformation);
+    cursor->setRotation(p);
+    cursor->setPos(256,256);
+  }
+
+
 
 }
 
@@ -557,6 +589,9 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
       if (infraredLine[i]->isVisible()) infraredLine[i]->hide();
 
     infraredLine[0]->setLine(infraredPoints[0]->x(), infraredPoints[0]->y(), infraredPoints[1]->x(), infraredPoints[1]->y());
+
+    cursor->setPos(infraredPoints[0]->x()-7, infraredPoints[0]->y()-2);
+
     if (!infraredLine[0]->isVisible()) infraredLine[0]->show();
     break;
 

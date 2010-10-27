@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>led_off.png</file>
         <file>led_on.png</file>
+        <file>cursor.png</file>
     </qresource>
 </RCC>

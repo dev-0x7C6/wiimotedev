@@ -44,7 +44,6 @@ option(BUILD_TOOLKIT "Build wiimotedev-toolkit tool" ON)
 option(BUILD_EXAMPLES "Build additional examples" ON)
 option(BUILD_QWIIMOTEDEV "Build qwiimotedev, front-end for wiimotedev-uinput" ON)
 
-
 add_subdirectory(config)
 add_subdirectory(dbus-1)
 add_subdirectory(headers)

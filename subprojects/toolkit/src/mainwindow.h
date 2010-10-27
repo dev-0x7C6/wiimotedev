@@ -57,13 +57,14 @@ protected:
 private:
   QGraphicsItemGroup *infraredGroup;
   QGraphicsTextItem *infraredTitle;
-  QGraphicsTextItem *infraredPointsText[4];
+  QGraphicsTextItem *infraredPointsText[5];
 
   QGraphicsTextItem *accelerometrTitle;
   QGraphicsItemGroup *accelerometrGroup;
   QGraphicsTextItem *accelerometrPointsText[10];
 
   QGraphicsLineItem *line;
+  QGraphicsPixmapItem *cursor;
 
   QGraphicsTextItem *wiimoteStdButtonText;
   QGraphicsTextItem *wiimoteExtButtonText;
