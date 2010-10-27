@@ -20,6 +20,7 @@ set(toolkit_sources
   ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
   src/mainwindow.cpp
   src/selectwiimote.cpp
+  widgets/wiimoteanalogitem.cpp
   widgets/wiimotebatteryitem.cpp
   widgets/wiimoteleditem.cpp
   main.cpp
@@ -33,6 +34,7 @@ set(toolkit_headers_qt
   ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
   src/mainwindow.h
   src/selectwiimote.h
+  widgets/wiimoteanalogitem.h
   widgets/wiimotebatteryitem.h
   widgets/wiimoteleditem.h
 )
