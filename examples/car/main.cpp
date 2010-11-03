@@ -21,45 +21,53 @@
 #include <QGraphicsView>
 #include <QGraphicsScene>
 #include <QDBusConnection>
+#include <QMessageBox>
 
+#include <QScopedPointer>
+#include <QObject>
+#include <QDebug>
+
+#include "src/interfaces/deviceevents.h"
 #include "car.h"
+
+const quint32 count = 4;
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    QGraphicsScene scene;
+    DBusDeviceEventsInterface *interface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
+        WIIMOTEDEV_DBUS_OBJECT_EVENTS, QDBusConnection::systemBus(), 0);
 
-    scene.setSceneRect(-500, -500, 1000, 1000);
-    scene.setItemIndexMethod(QGraphicsScene::NoIndex);
+    if(!interface->isValid()) {
+      QMessageBox::critical(0, "Critical", "Unable to connect with wiimotedev-daemon service", QMessageBox::Ok);
+      return EXIT_FAILURE;
+    }
 
-    Car *car;
+    QGraphicsScene *scene = new QGraphicsScene();
 
-    car = new Car(1); // wiimote 1 car
-    car->color = Qt::white; // white car for wiimote 1
-    scene.addItem(car);
+    scene->setSceneRect(-500, -500, 1000, 1000);
+    scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
-    car = new Car(2); // wiimote 2 car
-    car->color = Qt::white; // gray car for wiimote 2
-    car->setX(150);
-    scene.addItem(car);
+    for (register int i = 1; i <= count; ++i) {
+      Car *item = new Car();
+      item->setWiiremote(i);
+      item->color = Qt::white;
+      item->setX(100 * (i - 1));
+      item->setY(100 * (i - 1));
+      scene->addItem(item);
+      QObject::connect(interface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), item, SLOT(dbusWiimoteAcc(quint32,accdata)), Qt::QueuedConnection);
+      QObject::connect(interface, SIGNAL(dbusWiimoteButtons(quint32,quint64)), item, SLOT(dbusWiimoteButtons(quint32,quint64)), Qt::QueuedConnection);
+    }
 
-    car = new Car(3); // wiimote 3 car
-    car->color = Qt::white; // gray car for wiimote 2
-    car->setY(150);
-    scene.addItem(car);
+    QGraphicsView view(scene);
 
-    car = new Car(4); // wiimote 4 car
-    car->color = Qt::white; // gray car for wiimote 2
-    car->setX(150);
-    car->setY(150);
-    scene.addItem(car);
-
-    QGraphicsView view(&scene);
     view.setBackgroundBrush(Qt::darkGray);
     view.setCacheMode(QGraphicsView::CacheBackground);
-    view.setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Wiimotedev Car Example"));
+    view.setWindowTitle("Wiimotedev Remote-Car example");
     view.resize(400, 300);
     view.show();
 
     return app.exec();
+
+
 }

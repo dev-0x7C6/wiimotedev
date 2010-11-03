@@ -24,17 +24,22 @@
 #include <QObject>
 #include <QBrush>
 
-#include "src/interfaces/deviceevents.h"
+#include "headers/consts.h"
 
 class Car : public QObject, public QGraphicsItem
 {
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
+private:
+  quint32 wid;
+
 public:
-  Car(quint32 id = 0);
+  Car();
  ~Car();
   QRectF boundingRect() const;
   QBrush color;
+
+  void setWiiremote(quint32 id) { wid = id; }
 
 public slots:
 // slots for signals from DeviceEventsClass
@@ -46,9 +51,6 @@ protected:
   void timerEvent(QTimerEvent *event);
 
 private:
-  DBusDeviceEventsInterface *iface; // DBus interface
-  quint32 wiimoteId; // store wiimote id
-
   bool useRoll, carBreak;
   qreal wheelsAngle;
   qreal speed;

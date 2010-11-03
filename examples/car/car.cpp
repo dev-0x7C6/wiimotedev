@@ -26,7 +26,8 @@
 
 static const double Pi = 3.14159265358979323846264338327950288419717;
 
-Car::Car(quint32 id) : color(Qt::green), wiimoteId(id), wheelsAngle(0), speed(0)
+Car::Car() : color(Qt::green),
+  wheelsAngle(0), speed(0)
 {
     setFlag(QGraphicsItem::ItemIsMovable, true);
     setFlag(QGraphicsItem::ItemIsFocusable, true);
@@ -34,25 +35,17 @@ Car::Car(quint32 id) : color(Qt::green), wiimoteId(id), wheelsAngle(0), speed(0)
     startTimer(10);
     useRoll = false;
     carBreak = false;
-
-  // Connect DeviceEventsClass to DBUS !
-    iface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
-                                          WIIMOTEDEV_DBUS_OBJECT_EVENTS,
-                                          QDBusConnection::systemBus(), this);
-
-  // Make connections between iface and this class
-    connect(iface, SIGNAL(dbusWiimoteButtons(quint32,quint64)), this, SLOT(dbusWiimoteButtons(quint32,quint64)));
-    connect(iface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), this, SLOT(dbusWiimoteAcc(quint32,accdata)));
 }
 
 Car::~Car()
 {
-    delete iface;
 }
 
 void Car::dbusWiimoteButtons(quint32 id, quint64 value)
 {
-    if (id != wiimoteId) return;
+  if (wid != id)
+    return;
+
     if (checkWiimoteBtn(value, WIIMOTE_BTN_B)) carBreak = true; else carBreak = false;
     if (checkWiimoteBtn(value, WIIMOTE_BTN_A)) useRoll = true; else useRoll = false;
 
@@ -69,7 +62,7 @@ void Car::dbusWiimoteButtons(quint32 id, quint64 value)
 
 void Car::dbusWiimoteAcc(quint32 id, struct accdata acc)
 {
-    if (id != wiimoteId) return;
+    if (wid != id) return;
 
     wheelsAngle = acc.pitch;
     if ((wheelsAngle * Pi) >= 170) wheelsAngle = 170 / Pi; else
@@ -127,7 +120,7 @@ void Car::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidg
     painter->drawRect(19, 0, 12, 17);  // rear right
     painter->setPen(Qt::red);
     painter->setFont(QFont("Arial", 30));
-    painter->drawText(QPoint(-10,-5), QString::number(wiimoteId));
+    painter->drawText(QPoint(-10,-5), QString::number(wid));
 }
 
 void Car::timerEvent(QTimerEvent *event)
