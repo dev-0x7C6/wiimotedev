@@ -11,7 +11,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${QT_QTGUI_INCLUDE_DIR}
 )
 
-set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
+set(CMAKE_C_FLAGS "-Wall -pg ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(toolkit_sources

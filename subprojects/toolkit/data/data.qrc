@@ -3,5 +3,6 @@
         <file>led_off.png</file>
         <file>led_on.png</file>
         <file>cursor.png</file>
+        <file>cursor_medium.png</file>
     </qresource>
 </RCC>

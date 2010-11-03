@@ -29,7 +29,7 @@
 
 MainWindow::MainWindow(QWidget *parent) :
   QGraphicsView(parent),
-  cursor(new QGraphicsPixmapItem(QPixmap(":/cursor.png")))
+  cursor(new QGraphicsPixmapItem(QPixmap(":/cursor_medium.png")))
 {
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
@@ -174,45 +174,17 @@ MainWindow::MainWindow(QWidget *parent) :
   setScene(&scene);
 
   cursor->setZValue(100);
-  //cursor->setTransformOriginPoint(7, 2);
+  cursor->setTransformOriginPoint(7, 2);
+  cursor->setTransformationMode(Qt::SmoothTransformation);
   scene.addItem(cursor);
 
-  quint32 x = 0;
-
-  infraredTitle = new QGraphicsTextItem();
-  infraredTitle->setHtml("<font color=\"#ffffff\">Infrared:</font>");
-  infraredTitle->setPos(0, 0);
-
-  infraredGroup = new QGraphicsItemGroup();
-  infraredGroup->addToGroup(infraredTitle);
-
-  x = 10;
-  for (register int i = 0; i < 5; ++i) {
-    infraredPointsText[i] = new QGraphicsTextItem();
-    infraredPointsText[i]->setY(x += 15);
-    infraredPointsText[i]->setX(5);
-    infraredGroup->addToGroup(infraredPointsText[i]);
-  }
-
-  infraredGroup->setX(160);
+  infraredInfo = new QGraphicsTextItem();
+  infraredInfo->setPos(170, 0);
 
   updateInfraredInfo(QList < irpoint>() );
 
-  accelerometrTitle = new QGraphicsTextItem();
-  accelerometrTitle->setHtml("<font color=#ffffff>Accelerometer:</font>");
-  accelerometrTitle->setPos(0, 0);
-  accelerometrGroup = new QGraphicsItemGroup();
-  accelerometrGroup->addToGroup(accelerometrTitle);
-
-  x = 10;
-  for (register int i = 0; i < 10; ++i) {
-    accelerometrPointsText[i] = new QGraphicsTextItem();
-    accelerometrPointsText[i]->setY(x += 15);
-    accelerometrPointsText[i]->setX(5);
-    if (i == 4) x += 15;
-    accelerometrGroup->addToGroup(accelerometrPointsText[i]);
-  }
-  accelerometrGroup->setX(0);
+  accelerometrInfo = new QGraphicsTextItem();
+  accelerometrInfo->setPos(0, 0);
 
   memset(&nunchuk_acc, 0, sizeof(struct accdata));
   memset(&wiimote_acc, 0, sizeof(struct accdata));
@@ -251,9 +223,9 @@ MainWindow::MainWindow(QWidget *parent) :
   scene.addItem(wiimoteStdButtonText);
   scene.addItem(wiimoteExtButtonText);
   scene.addItem(batteryItem);
-  scene.addItem(infraredGroup);
-  scene.addItem(accelerometrGroup);
-  scene.addItem(line);
+  scene.addItem(infraredInfo);
+  scene.addItem(accelerometrInfo);
+ // scene.addItem(line);
 
   iface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
                                         WIIMOTEDEV_DBUS_OBJECT_EVENTS,
@@ -265,14 +237,14 @@ MainWindow::MainWindow(QWidget *parent) :
 
   connect(iface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
 
-  connect(iface, SIGNAL(dbusNunchukStick(quint32,stickdata)), this, SLOT(dbusNunchukStick(quint32,stickdata)));
-  connect(iface, SIGNAL(dbusClassicControllerRStick(quint32,stickdata)), this, SLOT(dbusClassicControllerRStick(quint32,stickdata)));
-  connect(iface, SIGNAL(dbusClassicControllerLStick(quint32,stickdata)), this, SLOT(dbusClassicControllerLStick(quint32,stickdata)));
+  connect(iface, SIGNAL(dbusNunchukStick(quint32, const stickdata&)), this, SLOT(dbusNunchukStick(quint32,const stickdata&)));
+  connect(iface, SIGNAL(dbusClassicControllerRStick(quint32,const stickdata&)), this, SLOT(dbusClassicControllerRStick(quint32,const stickdata&)));
+  connect(iface, SIGNAL(dbusClassicControllerLStick(quint32,const stickdata&)), this, SLOT(dbusClassicControllerLStick(quint32,const stickdata&)));
 
   connect(iface, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), this, SLOT(dbusWiimoteBatteryLife(quint32,quint8)));
-  connect(iface, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), this, SLOT(dbusWiimoteInfrared(quint32,QList<struct irpoint>)));
-  connect(iface, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), this, SLOT(dbusWiimoteAcc(quint32,struct accdata)));
-  connect(iface, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), this, SLOT(dbusNunchukAcc(quint32,accdata)));
+  connect(iface, SIGNAL(dbusWiimoteInfrared(quint32, const QList< irpoint>&)), this, SLOT(dbusWiimoteInfrared(quint32, const QList<struct irpoint>&)));
+  connect(iface, SIGNAL(dbusWiimoteAcc(quint32,const accdata&)), this, SLOT(dbusWiimoteAcc(quint32,const accdata&)));
+  connect(iface, SIGNAL(dbusNunchukAcc(quint32,const accdata&)), this, SLOT(dbusNunchukAcc(quint32,const accdata&)));
 
   connect(ledPixmaps[0], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed1(bool)));
   connect(ledPixmaps[1], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed2(bool)));
@@ -349,41 +321,24 @@ void MainWindow::updateButtonInfo(quint64 value) {
 
 void MainWindow::updateInfraredInfo(QList < irpoint> list)
 {
+  QString html = "<font color=#ffffff>Infrared</font><br>";
   int i = 0;
   for (; i < list.count(); ++i)
-    infraredPointsText[i]->setHtml(QString("<font color=#555555>%1: </font>" \
-      "<font color=#ffffff>%2</font><font color=#999999>x</font>" \
-      "<font color=#ffffff>%3</font><font color=#555555> size: </font>" \
-      "<font color=#ffffff>%4</font>").arg(QString::number(i), QString::number(list.at(i).x)
-                                              , QString::number(list.at(i).y), QString::number(list.at(i).size)));
+    html +=
+      "<font color=#555555>" + QString::number(i) +  ":</font>" \
+      "<font color=#ffffff>" + QString::number(list.at(i).x) + "</font><font color=#999999>x</font>" \
+      "<font color=#ffffff>" + QString::number(list.at(i).y) + "</font><font color=#555555> size: </font>" \
+      "<font color=#ffffff>" + QString::number(list.at(i).size) + "</font><br>";
   for (; i < 4; ++i)
-    infraredPointsText[i]->setHtml(QString("<font color=#555555>%1: </font>" \
-      "<font color=#ffffff>%2</font><font color=#999999>x</font>" \
-      "<font color=#ffffff>%3</font><font color=#555555> size: </font>" \
-      "<font color=#ffffff>%4</font>").arg(QString::number(i), "0", "0", "-1"));
+    html +=
+      "<font color=#555555>" + QString::number(i) +  ":</font>" \
+      "<font color=#ffffff>0</font><font color=#999999>x</font>" \
+      "<font color=#ffffff>0</font><font color=#555555> size: </font>" \
+      "<font color=#ffffff>-1</font><br>";
 
   if (list.count() > 1) {
-
-
-    register int x = list.at(0).x-list.at(1).x;
-    register int y = list.at(0).y-list.at(1).y;
-
-//    if (wiimote_acc.z > 120) {
-//      x = (list.at(0).x < list.at(1).x) ? list.at(0).x - list.at(1).x : list.at(1).x - list.at(0).x;
-//    } else {
-//      x = (list.at(0).x > list.at(1).x) ? list.at(0).x - list.at(1).x : list.at(1).x - list.at(0).x;
-
-
-//        //y = -y;
-//    }
-
-   //  qDebug() << x << "x" << y << " - " << wiimote_acc.z;
-
-
-
-    infraredPointsText[4]->setHtml(QString::fromUtf8("<font color=#555555> Infrared roll: </font>" \
-                                         "<font color=#ffffff>%1°</font>").arg(
-    QString::number(int(p*180/PI))));
+    html += QString::fromUtf8(
+      "<font color=#555555>Infrared roll: </font><font color=#ffffff>%1°</font><br>").arg(QString::number(int(p*180/PI)));
 
 //    x = (list.at(0).y > list.at(1).y) ? list.at(0).x-list.at(1).x :  list.at(1).x-list.at(0).x;
 //    y = (list.at(0).x > list.at(1).x) ? list.at(0).y-list.at(1).y :  list.at(1).y-list.at(0).y;
@@ -391,8 +346,9 @@ void MainWindow::updateInfraredInfo(QList < irpoint> list)
 //   // p = atan2(list.at(0).y-list.at(1).y, list.at(0).x-list.at(1).x)*180/PI-180;
 //   // //qDebug() << p;
 
-    timer.start();
   }
+
+  infraredInfo->setHtml(html);
 
 
 
@@ -400,26 +356,19 @@ void MainWindow::updateInfraredInfo(QList < irpoint> list)
 
 void MainWindow::updateAccelerometrInfo(int x1, int y1, int z1, double p1, double r1,
                                         int x2, int y2, int z2, double p2, double r2) {
-  accelerometrPointsText[0]->setHtml(QString("<font color=#555555> X-Axis: " \
-    "</font><font color=#ffffff>%1</font>").arg(QString::number(x1)));
-  accelerometrPointsText[1]->setHtml(QString("<font color=#555555> Y-Axis: " \
-    "</font><font color=#ffffff>%1</font>").arg(QString::number(y1)));
-  accelerometrPointsText[2]->setHtml(QString("<font color=#555555> Z-Axis: " \
-    "</font><font color=#ffffff>%1</font>").arg(QString::number(z1)));
-  accelerometrPointsText[3]->setHtml(QString::fromUtf8("<font color=#555555> Pitch: " \
-    "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(p1))));
-  accelerometrPointsText[4]->setHtml(QString::fromUtf8("<font color=#555555> Roll: " \
-    "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(r1))));
-  accelerometrPointsText[5]->setHtml(QString("<font color=#555555> X-Axis: " \
-    "</font><font color=#ffffff>%1</font>").arg(QString::number(x2)));
-  accelerometrPointsText[6]->setHtml(QString("<font color=#555555> Y-Axis: " \
-    "</font><font color=#ffffff>%1</font>").arg(QString::number(y2)));
-  accelerometrPointsText[7]->setHtml(QString("<font color=#555555> Z-Axis: " \
-    "</font><font color=#ffffff>%1</font>").arg(QString::number(z2)));
-  accelerometrPointsText[8]->setHtml(QString::fromUtf8("<font color=#555555> Pitch: " \
-    "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(p2))));
-  accelerometrPointsText[9]->setHtml(QString::fromUtf8("<font color=#555555> Roll: " \
-    "</font><font color=#ffffff>%1°</font>").arg(QString::number(static_cast< qint32>(r2))));
+  accelerometrInfo->setHtml(
+    "<font color=#ffffff>Accelerometer(wiimote)</font><br>" \
+    "<font color=#555555> X-Axis: </font><font color=#ffffff>" + QString::number(x1) + "</font><br>" \
+    "<font color=#555555> Y-Axis: </font><font color=#ffffff>" + QString::number(y1) + "</font><br>" \
+    "<font color=#555555> Z-Axis: </font><font color=#ffffff>" + QString::number(z1) + "</font><br>" \
+    "<font color=#555555> Roll: </font><font color=#ffffff>" + QString::number(int(r1)) + "</font><br>" \
+    "<font color=#555555> Pitch: </font><font color=#ffffff>" + QString::number(int(p1)) + "</font><br><br>" \
+    "<font color=#ffffff>Accelerometer(nunchuk)</font><br>" \
+    "<font color=#555555> X-Axis: </font><font color=#ffffff>" + QString::number(x2) + "</font><br>" \
+    "<font color=#555555> Y-Axis: </font><font color=#ffffff>" + QString::number(y2) + "</font><br>" \
+    "<font color=#555555> Z-Axis: </font><font color=#ffffff>" + QString::number(z2) + "</font><br>" \
+    "<font color=#555555> Roll: </font><font color=#ffffff>" + QString::number(int(r2)) + "</font><br>" \
+    "<font color=#555555> Pitch: </font><font color=#ffffff>" + QString::number(int(p2)) + "</font><br><br>");
 }
 
 QString MainWindow::getReadableWiiremoteSequence(quint64 value) {
@@ -511,7 +460,7 @@ void MainWindow::toggleLed4(bool toggled)
   iface->dbusWiimoteSetLedStatus(wiimoteId, leds);
 }
 
-void MainWindow::dbusNunchukStick(quint32 id, struct stickdata stick)
+void MainWindow::dbusNunchukStick(quint32 id, const stickdata &stick)
 {
   if (id != wiimoteId)
       return;
@@ -521,7 +470,7 @@ void MainWindow::dbusNunchukStick(quint32 id, struct stickdata stick)
   //nunchukStickDot->setPos(-x, y);
 }
 
-void MainWindow::dbusClassicControllerLStick(quint32 id, struct stickdata stick)
+void MainWindow::dbusClassicControllerLStick(quint32 id, const stickdata &stick)
 {
   if (id != wiimoteId)
       return;
@@ -531,7 +480,7 @@ void MainWindow::dbusClassicControllerLStick(quint32 id, struct stickdata stick)
   //classicLStickDot->setPos(-x, y);
 }
 
-void MainWindow::dbusClassicControllerRStick(quint32 id, struct stickdata stick)
+void MainWindow::dbusClassicControllerRStick(quint32 id, const stickdata &stick)
 {
   if (id != wiimoteId)
     return;
@@ -561,7 +510,7 @@ void MainWindow::dbusNunchukUnplugged(quint32 id)
 
 
 
-void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
+void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
 {
   if (id != wiimoteId)
       return;
@@ -580,7 +529,7 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
   for (register int i = 0; i < 4; ++i) {
     if (i < points.count()) {
       register int size = points.at(i).size * 2;
-      infraredPoints[i]->setRect(-size*5, -size*5, size*5, size*5);
+      infraredPoints[i]->setRect(-size, -size, size, size);
 
       if (!infraredPoints[i]->isVisible())
         infraredPoints[i]->show();
@@ -707,9 +656,6 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
       if (roll < 0)
         roll = 360 - wiimote_acc.roll;
 
-      qDebug() << roll;
-
-
       p = -(atan2(infraredPoints[1]->y()-infraredPoints[0]->y(),
                   infraredPoints[1]->x()-infraredPoints[0]->x())-PI);
 
@@ -769,7 +715,7 @@ if (id != wiimoteId)
 updateButtonInfo(value);
 }
 
-void MainWindow::dbusWiimoteAcc(quint32 id, struct accdata table)
+void MainWindow::dbusWiimoteAcc(quint32 id, const accdata &table)
 {
   if (id != wiimoteId)
       return;
@@ -787,7 +733,7 @@ void MainWindow::dbusWiimoteAcc(quint32 id, struct accdata table)
   line->setRotation(p);
 }
 
-void MainWindow::dbusNunchukAcc(quint32 id, struct accdata table)
+void MainWindow::dbusNunchukAcc(quint32 id, const accdata &table)
 {
   if (id != wiimoteId)
       return;

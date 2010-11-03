@@ -56,16 +56,8 @@ protected:
   virtual void resizeEvent(QResizeEvent*);
 
 private:
-  QGraphicsItemGroup *infraredGroup;
-  QGraphicsTextItem *infraredTitle;
-  bool useDefault;
-  QGraphicsTextItem  *infraredPointsText[5];
-
-  double rotationMatrix[3][3];
-
-  QGraphicsTextItem *accelerometrTitle;
-  QGraphicsItemGroup *accelerometrGroup;
-  QGraphicsTextItem *accelerometrPointsText[10];
+  QGraphicsTextItem *accelerometrInfo;
+  QGraphicsTextItem *infraredInfo;
 
   QGraphicsLineItem *line;
   QGraphicsPixmapItem *cursor;
@@ -123,19 +115,19 @@ private slots:
   void toggleLed3(bool);
   void toggleLed4(bool);
 
-  void dbusWiimoteAcc(quint32 id, struct accdata acc);
+  void dbusWiimoteAcc(quint32 id, const accdata &acc);
   void dbusWiimoteBatteryLife(quint32 id, quint8 life);
   void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
-  void dbusWiimoteInfrared(quint32 id, QList< struct irpoint> points);
+  void dbusWiimoteInfrared(quint32 id, const QList< struct irpoint> &points);
 
   void dbusNunchukPlugged(quint32 id);
   void dbusNunchukUnplugged(quint32 id);
 
-  void dbusNunchukAcc(quint32 id, struct accdata acc);
-  void dbusNunchukStick(quint32 id, struct stickdata stick);
+  void dbusNunchukAcc(quint32 id, const accdata &acc);
+  void dbusNunchukStick(quint32 id, const stickdata &stick);
 
-  void dbusClassicControllerLStick(quint32 id, struct stickdata stick);
-  void dbusClassicControllerRStick(quint32 id, struct stickdata stick);
+  void dbusClassicControllerLStick(quint32 id, const stickdata &stick);
+  void dbusClassicControllerRStick(quint32 id, const stickdata &stick);
 };
 
 #endif // MAINWINDOW_H

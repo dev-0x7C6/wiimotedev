@@ -58,20 +58,20 @@ Q_SIGNALS:
   void dbusWiimoteBatteryLife(quint32, quint8);
   void dbusWiimoteButtons(quint32, quint64);
   void dbusWiimoteStatus(quint32, quint8);
-  void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
-  void dbusWiimoteAcc(quint32, struct accdata);
+  void dbusWiimoteInfrared(quint32, const QList< irpoint>&);
+  void dbusWiimoteAcc(quint32, const accdata&);
 
   void dbusNunchukPlugged(quint32);
   void dbusNunchukUnplugged(quint32);
   void dbusNunchukButtons(quint32, quint64);
-  void dbusNunchukStick(quint32, struct stickdata);
-  void dbusNunchukAcc(quint32, struct accdata);
+  void dbusNunchukStick(quint32, const stickdata&);
+  void dbusNunchukAcc(quint32, const accdata&);
 
   void dbusClassicControllerPlugged(quint32);
   void dbusClassicControllerUnplugged(quint32);
   void dbusClassicControllerButtons(quint32, quint64);
-  void dbusClassicControllerLStick(quint32, struct stickdata);
-  void dbusClassicControllerRStick(quint32, struct stickdata);
+  void dbusClassicControllerLStick(quint32, const stickdata&);
+  void dbusClassicControllerRStick(quint32, const stickdata&);
 
   void dbusReportUnregisteredWiimote(quint32);
 };
