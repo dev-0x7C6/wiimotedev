@@ -25,7 +25,7 @@
 #include <math.h>
 #include <QDebug>
 
-#define PI 3.14159265
+#define PI M_PI
 
 MainWindow::MainWindow(QWidget *parent) :
   QGraphicsView(parent),
@@ -153,6 +153,7 @@ MainWindow::MainWindow(QWidget *parent) :
   text_buttons_.insert(WIIMOTE_BTN_SHIFT_SHAKE, "Wiiremote Shift Shake");
   text_buttons_.insert(NUNCHUK_BTN_SHIFT_SHAKE, "Nunchuk Shift Shake");
 
+
   wiimoteId = 1;
   widthMultiplier = 0.5;
   heightMultiplier = 0.5;
@@ -167,13 +168,13 @@ MainWindow::MainWindow(QWidget *parent) :
 
   scene.setBackgroundBrush(QBrush(QColor(0x0A, 0x0A, 0x0A, 0xFF), Qt::SolidPattern));
 
-  scene.setSceneRect(0, 0, 1024/2, 768/2);
-  this->setGeometry(QRect(0, 0, 1024/2, 768/2));
+  scene.setSceneRect(0, 0, 1024, 768);
+  this->setGeometry(QRect(0, 0, 1024, 768));
 
   setScene(&scene);
 
   cursor->setZValue(100);
-  cursor->setTransformOriginPoint(7, 2);
+  //cursor->setTransformOriginPoint(7, 2);
   scene.addItem(cursor);
 
   quint32 x = 0;
@@ -362,23 +363,35 @@ void MainWindow::updateInfraredInfo(QList < irpoint> list)
       "<font color=#ffffff>%4</font>").arg(QString::number(i), "0", "0", "-1"));
 
   if (list.count() > 1) {
-    register int x = (list.at(0).y > list.at(1).y) ? list.at(0).x-list.at(1).x :  list.at(1).x-list.at(0).x;
-    register int y = (list.at(0).x > list.at(1).x) ? list.at(0).y-list.at(1).y :  list.at(1).y-list.at(0).y;
 
-    double p = (atan2(y, x)*180/PI);
+
+    register int x = list.at(0).x-list.at(1).x;
+    register int y = list.at(0).y-list.at(1).y;
+
+//    if (wiimote_acc.z > 120) {
+//      x = (list.at(0).x < list.at(1).x) ? list.at(0).x - list.at(1).x : list.at(1).x - list.at(0).x;
+//    } else {
+//      x = (list.at(0).x > list.at(1).x) ? list.at(0).x - list.at(1).x : list.at(1).x - list.at(0).x;
+
+
+//        //y = -y;
+//    }
+
+   //  qDebug() << x << "x" << y << " - " << wiimote_acc.z;
+
+
+
     infraredPointsText[4]->setHtml(QString::fromUtf8("<font color=#555555> Infrared roll: </font>" \
                                          "<font color=#ffffff>%1°</font>").arg(
-    QString::number(int(p))));
+    QString::number(int(p*180/PI))));
 
-    x = (list.at(0).y > list.at(1).y) ? list.at(0).x-list.at(1).x :  list.at(1).x-list.at(0).x;
-    y = (list.at(0).x > list.at(1).x) ? list.at(0).y-list.at(1).y :  list.at(1).y-list.at(0).y;
+//    x = (list.at(0).y > list.at(1).y) ? list.at(0).x-list.at(1).x :  list.at(1).x-list.at(0).x;
+//    y = (list.at(0).x > list.at(1).x) ? list.at(0).y-list.at(1).y :  list.at(1).y-list.at(0).y;
 
-    p = atan2(list.at(0).y-list.at(1).y, list.at(0).x-list.at(1).x)*180/PI;
-    qDebug() << p;
+//   // p = atan2(list.at(0).y-list.at(1).y, list.at(0).x-list.at(1).x)*180/PI-180;
+//   // //qDebug() << p;
 
-    cursor->setTransformationMode(Qt::SmoothTransformation);
-    cursor->setRotation(p);
-    cursor->setPos(256,256);
+    timer.start();
   }
 
 
@@ -545,6 +558,9 @@ void MainWindow::dbusNunchukUnplugged(quint32 id)
 {
 }
 
+
+
+
 void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
 {
   if (id != wiimoteId)
@@ -564,7 +580,7 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
   for (register int i = 0; i < 4; ++i) {
     if (i < points.count()) {
       register int size = points.at(i).size * 2;
-      infraredPoints[i]->setRect(-size, -size, size, size);
+      infraredPoints[i]->setRect(-size*5, -size*5, size*5, size*5);
 
       if (!infraredPoints[i]->isVisible())
         infraredPoints[i]->show();
@@ -590,7 +606,132 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, QList<irpoint> points)
 
     infraredLine[0]->setLine(infraredPoints[0]->x(), infraredPoints[0]->y(), infraredPoints[1]->x(), infraredPoints[1]->y());
 
-    cursor->setPos(infraredPoints[0]->x()-7, infraredPoints[0]->y()-2);
+
+    // 180/PI
+
+    {
+
+    //  p = -(atan2(infraredPoints[1]->y()-infraredPoints[0]->y(),
+     //             infraredPoints[1]->x()-infraredPoints[0]->x())-PI);
+
+//      double roll = -wiimote_acc.roll;
+
+//      if (roll < 0)
+//        roll = -roll;
+////        roll = 360 - wiimote_acc.roll;
+
+////      if (roll > 180)
+////        roll = roll - 180;
+
+
+//      double stop = p*180/PI;
+
+//      if (p > M_PI)
+//        p = M_PI*2 - p;
+
+
+
+//      qDebug() << roll << ", " << (p*180/M_PI);
+
+
+
+
+
+      //roll*PI/180;
+
+      // qDebug() << roll << ", " << stop;
+
+      // 360 < 340 ok!
+      // 360 > 380 fail!
+
+      // 0 < -20 fail!
+      // 0 > 20 ok
+
+
+//      qDebug() << cos(p) << ", " << cos(roll*PI/180);
+
+//      if (cos(p) < 0 && cos(roll*PI/180) > 0)
+//        p = -(atan2(infraredPoints[0]->y()-infraredPoints[1]->y(),
+//                    infraredPoints[1]->x()-infraredPoints[0]->x())-PI);
+
+//      }
+//      p = roll*2
+
+//     ;
+
+//      double roll = -wiimote_acc.roll;
+
+//      if (roll < 0)
+//        roll = 360 - wiimote_acc.roll;
+
+//      if (roll > 90 && roll < 270) {
+
+//        int bx = (infraredPoints[1]->x() > infraredPoints[0]->x()) ? infraredPoints[1]->x() - infraredPoints[0]->x() : infraredPoints[0]->x() - infraredPoints[1]->x();
+//        int by = (infraredPoints[1]->x() > infraredPoints[0]->x()) ? infraredPoints[1]->y() - infraredPoints[0]->y() : infraredPoints[0]->y() - infraredPoints[1]->y();
+
+//        p = -(atan2(by, bx)-PI);
+//      } else {
+
+//        int bx = (infraredPoints[1]->y() > infraredPoints[0]->y()) ? infraredPoints[1]->x() - infraredPoints[0]->x() : infraredPoints[0]->x() - infraredPoints[1]->x();
+//        int by = (infraredPoints[1]->y() > infraredPoints[0]->y()) ? infraredPoints[1]->y() - infraredPoints[0]->y() : infraredPoints[0]->y() - infraredPoints[1]->y();
+//        p = -(atan2(by, bx)-PI);
+
+////        p = -(atan2(infraredPoints[1]->y()-infraredPoints[0]->y(),
+////                    infraredPoints[1]->x()-infraredPoints[0]->x())-PI);
+//      }
+
+
+
+
+     // qDebug() << (p*180/PI);
+
+
+//      if (cos(wiimote_acc.roll*PI/180) > 0) {
+//        int by = (infraredPoints[0]->y() > infraredPoints[1]->y()) ? infraredPoints[0]->y() - infraredPoints[1]->y() : infraredPoints[1]->y() - infraredPoints[0]->y();
+
+//        p = -(atan2(by,
+//                    infraredPoints[1]->x()-infraredPoints[0]->x()));
+//        qDebug() << "widzisz";
+//      } else
+//      {
+//        p = -(atan2(infraredPoints[1]->y()-infraredPoints[0]->y(),
+//                    infraredPoints[1]->x()-infraredPoints[0]->x()));
+//        qDebug() << "teraz roznice";
+//      }
+
+
+
+
+      double roll = -wiimote_acc.roll;
+
+      if (roll < 0)
+        roll = 360 - wiimote_acc.roll;
+
+      qDebug() << roll;
+
+
+      p = -(atan2(infraredPoints[1]->y()-infraredPoints[0]->y(),
+                  infraredPoints[1]->x()-infraredPoints[0]->x())-PI);
+
+     // p = -wiimote_acc.roll*PI/180;
+      register short unsigned int ax = (points.at(0).x + points.at(1).x) >> 1;
+      register short unsigned int ay = (points.at(0).y + points.at(1).y) >> 1;
+
+
+#ifdef __amd64 // 64-bit processors only
+      register double cosp = cos(p);
+      register double sinp = sin(p);
+#endif
+
+#ifdef i386  // 32-bit processors
+      register float cosp = cos(p);
+      register float sinp = sin(p);
+#endif
+
+      cursor->setX(1024 - (ax*cosp - ay*sinp + 512*(1-cosp) + 384*sinp) - 7);
+      cursor->setY((ax*sinp + ay*cosp - 512*sinp + 384*(1-cosp)) - 2);
+      cursor->setRotation(-p*180/PI);
+    }
 
     if (!infraredLine[0]->isVisible()) infraredLine[0]->show();
     break;
@@ -635,10 +776,15 @@ void MainWindow::dbusWiimoteAcc(quint32 id, struct accdata table)
 
   memcpy(&wiimote_acc, &table, sizeof(table));
 
-  updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, wiimote_acc.roll,
+  double roll = -wiimote_acc.roll;
+
+  if (roll < 0)
+    roll = 360 - wiimote_acc.roll;
+
+  updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, roll,
                          nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch, nunchuk_acc.roll);
 
-  line->setRotation(table.roll);
+  line->setRotation(p);
 }
 
 void MainWindow::dbusNunchukAcc(quint32 id, struct accdata table)
@@ -648,7 +794,14 @@ void MainWindow::dbusNunchukAcc(quint32 id, struct accdata table)
 
   memcpy(&nunchuk_acc, &table, sizeof(table));
 
-  updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, wiimote_acc.roll,
+
+  double roll = -wiimote_acc.roll;
+
+  if (roll < 0)
+    roll = 360 - wiimote_acc.roll;
+
+
+  updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, roll,
                          nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch, nunchuk_acc.roll);
 
 }

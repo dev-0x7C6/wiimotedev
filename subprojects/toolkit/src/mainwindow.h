@@ -24,6 +24,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsItem>
 #include <QTimer>
+#include <QTime>
 #include <QPainter>
 #include <QMenu>
 
@@ -57,7 +58,10 @@ protected:
 private:
   QGraphicsItemGroup *infraredGroup;
   QGraphicsTextItem *infraredTitle;
-  QGraphicsTextItem *infraredPointsText[5];
+  bool useDefault;
+  QGraphicsTextItem  *infraredPointsText[5];
+
+  double rotationMatrix[3][3];
 
   QGraphicsTextItem *accelerometrTitle;
   QGraphicsItemGroup *accelerometrGroup;
@@ -73,8 +77,12 @@ private:
   QGraphicsLineItem *infraredLine[4];
   WiimoteLedItem *ledPixmaps[4];
   WiimoteBatteryItem *batteryItem;
+  QTime timer;
 
   QMenu menu;
+
+  double p;
+  double stableAccRoll;
 
   struct accdata nunchuk_acc;
   struct accdata wiimote_acc;

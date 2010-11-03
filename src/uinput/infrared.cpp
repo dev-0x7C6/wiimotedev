@@ -18,6 +18,7 @@
  **********************************************************************************/
 
 #include "uinput/manager.h"
+#include <math.h>
 
 double acc_plus(int min, int max, int value, double sensitivy)
 {
@@ -72,6 +73,10 @@ void UInputProfileManager::unloadInfraredEvents() {
 
 }
 
+
+#define NEW_ALG
+
+
 void UInputProfileManager::dbusWiimoteInfrared(quint32 id, QList< irpoint> points) {
   if (id != irWiimoteId)
     return;
@@ -83,9 +88,33 @@ void UInputProfileManager::dbusWiimoteInfrared(quint32 id, QList< irpoint> point
     case 4:
     case 3:
     case 2:
+
+#ifdef NEW_ALG
+      {
+
+
+        double p = (atan2(points.at(0).y-points.at(1).y,
+                          points.at(0).x-points.at(1).x)*180/M_PI)-180.0;
+
+        int ax = (points.at(0).x+points.at(1).x)/2;
+        int ay = (points.at(0).y+points.at(1).y)/2;
+
+        double x1 = (ax * cos(-p*(M_PI/180))) + (ay * -sin(-p*(M_PI/180))) + (512*(1-cos(-p*(M_PI/180))) + 384*sin(-p*(M_PI/180)));
+        double y1 = (ax * sin(-p*(M_PI/180))) + (ay * cos(-p*(M_PI/180))) + (-512*(sin(-p*(M_PI/180))) + 384*(1-cos(-p*(M_PI/180))));
+
+        x = int(x1);
+        y = int(y1);
+
+        qDebug("%dx%d", x, y);
+
+      }
+      break;
+#else
+
       x = (points.at(0).x + points.at(1).x) >> 1;
       y = (points.at(0).y + points.at(1).y) >> 1;
       break;
+#endif
     case 1:
       break;
 
