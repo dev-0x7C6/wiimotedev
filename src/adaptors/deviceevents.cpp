@@ -109,6 +109,34 @@ quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetBatteryLife(quint32 id)
   return life;
 }
 
+quint32 DBusDeviceEventsAdaptor::dbusNunchukGetAccelerometrCalibrationOne(quint32 id)
+{
+  quint32 value;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationOne", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  return value;
+}
+
+quint32 DBusDeviceEventsAdaptor::dbusNunchukGetAccelerometrCalibrationZero(quint32 id)
+{
+  quint32 value;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationZero", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  return value;
+}
+
+quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetAccelerometrCalibrationOne(quint32 id)
+{
+  quint32 value;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationOne", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  return value;
+}
+
+quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetAccelerometrCalibrationZero(quint32 id)
+{
+  quint32 value;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationZero", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  return value;
+}
+
 quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetAverageLatency(quint32 id)
 {
   quint32 latency;
@@ -140,6 +168,34 @@ quint32 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAverageLatency(quint32 id)
   quint32 latency;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAverageLatency", Qt::DirectConnection, Q_RETURN_ARG(quint32, latency), Q_ARG(quint32, id));
   return latency;
+}
+
+quint32 DBusDeviceEventsAdaptorWrapper::dbusNunchukGetAccelerometrCalibrationOne(quint32 id)
+{
+  quint32 value;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationOne", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  return value;
+}
+
+quint32 DBusDeviceEventsAdaptorWrapper::dbusNunchukGetAccelerometrCalibrationZero(quint32 id)
+{
+  quint32 value;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationZero", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  return value;
+}
+
+quint32 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAccelerometrCalibrationOne(quint32 id)
+{
+  quint32 value;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationOne", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  return value;
+}
+
+quint32 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAccelerometrCalibrationZero(quint32 id)
+{
+  quint32 value;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationZero", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  return value;
 }
 
 QString DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetMacAddress(quint32 id)
