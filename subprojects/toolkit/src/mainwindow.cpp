@@ -168,14 +168,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
   scene.setBackgroundBrush(QBrush(QColor(0x0A, 0x0A, 0x0A, 0xFF), Qt::SolidPattern));
 
-  scene.setSceneRect(0, 0, 1024, 768);
-  this->setGeometry(QRect(0, 0, 1024, 768));
+  scene.setSceneRect(0, 0, 1024/2, 768/2);
+  setGeometry(QRect(0, 0, 1024/2, 768/2));
 
   setScene(&scene);
 
   cursor->setZValue(100);
   cursor->setTransformOriginPoint(7, 2);
   cursor->setTransformationMode(Qt::SmoothTransformation);
+  cursor->setVisible(false);
   scene.addItem(cursor);
 
   infraredInfo = new QGraphicsTextItem();
@@ -542,6 +543,8 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
     }
   }
 
+  cursor->setVisible(points.count() == 2);
+
   switch (points.count()) {
   case ir0source:
   case ir1source:
@@ -674,8 +677,8 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
       register float sinp = sin(p);
 #endif
 
-      cursor->setX(1024 - (ax*cosp - ay*sinp + 512*(1-cosp) + 384*sinp) - 7);
-      cursor->setY((ax*sinp + ay*cosp - 512*sinp + 384*(1-cosp)) - 2);
+      cursor->setX((1024 - (ax*cosp - ay*sinp + 512*(1-cosp) + 384*sinp)) * widthMultiplier - 7);
+      cursor->setY(((ax*sinp + ay*cosp - 512*sinp + 384*(1-cosp))) * heightMultiplier - 2);
       cursor->setRotation(-p*180/PI);
     }
 
