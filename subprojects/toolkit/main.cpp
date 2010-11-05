@@ -19,6 +19,7 @@
 
 #include <QApplication>
 #include <QMessageBox>
+#include <QTextCodec>
 
 #include "headers/consts.h"
 #include "src/interfaces/deviceevents.h"
@@ -27,21 +28,52 @@
 
 int main(int argc, char *argv[])
 {  
-    QApplication application(argc, argv);
+  QApplication application(argc, argv);
+  QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Utf-8"));
 
-    DBusDeviceEventsInterface *iface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
-                                                                     WIIMOTEDEV_DBUS_OBJECT_EVENTS,
-                                                                     QDBusConnection::systemBus(),
-                                                                     &application);
-    if (!iface->isValid()) {
-        QMessageBox::critical(application.activeWindow(), QString("Critical"), QString("Wiimotedev-daemon: service is not available"));
-        return 0;
-    }
+  DBusDeviceEventsInterface interface(WIIMOTEDEV_DBUS_SERVICE_NAME, WIIMOTEDEV_DBUS_OBJECT_EVENTS,
+                                      QDBusConnection::systemBus(), 0);
 
-    delete iface;
+  if (!interface.isValid()) {
+    QMessageBox::critical(0, "Critical", "Unable to connect with wiimotedev-daemon service", QMessageBox::Ok);
+    return EXIT_FAILURE;
+  }
 
-    MainWindow window;
-    window.show();
+  QList < uint> list = interface.dbusGetWiimoteList();
 
-    return application.exec();
+  int id = 1;
+
+  if (!list.count()) {
+    QMessageBox::warning(0, "Warning", "No wiiremotes connected", QMessageBox::Ok);
+  }
+
+  if (list.count() == 1)
+    id = list.first();
+
+  if (list.count() > 1) {
+    SelectWiimote select;
+    select.setWiimoteList(list);
+    select.exec();
+    id = select.getSelectedWiimote();
+  }
+
+  MainWindow window(&interface, id);
+  QObject::connect(&interface, SIGNAL(dbusClassicControllerRStick(quint32,const stickdata&)), &window, SLOT(dbusClassicControllerRStick(quint32,const stickdata&)));
+  QObject::connect(&interface, SIGNAL(dbusClassicControllerLStick(quint32,const stickdata&)), &window, SLOT(dbusClassicControllerLStick(quint32,const stickdata&)));
+
+  QObject::connect(&interface, SIGNAL(dbusNunchukAcc(quint32,const accdata&)), &window, SLOT(dbusNunchukAcc(quint32,const accdata&)));
+  QObject::connect(&interface, SIGNAL(dbusNunchukPlugged(quint32)), &window, SLOT(dbusNunchukPlugged(quint32)));
+  QObject::connect(&interface, SIGNAL(dbusNunchukUnplugged(quint32)), &window, SLOT(dbusNunchukUnplugged(quint32)));
+  QObject::connect(&interface, SIGNAL(dbusNunchukStick(quint32, const stickdata&)), &window, SLOT(dbusNunchukStick(quint32,const stickdata&)));
+
+  QObject::connect(&interface, SIGNAL(dbusWiimoteConnected(quint32)), &window, SLOT(dbusWiimoteConnected(quint32)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(quint32)), &window, SLOT(dbusWiimoteDisconnected(quint32)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(quint32,const accdata&)), &window, SLOT(dbusWiimoteAcc(quint32,const accdata&)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), &window, SLOT(dbusWiimoteBatteryLife(quint32,quint8)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), &window, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(quint32, const QList< irpoint>&)), &window, SLOT(dbusWiimoteInfrared(quint32, const QList<struct irpoint>&)));
+
+  window.show();
+
+  return application.exec();
 }

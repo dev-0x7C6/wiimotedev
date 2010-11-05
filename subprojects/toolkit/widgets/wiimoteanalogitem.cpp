@@ -21,13 +21,26 @@
 
 WiimoteAnalogItem::WiimoteAnalogItem(QObject *parent) :
   QObject(parent),
-  QGraphicsItem()
+  QGraphicsItem(),
+  size(1),
+  x(15),
+  y(15),
+  width(30),
+  height(30)
 {
 }
 
-QRectF WiimoteAnalogItem::boundingRect() const
-{
-  return QRectF(0, 0, 100, 100);
+QRectF WiimoteAnalogItem::boundingRect() const {
+  return QRectF(0, 0, width, height);
+}
+
+void  WiimoteAnalogItem::setPointSize(quint32 s) {
+  size = s;
+}
+
+void WiimoteAnalogItem::setPointPos(quint32 ax, quint32 ay) {
+  x = ax;
+  y = ay;
 }
 
 void WiimoteAnalogItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -38,5 +51,6 @@ void WiimoteAnalogItem::paint(QPainter *painter, const QStyleOptionGraphicsItem 
   painter->setPen(Qt::white);
   painter->setBrush(Qt::NoBrush);
 
-  painter->drawRect(0, 0, 100, 100);
+  //painter->drawRect(0, 0, width, height);
+  painter->drawEllipse(x - size, y - size, size << 1, size << 1);
 }

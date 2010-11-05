@@ -58,6 +58,7 @@ target_link_libraries(wiimotedev-toolkit
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${QT_QTGUI_LIBRARY}
+  ${QT_QTOPENGL_LIBRARY}
 )
 
 install(TARGETS wiimotedev-toolkit DESTINATION  ${WIIMOTEDEV_BIN_DIR})

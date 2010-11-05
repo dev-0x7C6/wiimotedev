@@ -27,9 +27,19 @@ class WiimoteAnalogItem : public QObject, public QGraphicsItem
 {
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
+private:
+  quint32 size;
+  quint32 x;
+  quint32 y;
+  quint32 width;
+  quint32 height;
+
 public:
   WiimoteAnalogItem(QObject *parent = 0);
   QRectF boundingRect() const;
+
+  void setPointSize(quint32);
+  void setPointPos(quint32, quint32);
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);

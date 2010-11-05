@@ -21,15 +21,20 @@
 #include <QDBusReply>
 
 #include "mainwindow.h"
+#include "src/interfaces/deviceevents.h"
 
 #include <math.h>
 #include <QDebug>
 
+#include <QtOpenGL/QGLWidget>
+
 #define PI M_PI
 
-MainWindow::MainWindow(QWidget *parent) :
+MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *parent) :
   QGraphicsView(parent),
-  cursor(new QGraphicsPixmapItem(QPixmap(":/cursor_medium.png")))
+  cursor(new QGraphicsPixmapItem(QPixmap(":/cursor_medium.png"))),
+  iface(iface),
+  wiimoteId(id)
 {
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
@@ -153,23 +158,19 @@ MainWindow::MainWindow(QWidget *parent) :
   text_buttons_.insert(WIIMOTE_BTN_SHIFT_SHAKE, "Wiiremote Shift Shake");
   text_buttons_.insert(NUNCHUK_BTN_SHIFT_SHAKE, "Nunchuk Shift Shake");
 
-
-  wiimoteId = 1;
   widthMultiplier = 0.5;
   heightMultiplier = 0.5;
   dotSizeMultiplier = 4;
 
-  qRegisterMetaType< irpoint>("irpoint");
-  qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
-
+  setViewport(new QGLWidget(QGLFormat(QGL::DoubleBuffer)));
 
   connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredCleanup()));
   infraredTimeout.setInterval(30);
 
   scene.setBackgroundBrush(QBrush(QColor(0x0A, 0x0A, 0x0A, 0xFF), Qt::SolidPattern));
 
-  scene.setSceneRect(0, 0, 1024/2, 768/2);
-  setGeometry(QRect(0, 0, 1024/2, 768/2));
+  scene.setSceneRect(0, 0, 1024/1.5, 768/1.5);
+  setGeometry(QRect(0, 0, 1024/1.5, 768/1.5));
 
   setScene(&scene);
 
@@ -179,13 +180,23 @@ MainWindow::MainWindow(QWidget *parent) :
   cursor->setVisible(false);
   scene.addItem(cursor);
 
-  infraredInfo = new QGraphicsTextItem();
-  infraredInfo->setPos(170, 0);
-
-  updateInfraredInfo(QList < irpoint>() );
 
   accelerometrInfo = new QGraphicsTextItem();
   accelerometrInfo->setPos(0, 0);
+
+  analogInfo = new QGraphicsTextItem();
+  analogInfo->setPos(290, 50);
+  analogInfo->setHtml("<font color=#ffffff>Analog output</font>");
+
+
+  infraredInfo = new QGraphicsTextItem();
+  infraredInfo->setPos(170, 0);
+
+  statusInfo = new QGraphicsTextItem();
+  statusInfo->setPos(290, 0);
+
+  updateInfraredInfo(QList < irpoint>() );
+
 
   memset(&nunchuk_acc, 0, sizeof(struct accdata));
   memset(&wiimote_acc, 0, sizeof(struct accdata));
@@ -201,6 +212,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ledPixmaps[i] = new WiimoteLedItem();
 
   line = new QGraphicsLineItem();
+  line->setZValue(-1);
 
   updateButtonInfo(0);
 
@@ -218,58 +230,47 @@ MainWindow::MainWindow(QWidget *parent) :
     scene.addItem(infraredLine[i]);
   }
 
-
   line->setPen(QPen(Qt::darkGray));
 
   scene.addItem(wiimoteStdButtonText);
   scene.addItem(wiimoteExtButtonText);
   scene.addItem(batteryItem);
-  scene.addItem(infraredInfo);
+
   scene.addItem(accelerometrInfo);
- // scene.addItem(line);
+  scene.addItem(analogInfo);
+  scene.addItem(infraredInfo);
+  scene.addItem(statusInfo);
+  scene.addItem(line);
 
-  iface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
-                                        WIIMOTEDEV_DBUS_OBJECT_EVENTS,
-                                        QDBusConnection::systemBus(),
-                                        this);
+  wiimoteAnalogItem[0] = new WiimoteAnalogItem();
+  wiimoteAnalogItem[1] = new WiimoteAnalogItem();
+  wiimoteAnalogItem[0]->setPos(300, 70);
+  wiimoteAnalogItem[1]->setPos(340, 70);
+  scene.addItem(wiimoteAnalogItem[0]);
+  scene.addItem(wiimoteAnalogItem[1]);
 
-  connect(iface, SIGNAL(dbusNunchukPlugged(quint32)), this, SLOT(dbusNunchukPlugged(quint32)));
-  connect(iface, SIGNAL(dbusNunchukUnplugged(quint32)), this, SLOT(dbusNunchukUnplugged(quint32)));
-
-  connect(iface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
-
-  connect(iface, SIGNAL(dbusNunchukStick(quint32, const stickdata&)), this, SLOT(dbusNunchukStick(quint32,const stickdata&)));
-  connect(iface, SIGNAL(dbusClassicControllerRStick(quint32,const stickdata&)), this, SLOT(dbusClassicControllerRStick(quint32,const stickdata&)));
-  connect(iface, SIGNAL(dbusClassicControllerLStick(quint32,const stickdata&)), this, SLOT(dbusClassicControllerLStick(quint32,const stickdata&)));
-
-  connect(iface, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), this, SLOT(dbusWiimoteBatteryLife(quint32,quint8)));
-  connect(iface, SIGNAL(dbusWiimoteInfrared(quint32, const QList< irpoint>&)), this, SLOT(dbusWiimoteInfrared(quint32, const QList<struct irpoint>&)));
-  connect(iface, SIGNAL(dbusWiimoteAcc(quint32,const accdata&)), this, SLOT(dbusWiimoteAcc(quint32,const accdata&)));
-  connect(iface, SIGNAL(dbusNunchukAcc(quint32,const accdata&)), this, SLOT(dbusNunchukAcc(quint32,const accdata&)));
 
   connect(ledPixmaps[0], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed1(bool)));
   connect(ledPixmaps[1], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed2(bool)));
   connect(ledPixmaps[2], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed3(bool)));
   connect(ledPixmaps[3], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed4(bool)));
 
-  QList <uint> list = iface->dbusGetWiimoteList();
+  getWiimoteStats() ;
+  wiimoteAnalogItem[0]->setVisible(false);
+  wiimoteAnalogItem[1]->setVisible(false);
+  analogInfo->setVisible(false);
 
-  if (list.count() == 1)
-      wiimoteId = list.at(0);
-
-  if (list.count() > 1) {
-    selectWiimote = new SelectWiimote(this);
-    selectWiimote->setWiimoteList(list);
-    selectWiimote->show();
-    selectWiimote->exec();
-    wiimoteId = selectWiimote->getSelectedWiimote();
-    if (!wiimoteId)
-        wiimoteId = list.at(0);
-    delete selectWiimote;
+  if (iface->dbusIsClassicConnected(wiimoteId)) {
+    wiimoteAnalogItem[0]->setVisible(true);
+    wiimoteAnalogItem[1]->setVisible(true);
+    analogInfo->setVisible(true);
   }
 
-
-  getWiimoteStats() ;
+  if (iface->dbusIsNunchukConnected(wiimoteId)) {
+    wiimoteAnalogItem[0]->setVisible(true);
+    wiimoteAnalogItem[1]->setVisible(false);
+    analogInfo->setVisible(true);
+  }
 
   batteryItem->setBatteryLevel(iface->dbusWiimoteGetBatteryLife(wiimoteId));
 
@@ -280,7 +281,45 @@ MainWindow::MainWindow(QWidget *parent) :
     scene.addItem(ledPixmaps[i]);
   }
 
-  setWindowTitle(QString("Wiimotedev Toolkit :: Wiiremote[%2] %1").arg(iface->dbusWiimoteGetMacAddress(wiimoteId), QString::number(wiimoteId)));
+  if (iface->dbusIsWiimoteConnected(wiimoteId))
+    dbusWiimoteConnected(wiimoteId); else
+    dbusWiimoteDisconnected(wiimoteId);
+}
+
+void MainWindow::updateStatusInfo() {
+  QString html = "<font color=#ffffff>Extensions</font><br>";
+
+  html += "<font color=#555555>classic: </font>";
+  if (iface->dbusIsClassicConnected(wiimoteId))
+    html += "<b><font color=#eeeeee>connected</font></b>"; else
+    html += "<font color=#aaaaaa>disconnected</font>";
+  html += "<br>";
+
+  html += "<font color=#555555>nunchuk: </font>";
+  if (iface->dbusIsNunchukConnected(wiimoteId))
+    html += "<b><font color=#eeeeee>connected</font></b>"; else
+    html += "<font color=#aaaaaa>disconnected</font>";
+  html += "<br>";
+
+  statusInfo->setHtml(html);
+}
+
+void MainWindow::dbusWiimoteConnected(quint32 id) {
+  if (wiimoteId != id)
+    return;
+
+  macAddress = iface->dbusWiimoteGetMacAddress(wiimoteId);
+
+  setWindowTitle(QString("Wiimotedev Toolkit :: Wiiremote[%2] %1 :: Connected").arg(macAddress, QString::number(wiimoteId)));
+  updateStatusInfo();
+}
+
+void MainWindow::dbusWiimoteDisconnected(quint32 id){
+  if (wiimoteId != id)
+    return;
+
+  setWindowTitle(QString("Wiimotedev Toolkit :: Wiiremote[%1] :: Disconnected").arg(QString::number(wiimoteId)));
+  updateStatusInfo();
 }
 
 void MainWindow::resizeEvent(QResizeEvent *event) {
@@ -337,22 +376,10 @@ void MainWindow::updateInfraredInfo(QList < irpoint> list)
       "<font color=#ffffff>0</font><font color=#555555> size: </font>" \
       "<font color=#ffffff>-1</font><br>";
 
-  if (list.count() > 1) {
-    html += QString::fromUtf8(
-      "<font color=#555555>Infrared roll: </font><font color=#ffffff>%1°</font><br>").arg(QString::number(int(p*180/PI)));
-
-//    x = (list.at(0).y > list.at(1).y) ? list.at(0).x-list.at(1).x :  list.at(1).x-list.at(0).x;
-//    y = (list.at(0).x > list.at(1).x) ? list.at(0).y-list.at(1).y :  list.at(1).y-list.at(0).y;
-
-//   // p = atan2(list.at(0).y-list.at(1).y, list.at(0).x-list.at(1).x)*180/PI-180;
-//   // //qDebug() << p;
-
-  }
+  if (list.count() > 1)
+    html += QString("<font color=#555555>Infrared roll: </font><font color=#ffffff>%1°</font><br>").arg(QString::number(int(p*180/PI)));
 
   infraredInfo->setHtml(html);
-
-
-
 }
 
 void MainWindow::updateAccelerometrInfo(int x1, int y1, int z1, double p1, double r1,
@@ -362,14 +389,14 @@ void MainWindow::updateAccelerometrInfo(int x1, int y1, int z1, double p1, doubl
     "<font color=#555555> X-Axis: </font><font color=#ffffff>" + QString::number(x1) + "</font><br>" \
     "<font color=#555555> Y-Axis: </font><font color=#ffffff>" + QString::number(y1) + "</font><br>" \
     "<font color=#555555> Z-Axis: </font><font color=#ffffff>" + QString::number(z1) + "</font><br>" \
-    "<font color=#555555> Roll: </font><font color=#ffffff>" + QString::number(int(r1)) + "</font><br>" \
-    "<font color=#555555> Pitch: </font><font color=#ffffff>" + QString::number(int(p1)) + "</font><br><br>" \
+    "<font color=#555555> Roll: </font><font color=#ffffff>" + QString::number(int(r1)) + "°</font><br>" \
+    "<font color=#555555> Pitch: </font><font color=#ffffff>" + QString::number(int(p1)) + "°</font><br><br>" \
     "<font color=#ffffff>Accelerometer(nunchuk)</font><br>" \
     "<font color=#555555> X-Axis: </font><font color=#ffffff>" + QString::number(x2) + "</font><br>" \
     "<font color=#555555> Y-Axis: </font><font color=#ffffff>" + QString::number(y2) + "</font><br>" \
     "<font color=#555555> Z-Axis: </font><font color=#ffffff>" + QString::number(z2) + "</font><br>" \
-    "<font color=#555555> Roll: </font><font color=#ffffff>" + QString::number(int(r2)) + "</font><br>" \
-    "<font color=#555555> Pitch: </font><font color=#ffffff>" + QString::number(int(p2)) + "</font><br><br>");
+    "<font color=#555555> Roll: </font><font color=#ffffff>" + QString::number(int(r2)) + "°</font><br>" \
+    "<font color=#555555> Pitch: </font><font color=#ffffff>" + QString::number(int(p2)) + "°</font><br><br>");
 }
 
 QString MainWindow::getReadableWiiremoteSequence(quint64 value) {
@@ -464,21 +491,23 @@ void MainWindow::toggleLed4(bool toggled)
 void MainWindow::dbusNunchukStick(quint32 id, const stickdata &stick)
 {
   if (id != wiimoteId)
-      return;
+    return;
 
-  //register int x = ((0xFF >> 1) - stick.x) * 0.25;
-  //register int y = ((0xFF >> 1) - stick.y) * 0.25;
-  //nunchukStickDot->setPos(-x, y);
+  register int x = ((0xFF >> 1) - stick.x) / 4;
+  register int y = ((0xFF >> 1) - stick.y) / 4;
+
+  wiimoteAnalogItem[0]->setPointPos(x, y);
 }
 
 void MainWindow::dbusClassicControllerLStick(quint32 id, const stickdata &stick)
 {
   if (id != wiimoteId)
-      return;
+    return;
 
-  //register int x = ((0x3F >> 1) - stick.x) * 1.2;
-  //register int y = ((0x3F >> 1) - stick.y) * 1.2;
-  //classicLStickDot->setPos(-x, y);
+  register int x = (0x3F >> 1) - stick.x;
+  register int y = (0x3F >> 1) - stick.y;
+
+  wiimoteAnalogItem[0]->setPointPos(x * 0.5, y * 0.5);
 }
 
 void MainWindow::dbusClassicControllerRStick(quint32 id, const stickdata &stick)
@@ -486,9 +515,10 @@ void MainWindow::dbusClassicControllerRStick(quint32 id, const stickdata &stick)
   if (id != wiimoteId)
     return;
 
-  //register int x = ((0x1F >> 1) - stick.x) * 2.3;
-  //register int y = ((0x1F >> 1) - stick.y) * 2.3;
-  //classicRStickDot->setPos(-x, y);
+  register int x = (0x1F >> 1) - stick.x;
+  register int y = (0x1F >> 1) - stick.y;
+
+  wiimoteAnalogItem[1]->setPointPos(x, y);
 }
 
 void MainWindow::infraredCleanup()
@@ -500,21 +530,42 @@ void MainWindow::infraredCleanup()
   }
 }
 
-void MainWindow::dbusNunchukPlugged(quint32 id)
-{
+void MainWindow::dbusNunchukPlugged(quint32 id) {
+  Q_UNUSED(id);
+  wiimoteAnalogItem[0]->setVisible(true);
+  wiimoteAnalogItem[1]->setVisible(false);
+  analogInfo->setVisible(true);
+  updateStatusInfo();
 }
 
-void MainWindow::dbusNunchukUnplugged(quint32 id)
-{
+void MainWindow::dbusNunchukUnplugged(quint32 id) {
+  Q_UNUSED(id);
+  wiimoteAnalogItem[0]->setVisible(false);
+  wiimoteAnalogItem[1]->setVisible(false);
+  analogInfo->setVisible(false);
+  updateStatusInfo();
 }
 
+void MainWindow::dbusClassicPlugged(quint32 id) {
+  Q_UNUSED(id);
+  wiimoteAnalogItem[0]->setVisible(true);
+  wiimoteAnalogItem[1]->setVisible(true);
+  analogInfo->setVisible(true);
+  updateStatusInfo();
+}
 
-
+void MainWindow::dbusClassicUnplugged(quint32 id) {
+  Q_UNUSED(id);
+  wiimoteAnalogItem[0]->setVisible(false);
+  wiimoteAnalogItem[1]->setVisible(false);
+  analogInfo->setVisible(false);
+  updateStatusInfo();
+}
 
 void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
 {
   if (id != wiimoteId)
-      return;
+    return;
 
   updateInfraredInfo(points);
 
@@ -558,102 +609,7 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
 
     infraredLine[0]->setLine(infraredPoints[0]->x(), infraredPoints[0]->y(), infraredPoints[1]->x(), infraredPoints[1]->y());
 
-
-    // 180/PI
-
     {
-
-    //  p = -(atan2(infraredPoints[1]->y()-infraredPoints[0]->y(),
-     //             infraredPoints[1]->x()-infraredPoints[0]->x())-PI);
-
-//      double roll = -wiimote_acc.roll;
-
-//      if (roll < 0)
-//        roll = -roll;
-////        roll = 360 - wiimote_acc.roll;
-
-////      if (roll > 180)
-////        roll = roll - 180;
-
-
-//      double stop = p*180/PI;
-
-//      if (p > M_PI)
-//        p = M_PI*2 - p;
-
-
-
-//      qDebug() << roll << ", " << (p*180/M_PI);
-
-
-
-
-
-      //roll*PI/180;
-
-      // qDebug() << roll << ", " << stop;
-
-      // 360 < 340 ok!
-      // 360 > 380 fail!
-
-      // 0 < -20 fail!
-      // 0 > 20 ok
-
-
-//      qDebug() << cos(p) << ", " << cos(roll*PI/180);
-
-//      if (cos(p) < 0 && cos(roll*PI/180) > 0)
-//        p = -(atan2(infraredPoints[0]->y()-infraredPoints[1]->y(),
-//                    infraredPoints[1]->x()-infraredPoints[0]->x())-PI);
-
-//      }
-//      p = roll*2
-
-//     ;
-
-//      double roll = -wiimote_acc.roll;
-
-//      if (roll < 0)
-//        roll = 360 - wiimote_acc.roll;
-
-//      if (roll > 90 && roll < 270) {
-
-//        int bx = (infraredPoints[1]->x() > infraredPoints[0]->x()) ? infraredPoints[1]->x() - infraredPoints[0]->x() : infraredPoints[0]->x() - infraredPoints[1]->x();
-//        int by = (infraredPoints[1]->x() > infraredPoints[0]->x()) ? infraredPoints[1]->y() - infraredPoints[0]->y() : infraredPoints[0]->y() - infraredPoints[1]->y();
-
-//        p = -(atan2(by, bx)-PI);
-//      } else {
-
-//        int bx = (infraredPoints[1]->y() > infraredPoints[0]->y()) ? infraredPoints[1]->x() - infraredPoints[0]->x() : infraredPoints[0]->x() - infraredPoints[1]->x();
-//        int by = (infraredPoints[1]->y() > infraredPoints[0]->y()) ? infraredPoints[1]->y() - infraredPoints[0]->y() : infraredPoints[0]->y() - infraredPoints[1]->y();
-//        p = -(atan2(by, bx)-PI);
-
-////        p = -(atan2(infraredPoints[1]->y()-infraredPoints[0]->y(),
-////                    infraredPoints[1]->x()-infraredPoints[0]->x())-PI);
-//      }
-
-
-
-
-     // qDebug() << (p*180/PI);
-
-
-//      if (cos(wiimote_acc.roll*PI/180) > 0) {
-//        int by = (infraredPoints[0]->y() > infraredPoints[1]->y()) ? infraredPoints[0]->y() - infraredPoints[1]->y() : infraredPoints[1]->y() - infraredPoints[0]->y();
-
-//        p = -(atan2(by,
-//                    infraredPoints[1]->x()-infraredPoints[0]->x()));
-//        qDebug() << "widzisz";
-//      } else
-//      {
-//        p = -(atan2(infraredPoints[1]->y()-infraredPoints[0]->y(),
-//                    infraredPoints[1]->x()-infraredPoints[0]->x()));
-//        qDebug() << "teraz roznice";
-//      }
-
-
-
-
       double roll = -wiimote_acc.roll;
 
       if (roll < 0)
@@ -712,16 +668,16 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
 }
 
 void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
-if (id != wiimoteId)
+  if (id != wiimoteId)
     return;
 
-updateButtonInfo(value);
+  updateButtonInfo(value);
 }
 
 void MainWindow::dbusWiimoteAcc(quint32 id, const accdata &table)
 {
   if (id != wiimoteId)
-      return;
+    return;
 
   memcpy(&wiimote_acc, &table, sizeof(table));
 
@@ -733,22 +689,20 @@ void MainWindow::dbusWiimoteAcc(quint32 id, const accdata &table)
   updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, roll,
                          nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch, nunchuk_acc.roll);
 
-  line->setRotation(p);
+  line->setRotation(-roll);
 }
 
 void MainWindow::dbusNunchukAcc(quint32 id, const accdata &table)
 {
   if (id != wiimoteId)
-      return;
+    return;
 
   memcpy(&nunchuk_acc, &table, sizeof(table));
-
 
   double roll = -wiimote_acc.roll;
 
   if (roll < 0)
     roll = 360 - wiimote_acc.roll;
-
 
   updateAccelerometrInfo(wiimote_acc.x, wiimote_acc.y, wiimote_acc.z, wiimote_acc.pitch, roll,
                          nunchuk_acc.x, nunchuk_acc.y, nunchuk_acc.z, nunchuk_acc.pitch, nunchuk_acc.roll);
