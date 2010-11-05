@@ -178,15 +178,18 @@ void WiimoteConnection::run()
     for (register int i = 0; i < count; ++i) switch (mesg[i].type) {
 
       case CWIID_MESG_ERROR:
-          if (classicPlugged) classicDeviceCleanup(classicLStickdata, classicRStickdata);
+        if (classicPlugged)
+          classicDeviceCleanup(classicLStickdata, classicRStickdata);
 
-          if (nunchukPlugged) nunchukDeviceCleanup(nunchukStickdata, nunchukAccdata);
-          wiimote->disconnectFromDevice(false);
-          WiimoteButtons = 0;
-          wiimoteDeviceCleanup(wiimoteIrTable, wiimoteAccdata);
-          ButtonRequest = true;
+        if (nunchukPlugged)
+          nunchukDeviceCleanup(nunchukStickdata, nunchukAccdata);
 
-          break;
+        wiimote->disconnectFromDevice(false);
+        WiimoteButtons = 0;
+        wiimoteDeviceCleanup(wiimoteIrTable, wiimoteAccdata);
+        ButtonRequest = true;
+
+        break;
 
       case CWIID_MESG_STATUS:
           NewBatteryLife = life = static_cast< unsigned char>(100.0 * (mesg[i].status_mesg.battery / static_cast< double>(CWIID_BATTERY_MAX)));

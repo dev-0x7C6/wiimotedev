@@ -144,8 +144,8 @@ bool WiimoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct a
   if (isDisconnected()) return false;
 
   if (cwiid_get_acc_cal(device, ext_type, acc_cal)) {
-    disconnectFromDevice(false);
-    return false;
+  //  disconnectFromDevice(false);
+  //  return false;
   }
 
   return true;
