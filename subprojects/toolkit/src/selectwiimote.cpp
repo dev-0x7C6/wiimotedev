@@ -42,6 +42,7 @@ void SelectWiimote::selectButtonPushed()
 
 void SelectWiimote::setWiimoteList(QList < uint> &list)
 {
+  qSort(list.begin(), list.end());
   for (register int i = 0; i < list.count(); ++i)
-      ui->comboBox->addItem(QString::number(list.at(i)));
+    ui->comboBox->addItem(QString::number(list.at(i)));
 }

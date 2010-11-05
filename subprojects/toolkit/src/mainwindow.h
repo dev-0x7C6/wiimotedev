@@ -28,11 +28,12 @@
 #include <QPainter>
 #include <QMenu>
 
+#include "src/interfaces/deviceevents.h"
+#include "widgets/wiimoteanalogitem.h"
 #include "widgets/wiimotebatteryitem.h"
 #include "widgets/wiimoteleditem.h"
 #include "src/selectwiimote.h"
 
-#include "src/interfaces/deviceevents.h"
 #include "headers/consts.h"
 
 const double defaultPointMultiplier = 2.5;
@@ -40,8 +41,11 @@ const double defaultPointMultiplier = 2.5;
 
 class MainWindow : public QGraphicsView {
   Q_OBJECT
+private:
+  QString macAddress;
+
 public:
-  MainWindow(QWidget *parent = 0);
+  MainWindow(DBusDeviceEventsInterface *iface, quint32 id = 1, QWidget *parent = 0);
   ~MainWindow();
 
   enum Points {
@@ -57,7 +61,11 @@ protected:
 
 private:
   QGraphicsTextItem *accelerometrInfo;
+  QGraphicsTextItem *analogInfo;
   QGraphicsTextItem *infraredInfo;
+  QGraphicsTextItem *statusInfo;
+
+  WiimoteAnalogItem *wiimoteAnalogItem[2];
 
   QGraphicsLineItem *line;
   QGraphicsPixmapItem *cursor;
@@ -102,9 +110,11 @@ private slots:
                               int, int, int, double, double);
   void updateButtonInfo(quint64);
   void updateInfraredInfo(QList < struct irpoint>);
+  void updateStatusInfo();
 
 
 private slots:
+
   void changeDevicePushed();
   void infraredCleanup();
   void getWiimoteStats();
@@ -117,11 +127,15 @@ private slots:
 
   void dbusWiimoteAcc(quint32 id, const accdata &acc);
   void dbusWiimoteBatteryLife(quint32 id, quint8 life);
+  void dbusWiimoteConnected(quint32 id);
+  void dbusWiimoteDisconnected(quint32 id);
   void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
   void dbusWiimoteInfrared(quint32 id, const QList< struct irpoint> &points);
 
   void dbusNunchukPlugged(quint32 id);
   void dbusNunchukUnplugged(quint32 id);
+  void dbusClassicPlugged(quint32 id);
+  void dbusClassicUnplugged(quint32 id);
 
   void dbusNunchukAcc(quint32 id, const accdata &acc);
   void dbusNunchukStick(quint32 id, const stickdata &stick);
