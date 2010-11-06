@@ -84,6 +84,8 @@ private:
   double p;
   double stableAccRoll;
 
+  double lineLength;
+
   struct accdata nunchuk_acc;
   struct accdata wiimote_acc;
 

@@ -376,8 +376,12 @@ void MainWindow::updateInfraredInfo(QList < irpoint> list)
       "<font color=#ffffff>0</font><font color=#555555> size: </font>" \
       "<font color=#ffffff>-1</font><br>";
 
-  if (list.count() > 1)
-    html += QString("<font color=#555555>Infrared roll: </font><font color=#ffffff>%1°</font><br>").arg(QString::number(int(p*180/PI)));
+  if (list.count() > 1) {
+    html +=
+      "<font color=#555555>Infrared roll: </font><font color=#ffffff>" + QString::number(int(p*180/PI)) + "°</font><br>" \
+      "<font color=#555555>Line length: </font><font color=#ffffff>" + QString::number(int(lineLength)) + "px</font>";
+
+  }
 
   infraredInfo->setHtml(html);
 }
@@ -618,6 +622,10 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
       p = -(atan2(infraredPoints[1]->y()-infraredPoints[0]->y(),
                   infraredPoints[1]->x()-infraredPoints[0]->x())-PI);
 
+      lineLength = sqrt(pow(abs(points.at(1).x - points.at(0).x), 2) +
+                        pow(abs(points.at(1).y - points.at(0).y), 2));
+
+
      // p = -wiimote_acc.roll*PI/180;
       register short unsigned int ax = (points.at(0).x + points.at(1).x) >> 1;
       register short unsigned int ay = (points.at(0).y + points.at(1).y) >> 1;
@@ -635,6 +643,7 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
 
       cursor->setX((1024 - (ax*cosp - ay*sinp + 512*(1-cosp) + 384*sinp)) * widthMultiplier - 7);
       cursor->setY(((ax*sinp + ay*cosp - 512*sinp + 384*(1-cosp))) * heightMultiplier - 2);
+      cursor->setScale(lineLength /400);
       cursor->setRotation(-p*180/PI);
     }
 
