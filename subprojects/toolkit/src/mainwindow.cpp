@@ -34,7 +34,8 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
   QGraphicsView(parent),
   cursor(new QGraphicsPixmapItem(QPixmap(":/cursor_medium.png"))),
   iface(iface),
-  wiimoteId(id)
+  wiimoteId(id),
+  order(RightToLeft)
 {
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
@@ -379,6 +380,7 @@ void MainWindow::updateInfraredInfo(QList < irpoint> list)
   if (list.count() > 1) {
     html +=
       "<font color=#555555>Infrared roll: </font><font color=#ffffff>" + QString::number(int(p*180/PI)) + "°</font><br>" \
+      "<font color=#555555>Angle diff: </font><font color=#ffffff>" + QString::number(int(angleDiff)) + "°</font><br>" \
       "<font color=#555555>Line length: </font><font color=#ffffff>" + QString::number(int(lineLength)) + "px</font>";
 
   }
@@ -614,13 +616,34 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
     infraredLine[0]->setLine(infraredPoints[0]->x(), infraredPoints[0]->y(), infraredPoints[1]->x(), infraredPoints[1]->y());
 
     {
+
       double roll = -wiimote_acc.roll;
 
       if (roll < 0)
         roll = 360 - wiimote_acc.roll;
 
-      p = -(atan2(infraredPoints[1]->y()-infraredPoints[0]->y(),
-                  infraredPoints[1]->x()-infraredPoints[0]->x())-PI);
+      qDebug()<< roll;
+
+      if (timer.elapsed() > 20) {
+        if (cos(roll*PI/180) > 0) {
+          if (points.at(1).x < points.at(0).x)
+            order = RightToLeft; else
+            order = LeftToRight;
+        } else {
+          if (points.at(1).x > points.at(0).x)
+            order = RightToLeft; else
+            order = LeftToRight;
+        }
+      }
+
+      if (order == RightToLeft) {
+
+      p = -(atan2(points.at(1).y - points.at(0).y,
+                  points.at(1).x - points.at(0).x)-PI);
+    } else {
+      p = -(atan2(points.at(0).y - points.at(1).y,
+                  points.at(0).x - points.at(1).x)-PI);
+    }
 
       lineLength = sqrt(pow(abs(points.at(1).x - points.at(0).x), 2) +
                         pow(abs(points.at(1).y - points.at(0).y), 2));
@@ -641,10 +664,13 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
       register float sinp = sin(p);
 #endif
 
+      angleDiff = roll - (p*180/PI);
+
       cursor->setX((1024 - (ax*cosp - ay*sinp + 512*(1-cosp) + 384*sinp)) * widthMultiplier - 7);
       cursor->setY(((ax*sinp + ay*cosp - 512*sinp + 384*(1-cosp))) * heightMultiplier - 2);
-      cursor->setScale(lineLength /400);
+      cursor->setScale(lineLength/300);
       cursor->setRotation(-p*180/PI);
+      timer.start();
     }
 
     if (!infraredLine[0]->isVisible()) infraredLine[0]->show();

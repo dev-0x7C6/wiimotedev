@@ -56,6 +56,11 @@ public:
     ir4source
   };
 
+  enum IROrder {
+    LeftToRight,
+    RightToLeft
+  };
+
 protected:
   virtual void resizeEvent(QResizeEvent*);
 
@@ -81,10 +86,13 @@ private:
 
   QMenu menu;
 
+  quint32 order;
+
   double p;
   double stableAccRoll;
 
   double lineLength;
+  double angleDiff;
 
   struct accdata nunchuk_acc;
   struct accdata wiimote_acc;
