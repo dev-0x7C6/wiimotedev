@@ -165,7 +165,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
   heightMultiplier = 0.5;
   dotSizeMultiplier = 4;
 
-//  setViewport(new QGLWidget(QGLFormat(QGL::DoubleBuffer)));
+  //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 
   connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredCleanup()));
   infraredTimeout.setInterval(30);
@@ -366,7 +366,7 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
   for (register int i = 3; i >= 0; --i)
     ledPixmaps[i]->setPos(x -= (16 + 5), y);
 
-  rumbleItem->setPos(x - rumbleItem->pixmap().width() - 10, y);
+  rumbleItem->setPos(x - rumbleItem->pixmap().width() - 10, y + 2);
 
   batteryItem->setPos(x, rect.height() - batteryItem->boundingRect().height() - 9);
 }
