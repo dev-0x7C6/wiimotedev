@@ -23,6 +23,7 @@ set(toolkit_sources
   widgets/wiimoteanalogitem.cpp
   widgets/wiimotebatteryitem.cpp
   widgets/wiimoteleditem.cpp
+  widgets/wiimoterumbleitem.cpp
   main.cpp
 )
 
@@ -37,6 +38,7 @@ set(toolkit_headers_qt
   widgets/wiimoteanalogitem.h
   widgets/wiimotebatteryitem.h
   widgets/wiimoteleditem.h
+  widgets/wiimoterumbleitem.h
 )
 
 set(toolkit_uis

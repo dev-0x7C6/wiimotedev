@@ -32,7 +32,7 @@
 
 MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *parent) :
   QGraphicsView(parent),
-  cursor(new QGraphicsPixmapItem(QPixmap(":/cursor_medium.png"))),
+  cursor(new QGraphicsPixmapItem(QPixmap(":/cursor.png"))),
   iface(iface),
   wiimoteId(id),
   order(RightToLeft)
@@ -165,7 +165,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
   heightMultiplier = 0.5;
   dotSizeMultiplier = 4;
 
-  setViewport(new QGLWidget(QGLFormat(QGL::DoubleBuffer)));
+//  setViewport(new QGLWidget(QGLFormat(QGL::DoubleBuffer)));
 
   connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredCleanup()));
   infraredTimeout.setInterval(30);
@@ -210,9 +210,12 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
   wiimoteStdButtonText = new QGraphicsTextItem();
   wiimoteExtButtonText = new QGraphicsTextItem();
   batteryItem = new WiimoteBatteryItem();
+  rumbleItem = new WiimoteRumbleItem();
 
-  for (register int i = 0; i < 4; ++i)
+  for (register int i = 0; i < 4; ++i) {
     ledPixmaps[i] = new WiimoteLedItem();
+    scene.addItem(ledPixmaps[i]);
+  }
 
   line = new QGraphicsLineItem();
   line->setZValue(-1);
@@ -227,7 +230,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
     infraredPoints[i]->hide();
     infraredPoints[i]->setZValue(10.0);
     infraredLine[i] = new QGraphicsLineItem();
-    infraredLine[i]->setPen(QPen(Qt::cyan));
+    infraredLine[i]->setPen(QPen(Qt::yellow));
     infraredLine[i]->hide();
     infraredLine[i]->setZValue(5.0);
     scene.addItem(infraredPoints[i]);
@@ -239,6 +242,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
   scene.addItem(wiimoteStdButtonText);
   scene.addItem(wiimoteExtButtonText);
   scene.addItem(batteryItem);
+  scene.addItem(rumbleItem);
 
   scene.addItem(accelerometrInfo);
   scene.addItem(analogInfo);
@@ -259,31 +263,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
   connect(ledPixmaps[2], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed3(bool)));
   connect(ledPixmaps[3], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed4(bool)));
 
-  getWiimoteStats() ;
-  wiimoteAnalogItem[0]->setVisible(false);
-  wiimoteAnalogItem[1]->setVisible(false);
-  analogInfo->setVisible(false);
-
-  if (iface->dbusIsClassicConnected(wiimoteId)) {
-    wiimoteAnalogItem[0]->setVisible(true);
-    wiimoteAnalogItem[1]->setVisible(true);
-    analogInfo->setVisible(true);
-  }
-
-  if (iface->dbusIsNunchukConnected(wiimoteId)) {
-    wiimoteAnalogItem[0]->setVisible(true);
-    wiimoteAnalogItem[1]->setVisible(false);
-    analogInfo->setVisible(true);
-  }
-
-  batteryItem->setBatteryLevel(iface->dbusWiimoteGetBatteryLife(wiimoteId));
-
-  for (register int i = 0; i < 4; ++i) {
-    if ((leds >> i) & true)
-      ledPixmaps[i]->switchOn(); else
-      ledPixmaps[i]->switchOff();
-    scene.addItem(ledPixmaps[i]);
-  }
+  connect(rumbleItem, SIGNAL(rumbleSwitched(bool)), this, SLOT(toggleRumble(bool)));
 
   if (iface->dbusIsWiimoteConnected(wiimoteId))
     dbusWiimoteConnected(wiimoteId); else
@@ -312,6 +292,40 @@ void MainWindow::dbusWiimoteConnected(quint32 id) {
   if (wiimoteId != id)
     return;
 
+  leds = iface->dbusWiimoteGetLedStatus(id);
+  batteryItem->setBatteryLevel(iface->dbusWiimoteGetBatteryLife(wiimoteId));
+
+  for (register int i = 0; i < 4; ++i)  {
+    ledPixmaps[i]->setEnabled(true);
+    if ((leds >> i) & 1)
+      ledPixmaps[i]->switchOn(); else
+      ledPixmaps[i]->switchOff();
+  }
+
+  batteryItem->setEnabled(true);
+
+  if (iface->dbusWiimoteGetRumbleStatus(id))
+    rumbleItem->switchOn(); else
+    rumbleItem->switchOff();
+
+  rumbleItem->setEnabled(true);
+
+  wiimoteAnalogItem[0]->setVisible(false);
+  wiimoteAnalogItem[1]->setVisible(false);
+  analogInfo->setVisible(false);
+
+  if (iface->dbusIsClassicConnected(wiimoteId)) {
+    wiimoteAnalogItem[0]->setVisible(true);
+    wiimoteAnalogItem[1]->setVisible(true);
+    analogInfo->setVisible(true);
+  }
+
+  if (iface->dbusIsNunchukConnected(wiimoteId)) {
+    wiimoteAnalogItem[0]->setVisible(true);
+    wiimoteAnalogItem[1]->setVisible(false);
+    analogInfo->setVisible(true);
+  }
+
   macAddress = iface->dbusWiimoteGetMacAddress(wiimoteId);
 
   setWindowTitle(QString("Wiimotedev Toolkit :: Wiiremote[%2] %1 :: Connected").arg(macAddress, QString::number(wiimoteId)));
@@ -321,6 +335,15 @@ void MainWindow::dbusWiimoteConnected(quint32 id) {
 void MainWindow::dbusWiimoteDisconnected(quint32 id){
   if (wiimoteId != id)
     return;
+
+  for (register int i = 0; i < 4; ++i) {
+    ledPixmaps[i]->setEnabled(false);
+    ledPixmaps[i]->switchOff();
+  }
+  batteryItem->setEnabled(false);
+  batteryItem->setBatteryLevel(0);
+  rumbleItem->setEnabled(false);
+  rumbleItem->switchOff();
 
   setWindowTitle(QString("Wiimotedev Toolkit :: Wiiremote[%1] :: Disconnected").arg(QString::number(wiimoteId)));
   updateStatusInfo();
@@ -338,8 +361,12 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
   line->setLine(-(geometry().width()/10), geometry().height()/2, geometry().width()+(geometry().width()/10), geometry().height()/2);
   line->setTransformOriginPoint(geometry().width()/2,geometry().height()/2);
 
+
+
   for (register int i = 3; i >= 0; --i)
     ledPixmaps[i]->setPos(x -= (16 + 5), y);
+
+  rumbleItem->setPos(x - rumbleItem->pixmap().width() - 10, y);
 
   batteryItem->setPos(x, rect.height() - batteryItem->boundingRect().height() - 9);
 }
@@ -436,8 +463,7 @@ MainWindow::~MainWindow()
 {
 }
 
-void MainWindow::toggleRumble(bool rumble)
-{
+void MainWindow::toggleRumble(bool rumble) {
   iface->dbusWiimoteSetRumbleStatus(wiimoteId, rumble);
 }
 
@@ -452,8 +478,6 @@ void MainWindow::changeDevicePushed()
   if (selectWiimote->getSelectedWiimote())
     wiimoteId = selectWiimote->getSelectedWiimote();
   delete selectWiimote;
-
-  getWiimoteStats();
 }
 
 void MainWindow::dbusWiimoteBatteryLife(quint32 id, quint8 life) {
@@ -461,12 +485,6 @@ void MainWindow::dbusWiimoteBatteryLife(quint32 id, quint8 life) {
     return;
 
   batteryItem->setBatteryLevel(life);
-}
-
-void MainWindow::getWiimoteStats()
-{
-  leds = iface->dbusWiimoteGetLedStatus(wiimoteId);
-//  ui->checkboxRumble->setChecked(iface->dbusWiimoteGetRumbleStatus(wiimoteId));
 }
 
 void MainWindow::toggleLed1(bool toggled)
@@ -511,7 +529,12 @@ void MainWindow::dbusWiimoteLedStatusChanged(quint32 id, quint8 value) {
 }
 
 void MainWindow::dbusWiimoteRumbleStatusChanged(quint32 id, quint8 value) {
+  if (id != wiimoteId)
+    return;
 
+  if (value)
+    rumbleItem->switchOn(); else
+    rumbleItem->switchOff();
 }
 
 void MainWindow::dbusNunchukStick(quint32 id, const stickdata &stick)
@@ -688,7 +711,7 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
 
       cursor->setX((1024 - (ax*cosp - ay*sinp + 512*(1-cosp) + 384*sinp)) * widthMultiplier - 7);
       cursor->setY(((ax*sinp + ay*cosp - 512*sinp + 384*(1-cosp))) * heightMultiplier - 2);
-      cursor->setScale(lineLength/300);
+      cursor->setScale((1024-lineLength)/500);
       cursor->setRotation(-p*180/PI);
       timer.start();
     }

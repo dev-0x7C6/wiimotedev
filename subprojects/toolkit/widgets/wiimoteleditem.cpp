@@ -45,7 +45,7 @@ void WiimoteLedItem::switchOff() {
   status = false;
 }
 
-void WiimoteLedItem::mousePressEvent (QGraphicsSceneMouseEvent *event) {
+void WiimoteLedItem::mousePressEvent (QGraphicsSceneMouseEvent *event) {  
   if (status)
     switchOff(); else
     switchOn();

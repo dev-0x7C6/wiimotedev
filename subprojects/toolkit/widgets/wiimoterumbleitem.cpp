@@ -17,33 +17,38 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#include "wiimoterumbleitem.h"
+#include <QGraphicsSceneMouseEvent>
 
-#include <QGraphicsPixmapItem>
-#include <QObject>
-
-#include "src/interfaces/deviceevents.h"
-
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
+WiimoteRumbleItem::WiimoteRumbleItem(QObject *parent) :
+  QObject(parent),
+  QGraphicsPixmapItem(),
+  status(false)
 {
-  Q_OBJECT
-private:
-  bool status;
+  setPixmap(QPixmap(":/rumble_off.png"));
+  switchOff();
+}
 
-public:
-  WiimoteLedItem(QObject *parent = 0);
+void WiimoteRumbleItem::switchOn() {
+  if (status)
+    return;
 
-protected:
-  virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
+  setPixmap(QPixmap(":/rumble_on.png"));
+  status = true;
+}
 
-public Q_SLOTS:
-  void switchOn();
-  void switchOff();
+void WiimoteRumbleItem::switchOff() {
+  if (!status)
+    return;
 
-Q_SIGNALS:
-  void ledSwitched(bool);
+  setPixmap(QPixmap(":/rumble_off.png"));
+  status = false;
+}
 
-};
+void WiimoteRumbleItem::mousePressEvent (QGraphicsSceneMouseEvent *event) {
+  if (status)
+    switchOff(); else
+    switchOn();
 
-#endif // WIIMOTELEDITEM_H
+  emit rumbleSwitched(status);
+}

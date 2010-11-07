@@ -17,22 +17,20 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#ifndef WIIMOTERUMBLEITEM_H
+#define WIIMOTERUMBLEITEM_H
 
 #include <QGraphicsPixmapItem>
 #include <QObject>
 
-#include "src/interfaces/deviceevents.h"
-
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
+class WiimoteRumbleItem : public QObject, public QGraphicsPixmapItem
 {
   Q_OBJECT
 private:
   bool status;
 
 public:
-  WiimoteLedItem(QObject *parent = 0);
+  WiimoteRumbleItem(QObject *parent = 0);
 
 protected:
   virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
@@ -42,8 +40,8 @@ public Q_SLOTS:
   void switchOff();
 
 Q_SIGNALS:
-  void ledSwitched(bool);
+  void rumbleSwitched(bool);
 
 };
 
-#endif // WIIMOTELEDITEM_H
+#endif // WIIMOTERUMBLEITEM_H

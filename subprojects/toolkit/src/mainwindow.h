@@ -32,6 +32,7 @@
 #include "widgets/wiimoteanalogitem.h"
 #include "widgets/wiimotebatteryitem.h"
 #include "widgets/wiimoteleditem.h"
+#include "widgets/wiimoterumbleitem.h"
 #include "src/selectwiimote.h"
 
 #include "headers/consts.h"
@@ -82,6 +83,7 @@ private:
   QGraphicsLineItem *infraredLine[4];
   WiimoteLedItem *ledPixmaps[4];
   WiimoteBatteryItem *batteryItem;
+  WiimoteRumbleItem *rumbleItem;
   QTime timer;
 
   QMenu menu;
@@ -124,10 +126,8 @@ private slots:
 
 
 private slots:
-
   void changeDevicePushed();
   void infraredCleanup();
-  void getWiimoteStats();
 
   void toggleRumble(bool);
   void toggleLed1(bool);
