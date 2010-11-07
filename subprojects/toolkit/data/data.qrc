@@ -4,5 +4,6 @@
         <file>led_on.png</file>
         <file>cursor.png</file>
         <file>cursor_medium.png</file>
+        <file>icon16.png</file>
     </qresource>
 </RCC>

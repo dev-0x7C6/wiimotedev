@@ -72,6 +72,8 @@ int main(int argc, char *argv[])
   QObject::connect(&interface, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), &window, SLOT(dbusWiimoteBatteryLife(quint32,quint8)));
   QObject::connect(&interface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), &window, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
   QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(quint32, const QList< irpoint>&)), &window, SLOT(dbusWiimoteInfrared(quint32, const QList<struct irpoint>&)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteLedStatusChanged(quint32,quint8)), &window, SLOT(dbusWiimoteLedStatusChanged(quint32,quint8)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteRumbleStatusChanged(quint32,quint8)), &window, SLOT(dbusWiimoteRumbleStatusChanged(quint32,quint8)));
 
   window.show();
 

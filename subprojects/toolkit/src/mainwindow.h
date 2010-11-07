@@ -141,6 +141,8 @@ private slots:
   void dbusWiimoteDisconnected(quint32 id);
   void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
   void dbusWiimoteInfrared(quint32 id, const QList< struct irpoint> &points);
+  void dbusWiimoteLedStatusChanged(quint32, quint8);
+  void dbusWiimoteRumbleStatusChanged(quint32, quint8);
 
   void dbusNunchukPlugged(quint32 id);
   void dbusNunchukUnplugged(quint32 id);

@@ -155,6 +155,14 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
 "      <arg direction=\"out\" type=\"a(nqq)\" name=\"table\" />\n"
 "    </signal>\n"
+"    <signal name=\"dbusWiimoteLedStatusChanged\">\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"y\" name=\"value\" />\n"
+"    </signal>\n"
+"    <signal name=\"dbusWiimoteRumbleStatusChanged\">\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"y\" name=\"value\" />\n"
+"    </signal>\n"
 "    <signal name=\"dbusWiimoteStatus\">\n"
 "      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
 "      <arg direction=\"out\" type=\"y\" name=\"status\" />\n"
@@ -196,22 +204,26 @@ Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
   void dbusWiimoteGeneralButtons(quint32, quint64);
 
-  void dbusWiimoteConnected(quint32);
-  void dbusWiimoteDisconnected(quint32);
+  void dbusWiimoteAcc(quint32, struct accdata);
   void dbusWiimoteBatteryLife(quint32, quint8);
   void dbusWiimoteButtons(quint32, quint64);
-  void dbusWiimoteStatus(quint32, quint8);
+  void dbusWiimoteConnected(quint32);
+  void dbusWiimoteDisconnected(quint32);
   void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
-  void dbusWiimoteAcc(quint32, struct accdata);
+  void dbusWiimoteLedStatusChanged(quint32, quint8);
+  void dbusWiimoteRumbleStatusChanged(quint32, quint8);
+  void dbusWiimoteStatus(quint32, quint8);
 
   void dbusNunchukPlugged(quint32);
   void dbusNunchukUnplugged(quint32);
+
+  void dbusNunchukAcc(quint32, struct accdata);
   void dbusNunchukButtons(quint32, quint64);
   void dbusNunchukStick(quint32, struct stickdata);
-  void dbusNunchukAcc(quint32, struct accdata);
 
   void dbusClassicControllerPlugged(quint32);
   void dbusClassicControllerUnplugged(quint32);
+
   void dbusClassicControllerButtons(quint32, quint64);
   void dbusClassicControllerLStick(quint32, struct stickdata);
   void dbusClassicControllerRStick(quint32, struct stickdata);
@@ -257,22 +269,26 @@ Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
   void dbusWiimoteGeneralButtons(quint32, quint64);
 
-  void dbusWiimoteConnected(quint32);
-  void dbusWiimoteDisconnected(quint32);
+  void dbusWiimoteAcc(quint32, struct accdata);
   void dbusWiimoteBatteryLife(quint32, quint8);
   void dbusWiimoteButtons(quint32, quint64);
-  void dbusWiimoteStatus(quint32, quint8);
+  void dbusWiimoteConnected(quint32);
+  void dbusWiimoteDisconnected(quint32);
   void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
-  void dbusWiimoteAcc(quint32, struct accdata);
+  void dbusWiimoteLedStatusChanged(quint32, quint8);
+  void dbusWiimoteRumbleStatusChanged(quint32, quint8);
+  void dbusWiimoteStatus(quint32, quint8);
 
   void dbusNunchukPlugged(quint32);
   void dbusNunchukUnplugged(quint32);
+
+  void dbusNunchukAcc(quint32, struct accdata);
   void dbusNunchukButtons(quint32, quint64);
   void dbusNunchukStick(quint32, struct stickdata);
-  void dbusNunchukAcc(quint32, struct accdata);
 
   void dbusClassicControllerPlugged(quint32);
   void dbusClassicControllerUnplugged(quint32);
+
   void dbusClassicControllerButtons(quint32, quint64);
   void dbusClassicControllerLStick(quint32, struct stickdata);
   void dbusClassicControllerRStick(quint32, struct stickdata);

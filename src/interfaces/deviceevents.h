@@ -57,6 +57,8 @@ Q_SIGNALS:
   void dbusWiimoteDisconnected(quint32);
   void dbusWiimoteBatteryLife(quint32, quint8);
   void dbusWiimoteButtons(quint32, quint64);
+  void dbusWiimoteLedStatusChanged(quint32, quint8);
+  void dbusWiimoteRumbleStatusChanged(quint32, quint8);
   void dbusWiimoteStatus(quint32, quint8);
   void dbusWiimoteInfrared(quint32, const QList< irpoint>&);
   void dbusWiimoteAcc(quint32, const accdata&);

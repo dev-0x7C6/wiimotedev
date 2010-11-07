@@ -222,6 +222,10 @@ bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetRumbleStatus(quint32 id, bool
 {
   bool value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteSetRumbleStatus", Qt::DirectConnection,  Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(bool, status));
+
+  if (value)
+    emit dbusWiimoteRumbleStatusChanged(id, status);
+
   return value;
 }
 
@@ -235,6 +239,10 @@ bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetLedStatus(quint32 id, quint32
 {
   bool value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(quint32, id), Q_ARG(quint32, status));
+
+  if (value)
+    emit dbusWiimoteLedStatusChanged(id, status);
+
   return value;
 }
 

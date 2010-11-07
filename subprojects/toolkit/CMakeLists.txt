@@ -40,7 +40,6 @@ set(toolkit_headers_qt
 )
 
 set(toolkit_uis
-  ui/mainwindow.ui
   ui/selectwiimote.ui
 )
 

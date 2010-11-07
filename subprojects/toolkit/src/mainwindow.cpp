@@ -92,6 +92,8 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
   setPalette(windowColor);
 //
 
+  setWindowIcon(QIcon(":/icon16.png"));
+
   setFrameStyle(QFrame::NoFrame);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
   setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -220,11 +222,12 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
   for (register int i = 0; i < 4; ++i) {
     infraredPoints[i] = new QGraphicsEllipseItem();
     infraredPoints[i]->setPen(QPen(Qt::white));
+    infraredPoints[i]->setBrush(QBrush(Qt::black));
     infraredPoints[i]->setRect(0, 0, 3, 3);
     infraredPoints[i]->hide();
     infraredPoints[i]->setZValue(10.0);
     infraredLine[i] = new QGraphicsLineItem();
-    infraredLine[i]->setPen(QPen(Qt::yellow));
+    infraredLine[i]->setPen(QPen(Qt::cyan));
     infraredLine[i]->hide();
     infraredLine[i]->setZValue(5.0);
     scene.addItem(infraredPoints[i]);
@@ -494,6 +497,23 @@ void MainWindow::toggleLed4(bool toggled)
   iface->dbusWiimoteSetLedStatus(wiimoteId, leds);
 }
 
+void MainWindow::dbusWiimoteLedStatusChanged(quint32 id, quint8 value) {
+  if (id != wiimoteId)
+    return;
+
+  leds = value;
+
+  for (register int i = 0; i < 4; ++i) {
+    if (leds & (1 << i))
+      ledPixmaps[i]->switchOn(); else
+      ledPixmaps[i]->switchOff();
+  }
+}
+
+void MainWindow::dbusWiimoteRumbleStatusChanged(quint32 id, quint8 value) {
+
+}
+
 void MainWindow::dbusNunchukStick(quint32 id, const stickdata &stick)
 {
   if (id != wiimoteId)
@@ -587,7 +607,7 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
   for (register int i = 0; i < 4; ++i) {
     if (i < points.count()) {
       register int size = points.at(i).size * 2;
-      infraredPoints[i]->setRect(-size, -size, size, size);
+      infraredPoints[i]->setRect(-size/2, -size/2, size, size);
 
       if (!infraredPoints[i]->isVisible())
         infraredPoints[i]->show();
@@ -622,9 +642,9 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
       if (roll < 0)
         roll = 360 - wiimote_acc.roll;
 
-      qDebug()<< roll;
+      //qDebug()<< roll;
 
-      if (timer.elapsed() > 20) {
+      if (timer.elapsed() > 40) {
         if (cos(roll*PI/180) > 0) {
           if (points.at(1).x < points.at(0).x)
             order = RightToLeft; else
