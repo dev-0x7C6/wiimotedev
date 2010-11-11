@@ -35,17 +35,41 @@ namespace Ui {
     class MainWindow;
 }
 
-struct ProfileItem
-{
-    QString ProfileName;
-    QString ProfileAuthor;
-    QString ProfileEmail;
-    QString ProfileVersion;
-    QString ProfilePath;
+struct ProfileItem {
+  QString ProfileName;
+  QString ProfileAuthor;
+  QString ProfileEmail;
+  QString ProfileVersion;
+  QString ProfilePath;
 };
 
+struct Profile {
+  QString name;
+  QString author;
+  QString email;
+  QString version;
+  QString path;
+};
+
+
 class MainWindow :public QMainWindow {
-    Q_OBJECT
+  Q_OBJECT
+private:
+  QSystemTrayIcon *tray;
+  QMenu *menu;
+  QAction *menuExitAction;
+// Window
+  Ui::MainWindow *ui;
+
+// Profile
+  QString profileName;
+  QString profileAuthor;
+  QString profileEmail;
+  QString profileVersion;
+  QString profilePath;
+
+  QList< Profile> uinputProfileList;
+
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -71,8 +95,7 @@ private:
     QRect calcGeometry();
 
 private:
-    QSystemTrayIcon *tray;
-    QMenu *menu;
+
     QRect defaultGeometry;
 
     QMap< QString, quint64> devicebuttons;
@@ -83,8 +106,6 @@ private:
     quint64 buttons;
     quint64 lastButtons;
     quint32 index;
-
-    Ui::MainWindow *ui;
 
     DBusCustomJobsInterface *customJobsInterface;
     DBusProfileManagerInterface *profileInterface;

@@ -30,12 +30,36 @@
 const QString wiimotedevDirectory = ".wiimotedev/";
 const QString profileDirectory = "profiles/";
 
-MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWindow),
+  profileName(""),
+  profileAuthor(""),
+  profileEmail(""),
+  profileVersion(""),
+  profilePath("")
 {
   ui->setupUi(this);
+  ui->nextProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-right.png"));
+  ui->previousProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-left.png"));
+
+  setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
+  setWindowOpacity(0.95);
+
   setWindowTitle("qwiimotedev");
   setWindowIcon(QIcon("/usr/share/qwiimotedev/tray.png"));
 
+  tray = new QSystemTrayIcon(QIcon("/usr/share/qwiimotedev/tray.png"));
+  menu = new QMenu();
+
+  QMenu *subMenu;
+  subMenu = menu->addMenu("Screen");
+  subMenu->addAction("At mouse position")->setCheckable(true);
+  for (register int i = 0; i < QApplication::desktop()->screenCount(); ++i)
+    subMenu->addAction(QString("Screen %1").arg(i + 1))->setCheckable(true);
+
+  connect(menu->addAction("Quit"), SIGNAL(triggered()), this, SLOT(close()));
+
+  tray->setContextMenu(menu);
+  tray->show();
 
   QStringList directoryList;
 
@@ -107,55 +131,40 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWin
   QDir dir(QChar('/'));
 
   for (register qint8 i = 0; i < directoryList.count(); ++i)
-      if (!dir.exists(directoryList.at(i)))
-          dir.mkdir(directoryList.at(i));
+    if (!dir.exists(directoryList.at(i)))
+      dir.mkdir(directoryList.at(i));
 
   dir.setPath(directoryList.at(2));
 
   QFileInfoList list = dir.entryInfoList();
 
-  struct ProfileItem item;
-  for (register qint32 i = 0; i < list.size(); ++i) {
-      QFileInfo fileInfo = list.at(i);
-      if (fileInfo.isFile() && (fileInfo.suffix().toLower() == QString("ini")))
-      {
-          QSettings settings(fileInfo.absoluteFilePath(), QSettings::IniFormat);
-          settings.beginGroup("profile");
-          item.ProfileName = settings.value("name", QString("undefined")).toString();
-          item.ProfileVersion = settings.value("version", QString("undefined")).toString();
-          item.ProfileAuthor = settings.value("author", QString("undefined")).toString();
-          item.ProfileEmail = settings.value("email", QString("undefined")).toString();
-          item.ProfilePath = fileInfo.absoluteFilePath();
-          profileList << item;
-          settings.endGroup();
-      }
+  foreach (const QFileInfo &file, dir.entryInfoList()) {
+    if (!file.isFile() || (file.suffix().toLower() != "ini"))
+      continue;
+
+    QSettings settings(file.absoluteFilePath(), QSettings::IniFormat);
+    Profile profile;
+    profile.name = settings.value("name", "undefined").toString();
+    profile.author = settings.value("author", "undefined").toString();
+    profile.email = settings.value("email", "undefined").toString();
+    profile.version = settings.value("version", "undefined").toString();
+    profile.path = file.absoluteFilePath();
+    uinputProfileList << profile;
   }
 
   windowAtMousePosition = true;
-
-  ui->nextProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-right.png"));
-  ui->previousProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-left.png"));
-
-  setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-  setWindowOpacity(0.95);
-
   moveToCenter();
 
-  index = 1;
-
+  index = 0;
   ui->previousProfile->setEnabled(false);
-  if (profileList.count() == 1)
-      ui->nextProfile->setEnabled(false);
 
-  if (profileList.count() < 1){
-      item.ProfileAuthor = "";
-      item.ProfileEmail = "";
-      item.ProfileVersion = "";
-      item.ProfilePath = "";
-      item.ProfileName = "";
-      showProfile(item);
-  } else
-      showProfile(profileList.at(0));
+  if (!uinputProfileList.count())
+    ui->nextProfile->setEnabled(false);
+
+  if (profileList.count() > 0) {
+    ui->nextProfile->setEnabled(false);
+    showProfile(profileList.at(0));
+  }
 
   connect(ui->nextProfile, SIGNAL(clicked()), this, SLOT(nextProfile()));
   connect(ui->previousProfile, SIGNAL(clicked()), this, SLOT(previousProfile()));
@@ -184,18 +193,6 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWin
 
   connect(&checkMousePos, SIGNAL(timeout()), this, SLOT(slotMousePosition()));
   checkMousePos.start(100);
-
-  menu = new QMenu(this);
-
-  tray = new QSystemTrayIcon(QIcon("/usr/share/qwiimotedev/tray.png"));
-  // tray->setContextMenu(menu);
-
-  QMenu *m;
-  m = menu->addMenu("Screen");
-  m->addAction("At mouse position")->setCheckable(true);
-  for (register int i = 0; i < QApplication::desktop()->screenCount(); ++i)
-      m->addAction(QString("Screen %1").arg(i + 1))->setCheckable(true);
-  tray->show();
 }
 
 void MainWindow::slotMousePosition()

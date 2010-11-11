@@ -464,6 +464,7 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::toggleRumble(bool rumble) {
+  qDebug() << wiimoteId << rumble;
   iface->dbusWiimoteSetRumbleStatus(wiimoteId, rumble);
 }
 

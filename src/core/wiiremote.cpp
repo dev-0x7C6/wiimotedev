@@ -90,12 +90,7 @@ bool WiimoteDevice::setLedStatus(quint8 led) {
 
 bool WiimoteDevice::setRumbleStatus(bool rumble) {
   if (isDisconnected()) return false;
-
-  if (cwiid_set_rumble(device, isRumble = rumble)) {
-    disconnectFromDevice(false);
-    return false;
-  }
-
+  cwiid_set_rumble(device, rumble);
   return true;
 }
 
