@@ -192,7 +192,7 @@ void WiimoteConnection::run()
         break;
 
       case CWIID_MESG_STATUS:
-          NewBatteryLife = life = static_cast< unsigned char>(100.0 * (mesg[i].status_mesg.battery / static_cast< double>(CWIID_BATTERY_MAX)));
+          NewBatteryLife = life = static_cast< unsigned char>(100.0 * (CWIID_BATTERY_MAX/double(mesg[i].status_mesg.battery)));
           if (BatteryLife != NewBatteryLife) {
             BatteryLife = NewBatteryLife;
             emit dbusWiimoteBatteryLife(sequence, BatteryLife);
