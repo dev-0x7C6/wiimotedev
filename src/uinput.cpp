@@ -18,19 +18,10 @@
  **********************************************************************************/
 
 #define DAEMON_NAME "wiimotedev[uinput]"
-#define DAEMON_VERSION "1.3.0"
 #define PID_FILE "/var/run/wiimotedev-uinput.pid"
 #define PID_MODE 0644
 
 #include "config.h"
-//Wiimotedev-daemon arguments
-// --debug -> for additional debug output
-// --force-dbus -> enable dbus protocol
-// --force-tcp -> enable tcp protocol
-// --help -> print help page
-// --no-daemon -> do not run in daemon mode
-// --no-quiet -> do not block stdout messages
-
 #include <fcntl.h>
 #include <signal.h>
 #include <stdlib.h>
@@ -47,34 +38,38 @@
 #include <QSettings>
 #include <QStringList>
 #include <QTextStream>
-#include <QScopedPointer>
 
 const QString scancodeFile("/etc/wiimotedev/scancode.conf");
 
-QScopedPointer <QCoreApplication> application;
 QMap < QString, quint64> devicebuttons;
 QMap < QString, quint32> scancodes;
 
-
 bool additional_debug = false;
+
+QCoreApplication *pointer;
 
 void signal_handler(int sig) {
   switch(sig) {
     case SIGHUP:
     case SIGTERM:
     case SIGINT:
-    case SIGQUIT: application.take()->quit(); break;
+    case SIGQUIT: pointer->quit(); break;
     case SIGPIPE: signal(SIGPIPE, signal_handler); break;
   }
 }
 
 int main(int argc, char *argv[])
 {
-  application.reset(new QCoreApplication(argc, argv));
-  application.take()->setApplicationName(DAEMON_NAME);
-  application.take()->setApplicationVersion(DAEMON_VERSION);
+  QCoreApplication application(argc, argv);
+  pointer = &application;
 
-  if (application.take()->arguments().indexOf("--help") != -1) {
+  application.setApplicationName(DAEMON_NAME);
+  application.setApplicationVersion(
+    QString::number(WIIMOTEDEV_VERSION_MAJOR) + '.' +
+    QString::number(WIIMOTEDEV_VERSION_MINOR) + '.' +
+    QString::number(WIIMOTEDEV_VERSION_PATCH));
+
+  if (application.arguments().indexOf("--help") != -1) {
     qDebug("Wiimotedev-daemon argument list\n");
     qDebug("  --debug\t\tfor additional debug output");
     qDebug("  --help\t\tprint help page");
@@ -85,7 +80,7 @@ int main(int argc, char *argv[])
     exit(EXIT_SUCCESS);
   }
 
-  if (application.take()->arguments().indexOf("--version") != -1) {
+  if (application.arguments().indexOf("--version") != -1) {
     qDebug("Version: %d.%d.%d",
            WIIMOTEDEV_VERSION_MAJOR,
            WIIMOTEDEV_VERSION_MINOR,
@@ -98,9 +93,9 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  additional_debug = (application.take()->arguments().indexOf("--debug") != -1);
+  additional_debug = (application.arguments().indexOf("--debug") != -1);
 
-  if (application.take()->arguments().indexOf("--no-daemon") == -1) {
+  if (application.arguments().indexOf("--no-daemon") == -1) {
     QFileInfo info(PID_FILE);
     if (info.isFile())
       exit(EXIT_FAILURE);
@@ -121,7 +116,7 @@ int main(int argc, char *argv[])
     close(fd);
   }
 
-  if (application.take()->arguments().indexOf("--no-quiet") == -1) {
+  if (application.arguments().indexOf("--no-quiet") == -1) {
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
@@ -221,11 +216,10 @@ int main(int argc, char *argv[])
 
   UInputProfileManager profileManager;
 
-  application.take()->exec();
+  application.exec();
 
   systemlog::information("system service closed");
   systemlog::close();
 
-  application.reset();
   exit(EXIT_SUCCESS);
 }
