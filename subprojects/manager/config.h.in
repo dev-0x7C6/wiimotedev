@@ -17,19 +17,15 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include <QtGui/QApplication>
-#include <QtSingleApplication>
-#include "src/mainwindow.h"
+#ifndef CONFIG_H_IN
+#define CONFIG_H_IN
 
-int main(int argc, char *argv[])
-{
-  QtSingleApplication application(argc, argv);
+#define CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 
-  if (application.isRunning())
-       return 0;
+#cmakedefine USE_SYSTEM_CWIID
 
-  MainWindow window;
-  application.setActivationWindow(&window);
+#define WIIMOTEDEV_VERSION_MAJOR ${WIIMOTEDEV_VERSION_MAJOR}
+#define WIIMOTEDEV_VERSION_MINOR ${WIIMOTEDEV_VERSION_MINOR}
+#define WIIMOTEDEV_VERSION_PATCH ${WIIMOTEDEV_VERSION_PATCH}
 
-  return application.exec();
-}
+#endif // CONFIG_H

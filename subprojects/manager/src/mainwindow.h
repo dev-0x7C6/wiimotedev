@@ -24,6 +24,7 @@
 #include <QSystemTrayIcon>
 #include <QProcess>
 #include <QMenu>
+#include <QPainter>
 #include <QTimer>
 
 #include "headers/consts.h"
@@ -58,6 +59,15 @@ private:
   QSystemTrayIcon *tray;
   QMenu *menu;
   QAction *menuExitAction;
+  QPixmap *logo;
+
+  DBusDeviceEventsInterface *daemon;
+
+  qreal logoOpacity;
+  bool logoGlow;
+
+  QHash < quint32, QString> storeMacAddresses;
+
 // Window
   Ui::MainWindow *ui;
 
@@ -71,48 +81,52 @@ private:
   QList< Profile> uinputProfileList;
 
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+  MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent = 0);
+  ~MainWindow();
 
 public slots:
-    void nextProfile();
-    void previousProfile();
+  void nextProfile();
+  void previousProfile();
 
 protected:
-    void timerEvent(QTimerEvent *event);
+  virtual void paintEvent(QPaintEvent*);
+  void timerEvent(QTimerEvent *event);
 
-private slots:
-    void wiimoteGeneralButtons(quint32 id, quint64 value);
-    void slotMousePosition();
+public slots:
+  void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
+  void dbusWiimoteConnected(quint32 id);
+  void dbusWiimoteDisconnected(quint32 id);
+  void slotMousePosition();
 
-    void executeRequest(QStringList list);
+  void executeRequest(QStringList list);
 
-private:
-    bool windowAtMousePosition;
-
-    QTimer checkMousePos;
-
-    QRect calcGeometry();
+  void setTrayTooltip();
 
 private:
+  bool windowAtMousePosition;
 
-    QRect defaultGeometry;
+  QTimer checkMousePos;
 
-    QMap< QString, quint64> devicebuttons;
-    QList< struct ProfileItem> profileList;
+  QRect calcGeometry();
 
-    bool connectedWithService;
+private:
 
-    quint64 buttons;
-    quint64 lastButtons;
-    quint32 index;
+  QRect defaultGeometry;
 
-    DBusCustomJobsInterface *customJobsInterface;
-    DBusProfileManagerInterface *profileInterface;
-    DBusDeviceEventsInterface *deviceInterface;
+  QMap< QString, quint64> devicebuttons;
+  QList< struct ProfileItem> profileList;
 
-    void showProfile(struct ProfileItem item);
-    void moveToCenter();
+  bool connectedWithService;
+
+  quint64 buttons;
+  quint64 lastButtons;
+  quint32 index;
+
+  DBusCustomJobsInterface *customJobsInterface;
+  DBusProfileManagerInterface *profileInterface;
+
+  void showProfile(struct ProfileItem item);
+  void moveToCenter();
 
 };
 

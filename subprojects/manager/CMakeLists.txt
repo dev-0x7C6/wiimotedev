@@ -15,6 +15,9 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
+configure_file(config.h.in
+               config.h)
+
 add_subdirectory(icons)
 
 set(qwiimotedev_sources
@@ -38,6 +41,13 @@ set(qwiimotedev_headers
 set(qwiimotedev_uis
   ui/mainwindow.ui
 )
+
+set(resources
+  data/data.qrc
+)
+
+
+qt4_add_resources(qwiimotedev_sources ${resources})
 
 qt4_wrap_ui(qwiimotedev_sources ${qwiimotedev_uis})
 qt4_wrap_cpp(qwiimotedev_sources ${qwiimotedev_headers})

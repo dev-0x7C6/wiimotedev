@@ -22,7 +22,10 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QPointer>
+#include <QTextStream>
 #include <QCursor>
+
+#include "config.h"
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -30,12 +33,16 @@
 const QString wiimotedevDirectory = ".wiimotedev/";
 const QString profileDirectory = "profiles/";
 
-MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWindow),
+MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWindow),
   profileName(""),
   profileAuthor(""),
   profileEmail(""),
   profileVersion(""),
-  profilePath("")
+  profilePath(""),
+  logo(new QPixmap(":/logo.png")),
+  daemon(daemon),
+  logoOpacity(0.5),
+  logoGlow(true)
 {
   ui->setupUi(this);
   ui->nextProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-right.png"));
@@ -166,6 +173,9 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWin
     showProfile(profileList.at(0));
   }
 
+  ui->nextProfile->setVisible(false);
+  ui->previousProfile->setVisible(false);
+
   connect(ui->nextProfile, SIGNAL(clicked()), this, SLOT(nextProfile()));
   connect(ui->previousProfile, SIGNAL(clicked()), this, SLOT(previousProfile()));
 
@@ -178,21 +188,91 @@ MainWindow::MainWindow(QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWin
                                                     "/customJobs",
                                                     QDBusConnection::systemBus(), this);
 
-  deviceInterface = new DBusDeviceEventsInterface("org.wiimotedev.daemon",
-                                                  "/deviceEvents",
-                                                  QDBusConnection::systemBus(), this);
 
 
-  connect(deviceInterface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(wiimoteGeneralButtons(quint32,quint64)));
   connect(customJobsInterface, SIGNAL(executeRequest(QStringList)), this, SLOT(executeRequest(QStringList)));
 
   connectedWithService = false;
 
-  startTimer(1000);
-
-
   connect(&checkMousePos, SIGNAL(timeout()), this, SLOT(slotMousePosition()));
   checkMousePos.start(100);
+  startTimer(10);
+  setTrayTooltip();
+
+
+}
+
+
+void MainWindow::setTrayTooltip() {
+  QString hint;
+  QTextStream stream(&hint);
+  stream << "Wiimotedev Manager " <<  WIIMOTEDEV_VERSION_MAJOR << '.' <<  WIIMOTEDEV_VERSION_MINOR
+         << '.' <<  WIIMOTEDEV_VERSION_PATCH << '\n' << '\n';
+  stream << "Services: " << '\n';
+
+  stream << "\torg.wiimotedev.daemon service: ";
+
+  if (daemon->isValid())
+    stream << "connected"; else
+    stream << "waiting for connection";
+  stream << '\n';
+
+  stream << "\torg.wiimotedev.uinput service: ";
+
+  if (profileInterface->isValid())
+    stream << "connected"; else
+    stream << "waiting for connection";
+  stream << '\n' << '\n';
+
+
+  if (daemon->isValid()) {
+    QList <quint32> list = daemon->dbusGetWiimoteList();
+
+    stream << "Devices:" << '\n';
+
+    if (!list.count())
+      stream << "\tno wiiremotes connected";
+
+    qSort(list.begin(), list.end());
+    for (register int i = 0; i < list.count(); ++i) {
+      QString address = daemon->dbusWiimoteGetMacAddress(list.at(i));
+      stream << "\tbluetooth device " << address << " is registered as " << list.at(i) << " wiiremote";
+      storeMacAddresses[list.at(i)] =  address;
+      if (i != (list.count() - 1))
+        stream << '\n';
+    }
+  }
+
+
+
+  tray->setToolTip(hint);
+}
+
+void MainWindow::dbusWiimoteConnected(quint32 id) {
+  setTrayTooltip();
+  QString hint;
+  QTextStream stream(&hint);
+  stream << "Bluetooth device " << daemon->dbusWiimoteGetMacAddress(id) << " is registered as " << id << " wiiremote";
+  tray->showMessage("Connected", hint);
+}
+
+void MainWindow::dbusWiimoteDisconnected(quint32 id) {
+  setTrayTooltip();
+  QString hint;
+  QTextStream stream(&hint);
+  stream << "Bluetooth device " << storeMacAddresses[id] << " is registered as " << id << " wiiremote";
+  tray->showMessage("Disconnected", hint);
+}
+
+
+void MainWindow::paintEvent(QPaintEvent *event) {
+  QPainter p;
+  p.begin(this);
+
+  p.setOpacity(logoOpacity);
+  p.drawPixmap(geometry().width() - logo->width() - 10, geometry().height() - logo->height() - 10,
+               logo->width(), logo->height(), *logo);
+  p.end();
 }
 
 void MainWindow::slotMousePosition()
@@ -253,7 +333,7 @@ void MainWindow::executeRequest(QStringList list)
   QProcess::execute(process, list);
 }
 
-void MainWindow::wiimoteGeneralButtons(quint32 id, quint64 value)
+void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
 {
   buttons = value & WIIMOTE_BUTTON_MASK;
 
@@ -288,6 +368,24 @@ void MainWindow::wiimoteGeneralButtons(quint32 id, quint64 value)
 void MainWindow::timerEvent(QTimerEvent *event)
 {
   Q_UNUSED(event);
+
+  if (logoGlow) {
+    logoOpacity += 0.001;
+
+    if (logoOpacity > 0.5)
+      logoGlow = false;
+  } else
+  {
+    logoOpacity -= 0.001;
+
+    if (logoOpacity < 0.1)
+      logoGlow = true;
+  }
+
+  repaint(QRect(geometry().width() - logo->width() - 10, geometry().height() - logo->height() - 10,
+          logo->width(), logo->height()));
+
+
 
   if (connectedWithService != profileInterface->isValid())
   {
