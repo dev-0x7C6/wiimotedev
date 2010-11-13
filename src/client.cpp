@@ -65,9 +65,18 @@ int main(int argc, char *argv[])
     qDebug("  --help\t\tprint help page");
     qDebug("  --no-daemon\t\tdo not run in background");
     qDebug("  --no-quiet\t\tdo not block stdout messages");
+    qDebug("  --version\t\tprint version");
     qDebug(" ");
     exit(EXIT_SUCCESS);
   }
+
+   if (application.take()->arguments().indexOf("--version") != -1) {
+     qDebug("Version: %d.%d.%d",
+            WIIMOTEDEV_VERSION_MAJOR,
+            WIIMOTEDEV_VERSION_MINOR,
+            WIIMOTEDEV_VERSION_PATCH);
+     exit(EXIT_SUCCESS);
+   }
 
   if (getuid()) {
     qDebug("root privilages needed.");
