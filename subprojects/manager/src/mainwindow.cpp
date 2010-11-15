@@ -196,7 +196,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
 
   connect(&checkMousePos, SIGNAL(timeout()), this, SLOT(slotMousePosition()));
   checkMousePos.start(100);
-  startTimer(10);
+  startTimer(1000);
   setTrayTooltip();
 
 
@@ -211,6 +211,7 @@ void MainWindow::setTrayTooltip() {
   stream << "Services: " << '\n';
 
   stream << "\torg.wiimotedev.daemon service: ";
+
 
   if (daemon->isValid())
     stream << "connected"; else
@@ -242,8 +243,6 @@ void MainWindow::setTrayTooltip() {
         stream << '\n';
     }
   }
-
-
 
   tray->setToolTip(hint);
 }
