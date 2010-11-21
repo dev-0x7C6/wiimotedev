@@ -34,40 +34,40 @@ const quint32 count = 4;
 
 int main(int argc, char *argv[])
 {
-    QApplication app(argc, argv);
-    DBusDeviceEventsInterface *interface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
-        WIIMOTEDEV_DBUS_OBJECT_EVENTS, QDBusConnection::systemBus(), 0);
+  QApplication app(argc, argv);
+  DBusDeviceEventsInterface *interface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
+      WIIMOTEDEV_DBUS_OBJECT_EVENTS, QDBusConnection::systemBus(), 0);
 
-    if(!interface->isValid()) {
-      QMessageBox::critical(0, "Critical", "Unable to connect with wiimotedev-daemon service", QMessageBox::Ok);
-      return EXIT_FAILURE;
-    }
+  if(!interface->isValid()) {
+    QMessageBox::critical(0, "Critical", "Unable to connect with wiimotedev-daemon service", QMessageBox::Ok);
+    return EXIT_FAILURE;
+  }
 
-    QGraphicsScene *scene = new QGraphicsScene();
+  QGraphicsScene *scene = new QGraphicsScene();
 
-    scene->setSceneRect(-500, -500, 1000, 1000);
-    scene->setItemIndexMethod(QGraphicsScene::NoIndex);
+  scene->setSceneRect(-500, -500, 1000, 1000);
+  scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
-    for (register int i = 1; i <= count; ++i) {
-      Car *item = new Car();
-      item->setWiiremote(i);
-      item->color = Qt::white;
-      item->setX(100 * (i - 1));
-      item->setY(100 * (i - 1));
-      scene->addItem(item);
-      QObject::connect(interface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), item, SLOT(dbusWiimoteAcc(quint32,accdata)), Qt::QueuedConnection);
-      QObject::connect(interface, SIGNAL(dbusWiimoteButtons(quint32,quint64)), item, SLOT(dbusWiimoteButtons(quint32,quint64)), Qt::QueuedConnection);
-    }
+  for (register int i = 1; i <= count; ++i) {
+    Car *item = new Car();
+    item->setWiiremote(i);
+    item->color = Qt::white;
+    item->setX(100 * (i - 1));
+    item->setY(100 * (i - 1));
+    scene->addItem(item);
+    QObject::connect(interface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), item, SLOT(dbusWiimoteAcc(quint32,accdata)), Qt::QueuedConnection);
+    QObject::connect(interface, SIGNAL(dbusWiimoteButtons(quint32,quint64)), item, SLOT(dbusWiimoteButtons(quint32,quint64)), Qt::QueuedConnection);
+  }
 
-    QGraphicsView view(scene);
+  QGraphicsView view(scene);
 
-    view.setBackgroundBrush(Qt::darkGray);
-    view.setCacheMode(QGraphicsView::CacheBackground);
-    view.setWindowTitle("Wiimotedev Remote-Car example");
-    view.resize(400, 300);
-    view.show();
+  view.setBackgroundBrush(Qt::darkGray);
+  view.setCacheMode(QGraphicsView::CacheBackground);
+  view.setWindowTitle("Wiimotedev Remote-Car example");
+  view.resize(400, 300);
+  view.show();
 
-    return app.exec();
+  return app.exec();
 
 
 }

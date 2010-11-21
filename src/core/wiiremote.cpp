@@ -22,17 +22,23 @@
 WiimoteDevice::WiimoteDevice(QObject *parent):
   QObject(parent),
   device(0),
+  lock(new QReadWriteLock()),
+  haveWiimoteCallibration(false),
+  haveNunchukCallibration(false),
   isRumble(false),
   switchOnLeds(0),
   reportMode(0)
 {
   memset(&bdaddr, 0, sizeof(bdaddr_t));
+  memset(&wiimote_acc_cal, 0, sizeof(acc_cal));
+  memset(&nunchuk_acc_cal, 0, sizeof(acc_cal));
 }
 
 WiimoteDevice::~WiimoteDevice()
 {
   if (isConnected())
     disconnectFromDevice(true);
+  delete lock;
 }
 
 bool WiimoteDevice::connectToDevice(const quint32 timeout)
@@ -52,7 +58,8 @@ bool WiimoteDevice::connectToDevice(const quint32 timeout)
 }
 
 bool WiimoteDevice::disconnectFromDevice(const bool switchOfReport) {
-  if (isDisconnected()) return false;
+  if (isDisconnected())
+    return false;
 
   if (switchOfReport) cwiid_set_rpt_mode(device, 0);
 
@@ -61,7 +68,8 @@ bool WiimoteDevice::disconnectFromDevice(const bool switchOfReport) {
   isRumble = false;
   switchOnLeds = 0;
   reportMode = 0;
-
+  haveWiimoteCallibration = false;
+  haveNunchukCallibration = false;
   return true;
 }
 
@@ -136,15 +144,46 @@ bdaddr_t WiimoteDevice::getWiimoteAddr() {
 }
 
 bool WiimoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal) {
-  if (isDisconnected()) return false;
+  if (isDisconnected())
+    return false;
 
-  if (cwiid_get_acc_cal(device, ext_type, acc_cal)) {
-  //  disconnectFromDevice(false);
-  //  return false;
+  if (cwiid_get_acc_cal(device, ext_type, acc_cal))
+    return false;
+
+  switch (ext_type) {
+  case CWIID_EXT_NONE:
+    wiimote_acc_cal = *acc_cal;
+    haveWiimoteCallibration = true;
+    break;
+  case CWIID_EXT_NUNCHUK:
+    nunchuk_acc_cal = *acc_cal;
+    haveWiimoteCallibration = true;
+    break;
   }
 
   return true;
 }
+
+struct acc_cal WiimoteDevice::getLastWiimoteCallibration(bool &valid) {
+  lock->lockForRead();
+  valid = haveWiimoteCallibration;
+  struct acc_cal copy;
+  memcpy(&copy, &wiimote_acc_cal, sizeof(acc_cal));
+  lock->unlock();
+
+  return copy;
+}
+
+struct acc_cal WiimoteDevice::getLastNunchukCallibration(bool &valid) {
+  lock->lockForRead();
+  valid = haveNunchukCallibration;
+  struct acc_cal copy;
+  memcpy(&copy, &nunchuk_acc_cal, sizeof(acc_cal));
+  lock->unlock();
+
+  return copy;
+}
+
 
 bool WiimoteDevice::getWiimoteState(struct cwiid_state &state) {
   if (isDisconnected()) return false;

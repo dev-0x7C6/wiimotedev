@@ -266,13 +266,29 @@ QStringList ConnectionManager::dbusGetUnregistredWiimoteList()
   return list;
 }
 
-
 QList < uint> ConnectionManager::dbusGetWiimoteList()
 {
   QList < uint> list;
   foreach (WiimoteConnection *connection, connections)
     if (connection->wiimote->isConnected())
       list << connection->getWiimoteSequence();
+  return list;
+}
+
+QList< uint> ConnectionManager::dbusNunchukGetAccelerometrCalibration(quint32 id)
+{
+  QList < uint> list;
+  foreach (WiimoteConnection *connection, connections)
+    if (connection->wiimote->isConnected()) {
+      list << connection->wiimote->getLastNunchukCallibration()
+    }
+  return list;
+}
+
+QList< uint> ConnectionManager::dbusWiimoteGetAccelerometrCalibration(quint32 id)
+{
+  QList < uint> list;
+  list << 3 << 2 << 1;
   return list;
 }
 

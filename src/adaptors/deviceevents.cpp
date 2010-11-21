@@ -109,31 +109,16 @@ quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetBatteryLife(quint32 id)
   return life;
 }
 
-quint32 DBusDeviceEventsAdaptor::dbusNunchukGetAccelerometrCalibrationOne(quint32 id)
+QList < uint> DBusDeviceEventsAdaptor::dbusNunchukGetAccelerometrCalibration(quint32 id)
 {
-  quint32 value;
-  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationOne", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  QList < uint> value;
+  QMetaObject::invokeMethod(parent(), "dbusNunchukGetAccelerometrCalibration", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, value), Q_ARG(quint32, id));
   return value;
 }
 
-quint32 DBusDeviceEventsAdaptor::dbusNunchukGetAccelerometrCalibrationZero(quint32 id)
-{
-  quint32 value;
-  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationZero", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
-  return value;
-}
-
-quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetAccelerometrCalibrationOne(quint32 id)
-{
-  quint32 value;
-  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationOne", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
-  return value;
-}
-
-quint32 DBusDeviceEventsAdaptor::dbusWiimoteGetAccelerometrCalibrationZero(quint32 id)
-{
-  quint32 value;
-  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationZero", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+QList < uint> DBusDeviceEventsAdaptor::dbusWiimoteGetAccelerometrCalibration(quint32 id) {
+  QList < uint> value;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibration", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, value), Q_ARG(quint32, id));
   return value;
 }
 
@@ -170,31 +155,17 @@ quint32 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAverageLatency(quint32 id)
   return latency;
 }
 
-quint32 DBusDeviceEventsAdaptorWrapper::dbusNunchukGetAccelerometrCalibrationOne(quint32 id)
+QList < uint> DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAccelerometrCalibration(quint32 id)
 {
-  quint32 value;
-  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationOne", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  QList < uint> value;
+  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibration", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, value), Q_ARG(quint32, id));
   return value;
 }
 
-quint32 DBusDeviceEventsAdaptorWrapper::dbusNunchukGetAccelerometrCalibrationZero(quint32 id)
+QList < uint> DBusDeviceEventsAdaptorWrapper::dbusNunchukGetAccelerometrCalibration(quint32 id)
 {
-  quint32 value;
-  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationZero", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
-  return value;
-}
-
-quint32 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAccelerometrCalibrationOne(quint32 id)
-{
-  quint32 value;
-  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationOne", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
-  return value;
-}
-
-quint32 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAccelerometrCalibrationZero(quint32 id)
-{
-  quint32 value;
-  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibrationZero", Qt::DirectConnection, Q_RETURN_ARG(quint32, value), Q_ARG(quint32, id));
+  QList < uint> value;
+  QMetaObject::invokeMethod(parent(), "dbusNunchukGetAccelerometrCalibration", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, value), Q_ARG(quint32, id));
   return value;
 }
 

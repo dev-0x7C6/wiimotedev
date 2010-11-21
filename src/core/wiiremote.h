@@ -26,6 +26,7 @@
 #include "config.h"
 
 #include <QObject>
+#include <QReadWriteLock>
 
 #ifdef USE_STATIC_CWIID
 #include "3rdparty/libcwiid/cwiid.h"
@@ -49,11 +50,16 @@ private:
   bdaddr_t bdaddr;
   cwiid_wiimote_t *device;
   qint32 id;
+  QReadWriteLock *lock;
+  bool haveWiimoteCallibration;
+  bool haveNunchukCallibration;
 
 private:
   bool isRumble;
   quint8 switchOnLeds;
   quint8 reportMode;
+  struct acc_cal wiimote_acc_cal;
+  struct acc_cal nunchuk_acc_cal;
 
 public:
   explicit WiimoteDevice(QObject *parent = 0);
@@ -77,6 +83,8 @@ public:
   bool getWiimoteState(struct cwiid_state &state);
 
   bool getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal);
+  struct acc_cal getLastWiimoteCallibration(bool &valid);
+  struct acc_cal getLastNunchukCallibration(bool &valid);
 
   QString getWiimoteSAddr();
   bdaddr_t getWiimoteAddr();

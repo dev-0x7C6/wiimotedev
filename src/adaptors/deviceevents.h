@@ -47,21 +47,15 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
 "      <arg direction=\"out\" type=\"y\" name=\"status\" />\n"
 "    </method>\n"
-"    <method name=\"dbusNunchukGetAccelerometrCalibrationOne\">\n"
+"    <method name=\"dbusNunchukGetAccelerometrCalibration\">\n"
 "      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
-"      <arg direction=\"out\" type=\"u\" name=\"value\" />\n"
+"      <annotation value=\"QList&lt;uint>\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\" />\n"
+"      <arg direction=\"out\" type=\"au\" name=\"id_list\" />\n"
 "    </method>\n"
-"    <method name=\"dbusNunchukGetAccelerometrCalibrationZero\">\n"
+"    <method name=\"dbusWiimoteGetAccelerometrCalibration\">\n"
 "      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
-"      <arg direction=\"out\" type=\"u\" name=\"value\" />\n"
-"    </method>\n"
-"    <method name=\"dbusWiimoteGetAccelerometrCalibrationOne\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
-"      <arg direction=\"out\" type=\"u\" name=\"value\" />\n"
-"    </method>\n"
-"    <method name=\"dbusWiimoteGetAccelerometrCalibrationZero\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
-"      <arg direction=\"out\" type=\"u\" name=\"value\" />\n"
+"      <annotation value=\"QList&lt;uint>\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\" />\n"
+"      <arg direction=\"out\" type=\"au\" name=\"id_list\" />\n"
 "    </method>\n"
 "    <method name=\"dbusWiimoteGetAverageLatency\">\n"
 "      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
@@ -188,11 +182,9 @@ public Q_SLOTS:
   bool dbusIsNunchukConnected(quint32 id);
   bool dbusIsWiimoteConnected(quint32 id);
 
-  quint32 dbusNunchukGetAccelerometrCalibrationOne(quint32 id);
-  quint32 dbusNunchukGetAccelerometrCalibrationZero(quint32 id);
+  QList< uint> dbusNunchukGetAccelerometrCalibration(quint32 id);
+  QList< uint> dbusWiimoteGetAccelerometrCalibration(quint32 id);
 
-  quint32 dbusWiimoteGetAccelerometrCalibrationOne(quint32 id);
-  quint32 dbusWiimoteGetAccelerometrCalibrationZero(quint32 id);
   quint32 dbusWiimoteGetAverageLatency(quint32 id);
   quint32 dbusWiimoteGetBatteryLife(quint32 id);
   quint32 dbusWiimoteGetCurrentLatency(quint32 id);
@@ -253,11 +245,9 @@ public Q_SLOTS:
   bool dbusIsNunchukConnected(quint32 id);
   bool dbusIsWiimoteConnected(quint32 id);
 
-  quint32 dbusNunchukGetAccelerometrCalibrationOne(quint32 id);
-  quint32 dbusNunchukGetAccelerometrCalibrationZero(quint32 id);
+  QList< uint> dbusNunchukGetAccelerometrCalibration(quint32 id);
+  QList< uint> dbusWiimoteGetAccelerometrCalibration(quint32 id);
 
-  quint32 dbusWiimoteGetAccelerometrCalibrationOne(quint32 id);
-  quint32 dbusWiimoteGetAccelerometrCalibrationZero(quint32 id);
   quint32 dbusWiimoteGetAverageLatency(quint32 id);
   quint32 dbusWiimoteGetBatteryLife(quint32 id);
   quint32 dbusWiimoteGetCurrentLatency(quint32 id);
