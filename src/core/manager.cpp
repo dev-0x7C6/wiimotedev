@@ -280,7 +280,16 @@ QList< uint> ConnectionManager::dbusNunchukGetAccelerometrCalibration(quint32 id
   QList < uint> list;
   foreach (WiimoteConnection *connection, connections)
     if (connection->wiimote->isConnected()) {
-      list << connection->wiimote->getLastNunchukCallibration()
+      bool valid;
+      struct acc_cal data = connection->wiimote->getLastNunchukCallibration(valid);
+
+      if (!valid)
+        return list;
+
+      for (register int i = 0; i < 3; ++i) {
+        list << data.one[i];
+        list << data.zero[i];
+      }
     }
   return list;
 }
@@ -288,7 +297,19 @@ QList< uint> ConnectionManager::dbusNunchukGetAccelerometrCalibration(quint32 id
 QList< uint> ConnectionManager::dbusWiimoteGetAccelerometrCalibration(quint32 id)
 {
   QList < uint> list;
-  list << 3 << 2 << 1;
+  foreach (WiimoteConnection *connection, connections)
+    if (connection->wiimote->isConnected()) {
+      bool valid;
+      struct acc_cal data = connection->wiimote->getLastWiimoteCallibration(valid);
+
+      if (!valid)
+        return list;
+
+      for (register int i = 0; i < 3; ++i) {
+        list << data.one[i];
+        list << data.zero[i];
+      }
+    }
   return list;
 }
 
