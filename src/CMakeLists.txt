@@ -103,6 +103,7 @@ set(uinput_sources
   uinput/keyboard.cpp
   uinput/manager.cpp
   uinput/actions.cpp
+  virtual/mouse.cpp
   uinput.cpp
 )
 
@@ -112,6 +113,7 @@ set(uinput_headers
   adaptors/uinputservice.h
   interfaces/deviceevents.h
   uinput/manager.h
+  virtual/mouse.h
 )
 
 if(BUILD_DAEMON)
