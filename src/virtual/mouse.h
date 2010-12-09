@@ -22,6 +22,7 @@
 
 #include "devices/mouse.h"
 
+/*
 struct MouseConfiguration {
   quint32 device;
   quint8 mode;
@@ -63,5 +64,5 @@ public slots:
   void dbusWiimoteInfrared(quint32, QList< irpoint>);
 
 };
-
+*/
 #endif // UINPUT_MOUSE_H

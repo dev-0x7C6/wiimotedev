@@ -122,12 +122,20 @@ void ClassicGamepadDevice::setButtons(quint64 buttons) {
 }
 
 void ClassicGamepadDevice::setLeftStick(qint32 x, qint32 y) {
+  if (CLASSIC_LEFT_STICK_MAX < x) x = CLASSIC_LEFT_STICK_MAX; else
+  if (CLASSIC_LEFT_STICK_MIN > x) x = CLASSIC_LEFT_STICK_MIN;
+  if (CLASSIC_LEFT_STICK_MAX < y) y = CLASSIC_LEFT_STICK_MAX; else
+  if (CLASSIC_LEFT_STICK_MIN > y) y = CLASSIC_LEFT_STICK_MIN;
   sendEvent(EV_ABS, ABS_X, x);
   sendEvent(EV_ABS, ABS_Y, y);
   sendEventSync();
 }
 
 void ClassicGamepadDevice::setRightStick(qint32 x, qint32 y) {
+  if (CLASSIC_RIGHT_STICK_MAX < x) x = CLASSIC_RIGHT_STICK_MAX; else
+  if (CLASSIC_RIGHT_STICK_MIN > x) x = CLASSIC_RIGHT_STICK_MIN;
+  if (CLASSIC_RIGHT_STICK_MAX < y) y = CLASSIC_RIGHT_STICK_MAX; else
+  if (CLASSIC_RIGHT_STICK_MIN > y) y = CLASSIC_RIGHT_STICK_MIN;
   sendEvent(EV_ABS, ABS_RX, x);
   sendEvent(EV_ABS, ABS_RY, y);
   sendEventSync();

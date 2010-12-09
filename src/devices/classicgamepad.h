@@ -24,8 +24,8 @@
 
 const qint16 CLASSIC_LEFT_STICK_MAX = (0x3F >> 1) + (0x3F >> 2) + 4;
 const qint16 CLASSIC_LEFT_STICK_MIN = (0x3F >> 1) - (0x3F >> 2) - 4;
-const qint16 CLASSIC_RIGHT_STICK_MAX = (0x3F >> 1) + (0x3F >> 2) + 4;
-const qint16 CLASSIC_RIGHT_STICK_MIN = (0x3F >> 1) - (0x3F >> 2) - 4;
+const qint16 CLASSIC_RIGHT_STICK_MAX = (0x1F >> 1) + (0x1F >> 2) + 4;
+const qint16 CLASSIC_RIGHT_STICK_MIN = (0x1F >> 1) - (0x1F >> 2) - 4;
 
 const qint8 CLASSIC_BUTTON_PUSHED = 1;
 const qint8 CLASSIC_BUTTON_RELEASED = 0;

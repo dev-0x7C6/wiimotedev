@@ -19,6 +19,7 @@
 
 #include "virtual/mouse.h"
 
+/*
 VirtualMouse::VirtualMouse():
   mouse(new UInputMouse()),
   currentMode(ModeNotSet)
@@ -56,3 +57,4 @@ void VirtualMouse::switchToFPSMode() {
     currentMode = ModeFPS;
   }
 }
+*/
