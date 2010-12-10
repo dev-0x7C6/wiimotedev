@@ -106,7 +106,6 @@ Q_SIGNALS:
  void dbusWiimoteDisconnected(quint32);
  void dbusWiimoteBatteryLife(quint32, quint8);
  void dbusWiimoteButtons(quint32, quint64);
- void dbusWiimoteStatus(quint32, quint8);
  void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
  void dbusWiimoteAcc(quint32, struct accdata);
  void dbusNunchukPlugged(quint32);

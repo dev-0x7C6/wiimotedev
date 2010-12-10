@@ -81,10 +81,6 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
 "      <arg direction=\"out\" type=\"b\" name=\"rumble\" />\n"
 "    </method>\n"
-"    <method name=\"dbusWiimoteGetStatus\">\n"
-"      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
-"      <arg direction=\"out\" type=\"y\" name=\"status\" />\n"
-"    </method>\n"
 "    <method name=\"dbusWiimoteSetLedStatus\">\n"
 "      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
 "      <arg direction=\"in\" type=\"u\" name=\"status\" />\n"
@@ -191,7 +187,6 @@ public Q_SLOTS:
   QString dbusWiimoteGetMacAddress(quint32 id);
 
   quint8 dbusWiimoteGetLedStatus(quint32 id);
-  quint8 dbusWiimoteGetStatus(quint32 id);
 
   QList < uint> dbusGetWiimoteList();
   QStringList dbusGetUnregistredWiimoteList();
@@ -254,7 +249,6 @@ public Q_SLOTS:
   QString dbusWiimoteGetMacAddress(quint32 id);
 
   quint8 dbusWiimoteGetLedStatus(quint32 id);
-  quint8 dbusWiimoteGetStatus(quint32 id);
 
   QList < uint> dbusGetWiimoteList();
   QStringList dbusGetUnregistredWiimoteList();

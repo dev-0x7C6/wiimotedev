@@ -60,13 +60,6 @@ QStringList DBusDeviceEventsAdaptor::dbusGetUnregistredWiimoteList()
   return list;
 }
 
-quint8 DBusDeviceEventsAdaptor::dbusWiimoteGetStatus(quint32 id)
-{
-  quint8 value;
-  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));
-  return value;
-}
-
 quint8 DBusDeviceEventsAdaptor::dbusWiimoteGetLedStatus(quint32 id)
 {
   quint8 value;
@@ -214,12 +207,6 @@ bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetLedStatus(quint32 id, quint32
   if (value)
     emit dbusWiimoteLedStatusChanged(id, status);
 
-  return value;
-}
-
-quint8 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetStatus(quint32 id){
-  quint8 value;
-  QMetaObject::invokeMethod(parent(), "dbusWiimoteGetStatus", Qt::DirectConnection, Q_RETURN_ARG(quint8, value), Q_ARG(quint32, id));
   return value;
 }
 

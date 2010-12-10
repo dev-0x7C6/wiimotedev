@@ -219,28 +219,20 @@ void WiimoteConnection::run()
                 nunchukDeviceCleanup(nunchukStickdata, nunchukAccdata);
                 ButtonRequest = true;
               }
-
-              status = STATUS_WIIMOTE_CONNECTED;
-              emit dbusWiimoteStatus(sequence, status);
-
               break;
 
             case CWIID_EXT_NUNCHUK:
               wiimote->getDeviceCallibration(CWIID_EXT_NUNCHUK, &nunchuk_calibration);
               if (!nunchukPlugged) {
                 nunchukPlugged = true;
-                status = STATUS_WIIMOTE_CONNECTED | STATUS_WIIMOTE_NUNCHUK_CONNECTED;
                 emit dbusNunchukPlugged(sequence);
-                emit dbusWiimoteStatus(sequence, status);
               }
               break;
 
             case CWIID_EXT_CLASSIC:
               if (!classicPlugged) {
                 classicPlugged = true;
-                status = STATUS_WIIMOTE_CONNECTED | STATUS_WIIMOTE_CLASSIC_CONNECTED;
                 emit dbusClassicControllerPlugged(sequence);
-                emit dbusWiimoteStatus(sequence, status);
               }
               break;
 
