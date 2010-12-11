@@ -40,7 +40,10 @@ void UInputProfileManager::loadGamepadEvents(QSettings &settings) {
 
   settings.beginGroup("classic-gamepads");
 
-  foreach (const QString key, settings.allKeys()) {
+  QStringList list = settings.allKeys();
+  list.sort();
+
+  foreach (const QString key, list) {
     bool valid;
     quint32 id = key.toUInt(&valid);
     if (!valid)
