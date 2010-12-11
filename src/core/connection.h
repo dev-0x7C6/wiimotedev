@@ -84,6 +84,12 @@ public:
   inline quint32 dbusWiimoteGetCurrentLatency(){ return currentLatency; }
   inline quint8 getWiiremoteStatus() { return status; }
 
+  enum IROrder {
+    LeftToRight,
+    RightToLeft
+  };
+
+
 public Q_SLOTS:
   void quitThread();
 
@@ -101,6 +107,7 @@ Q_SIGNALS:
  void unregisterConnection(WiimoteConnection*);
 
 Q_SIGNALS: 
+ void dbusVirtualCursorPosition(quint32, quint32, quint32, quint32, double);
  void dbusWiimoteGeneralButtons(quint32, quint64);
  void dbusWiimoteConnected(quint32);
  void dbusWiimoteDisconnected(quint32);

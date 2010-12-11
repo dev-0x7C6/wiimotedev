@@ -25,6 +25,8 @@
 #include "headers/consts.h"
 #include "syslog/syslog.h"
 
+#define PI M_PI
+
 extern bool additional_debug;
 
 WiimoteConnection::WiimoteConnection(quint32 powersave)
@@ -44,6 +46,10 @@ void WiimoteConnection::run()
       return;
 
   emit dbusWiimoteConnected(sequence);
+
+  QTime timer;
+  qint32 order;
+  double p;
 
   int count;
   union cwiid_mesg *mesg;
@@ -134,6 +140,9 @@ void WiimoteConnection::run()
   double wxvalueabs, wxvalue, nxvalueabs, nxvalue, wxpow, nxpow = 0.0;
   double wyvalueabs, wyvalue, nyvalueabs, nyvalue, wypow, nypow = 0.0;
   double wzvalueabs, wzvalue, nzvalueabs, nzvalue, wzpow, nzpow = 0.0;
+
+
+  double stableroll = 0;
 
   qint32 wcounter, ncounter = 0;
 
@@ -253,10 +262,63 @@ void WiimoteConnection::run()
           wiimoteIrTable << wiimotePoint;
         }
 
+        if (sendIrSignal && wiimoteIrTable.count() == 2) {
+          double tmproll = -stableroll;
+
+          if (tmproll < 0)
+            tmproll = 360 -stableroll;
+
+          if (timer.elapsed() > 40) {
+            if (cos(tmproll*PI/180) > 0) {
+              if (wiimoteIrTable.at(1).x < wiimoteIrTable.at(0).x)
+                order = RightToLeft; else
+                order = LeftToRight;
+            } else {
+              if (wiimoteIrTable.at(1).x > wiimoteIrTable.at(0).x)
+                order = RightToLeft; else
+                order = LeftToRight;
+            }
+          }
+
+          switch(order) {
+          case RightToLeft:
+            p = -(atan2(wiimoteIrTable.at(1).y - wiimoteIrTable.at(0).y, wiimoteIrTable.at(1).x - wiimoteIrTable.at(0).x)-PI);
+            break;
+          case LeftToRight:
+            p = -(atan2(wiimoteIrTable.at(0).y - wiimoteIrTable.at(1).y, wiimoteIrTable.at(0).x - wiimoteIrTable.at(1).x)-PI);
+            break;
+          default:
+            break;
+          }
+
+          register short unsigned int ax = (wiimoteIrTable.at(0).x + wiimoteIrTable.at(1).x) >> 1;
+          register short unsigned int ay = (wiimoteIrTable.at(0).y + wiimoteIrTable.at(1).y) >> 1;
+
+
+    #ifdef __amd64 // 64-bit processors only
+          register double cosp = cos(p);
+          register double sinp = sin(p);
+    #endif
+
+    #ifdef i386  // 32-bit processors
+          register float cosp = cos(p);
+          register float sinp = sin(p);
+    #endif
+
+          emit dbusVirtualCursorPosition(sequence, (1024 - (ax*cosp - ay*sinp + 512*(1-cosp) + 384*sinp)),
+                                         (ax*sinp + ay*cosp - 512*sinp + 384*(1-cosp)),
+                                         sqrt(pow(abs(wiimoteIrTable.at(1).x - wiimoteIrTable.at(0).x), 2) + pow(abs(wiimoteIrTable.at(1).y - wiimoteIrTable.at(0).y), 2)),
+                                         -p*180/PI);
+          timer.start();
+        }
+
         if (sendIrSignal) {
           emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
           sendIrSignal = false;
         }
+
+
+
         break;
 
       case CWIID_MESG_BTN:
@@ -346,6 +408,9 @@ void WiimoteConnection::run()
             WiimoteButtons |= WIIMOTE_BTN_TILT_LEFT;
 
           vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+
+          if (vacc < 1.5)
+            stableroll = acc.roll;
 
           if (vacc > 2.2) WiimoteButtons |= WIIMOTE_BTN_SHIFT_SHAKE;
 
@@ -645,6 +710,7 @@ void WiimoteConnection::run()
   emit dbusWiimoteDisconnected(sequence);
   emit unregisterConnection(this);
 }
+
 
 void WiimoteConnection::batteryStatusRequest()
 {

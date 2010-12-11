@@ -165,6 +165,13 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
 "      <arg direction=\"out\" type=\"y\" name=\"status\" />\n"
 "    </signal>\n"
+"    <signal name=\"dbusVirtualCursorPosition\">\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"      <arg direction=\"out\" type=\"u\" name=\"x\" />\n"
+"      <arg direction=\"out\" type=\"u\" name=\"y\" />\n"
+"      <arg direction=\"out\" type=\"u\" name=\"length\" />\n"
+"      <arg direction=\"out\" type=\"d\" name=\"angle\" />\n"
+"    </signal>\n"
 "    <signal name=\"dbusReportUnregistredWiimote\">\n"
 "      <arg direction=\"out\" type=\"s\" name=\"mac\" />\n"
 "    </signal>\n"
@@ -198,6 +205,8 @@ public Q_SLOTS:
 Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
   void dbusWiimoteGeneralButtons(quint32, quint64);
+
+  void dbusVirtualCursorPosition(quint32, quint32, quint32, quint32, double);
 
   void dbusWiimoteAcc(quint32, struct accdata);
   void dbusWiimoteBatteryLife(quint32, quint8);
@@ -260,6 +269,8 @@ public Q_SLOTS:
 Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
   void dbusWiimoteGeneralButtons(quint32, quint64);
+
+  void dbusVirtualCursorPosition(quint32, quint32, quint32, quint32, double);
 
   void dbusWiimoteAcc(quint32, struct accdata);
   void dbusWiimoteBatteryLife(quint32, quint8);

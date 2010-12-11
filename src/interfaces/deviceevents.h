@@ -53,6 +53,8 @@ public Q_SLOTS:
 Q_SIGNALS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
 
+  void dbusVirtualCursorPosition(quint32, quint32, quint32, quint32, double);
+
   void dbusWiimoteConnected(quint32);
   void dbusWiimoteDisconnected(quint32);
   void dbusWiimoteBatteryLife(quint32, quint8);
