@@ -62,6 +62,12 @@ public:
     RightToLeft
   };
 
+  enum AnalogMode {
+    modeNone,
+    modeClassic,
+    modeNunchuk
+  };
+
 protected:
   virtual void resizeEvent(QResizeEvent*);
 
@@ -70,9 +76,6 @@ private:
   QGraphicsTextItem *analogInfo;
   QGraphicsTextItem *infraredInfo;
   QGraphicsTextItem *statusInfo;
-
-  WiimoteAnalogItem *wiimoteAnalogItem[2];
-
   QGraphicsLineItem *line;
   QGraphicsPixmapItem *cursor;
 
@@ -115,11 +118,16 @@ private:
   double heightMultiplier;
   double dotSizeMultiplier;
 
+  stickdata sticks[2];
+
   QString getReadableWiiremoteSequence(quint64);
+
+  int analogMode;
 
 private slots:
   void updateAccelerometrInfo(int, int, int, double, double,
                               int, int, int, double, double);
+  void updateAnalogInfo();
   void updateButtonInfo(quint64);
   void updateInfraredInfo(QList < struct irpoint>);
   void updateStatusInfo();

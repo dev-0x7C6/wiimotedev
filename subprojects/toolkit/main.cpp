@@ -58,6 +58,8 @@ int main(int argc, char *argv[])
   }
 
   MainWindow window(&interface, id);
+  QObject::connect(&interface, SIGNAL(dbusClassicControllerPlugged(quint32)), &window, SLOT(dbusClassicPlugged(quint32)));
+  QObject::connect(&interface, SIGNAL(dbusClassicControllerUnplugged(quint32)), &window, SLOT(dbusClassicUnplugged(quint32)));
   QObject::connect(&interface, SIGNAL(dbusClassicControllerRStick(quint32,const stickdata&)), &window, SLOT(dbusClassicControllerRStick(quint32,const stickdata&)));
   QObject::connect(&interface, SIGNAL(dbusClassicControllerLStick(quint32,const stickdata&)), &window, SLOT(dbusClassicControllerLStick(quint32,const stickdata&)));
 

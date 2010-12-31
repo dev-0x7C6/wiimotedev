@@ -165,6 +165,8 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
   heightMultiplier = 0.5;
   dotSizeMultiplier = 4;
 
+  memset(&sticks, 0, sizeof(stickdata)*2);
+
   //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
 
   connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredCleanup()));
@@ -189,11 +191,10 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
 
   analogInfo = new QGraphicsTextItem();
   analogInfo->setPos(290, 50);
-  analogInfo->setHtml("<font color=#ffffff>Analog output</font>");
-
 
   infraredInfo = new QGraphicsTextItem();
   infraredInfo->setPos(170, 0);
+
 
   statusInfo = new QGraphicsTextItem();
   statusInfo->setPos(290, 0);
@@ -250,14 +251,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *pa
   scene.addItem(statusInfo);
   scene.addItem(line);
 
-  wiimoteAnalogItem[0] = new WiimoteAnalogItem();
-  wiimoteAnalogItem[1] = new WiimoteAnalogItem();
-  wiimoteAnalogItem[0]->setPos(300, 70);
-  wiimoteAnalogItem[1]->setPos(340, 70);
-  scene.addItem(wiimoteAnalogItem[0]);
-  scene.addItem(wiimoteAnalogItem[1]);
-
-
   connect(ledPixmaps[0], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed1(bool)));
   connect(ledPixmaps[1], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed2(bool)));
   connect(ledPixmaps[2], SIGNAL(ledSwitched(bool)), this, SLOT(toggleLed3(bool)));
@@ -310,21 +303,11 @@ void MainWindow::dbusWiimoteConnected(quint32 id) {
 
   rumbleItem->setEnabled(true);
 
-  wiimoteAnalogItem[0]->setVisible(false);
-  wiimoteAnalogItem[1]->setVisible(false);
-  analogInfo->setVisible(false);
-
-  if (iface->dbusIsClassicConnected(wiimoteId)) {
-    wiimoteAnalogItem[0]->setVisible(true);
-    wiimoteAnalogItem[1]->setVisible(true);
-    analogInfo->setVisible(true);
-  }
-
-  if (iface->dbusIsNunchukConnected(wiimoteId)) {
-    wiimoteAnalogItem[0]->setVisible(true);
-    wiimoteAnalogItem[1]->setVisible(false);
-    analogInfo->setVisible(true);
-  }
+  analogInfo->setVisible(iface->dbusIsClassicConnected(wiimoteId) ||
+                         iface->dbusIsNunchukConnected(wiimoteId));
+  if (iface->dbusIsClassicConnected(wiimoteId)) analogMode = modeClassic; else
+  if (iface->dbusIsNunchukConnected(wiimoteId)) analogMode = modeNunchuk; else
+    analogMode = modeNone;
 
   macAddress = iface->dbusWiimoteGetMacAddress(wiimoteId);
 
@@ -421,13 +404,13 @@ void MainWindow::updateInfraredInfo(QList < irpoint> list)
 void MainWindow::updateAccelerometrInfo(int x1, int y1, int z1, double p1, double r1,
                                         int x2, int y2, int z2, double p2, double r2) {
   accelerometrInfo->setHtml(
-    "<font color=#ffffff>Accelerometer(wiimote)</font><br>" \
+    "<font color=#ffffff>Accelerometer (wiimote)</font><br>" \
     "<font color=#555555> X-Axis: </font><font color=#ffffff>" + QString::number(x1) + "</font><br>" \
     "<font color=#555555> Y-Axis: </font><font color=#ffffff>" + QString::number(y1) + "</font><br>" \
     "<font color=#555555> Z-Axis: </font><font color=#ffffff>" + QString::number(z1) + "</font><br>" \
     "<font color=#555555> Roll: </font><font color=#ffffff>" + QString::number(int(r1)) + "°</font><br>" \
     "<font color=#555555> Pitch: </font><font color=#ffffff>" + QString::number(int(p1)) + "°</font><br><br>" \
-    "<font color=#ffffff>Accelerometer(nunchuk)</font><br>" \
+    "<font color=#ffffff>Accelerometer (nunchuk)</font><br>" \
     "<font color=#555555> X-Axis: </font><font color=#ffffff>" + QString::number(x2) + "</font><br>" \
     "<font color=#555555> Y-Axis: </font><font color=#ffffff>" + QString::number(y2) + "</font><br>" \
     "<font color=#555555> Z-Axis: </font><font color=#ffffff>" + QString::number(z2) + "</font><br>" \
@@ -464,7 +447,6 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::toggleRumble(bool rumble) {
-  qDebug() << wiimoteId << rumble;
   iface->dbusWiimoteSetRumbleStatus(wiimoteId, rumble);
 }
 
@@ -543,10 +525,30 @@ void MainWindow::dbusNunchukStick(quint32 id, const stickdata &stick)
   if (id != wiimoteId)
     return;
 
-  register int x = ((0xFF >> 1) - stick.x) / 4;
-  register int y = ((0xFF >> 1) - stick.y) / 4;
+  sticks[0].x = stick.x;
+  sticks[0].y = stick.y;
 
-  wiimoteAnalogItem[0]->setPointPos(x, y);
+  updateAnalogInfo();
+}
+
+void MainWindow::updateAnalogInfo() {
+  QString html;
+
+  switch (analogMode) {
+  case modeClassic:
+    html = "<font color=#ffffff>Analog data (classic)</font><br>" \
+           "<font color=#555555> Left X-Axis: </font><font color=#ffffff>" + QString::number(sticks[0].x) + "</font><br>" \
+           "<font color=#555555> Left Y-Axis: </font><font color=#ffffff>" + QString::number(sticks[0].y) + "</font><br>" \
+           "<font color=#555555> Right X-Axis: </font><font color=#ffffff>" + QString::number(sticks[1].x) + "</font><br>" \
+           "<font color=#555555> Right Y-Axis: </font><font color=#ffffff>" + QString::number(sticks[1].y) + "</font>";
+    break;
+  case modeNunchuk:
+    html = "<font color=#ffffff>Analog data (nunchuk)</font><br>" \
+           "<font color=#555555> X-Axis: </font><font color=#ffffff>" + QString::number(sticks[0].x) + "</font><br>" \
+           "<font color=#555555> Y-Axis: </font><font color=#ffffff>" + QString::number(sticks[0].y) + "</font>";
+    break;
+  }
+  analogInfo->setHtml(html);
 }
 
 void MainWindow::dbusClassicControllerLStick(quint32 id, const stickdata &stick)
@@ -554,10 +556,10 @@ void MainWindow::dbusClassicControllerLStick(quint32 id, const stickdata &stick)
   if (id != wiimoteId)
     return;
 
-  register int x = (0x3F >> 1) - stick.x;
-  register int y = (0x3F >> 1) - stick.y;
+  sticks[0].x = stick.x;
+  sticks[0].y = stick.y;
 
-  wiimoteAnalogItem[0]->setPointPos(x * 0.5, y * 0.5);
+  updateAnalogInfo();
 }
 
 void MainWindow::dbusClassicControllerRStick(quint32 id, const stickdata &stick)
@@ -565,10 +567,10 @@ void MainWindow::dbusClassicControllerRStick(quint32 id, const stickdata &stick)
   if (id != wiimoteId)
     return;
 
-  register int x = (0x1F >> 1) - stick.x;
-  register int y = (0x1F >> 1) - stick.y;
+  sticks[1].x = stick.x;
+  sticks[1].y = stick.y;
 
-  wiimoteAnalogItem[1]->setPointPos(x, y);
+  updateAnalogInfo();
 }
 
 void MainWindow::infraredCleanup()
@@ -582,33 +584,32 @@ void MainWindow::infraredCleanup()
 
 void MainWindow::dbusNunchukPlugged(quint32 id) {
   Q_UNUSED(id);
-  wiimoteAnalogItem[0]->setVisible(true);
-  wiimoteAnalogItem[1]->setVisible(false);
   analogInfo->setVisible(true);
+  analogMode = modeNunchuk;
+  updateAnalogInfo();
   updateStatusInfo();
 }
 
 void MainWindow::dbusNunchukUnplugged(quint32 id) {
   Q_UNUSED(id);
-  wiimoteAnalogItem[0]->setVisible(false);
-  wiimoteAnalogItem[1]->setVisible(false);
   analogInfo->setVisible(false);
+  analogMode = modeNone;
   updateStatusInfo();
 }
 
 void MainWindow::dbusClassicPlugged(quint32 id) {
   Q_UNUSED(id);
-  wiimoteAnalogItem[0]->setVisible(true);
-  wiimoteAnalogItem[1]->setVisible(true);
   analogInfo->setVisible(true);
+  analogMode = modeClassic;
+  updateAnalogInfo();
   updateStatusInfo();
 }
 
 void MainWindow::dbusClassicUnplugged(quint32 id) {
   Q_UNUSED(id);
-  wiimoteAnalogItem[0]->setVisible(false);
-  wiimoteAnalogItem[1]->setVisible(false);
   analogInfo->setVisible(false);
+  analogMode = modeNone;
+  updateAnalogInfo();
   updateStatusInfo();
 }
 
