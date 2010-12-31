@@ -44,14 +44,71 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   logoOpacity(0.5),
   logoGlow(true)
 {
+  QPalette windowColor;
+  QBrush brush(QColor(255, 255, 255, 255));
+  brush.setStyle(Qt::SolidPattern);
+  windowColor.setBrush(QPalette::Active, QPalette::WindowText, brush);
+  QBrush brush1(QColor(0, 0, 0, 255));
+  brush1.setStyle(Qt::SolidPattern);
+  windowColor.setBrush(QPalette::Active, QPalette::Button, brush1);
+  windowColor.setBrush(QPalette::Active, QPalette::Light, brush1);
+  windowColor.setBrush(QPalette::Active, QPalette::Midlight, brush1);
+  windowColor.setBrush(QPalette::Active, QPalette::Dark, brush1);
+  windowColor.setBrush(QPalette::Active, QPalette::Mid, brush1);
+  windowColor.setBrush(QPalette::Active, QPalette::Text, brush);
+  windowColor.setBrush(QPalette::Active, QPalette::BrightText, brush);
+  windowColor.setBrush(QPalette::Active, QPalette::ButtonText, brush);
+  windowColor.setBrush(QPalette::Active, QPalette::Base, brush1);
+  windowColor.setBrush(QPalette::Active, QPalette::Window, brush1);
+  windowColor.setBrush(QPalette::Active, QPalette::Shadow, brush1);
+  windowColor.setBrush(QPalette::Active, QPalette::AlternateBase, brush1);
+  QBrush brush2(QColor(255, 255, 220, 255));
+  QBrush brush3(QColor(100, 100, 100, 255));
+  brush2.setStyle(Qt::SolidPattern);
+  brush3.setStyle(Qt::SolidPattern);
+  windowColor.setBrush(QPalette::Active, QPalette::ToolTipBase, brush2);
+  windowColor.setBrush(QPalette::Active, QPalette::ToolTipText, brush1);
+  windowColor.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
+  windowColor.setBrush(QPalette::Inactive, QPalette::Button, brush1);
+  windowColor.setBrush(QPalette::Inactive, QPalette::Light, brush1);
+  windowColor.setBrush(QPalette::Inactive, QPalette::Midlight, brush1);
+  windowColor.setBrush(QPalette::Inactive, QPalette::Dark, brush1);
+  windowColor.setBrush(QPalette::Inactive, QPalette::Mid, brush1);
+  windowColor.setBrush(QPalette::Inactive, QPalette::Text, brush);
+  windowColor.setBrush(QPalette::Inactive, QPalette::BrightText, brush);
+  windowColor.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
+  windowColor.setBrush(QPalette::Inactive, QPalette::Base, brush1);
+  windowColor.setBrush(QPalette::Inactive, QPalette::Window, brush1);
+  windowColor.setBrush(QPalette::Inactive, QPalette::Shadow, brush1);
+  windowColor.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush1);
+  windowColor.setBrush(QPalette::Inactive, QPalette::ToolTipBase, brush2);
+  windowColor.setBrush(QPalette::Inactive, QPalette::ToolTipText, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::WindowText, brush3);
+  windowColor.setBrush(QPalette::Disabled, QPalette::Button, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::Light, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::Midlight, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::Dark, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::Mid, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::Text, brush3);
+  windowColor.setBrush(QPalette::Disabled, QPalette::BrightText, brush);
+  windowColor.setBrush(QPalette::Disabled, QPalette::ButtonText, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::Base, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::Window, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::Shadow, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush1);
+  windowColor.setBrush(QPalette::Disabled, QPalette::ToolTipBase, brush2);
+  windowColor.setBrush(QPalette::Disabled, QPalette::ToolTipText, brush1);
+  setPalette(windowColor);
+//
   ui->setupUi(this);
-  ui->nextProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-right.png"));
-  ui->previousProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-left.png"));
+//  ui->nextProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-right.png"));
+//  ui->previousProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-left.png"));
 
-  setWindowFlags(Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint);
-  setWindowOpacity(0.95);
 
-  setWindowTitle("qwiimotedev");
+  setWindowTitle(QString("Wiimotedev Manager %1.%2.%3").arg(
+                   QString::number(WIIMOTEDEV_VERSION_MAJOR),
+                   QString::number(WIIMOTEDEV_VERSION_MINOR),
+                   QString::number(WIIMOTEDEV_VERSION_PATCH)));
   setWindowIcon(QIcon("/usr/share/qwiimotedev/tray.png"));
 
   tray = new QSystemTrayIcon(QIcon("/usr/share/qwiimotedev/tray.png"));
@@ -163,21 +220,21 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   moveToCenter();
 
   index = 0;
-  ui->previousProfile->setEnabled(false);
+//  ui->previousProfile->setEnabled(false);
 
-  if (!uinputProfileList.count())
-    ui->nextProfile->setEnabled(false);
+  if (!uinputProfileList.count());
+//    ui->nextProfile->setEnabled(false);
 
   if (profileList.count() > 0) {
-    ui->nextProfile->setEnabled(false);
-    showProfile(profileList.at(0));
+//    ui->nextProfile->setEnabled(false);
+//    showProfile(profileList.at(0));
   }
 
-  ui->nextProfile->setVisible(false);
-  ui->previousProfile->setVisible(false);
+//  ui->nextProfile->setVisible(false);
+//  ui->previousProfile->setVisible(false);
 
-  connect(ui->nextProfile, SIGNAL(clicked()), this, SLOT(nextProfile()));
-  connect(ui->previousProfile, SIGNAL(clicked()), this, SLOT(previousProfile()));
+//  connect(ui->nextProfile, SIGNAL(clicked()), this, SLOT(nextProfile()));
+//  connect(ui->previousProfile, SIGNAL(clicked()), this, SLOT(previousProfile()));
 
 
   profileInterface = new DBusProfileManagerInterface("org.wiimotedev.uinput",
@@ -199,7 +256,31 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   startTimer(1000);
   setTrayTooltip();
 
+  for (register int i = 0; i < ui->connections->columnCount(); ++i) {
+    QHeaderView *view = ui->connections->header();
+    view->setResizeMode(i, QHeaderView::ResizeToContents);
+    view->setMinimumSectionSize(50);
+  }
 
+
+
+{
+  QList <quint32> list = daemon->dbusGetWiimoteList();
+  foreach (quint32 id, list) {
+    QTreeWidgetItem *item = new QTreeWidgetItem(ui->connections);
+    item->setText(0, QString::number(id));
+    item->setText(1, daemon->dbusWiimoteGetMacAddress(id));
+    QString ext = "none";
+
+    if (daemon->dbusIsNunchukConnected(id))
+      ext = "nunchuk"; else
+    if (daemon->dbusIsClassicConnected(id))
+      ext = "classic";
+
+    item->setText(2, ext);
+    item->setText(3, QString::number(daemon->dbusWiimoteCurrentLatency(id)));
+  }
+}
 }
 
 
@@ -351,9 +432,9 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
 
   if (isVisible())
   {
-      if ((value & WIIMOTE_BTN_B) || (value & WIIMOTE_BTN_PLUS))
-          ui->stackedWidget->setCurrentIndex(1); else
-          ui->stackedWidget->setCurrentIndex(0);
+//      if ((value & WIIMOTE_BTN_B) || (value & WIIMOTE_BTN_PLUS))
+//          ui->stackedWidget->setCurrentIndex(1); else
+//          ui->stackedWidget->setCurrentIndex(0);
       if ((value & WIIMOTE_BTN_LEFT) || (value & WIIMOTE_BTN_UP)) previousProfile();
       if ((value & WIIMOTE_BTN_RIGHT) || (value & WIIMOTE_BTN_DOWN)) nextProfile();
       if ((value & WIIMOTE_BTN_A) || (value & WIIMOTE_BTN_2))
@@ -399,10 +480,10 @@ void MainWindow::nextProfile()
 {
   if (index < profileList.count()) {
       index++;
-      if (index == profileList.count())
-          ui->nextProfile->setEnabled(false);
-      if (index > 1)
-          ui->previousProfile->setEnabled(true);
+//      if (index == profileList.count())
+//          ui->nextProfile->setEnabled(false);
+//      if (index > 1)
+//          ui->previousProfile->setEnabled(true);
       showProfile(profileList.at(index - 1));
   }
 }
@@ -412,22 +493,22 @@ void MainWindow::previousProfile()
   if (index > 1)
   {
       index--;
-      if (index == 1)
-          ui->previousProfile->setEnabled(false);
-      if (index < profileList.count())
-          ui->nextProfile->setEnabled(true);
+//      if (index == 1)
+//          ui->previousProfile->setEnabled(false);
+//      if (index < profileList.count())
+//          ui->nextProfile->setEnabled(true);
       showProfile(profileList.at(index - 1));
   }
 }
 
 void MainWindow::showProfile(struct ProfileItem item)
 {
-  ui->profileName->setText(item.ProfileName);
-  ui->profileVersion->setText(item.ProfileVersion);
-  ui->profilePath->setText(item.ProfilePath);
-  ui->profileEmail->setText(item.ProfileEmail);
-  ui->profileAuthor->setText(item.ProfileAuthor);
-  ui->largeProfileName->setText(item.ProfileName);
+//  ui->profileName->setText(item.ProfileName);
+//  ui->profileVersion->setText(item.ProfileVersion);
+//  ui->profilePath->setText(item.ProfilePath);
+//  ui->profileEmail->setText(item.ProfileEmail);
+//  ui->profileAuthor->setText(item.ProfileAuthor);
+//  ui->largeProfileName->setText(item.ProfileName);
   this->repaint();
   if (geometry() != defaultGeometry) moveToCenter();
 }

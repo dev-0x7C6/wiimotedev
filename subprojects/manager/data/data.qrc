@@ -1,5 +1,8 @@
 <RCC>
     <qresource prefix="/">
         <file>logo.png</file>
+        <file>profiles.png</file>
+        <file>settings.png</file>
+        <file>wiimotedev.png</file>
     </qresource>
 </RCC>

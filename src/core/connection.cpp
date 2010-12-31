@@ -295,7 +295,7 @@ void WiimoteConnection::run()
           register short unsigned int ay = (wiimoteIrTable.at(0).y + wiimoteIrTable.at(1).y) >> 1;
 
 
-    #ifdef __amd64 // 64-bit processors only
+    #ifdef __amd64 // 64-bit processors
           register double cosp = cos(p);
           register double sinp = sin(p);
     #endif
