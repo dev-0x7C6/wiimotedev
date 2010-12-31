@@ -63,6 +63,8 @@ private:
 
   quint8 life;
   quint8 status;
+  bool nunchukPlugged;
+  bool classicPlugged;
 
 public:
   WiimoteConnection(quint32 powersave);
@@ -75,9 +77,9 @@ public:
 
 /* Exported methods ******************************************************/   
 
-  inline bool dbusIsClassicConnected(){ return (status & STATUS_WIIMOTE_CLASSIC_CONNECTED); }
-  inline bool dbusIsNunchukConnected(){ return (status & STATUS_WIIMOTE_NUNCHUK_CONNECTED); }
-  inline bool dbusIsWiimoteConnected(){ return (status & STATUS_WIIMOTE_CONNECTED); }
+  inline bool dbusIsClassicConnected(){ return classicPlugged; }
+  inline bool dbusIsNunchukConnected(){ return nunchukPlugged; }
+  inline bool dbusIsWiimoteConnected(){ return true; }
 
   inline quint32 dbusWiimoteGetAverageLatency(){ return averageLatency; }
   inline quint32 dbusWiimoteGetBatteryLife(){ return life; }

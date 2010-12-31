@@ -31,7 +31,9 @@ extern bool additional_debug;
 
 WiimoteConnection::WiimoteConnection(quint32 powersave)
  :powersavevalue(powersave),
-  wiimote(new WiimoteDevice(this))
+  wiimote(new WiimoteDevice(this)),
+  nunchukPlugged(false),
+  classicPlugged(false)
 {
   setTerminationEnabled(false);
 }
@@ -150,9 +152,6 @@ void WiimoteConnection::run()
   averageLatency = 0;
 
   quitRequest = false;
-  bool nunchukPlugged = false;
-  bool classicPlugged = false;
-
   status = STATUS_WIIMOTE_CONNECTED;
 
   int batteryRequest = 0;
