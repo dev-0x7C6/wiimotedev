@@ -256,31 +256,50 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   startTimer(1000);
   setTrayTooltip();
 
-  for (register int i = 0; i < ui->connections->columnCount(); ++i) {
-    QHeaderView *view = ui->connections->header();
-    view->setResizeMode(i, QHeaderView::ResizeToContents);
-    view->setMinimumSectionSize(50);
+
+
+  //for (register int i = 0; i < ui->connections->columnCount(); ++i) {
+  //  QHeaderView *view = ui->connections->header();
+  //  view->setResizeMode(i, QHeaderView::ResizeToContents);
+  //  view->setMinimumSectionSize(50);
+ // }
+
+
+  deviceVerticalLayout = new QVBoxLayout(ui->scrollAreaWidgetContents);
+  deviceVerticalLayout->setSpacing(6);
+  deviceVerticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+  deviceVerticalLayout->setContentsMargins(4, 4, -1, -1);
+  deviceVerticalLayout->addSpacing(10);
+
+  {
+    QList <quint32> list = daemon->dbusGetWiimoteList();
+    foreach (quint32 id, list) {
+      QString physicalAddress = daemon->dbusWiimoteGetMacAddress(id);
+      QString ident = QString::number(id);
+      QString extensions = "none";
+      if (daemon->dbusIsNunchukConnected(id))
+        extensions = "Nunchuk"; else
+      if (daemon->dbusIsClassicConnected(id))
+        extensions = "Classic Controller";
+
+      DeviceWidget *widget = new DeviceWidget(ui->scrollAreaWidgetContents);
+      widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
+      widget->ui->physicalAddress->setText(QString("Physical address: %1").arg(physicalAddress));
+      widget->ui->id->setText(QString("Ident number: %1").arg(ident));
+      widget->ui->extensions->setText(QString("Extensions: %1").arg(extensions));
+      widget->setGraphicsEffect(new QGraphicsOpacityEffect());
+      static_cast< QGraphicsOpacityEffect*>(widget->graphicsEffect())->setOpacity(1.0);
+
+      deviceVerticalLayout->addWidget(widget, 0, Qt::AlignTop);
+      deviceWidgets[id] = widget;
+    }
   }
 
+ // deviceVerticalLayout->addStretch(0);
 
 
-{
-  QList <quint32> list = daemon->dbusGetWiimoteList();
-  foreach (quint32 id, list) {
-    QTreeWidgetItem *item = new QTreeWidgetItem(ui->connections);
-    item->setText(0, QString::number(id));
-    item->setText(1, daemon->dbusWiimoteGetMacAddress(id));
-    QString ext = "none";
 
-    if (daemon->dbusIsNunchukConnected(id))
-      ext = "nunchuk"; else
-    if (daemon->dbusIsClassicConnected(id))
-      ext = "classic";
 
-    item->setText(2, ext);
-    item->setText(3, QString::number(daemon->dbusWiimoteCurrentLatency(id)));
-  }
-}
 }
 
 
@@ -334,6 +353,36 @@ void MainWindow::dbusWiimoteConnected(quint32 id) {
   QTextStream stream(&hint);
   stream << "Bluetooth device " << daemon->dbusWiimoteGetMacAddress(id) << " is registered as " << id << " wiiremote";
   tray->showMessage("Connected", hint);
+
+  QString physicalAddress = daemon->dbusWiimoteGetMacAddress(id);
+  QString ident = QString::number(id);
+  QString extensions = "none";
+  if (daemon->dbusIsNunchukConnected(id))
+    extensions = "Nunchuk"; else
+  if (daemon->dbusIsClassicConnected(id))
+    extensions = "Classic Controller";
+
+
+  DeviceWidget *widget = new DeviceWidget(ui->scrollAreaWidgetContents);
+  widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
+  widget->ui->physicalAddress->setText(QString("Physical address: %1").arg(physicalAddress));
+  widget->ui->id->setText(QString("Ident number: %1").arg(ident));
+  widget->ui->extensions->setText(QString("Extensions: %1").arg(extensions));
+
+  deviceVerticalLayout->addWidget(widget, 0, Qt::AlignTop);
+  deviceWidgets[id] = widget;
+  QGraphicsOpacityEffect *effect;
+  widget->setGraphicsEffect(effect = new QGraphicsOpacityEffect);
+
+  QPropertyAnimation* animation = new QPropertyAnimation(effect, "opacity");
+  animation->setDuration(1000);
+  animation->setEasingCurve(QEasingCurve::Linear);
+  animation->setStartValue(qreal(0.0));
+  animation->setEndValue(qreal(1.0));
+  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  animation->start();
+
+
 }
 
 void MainWindow::dbusWiimoteDisconnected(quint32 id) {
@@ -342,6 +391,18 @@ void MainWindow::dbusWiimoteDisconnected(quint32 id) {
   QTextStream stream(&hint);
   stream << "Bluetooth device " << storeMacAddresses[id] << " is registered as " << id << " wiiremote";
   tray->showMessage("Disconnected", hint);
+
+  DeviceWidget *widget = deviceWidgets.value(id, 0);
+  if (widget) {
+    QPropertyAnimation* animation = new QPropertyAnimation(widget->graphicsEffect(), "opacity");
+    animation->setDuration(1000);
+    animation->setEasingCurve(QEasingCurve::Linear);
+    animation->setStartValue(qreal(1.0));
+    animation->setEndValue(qreal(0.0));
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+    connect(animation, SIGNAL(finished()), widget, SLOT(deleteLater()));
+    animation->start();
+  }
 }
 
 

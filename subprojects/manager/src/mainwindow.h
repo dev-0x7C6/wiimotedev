@@ -32,6 +32,14 @@
 #include "src/interfaces/deviceevents.h"
 #include "src/interfaces/profilemanager.h"
 
+#include "widgets/devicewidget.h"
+#include "ui_devicewidget.h"
+#include <QVBoxLayout>
+#include <QSpacerItem>
+
+#include <QGraphicsOpacityEffect>
+#include <QPropertyAnimation>
+
 namespace Ui {
     class MainWindow;
 }
@@ -66,6 +74,8 @@ private:
   qreal logoOpacity;
   bool logoGlow;
 
+  QVBoxLayout *deviceVerticalLayout;
+  QHash < quint32, DeviceWidget*> deviceWidgets;
   QHash < quint32, QString> storeMacAddresses;
 
 // Window
