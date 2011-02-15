@@ -93,19 +93,17 @@ void UInputProfileManager::dbusWiimoteInfrared(quint32 id, QList< irpoint> point
       {
 
 
-        double p = (atan2(points.at(0).y-points.at(1).y,
-                          points.at(0).x-points.at(1).x)*180/M_PI)-180.0;
+      double p = (atan2(points.at(0).y-points.at(1).y,
+                        points.at(0).x-points.at(1).x)*180/M_PI)-180.0;
 
-        int ax = (points.at(0).x+points.at(1).x)/2;
-        int ay = (points.at(0).y+points.at(1).y)/2;
+      int ax = (points.at(0).x+points.at(1).x)/2;
+      int ay = (points.at(0).y+points.at(1).y)/2;
 
-        double x1 = (ax * cos(-p*(M_PI/180))) + (ay * -sin(-p*(M_PI/180))) + (512*(1-cos(-p*(M_PI/180))) + 384*sin(-p*(M_PI/180)));
-        double y1 = (ax * sin(-p*(M_PI/180))) + (ay * cos(-p*(M_PI/180))) + (-512*(sin(-p*(M_PI/180))) + 384*(1-cos(-p*(M_PI/180))));
+      double x1 = (ax * cos(-p*(M_PI/180))) + (ay * -sin(-p*(M_PI/180))) + (512*(1-cos(-p*(M_PI/180))) + 384*sin(-p*(M_PI/180)));
+      double y1 = (ax * sin(-p*(M_PI/180))) + (ay * cos(-p*(M_PI/180))) + (-512*(sin(-p*(M_PI/180))) + 384*(1-cos(-p*(M_PI/180))));
 
-        x = int(x1);
-        y = int(y1);
-
-        qDebug("%dx%d", x, y);
+      x = int(x1);
+      y = int(y1);
 
       }
       break;
@@ -153,6 +151,7 @@ void UInputProfileManager::infraredAccSection()
 {
   if (timeout)
     return;
+
 
   virtualEvent->moveMousePointerRel(moveX, moveY);
 }

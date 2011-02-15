@@ -47,7 +47,6 @@ class UInputObject
 {
 protected:
   QString uinputFile;
-  bool alreadyOpened;
 
   int uinput_fd;
   struct uinput_user_dev dev;
@@ -55,6 +54,7 @@ protected:
 public:
   UInputObject();
 
+  bool alreadyOpened;
   virtual void uinput_close(bool force = true);
 
   QString path(){ return uinputFile; }

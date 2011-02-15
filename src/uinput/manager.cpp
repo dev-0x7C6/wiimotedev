@@ -91,6 +91,18 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   QDBusConnection::systemBus().registerService("org.wiimotedev.uinput");
 
   dbusWiimoteGeneralButtons(1, 0);
+
+//  struct MouseConfiguration config;
+//  config.device = 1;
+//  config.deadzoneXRange = 20;
+//  config.deadzoneYRange = 38;
+//  config.latency = 0;
+//  config.mode = 1;
+//  config.source = SourceClassicLStick;
+//  config.sensitivityXMultiplier = 2.6*2;
+//  config.sensitivityYMultiplier = 4;
+//  mouse = new VirtualMouse(dbusDeviceEventsIface);
+//  mouse->setMouseConfiguration(config);
 }
 
 void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons) {

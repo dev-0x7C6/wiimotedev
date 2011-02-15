@@ -66,6 +66,7 @@ bool UInputMouse::uinput_open(QRect absRect, bool abs){
 }
 
 void UInputMouse::moveMousePointerRel(qint32 x, qint32 y) {
+
   if (x) sendEvent(EV_REL, REL_X, x);
   if (y) sendEvent(EV_REL, REL_Y, y);
   sendEventSync();

@@ -37,6 +37,7 @@
 #include "devices/wiimotegamepad.h"
 #include "headers/consts.h"
 #include "interfaces/deviceevents.h"
+#include "virtual/mouse.h"
 
 enum {
   mouseEmulationModeNone = 0,
@@ -140,6 +141,8 @@ private:
   QRect irRange;
 
   bool timeout;
+
+  VirtualMouse *mouse;
 
 //Keyboard section
   const static char *keyboardSection;

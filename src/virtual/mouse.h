@@ -19,50 +19,89 @@
 
 #ifndef VIRTUAL_MOUSE_H
 #define VIRTUAL_MOUSE_H
-
+\
+#include <QTimer>
+#include <QTime>
+#include "devices/eventdevice.h"
 #include "devices/mouse.h"
+#include "interfaces/deviceevents.h"
 
-/*
+enum MouseMode {
+  ModeNotSet,
+  ModeDesktop,
+  ModeFPS
+};
+
+enum SourceDevice {
+  SourceInfrared,
+  SourceNunchukStick,
+  SourceClassicLStick,
+  SourceClassicRStick
+};
+
 struct MouseConfiguration {
   quint32 device;
   quint8 mode;
+  quint8 source;
   double deadzoneXRange;
   double deadzoneYRange;
-  double sensitivityXPower;
-  double sensitivityYPower;
+  double sensitivityXMultiplier;
+  double sensitivityYMultiplier;
   quint16 latency;
 };
+
 
 class VirtualMouse: public QObject
 {
   Q_OBJECT
 private:
   UInputMouse *mouse;
-  quint32 currentMode;
+  struct accdata wiimote_acc;
 
   MouseConfiguration config;
+  quint8 currentMode;
+
+  QTimer interruptClock;
+  QTimer accelerationClock;
+  QTime accelerationTimeout;
+
+  qint16 lastx1;
+  qint16 lastx2;
+  qint16 lasty1;
+  qint16 lasty2;
+
+
+  QTime timer;
+  quint8 order;
+
+  DBusDeviceEventsInterface *events;
+  double lastX;
+  double lastY;
+
+  QPoint accVector;
+
+  QList < QPoint> data;
 
 public:
-  VirtualMouse();
+  VirtualMouse(DBusDeviceEventsInterface *events);
  ~VirtualMouse();
 
-  enum MouseMode {
-    ModeNotSet,
-    ModeDesktop,
-    ModeFPS
-  };
+  void setMouseConfiguration(struct MouseConfiguration &cfg);
 
 private:
-  void setMouseConfiguration(struct MouseConfiguration &cfg);
   void switchToDesktopMode();
   void switchToFPSMode();
 
-public slots:
+private Q_SLOTS:
+  void interrupt();
+  void acceleration();
+
   void dbusClassicControllerLStick(quint32, stickdata);
   void dbusClassicControllerRStick(quint32, stickdata);
   void dbusNunchukStick(quint32, stickdata);
+  void dbusWiimoteAcc(quint32, const accdata &table);
   void dbusWiimoteInfrared(quint32, QList< irpoint>);
 
 };
-*/
+
 #endif // UINPUT_MOUSE_H
