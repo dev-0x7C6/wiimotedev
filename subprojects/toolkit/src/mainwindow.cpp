@@ -27,7 +27,6 @@
 #include <QDebug>
 
 #include <QtOpenGL/QGLWidget>
-
 #define PI M_PI
 
 MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *parent) :

@@ -17,94 +17,60 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef VIRTUAL_MOUSE_H
-#define VIRTUAL_MOUSE_H
+
+#ifndef INFRARED_VIRTUAL_MOUSE_H
+#define INFRARED_VIRTUAL_MOUSE_H
 
 #include "devices/eventdevice.h"
-#include "devices/mouse.h"
-#include "interfaces/deviceevents.h"
+#include "headers/consts.h"
 
 #include <QTimer>
 #include <QTime>
+#include <QCursor>
 
-enum MouseMode {
-  ModeNotSet,
-  ModeDesktop,
-  ModeFPS
-};
-
-enum SourceDevice {
-  SourceInfrared,
-  SourceNunchukStick,
-  SourceClassicLStick,
-  SourceClassicRStick
-};
-
-struct MouseConfiguration {
-  quint32 device;
-  quint8 mode;
-  quint8 source;
-  double deadzoneXRange;
-  double deadzoneYRange;
-  double sensitivityXMultiplier;
-  double sensitivityYMultiplier;
-  quint16 latency;
-};
-
-
-
-
-class VirtualMouse: public QObject
+class InfraredVirtualMouse: public QObject
 {
   Q_OBJECT
-private:
-  UInputMouse *mouse;
+
+  UInputEvent *device;
+  quint32 id;
+
+  QTimer clock;
+  QTime timeout;
+  int accVectorX;
+  int accVectorY;
   struct accdata wiimote_acc;
-
-  MouseConfiguration config;
-  quint8 currentMode;
-
-  QTimer interruptClock;
-  QTimer accelerationClock;
-  QTime accelerationTimeout;
 
   qint16 lastx1;
   qint16 lastx2;
   qint16 lasty1;
   qint16 lasty2;
-
-
-  QTime timer;
-  quint8 order;
-
-  DBusDeviceEventsInterface *events;
+  qint16 order;
   double lastX;
   double lastY;
 
-  QPoint accVector;
+  int accelerationTimeout;
+  int deadzoneXRange;
+  int deadzoneYRange;
+  double sensitivityXPower;
+  double sensitivityYPower;
+  double sensitivityXMultiplier;
+  double sensitivityYMultiplier;
 
-  QList < QPoint> data;
+  bool useAcceleration;
 
 public:
-  VirtualMouse(DBusDeviceEventsInterface *events);
- ~VirtualMouse();
+  InfraredVirtualMouse(UInputEvent *device, quint32 id);
+ ~InfraredVirtualMouse();
 
-  void setMouseConfiguration(struct MouseConfiguration &cfg);
 
-private:
-  void switchToDesktopMode();
-  void switchToFPSMode();
+public Q_SLOTS:
+  void dbusWiimoteInfrared(quint32, QList< irpoint>);
+  void dbusWiimoteAcc(quint32, const accdata&);
 
 private Q_SLOTS:
-  void interrupt();
-  void acceleration();
+  void accel();
 
-  void dbusClassicControllerLStick(quint32, stickdata);
-  void dbusClassicControllerRStick(quint32, stickdata);
-  void dbusNunchukStick(quint32, stickdata);
-  void dbusWiimoteAcc(quint32, const accdata &table);
-  void dbusWiimoteInfrared(quint32, QList< irpoint>);
 
 };
-
-#endif // UINPUT_MOUSE_H
+#endif // INFRARED_VIRTUAL_MOUSE_H

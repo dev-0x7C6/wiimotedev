@@ -38,6 +38,8 @@
 #include "headers/consts.h"
 #include "interfaces/deviceevents.h"
 #include "virtual/mouse.h"
+#include "virtual/mouse/infrared.h"
+
 
 enum {
   mouseEmulationModeNone = 0,
@@ -142,7 +144,7 @@ private:
 
   bool timeout;
 
-  VirtualMouse *mouse;
+  InfraredVirtualMouse *mouse;
 
 //Keyboard section
   const static char *keyboardSection;

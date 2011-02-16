@@ -104,6 +104,7 @@ set(uinput_sources
   uinput/manager.cpp
   uinput/actions.cpp
   virtual/mouse.cpp
+  virtual/mouse/infrared.cpp
   uinput.cpp
 )
 
@@ -114,6 +115,7 @@ set(uinput_headers
   interfaces/deviceevents.h
   uinput/manager.h
   virtual/mouse.h
+  virtual/mouse/infrared.h
 )
 
 if(BUILD_DAEMON)
@@ -148,6 +150,7 @@ if(BUILD_UINPUT)
 
   add_executable(wiimotedev-uinput ${uinput_sources})
   target_link_libraries(wiimotedev-uinput
+    ${QT_QTGUI_LIBRARY}
     ${QT_QTCORE_LIBRARY}
     ${QT_QTDBUS_LIBRARY}
   )
