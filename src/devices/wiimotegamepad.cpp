@@ -105,7 +105,7 @@ void WiimoteGamepadDevice::setWiimoteButtons(quint64 buttons) {
   if (buttons & WIIMOTE_BTN_UP) y = WIIMOTE_DPAD_MIN;
 
   sendEvent(EV_ABS, ABS_RX, x);
-  sendEvent(EV_ABS, ABS_RX, y);
+  sendEvent(EV_ABS, ABS_RY, y);
 
   sendEvent(EV_KEY, BTN_A, (buttons & WIIMOTE_BTN_A) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_B, (buttons & WIIMOTE_BTN_B) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
