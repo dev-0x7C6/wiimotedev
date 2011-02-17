@@ -75,10 +75,10 @@ bool WiimoteGamepadDevice::uinput_open() {
   linux_register_absbit(ABS_HAT1X);
   linux_register_absbit(ABS_HAT1Y);
 
-  linux_abs_set_range(ABS_X, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
-  linux_abs_set_range(ABS_Y, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
-  linux_abs_set_range(ABS_RX, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
-  linux_abs_set_range(ABS_RY, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
+  linux_abs_set_range(ABS_RX, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
+  linux_abs_set_range(ABS_RY, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
+  linux_abs_set_range(ABS_X, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
+  linux_abs_set_range(ABS_Y, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
 
   linux_abs_set_range(ABS_HAT0X, WIIMOTE_PITCH_MAX, WIIMOTE_PITCH_MIN);
   linux_abs_set_range(ABS_HAT0Y, WIIMOTE_ROLL_MAX, WIIMOTE_ROLL_MIN);
@@ -104,8 +104,8 @@ void WiimoteGamepadDevice::setWiimoteButtons(quint64 buttons) {
   if (buttons & WIIMOTE_BTN_DOWN) y = WIIMOTE_DPAD_MAX; else
   if (buttons & WIIMOTE_BTN_UP) y = WIIMOTE_DPAD_MIN;
 
-  sendEvent(EV_ABS, ABS_RX, x);
-  sendEvent(EV_ABS, ABS_RY, y);
+  sendEvent(EV_ABS, ABS_X, x);
+  sendEvent(EV_ABS, ABS_Y, y);
 
   sendEvent(EV_KEY, BTN_A, (buttons & WIIMOTE_BTN_A) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_B, (buttons & WIIMOTE_BTN_B) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
@@ -137,8 +137,8 @@ void WiimoteGamepadDevice::setNunchukButtons(quint64 buttons) {
 }
 
 void WiimoteGamepadDevice::setNunchukStick(qint32 x, qint32 y) {
-  sendEvent(EV_ABS, ABS_X, x);
-  sendEvent(EV_ABS, ABS_Y, y);
+  sendEvent(EV_ABS, ABS_RX, x);
+  sendEvent(EV_ABS, ABS_RY, y);
   sendEventSync();
 }
 
