@@ -96,6 +96,17 @@ bool WiimoteGamepadDevice::uinput_open() {
 }
 
 void WiimoteGamepadDevice::setWiimoteButtons(quint64 buttons) {
+  register qint8 x = 0;
+  register qint8 y = 0;
+
+  if (buttons & WIIMOTE_BTN_RIGHT) x = WIIMOTE_DPAD_MAX; else
+  if (buttons & WIIMOTE_BTN_LEFT) x = WIIMOTE_DPAD_MIN;
+  if (buttons & WIIMOTE_BTN_DOWN) y = WIIMOTE_DPAD_MAX; else
+  if (buttons & WIIMOTE_BTN_UP) y = WIIMOTE_DPAD_MIN;
+
+  sendEvent(EV_ABS, ABS_RX, x);
+  sendEvent(EV_ABS, ABS_RX, y);
+
   sendEvent(EV_KEY, BTN_A, (buttons & WIIMOTE_BTN_A) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_B, (buttons & WIIMOTE_BTN_B) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_X, (buttons & WIIMOTE_BTN_1) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
@@ -107,17 +118,6 @@ void WiimoteGamepadDevice::setWiimoteButtons(quint64 buttons) {
   sendEvent(EV_KEY, BTN_1, (buttons & WIIMOTE_BTN_LEFT) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_2, (buttons & WIIMOTE_BTN_DOWN) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_3, (buttons & WIIMOTE_BTN_UP) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
-
-  register qint8 x = 0;
-  register qint8 y = 0;
-
-  if (buttons & WIIMOTE_BTN_RIGHT) x = WIIMOTE_DPAD_MAX; else
-  if (buttons & WIIMOTE_BTN_LEFT) x = WIIMOTE_DPAD_MIN;
-  if (buttons & WIIMOTE_BTN_DOWN) y = WIIMOTE_DPAD_MAX; else
-  if (buttons & WIIMOTE_BTN_UP) y = WIIMOTE_DPAD_MIN;
-
-  sendEvent(EV_ABS, ABS_RX, x);
-  sendEvent(EV_ABS, ABS_RX, y);
   sendEventSync();
 }
 
