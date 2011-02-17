@@ -45,19 +45,27 @@ class InfraredVirtualMouse: public QObject
   qint16 lastx2;
   qint16 lasty1;
   qint16 lasty2;
+  qint16 lastsx1;
   qint16 order;
   double lastX;
   double lastY;
 
+  int lastPointCount;
+
   int accelerationTimeout;
+  int aimHelperXRange;
+  int aimHelperYRange;
   int deadzoneXRange;
   int deadzoneYRange;
+  double aimHelperSensitivityXMultiplier;
+  double aimHelperSensitivityYMultiplier;
   double sensitivityXPower;
   double sensitivityYPower;
   double sensitivityXMultiplier;
   double sensitivityYMultiplier;
 
   bool useAcceleration;
+  bool useAimHelper;
 
 public:
   InfraredVirtualMouse(UInputEvent *device, quint32 id);

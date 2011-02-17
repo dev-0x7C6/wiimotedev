@@ -24,19 +24,28 @@
 InfraredVirtualMouse::InfraredVirtualMouse(UInputEvent *device, quint32 id) :
   device(device),
   id(id),
+  lastPointCount(0),
   accelerationTimeout(2000),
-  deadzoneXRange(65),
-  deadzoneYRange(60),
-  sensitivityXPower(1.5),
-  sensitivityYPower(1.2),
+  deadzoneXRange(100),
+  deadzoneYRange(50),
+  aimHelperXRange(20),
+  aimHelperYRange(15),
+  aimHelperSensitivityXMultiplier(0.2),
+  aimHelperSensitivityYMultiplier(0.2),
+  sensitivityXPower(1.3),
+  sensitivityYPower(1.1),
   sensitivityXMultiplier(5),
-  sensitivityYMultiplier(5),
-  useAcceleration(true)
+  sensitivityYMultiplier(4),
+  useAcceleration(true),
+  useAimHelper(true)
 {
   connect(&clock, SIGNAL(timeout()), this, SLOT(accel()));
-  clock.setInterval(5);
+  clock.setInterval(10);
   if (useAcceleration)
     clock.start();
+
+  lastsx1 = -1;
+
 }
 
 InfraredVirtualMouse::~InfraredVirtualMouse()
@@ -60,60 +69,45 @@ void InfraredVirtualMouse::dbusWiimoteInfrared(quint32 _id, QList< irpoint> poin
   qint16 x2;
   qint16 y1;
   qint16 y2;
+  qint16 sx1;
+  qint16 sy1;
 
-  if (points.count() < 2)
+  if (points.count() > 2)
     return;
-
-//  if (points.count() == 1) {
-//    if (sqrt(pow(lastx1 - points.at(0).x, 2.0) + pow(lasty1 - points.at(0).y, 2.0)) <
-//        sqrt(pow(lastx2 - points.at(0).x, 2.0) + pow(lasty2 - points.at(0).y, 2.0))) {
-//      x1 = points.at(0).x;
-//      y1 = points.at(0).y;
-//      x2 = lastx2 + (x1 - lastx1);
-//      y2 = lasty2;
-//    } else {
-//      x2 = points.at(0).x;
-//      y2 = points.at(0).y;
-//      x1 = lastx1 + (x2 - lastx2);
-//      y1 = lasty1;
-//    }
-//  }
 
   if (points.count() == 2) {
     x1 = points.at(0).x;
     x2 = points.at(1).x;
     y1 = points.at(0).y;
     y2 = points.at(1).y;
-  } else
-  if (points.count() > 2)
-  {
-    double lenght = 1000;
-    for (int i = 0; i < points.count(); ++i)
-      for (int j = 0; j < points.count(); ++j) {
-        double nlenght = sqrt(pow(points.at(j).x - points.at(i).x, 2.0) + pow(points.at(j).y - points.at(i).y, 2.0));
+    lastsx1 = -1;
+    lastx1 = x1;
+    lastx2 = x2;
+    lasty1 = y1;
+    lasty2 = y2;
+  } else {
+    sx1 = points.at(0).x;
 
-        if (nlenght < 0)
-          nlenght = nlenght * (-1);
+    if (lastsx1 == -1)
+      lastsx1 = sx1;
 
-        if (lenght > nlenght) {
-          x1 = points.at(i).x;
-          x2 = points.at(j).x;
-          y1 = points.at(i).y;
-          y2 = points.at(j).y;
-          lenght = nlenght;
-        }
-      }
+    x1 = lastx1 + (sx1 - lastsx1);
+    x2 = lastx2 + (sx1 - lastsx1);
+    y1 = lasty1;
+    y2 = lasty2;
   }
 
-  lastx1 = x1;
-  lastx2 = x2;
-  lasty1 = y1;
-  lasty2 = y2;
+
+
+  qDebug() << "count: " << points.count() << "   "<<  x1 << "x" << y1 << "  " << x2 << "x" << y2;
 
   double roll = -wiimote_acc.roll;
 
   if (roll < 0)
-    roll = 360 - wiimote_acc.roll;
+
+  roll = 360 - wiimote_acc.roll;
+
+
 
   if (timeout.elapsed() > 40) {
     if (cos(roll*M_PI/180) > 0) {
@@ -152,29 +146,52 @@ void InfraredVirtualMouse::dbusWiimoteInfrared(quint32 _id, QList< irpoint> poin
   double y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
   double ax = 512.0 - x;
   double ay = 384.0 - y;
+
   if (lastX == -1.0) lastX = x;
   if (lastY == -1.0) lastY = y;
 
-  device->moveMousePointerRel(x - lastX, y - lastY);
+  if (useAimHelper) {
+    int helperX = (x - lastX) * aimHelperSensitivityXMultiplier;
+    int helperY = (y - lastY) * aimHelperSensitivityYMultiplier;
+    if (ax < -aimHelperXRange || ax > aimHelperXRange)
+      helperX = x - lastX;
+    if (ay < -aimHelperYRange || ay > aimHelperYRange)
+      helperY = y - lastY;
+    device->moveMousePointerRel(helperX, helperY);
+  } else
+    device->moveMousePointerRel(x - lastX, y - lastY);
 
   lastX = x;
   lastY = y;
+  lastPointCount = points.count();
 
-  if (ax > deadzoneXRange || ax < -deadzoneXRange ||
-      ay > deadzoneYRange || ay < -deadzoneYRange) {
-    accVectorX = pow(abs((ax / (512.0 -  deadzoneXRange)) * -sensitivityXMultiplier), sensitivityXPower);
-    accVectorY = pow(abs((ay / (384.0 -  deadzoneYRange)) * -sensitivityYMultiplier), sensitivityYPower);
-    if (accVectorX >= 0.0 && ax > 0.0) accVectorX = accVectorX * -1;
-    if (accVectorY >= 0.0 && ay > 0.0) accVectorY = accVectorY * -1;
+  if (useAcceleration) {
+    if (ax < -deadzoneXRange || ax > deadzoneXRange) {
+      if (ax < -deadzoneXRange) ax += deadzoneXRange;
+      if (ax > deadzoneXRange) ax -= deadzoneXRange;
+      bool invert = (ax > 0.0);
+      if (!invert) ax *= -1;
+      accVectorX = pow((ax / (512.0 -  deadzoneXRange) * sensitivityXMultiplier), sensitivityXPower);
+      if (accVectorX >= 0.0 && invert) accVectorX = accVectorX * -1;
+    } else
+      accVectorX = 0;
+
+    if (ay < -deadzoneYRange || ay > deadzoneYRange) {
+      if (ay < -deadzoneYRange) ay += deadzoneYRange;
+      if (ay > deadzoneYRange) ay -= deadzoneYRange;
+      bool invert = (ay > 0.0);
+      if (!invert) ay *= -1;
+      accVectorY = pow((ay / (384.0 -  deadzoneYRange) * sensitivityYMultiplier), sensitivityYPower);
+      if (accVectorY >= 0.0 && invert) accVectorY = accVectorY * -1;
+    } else
+      accVectorY = 0;
+    device->moveMousePointerRel(accVectorX, accVectorY);
   }
-
-  qDebug() << x << "x" << y;
-
 }
 
 void InfraredVirtualMouse::accel()
 {
   device->moveMousePointerRel(accVectorX, accVectorY);
-}//
+}
 
 
