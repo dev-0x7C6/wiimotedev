@@ -41,6 +41,11 @@ class InfraredVirtualMouse: public QObject
   int accVectorY;
   struct accdata wiimote_acc;
 
+  quint8 firstPoint;
+  quint8 secondPoint;
+
+  QList< irpoint> lastPoints;
+
   qint16 lastx1;
   qint16 lastx2;
   qint16 lasty1;

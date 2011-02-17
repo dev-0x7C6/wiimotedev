@@ -92,9 +92,9 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
 
   dbusWiimoteGeneralButtons(1, 0);
 
- // mouse = new InfraredVirtualMouse(virtualEvent, 1);
- // connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), mouse , SLOT(dbusWiimoteAcc(quint32,accdata)));
- // connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteInfrared(quint32,QList<irpoint>)), mouse , SLOT(dbusWiimoteInfrared(quint32,QList<irpoint>)));
+  //mouse = new InfraredVirtualMouse(virtualEvent, 1);
+  //connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), mouse , SLOT(dbusWiimoteAcc(quint32,accdata)));
+  //connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteInfrared(quint32,QList<irpoint>)), mouse , SLOT(dbusWiimoteInfrared(quint32,QList<irpoint>)));
   //loadProfile("/fear.ini");
 }
 
