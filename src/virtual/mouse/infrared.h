@@ -35,10 +35,14 @@ class InfraredVirtualMouse: public QObject
   UInputEvent *device;
   quint32 id;
 
-  QTimer clock;
+  QTimer axisClockX;
+  QTimer axisClockY;
+  QTimer accelerationClockTimeout;
   QTime timeout;
-  int accVectorX;
-  int accVectorY;
+  double accVectorX;
+  double accVectorY;
+  double accVectorXAccumulation;
+  double accVectorYAccumulation;
   struct accdata wiimote_acc;
 
   quint8 firstPoint;
@@ -51,13 +55,14 @@ class InfraredVirtualMouse: public QObject
   qint16 lasty1;
   qint16 lasty2;
   qint16 lastsx1;
+  qint16 lastsy1;
   qint16 order;
   double lastX;
   double lastY;
 
   int lastPointCount;
 
-  int accelerationTimeout;
+  int accelerationTimeoutValue;
   int aimHelperXRange;
   int aimHelperYRange;
   int deadzoneXRange;
@@ -69,20 +74,31 @@ class InfraredVirtualMouse: public QObject
   double sensitivityXMultiplier;
   double sensitivityYMultiplier;
 
+  int calibrationState;
+
   bool useAcceleration;
   bool useAimHelper;
+
+  bool accelerationTimeout;
 
 public:
   InfraredVirtualMouse(UInputEvent *device, quint32 id);
  ~InfraredVirtualMouse();
 
+  enum Calibration {
+    CalibrationNeeded,
+    CalibrationNormal,
+    CalibrationInverted
+  };
 
 public Q_SLOTS:
   void dbusWiimoteInfrared(quint32, QList< irpoint>);
   void dbusWiimoteAcc(quint32, const accdata&);
 
 private Q_SLOTS:
-  void accel();
+  void axisAccelerationX();
+  void axisAccelerationY();
+  void axisAccelerationTimeout();
 
 
 };
