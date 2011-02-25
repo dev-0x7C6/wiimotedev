@@ -37,7 +37,6 @@
 #include "devices/wiimotegamepad.h"
 #include "headers/consts.h"
 #include "interfaces/deviceevents.h"
-#include "virtual/mouse.h"
 #include "virtual/mouse/infrared.h"
 
 

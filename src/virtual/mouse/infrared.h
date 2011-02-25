@@ -31,38 +31,36 @@
 class InfraredVirtualMouse: public QObject
 {
   Q_OBJECT
-
+//general
   UInputEvent *device;
   quint32 id;
 
+// timers
   QTimer axisClockX;
   QTimer axisClockY;
   QTimer accelerationClockTimeout;
-  QTime timeout;
-  double accVectorX;
-  double accVectorY;
-  double accVectorXAccumulation;
-  double accVectorYAccumulation;
-  struct accdata wiimote_acc;
 
-  quint8 firstPoint;
-  quint8 secondPoint;
-
-  QList< irpoint> lastPoints;
-
+//variables
+  int calibrationState;
   qint16 lastx1;
   qint16 lastx2;
   qint16 lasty1;
   qint16 lasty2;
   qint16 lastsx1;
   qint16 lastsy1;
-  qint16 order;
+  int lastPointCount;
   double lastX;
   double lastY;
+  double accVectorX;
+  double accVectorY;
+  double accVectorXAccumulation;
+  double accVectorYAccumulation;
+  struct accdata wiimote_acc;
 
-  int lastPointCount;
+  QList< irpoint> lastPoints;
 
-  int accelerationTimeoutValue;
+//settings
+  int accelerationTimeout;
   int aimHelperXRange;
   int aimHelperYRange;
   int deadzoneXRange;
@@ -74,12 +72,11 @@ class InfraredVirtualMouse: public QObject
   double sensitivityXMultiplier;
   double sensitivityYMultiplier;
 
-  int calibrationState;
 
+  bool interfaceEnabled;
   bool useAcceleration;
   bool useAimHelper;
-
-  bool accelerationTimeout;
+  bool useAccelerationTimeout;
 
 public:
   InfraredVirtualMouse(UInputEvent *device, quint32 id);
@@ -90,6 +87,23 @@ public:
     CalibrationNormal,
     CalibrationInverted
   };
+
+  void setDeviceId(int);
+  void setInterfaceEnabled(bool);
+  void setAccelerationTimeoutValue(int);
+  void setAimHelperXRange(int);
+  void setAimHelperYRange(int);
+  void setDeadzoneXRange(int);
+  void setDeadzoneYRange(int);
+  void setAimHelperSensitivityXMultiplier(double);
+  void setAimHelperSensitivityYMultiplier(double);
+  void setAccelerationSensitivityXPower(double);
+  void setAccelerationSensitivityYPower(double);
+  void setAccelerationSensitivityXMultiplier(double);
+  void setAccelerationSensitivityYMultiplier(double);
+  void setAccelerationFeatureEnabled(bool);
+  void setAimHelperFeatureEnabled(bool);
+  void setAccelerationTimeoutFeatureEnabled(bool);
 
 public Q_SLOTS:
   void dbusWiimoteInfrared(quint32, QList< irpoint>);
