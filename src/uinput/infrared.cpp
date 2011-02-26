@@ -22,8 +22,8 @@
 void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
   unloadInfraredEvents();
 
-  foreach (const QString &key, settings.childKeys()) {
-    if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() != "infrared") {
+  foreach (const QString &key, settings.childGroups()) {
+    if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "infrared") {
       settings.beginGroup(key);
       InfraredVirtualMouse *mouse = new InfraredVirtualMouse(virtualEvent, 0);
       mouse->setDeviceId(settings.value("assignWiimote", quint32(1)).toLongLong());
