@@ -42,6 +42,8 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
       mouse->setDeadzoneXRange(settings.value("deadzoneXRange", int(30)).toULongLong());
       mouse->setDeadzoneYRange(settings.value("deadzoneYRange", int(20)).toULongLong());
       mouse->setInterfaceEnabled(true);
+      connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteInfrared(quint32,QList<irpoint>)), mouse, SLOT(dbusWiimoteInfrared(quint32,QList<irpoint>)));
+      connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), mouse, SLOT(dbusWiimoteAcc(quint32,accdata)));
       settings.endGroup();
       virtualMouses << mouse;
     }

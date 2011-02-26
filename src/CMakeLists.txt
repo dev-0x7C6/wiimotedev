@@ -104,6 +104,7 @@ set(uinput_sources
   uinput/manager.cpp
   uinput/actions.cpp
   virtual/mouse/infrared.cpp
+  virtual/event/keyboard.cpp
   uinput.cpp
 )
 
@@ -114,6 +115,7 @@ set(uinput_headers
   interfaces/deviceevents.h
   uinput/manager.h
   virtual/mouse/infrared.h
+  virtual/event/keyboard.h
 )
 
 if(BUILD_DAEMON)
