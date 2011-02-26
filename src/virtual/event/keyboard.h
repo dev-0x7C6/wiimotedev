@@ -22,11 +22,18 @@
 
 #include "devices/eventdevice.h"
 #include "headers/consts.h"
+#include "classes/hashcompare.h"
 
 #include <QTimer>
 #include <QTime>
 #include <QCursor>
 #include <QMap>
+
+struct KeyboardAction {
+  QHash< quint32, quint64> event;
+  QList< quint32> keys;
+  bool pushed;
+};
 
 class EventVirtualKeyboard: public QObject
 {
@@ -34,15 +41,28 @@ class EventVirtualKeyboard: public QObject
 //general
   UInputEvent *device;
   quint32 id;
+  quint32 compareType;
 
-  QMap <quint32, quint64> buttons;
+  QHash <quint32, quint64> buttons;
+
+  QList < KeyboardAction*> keyboardActions;
 
 public:
   EventVirtualKeyboard(UInputEvent *device);
  ~EventVirtualKeyboard();
 
+  void addKeyboardAction(KeyboardAction&);
+  void clearKeyboardActions();
+  void setCompareType(QString);
+
 public Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
+
+private:
+  void pressKeyboardButtons(QList < quint32>&);
+  void releaseKeyboardButtons(QList < quint32>&);
+  void pressKeyboardExtendedButton(quint32);
+  void releaseKeyboardExtendedButton(quint32);
 
 };
 #endif // EVENT_VIRTUAL_KEYBOARD_H

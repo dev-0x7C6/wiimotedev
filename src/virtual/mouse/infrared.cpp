@@ -24,7 +24,19 @@
 InfraredVirtualMouse::InfraredVirtualMouse(UInputEvent *device, quint32 id) :
   device(device),
   id(id),
+  lastx1(0),
+  lastx2(0),
+  lasty1(0),
+  lasty2(0),
+  lastsx1(-1),
+  lastsy1(-1),
   lastPointCount(0),
+  lastX(0),
+  lastY(0),
+  accVectorX(0),
+  accVectorY(0),
+  accVectorXAccumulation(0),
+  accVectorYAccumulation(0),
   accelerationTimeout(2000),
   deadzoneXRange(50),
   deadzoneYRange(20),
@@ -45,13 +57,13 @@ InfraredVirtualMouse::InfraredVirtualMouse(UInputEvent *device, quint32 id) :
   connect(&accelerationClockTimeout, SIGNAL(timeout()), this, SLOT(axisAccelerationTimeout()));
   if (useAcceleration && accelerationTimeout)
     accelerationClockTimeout.start(accelerationTimeout);
-  lastsx1 = -1;
   memset(&wiimote_acc, 0, sizeof(wiimote_acc));
 }
 
 InfraredVirtualMouse::~InfraredVirtualMouse()
 {
   accelerationClockTimeout.stop();
+  disconnect(&accelerationClockTimeout, 0, 0, 0);
 }
 
 
@@ -67,7 +79,6 @@ void InfraredVirtualMouse::setInterfaceEnabled(bool enabled) {
 void InfraredVirtualMouse::setAccelerationTimeoutValue(int value) {
   if (accelerationTimeout = value)
       accelerationClockTimeout.start(accelerationTimeout);
-  useAccelerationTimeout = true;
 }
 
 void InfraredVirtualMouse::setAimHelperXRange(int value) {

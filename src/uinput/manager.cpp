@@ -28,28 +28,6 @@ extern QMap < QString, quint16> scancodes;
 
 const QRegExp deviceEventRegExp(".*(\\[.*(\\d+)\\])");
 
-QHash < quint32, quint64> UInputProfileManager::extractDeviceEvent(QString input)
-{
-  QStringList list = input.remove(QRegExp("[ ]")).toLower().split('+');
-  QHash < quint32, quint64> values;
-  bool result = false;
-
-  quint32 index;
-  quint64 value;
-
-  foreach (const QString &item, list) {
-    deviceEventRegExp.exactMatch(item);
-    index = deviceEventRegExp.cap(2).toUInt();
-    value = devicebuttons.value(deviceEventRegExp.cap(0).remove(deviceEventRegExp.cap(1)), 0);
-    values.insert(index, values.value(index, 0) | value);
-    result = result || (value);
-  }
-
-  if (!result)
-    return (QHash < quint32, quint64>()); else
-    return values;
-}
-
 UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   dbusDeviceEventsIface(new DBusDeviceEventsInterface(
       WIIMOTEDEV_DBUS_SERVICE_NAME,
@@ -87,6 +65,38 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   dbusWiimoteGeneralButtons(1, 0);
 }
 
+QHash < quint32, quint64> UInputProfileManager::extractDeviceEvent(QString input)
+{
+  QStringList list = input.remove(QRegExp("[ ]")).toLower().split('+');
+  QHash < quint32, quint64> values;
+  bool result = false;
+
+  quint32 index;
+  quint64 value;
+
+  foreach (const QString &item, list) {
+    deviceEventRegExp.exactMatch(item);
+    index = deviceEventRegExp.cap(2).toUInt();
+    value = devicebuttons.value(deviceEventRegExp.cap(0).remove(deviceEventRegExp.cap(1)), 0);
+    values.insert(index, values.value(index, 0) | value);
+    result = result || (value);
+  }
+
+  if (!result)
+    return (QHash < quint32, quint64>()); else
+    return values;
+}
+
+QList < quint32> UInputProfileManager::extractScancodes(QStringList list)
+{
+  QList < quint32> values;
+  for (register int i = 0; i < list.count(); ++i)
+    if (scancodes.value(list.at(i), QString(list.at(i)).toUInt()))
+      values << scancodes.value(list.at(i), QString(list.at(i)).toUInt());
+  return values;
+}
+
+
 void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons) {
   if (disableNunchukExtShift) buttons &= ~NUNCHUK_SHIFT_MASK;
   if (disableNunchukExtShake) buttons &= ~NUNCHUK_BTN_SHIFT_SHAKE;
@@ -101,7 +111,6 @@ void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons
   lastWiiremoteButtons[id] = buttons;
 
   processCommandEvents();
-  processKeyboardEvents();
 }
 
 bool UInputProfileManager::loadProfile(QString file) {

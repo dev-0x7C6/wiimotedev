@@ -23,10 +23,10 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
   unloadInfraredEvents();
 
   foreach (const QString &key, settings.childGroups()) {
-    if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "infrared") {
+    if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "infrared" ||
+        settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "mouse") {
       settings.beginGroup(key);
-      InfraredVirtualMouse *mouse = new InfraredVirtualMouse(virtualEvent, 0);
-      mouse->setDeviceId(settings.value("assignWiimote", quint32(1)).toLongLong());
+      InfraredVirtualMouse *mouse = new InfraredVirtualMouse(virtualEvent, settings.value("assignWiimote", quint32(1)).toLongLong());
       mouse->setAccelerationFeatureEnabled(settings.value("accelerationFeature", bool(false)).toBool());
       mouse->setAccelerationSensitivityXMultiplier(settings.value("accelerationSensitivityXMultiplier", double(8.0)).toDouble());
       mouse->setAccelerationSensitivityYMultiplier(settings.value("accelerationSensitivityYMultiplier", double(8.0)).toDouble());
@@ -51,7 +51,7 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
 }
 
 void UInputProfileManager::unloadInfraredEvents() {
-  foreach (InfraredVirtualMouse *dev, virtualMouses)
-    delete dev;
+  foreach (InfraredVirtualMouse *mouse, virtualMouses)
+    delete mouse;
   virtualMouses.clear();
 }

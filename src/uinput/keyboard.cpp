@@ -19,130 +19,34 @@
 
 #include "classes/hashcompare.h"
 #include "uinput/manager.h"
+#include "QDebug"
 
 extern QMap < QString, quint32> scancodes;
 
-enum KeyboardExtension {
-  keyboardExt = 0xFFFF,
-  keyboardExtMouseHWheelUp,
-  keyboardExtMouseHWheelDown,
-  keyboardExtMouseVWheelUp,
-  keyboardExtMouseVWheelDown
-};
-
-
-QList < quint32> UInputProfileManager::extractScancodes(QStringList list)
-{
-  QList < quint32> values;
-  for (register int i = 0; i < list.count(); ++i)
-    if (scancodes.value(list.at(i), QString(list.at(i)).toUInt()))
-      values << scancodes.value(list.at(i), QString(list.at(i)).toUInt());
-  return values;
-}
-
 void UInputProfileManager::loadKeyboardEvents(QSettings &settings) {
   unloadKeyboardEvents();
-
-  QMap < QString, quint8> keyboardConfigList;
-  keyboardConfigList["keyboard-bit"] = HashCompare<QString, quint8>::BitCompare;
-  keyboardConfigList["keyboard"] = HashCompare<QString, quint8>::BitCompare;
-  keyboardConfigList["keyboard-equal"] = HashCompare<QString, quint8>::EqualCompare;
-  keyboardConfigList["keyboard-notequal"] = HashCompare<QString, quint8>::NotEqualCompare;
-
-  QMapIterator < QString, quint8> map(keyboardConfigList);
-
-  while (map.hasNext()) {
-    map.next();
-    settings.beginGroup(map.key());
-    foreach (const QString &string, settings.allKeys()) {
-      KeyboardAction *action = new KeyboardAction;
-      action->event = extractDeviceEvent(string);
-      action->keys = extractScancodes(settings.value(string, QStringList()).toStringList());
-      action->pushed = false;
-      action->alghoritm = map.value();
-      keyboardActions << action;
+  foreach (const QString &key, settings.childGroups()) {
+    if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "keyboard" ||
+        settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "kbd" ||
+        settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "event") {
+      settings.beginGroup(key);
+      EventVirtualKeyboard *kbd = new EventVirtualKeyboard(virtualEvent);
+      foreach (const QString &string, settings.allKeys()) {
+        KeyboardAction action;
+        action.event = extractDeviceEvent(string);
+        action.keys = extractScancodes(settings.value(string, QStringList()).toStringList());
+        action.pushed = false;
+        kbd->addKeyboardAction(action);
+      }
+      connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), kbd, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
+      settings.endGroup();
+      virtualKeyboards << kbd;
     }
-    settings.endGroup();
   }
-
-  disableKeyboardModule = keyboardActions.isEmpty();
 }
 
 void UInputProfileManager::unloadKeyboardEvents() {
-  disableKeyboardModule = true;
-
-  if (keyboardActions.isEmpty())
-    return;
-
-  foreach (KeyboardAction *action, keyboardActions)
-    delete action;
-
-  keyboardActions.clear();
+  foreach (EventVirtualKeyboard *kbd, virtualKeyboards)
+    delete kbd;
+  virtualKeyboards.clear();
 }
-
-void UInputProfileManager::processKeyboardEvents() {
-  if (keyboardActions.isEmpty() || disableKeyboardModule)
-    return;
-
-  HashCompare<quint32, quint64> compare;
-
-  foreach (KeyboardAction *action, keyboardActions) {
-    if (action->event.isEmpty())
-      continue;
-
-    bool matched = compare.compare(&action->event, &lastWiiremoteButtons, action->alghoritm);
-
-    if (matched && !action->pushed) {
-      action->pushed = !action->pushed;
-      pressKeyboardButtons(action->keys);
-    } else
-    if (!matched && action->pushed) {
-      action->pushed = !action->pushed;
-      releaseKeyboardButtons(action->keys);
-    }
-
-  }
-}
-
-void UInputProfileManager::pressKeyboardExtendedButton(quint32 key) {
-  switch (key) {
-  case keyboardExtMouseHWheelUp:
-    virtualEvent->moveMouseHWheel(1);
-    break;
-  case keyboardExtMouseHWheelDown:
-    virtualEvent->moveMouseHWheel(-1);
-    break;
-  case keyboardExtMouseVWheelUp:
-    virtualEvent->moveMouseVWheel(1);
-    break;
-  case keyboardExtMouseVWheelDown:
-    virtualEvent->moveMouseVWheel(-1);
-    break;
-  }
-}
-
-void UInputProfileManager::releaseKeyboardExtendedButton(quint32 key) {
-  Q_UNUSED(key);
-}
-
-void UInputProfileManager::pressKeyboardButtons(QList < quint32> &list) {
-  if (list.isEmpty())
-    return;
-
-  foreach (const quint32 key, list)
-    if (key <= keyboardExt)
-      virtualEvent->pressKeyboardButton(key); else
-      pressKeyboardExtendedButton(key);
-}
-
-void UInputProfileManager::releaseKeyboardButtons(QList < quint32> &list) {
-  if (list.isEmpty())
-    return;
-
-  foreach (const quint32 key, list)
-    if (key <= keyboardExt)
-      virtualEvent->releaseKeyboardButton(key); else
-      releaseKeyboardExtendedButton(key);
-}
-
-

@@ -21,14 +21,112 @@
 
 extern QMap < QString, quint32> scancodes;
 
+enum KeyboardExtension {
+  keyboardExt = 0xFFFF,
+  keyboardExtMouseHWheelUp,
+  keyboardExtMouseHWheelDown,
+  keyboardExtMouseVWheelUp,
+  keyboardExtMouseVWheelDown
+};
+
 EventVirtualKeyboard::EventVirtualKeyboard(UInputEvent *device) :
   device(device)
 {
+  compareType = HashCompare< quint32, quint64>::BitCompare;
 }
 
+
 EventVirtualKeyboard::~EventVirtualKeyboard() {
+  disconnect(this, 0, 0, 0);
+}
+
+void EventVirtualKeyboard::setCompareType(QString type) {
+  compareType = HashCompare< quint32, quint64>::BitCompare;
+
+  if (type.toLower() == QString("bitCompare").toLower())
+    compareType = HashCompare< quint32, quint64>::BitCompare; else
+  if (type.toLower() == QString("equal").toLower())
+    compareType = HashCompare< quint32, quint64>::EqualCompare; else
+  if (type.toLower() == QString("notEqual").toLower())
+    compareType = HashCompare< quint32, quint64>::NotEqualCompare;
+
+}
+
+void EventVirtualKeyboard::addKeyboardAction(KeyboardAction &action) {
+  KeyboardAction *kbdAction = new KeyboardAction;
+  kbdAction->event = action.event;
+  kbdAction->keys = action.keys;
+  kbdAction->pushed = false;
+  keyboardActions << kbdAction;
+}
+
+void EventVirtualKeyboard::clearKeyboardActions() {
+  foreach (KeyboardAction *action, keyboardActions)
+    delete action;
+  keyboardActions.clear();
 }
 
 void EventVirtualKeyboard::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
+  if (value == buttons.value(id, -1))
+    return;
 
+  buttons[id] = value;
+
+  HashCompare< quint32, quint64> compare;
+
+  foreach (KeyboardAction *action, keyboardActions) {
+    if (action->event.isEmpty())
+      continue;
+
+    bool matched = compare.compare(&action->event, &buttons, compareType);
+    if (matched && !action->pushed) {
+      action->pushed = !action->pushed;
+      pressKeyboardButtons(action->keys);
+    } else
+    if (!matched && action->pushed) {
+      action->pushed = !action->pushed;
+      releaseKeyboardButtons(action->keys);
+    }
+  }
+}
+
+void EventVirtualKeyboard::pressKeyboardExtendedButton(quint32 key) {
+  switch (key) {
+  case keyboardExtMouseHWheelUp:
+    device->moveMouseHWheel(1);
+    break;
+  case keyboardExtMouseHWheelDown:
+    device->moveMouseHWheel(-1);
+    break;
+  case keyboardExtMouseVWheelUp:
+    device->moveMouseVWheel(1);
+    break;
+  case keyboardExtMouseVWheelDown:
+    device->moveMouseVWheel(-1);
+    break;
+  }
+}
+
+void EventVirtualKeyboard::releaseKeyboardExtendedButton(quint32 key) {
+  Q_UNUSED(key);
+}
+
+void EventVirtualKeyboard::pressKeyboardButtons(QList < quint32> &list) {
+  if (list.isEmpty())
+    return;
+
+  foreach (const quint32 key, list)
+    if (key <= keyboardExt)
+      device->pressKeyboardButton(key); else
+      pressKeyboardExtendedButton(key);
+}
+
+void EventVirtualKeyboard::releaseKeyboardButtons(QList < quint32> &list) {
+  if (list.isEmpty())
+    return;
+
+  foreach (const quint32 key, list)
+    if (key <= keyboardExt)
+      device->releaseKeyboardButton(key); else
+      releaseKeyboardExtendedButton(key);
 }

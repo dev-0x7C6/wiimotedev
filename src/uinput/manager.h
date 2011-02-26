@@ -37,8 +37,8 @@
 #include "devices/wiimotegamepad.h"
 #include "headers/consts.h"
 #include "interfaces/deviceevents.h"
+#include "virtual/event/keyboard.h"
 #include "virtual/mouse/infrared.h"
-
 
 enum {
   mouseEmulationModeNone = 0,
@@ -120,17 +120,11 @@ private:
   bool enableWiiremoteInfraredMouse;
   bool rumbleStatus;
 
+  QList < EventVirtualKeyboard*> virtualKeyboards;
   QList < InfraredVirtualMouse*> virtualMouses;
 
 //Keyboard section
   const static char *keyboardSection;
-
-  struct KeyboardAction {
-    QHash< quint32, quint64> event;
-    QList< quint32> keys;
-    bool pushed;
-    quint8 alghoritm;
-  };
 
   struct CommandAction {
     QHash< quint32, quint64> event;
@@ -146,7 +140,6 @@ private:
     vwheelAction
   };
 
-  QList < KeyboardAction*> keyboardActions;
   QList < CommandAction*> commandActions;
   QHash< quint32, quint64> lastWiiremoteButtons;
 
@@ -187,16 +180,10 @@ private:
   void loadInfraredEvents(QSettings&);
   void unloadInfraredEvents();
 
-  void processKeyboardEvents();
   void processCommandEvents();
 
   void activeCommandEvent(QStringList&);
   void deactiveCommandEvent(QStringList&);
-
-  void pressKeyboardButtons(QList < quint32>&);
-  void releaseKeyboardButtons(QList < quint32>&);
-  void pressKeyboardExtendedButton(quint32);
-  void releaseKeyboardExtendedButton(quint32);
 
 private Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
