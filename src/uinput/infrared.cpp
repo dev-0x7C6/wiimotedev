@@ -18,140 +18,38 @@
  **********************************************************************************/
 
 #include "uinput/manager.h"
-#include <math.h>
-
-double acc_plus(int min, int max, int value, double sensitivy)
-{
-  if ((value <= min) || (value >= max))
-    return 0.0;
-  return ((value - min) / (double)(max - min)) * sensitivy;
-}
-
-double acc_minus(int max, int min, int value, double sensitivy)
-{
-  if ((value <= min) || (value >= max))
-    return 0.0;
-  return ((value - max) / (double)(min - max)) * -sensitivy;
-}
 
 void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
   unloadInfraredEvents();
 
-  settings.beginGroup("infrared");
-
-  irWiimoteId = settings.value(profiles::infrared::wiimoteid, 0).toInt();
-  irMode = settings.value(profiles::infrared::mode, 0).toInt();
-  irAlghoritm = settings.value(profiles::infrared::alghoritm, 0).toInt();
-  irXSensitivity = settings.value(profiles::infrared::sensx, 0).toDouble();
-  irYSensitivity = settings.value(profiles::infrared::sensy, 0).toDouble();
-  irXFreeZone = settings.value(profiles::infrared::freezonex, 0).toInt();
-  irYFreeZone = settings.value(profiles::infrared::freezoney, 0).toInt();
-  irTimeout = settings.value(profiles::infrared::timeout, 2000).toInt();
-  irLatency = settings.value(profiles::infrared::latency, 8).toInt();
-  irRange = settings.value(profiles::infrared::range, QRect(-512, -384, 1024, 768)).toRect();
-
-  if (irWiimoteId) {
-    infraredTimer.setInterval(irLatency);
-    infraredTimer.start();
-    infraredTimeout.setInterval(irTimeout);
-    infraredTimeout.start();
-    virtualAbsoluteMouse->uinput_open(irRange, true);
+  foreach (const QString &key, settings.childKeys()) {
+    if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() != "infrared") {
+      settings.beginGroup(key);
+      InfraredVirtualMouse *mouse = new InfraredVirtualMouse(virtualEvent, 0);
+      mouse->setDeviceId(settings.value("assignWiimote", quint32(1)).toLongLong());
+      mouse->setAccelerationFeatureEnabled(settings.value("accelerationFeature", bool(false)).toBool());
+      mouse->setAccelerationSensitivityXMultiplier(settings.value("accelerationSensitivityXMultiplier", double(8.0)).toDouble());
+      mouse->setAccelerationSensitivityYMultiplier(settings.value("accelerationSensitivityYMultiplier", double(8.0)).toDouble());
+      mouse->setAccelerationSensitivityXPower(settings.value("accelerationSensitivityXPower", double(1.1)).toDouble());
+      mouse->setAccelerationSensitivityYPower(settings.value("accelerationSensitivityYPower", double(1.0)).toDouble());
+      mouse->setAccelerationTimeoutFeatureEnabled(settings.value("accelerationTimeoutFeature", bool(true)).toBool());
+      mouse->setAccelerationTimeoutValue(settings.value("accelerationTimeoutValue", int(2000)).toULongLong());
+      mouse->setAimHelperFeatureEnabled(settings.value("aimHelperFeature", bool(false)).toBool());
+      mouse->setAimHelperSensitivityXMultiplier(settings.value("aimHelperSensitivityXMultiplier", double(0.75)).toDouble());
+      mouse->setAimHelperSensitivityYMultiplier(settings.value("aimHelperSensitivityYMultiplier", double(0.75)).toDouble());
+      mouse->setAimHelperXRange(settings.value("aimHelperXRange", int(20)).toULongLong());
+      mouse->setAimHelperYRange(settings.value("aimHelperYRange", int(15)).toULongLong());
+      mouse->setDeadzoneXRange(settings.value("deadzoneXRange", int(30)).toULongLong());
+      mouse->setDeadzoneYRange(settings.value("deadzoneYRange", int(20)).toULongLong());
+      mouse->setInterfaceEnabled(true);
+      settings.endGroup();
+      virtualMouses << mouse;
+    }
   }
-
-  settings.endGroup();
 }
 
 void UInputProfileManager::unloadInfraredEvents() {
-  moveX = 0;
-  moveY = 0;
-  timeout = false;
-
-  infraredTimer.stop();
-  infraredTimeout.stop();
-
-//  virtualAbsoluteMouse->uinput_close();
-
-}
-
-
-#define NEW_ALG
-
-
-void UInputProfileManager::dbusWiimoteInfrared(quint32 id, QList< irpoint> points) {
-  if (id != irWiimoteId)
-    return;
-
-  timeout = false;
-
-  if (irAlghoritm == mouseEmulationAlghoritm2points) {
-    switch (points.count()) {
-    case 4:
-    case 3:
-    case 2:
-
-#ifdef NEW_ALG
-      {
-
-
-      double p = (atan2(points.at(0).y-points.at(1).y,
-                        points.at(0).x-points.at(1).x)*180/M_PI)-180.0;
-
-      int ax = (points.at(0).x+points.at(1).x)/2;
-      int ay = (points.at(0).y+points.at(1).y)/2;
-
-      double x1 = (ax * cos(-p*(M_PI/180))) + (ay * -sin(-p*(M_PI/180))) + (512*(1-cos(-p*(M_PI/180))) + 384*sin(-p*(M_PI/180)));
-      double y1 = (ax * sin(-p*(M_PI/180))) + (ay * cos(-p*(M_PI/180))) + (-512*(sin(-p*(M_PI/180))) + 384*(1-cos(-p*(M_PI/180))));
-
-      x = int(x1);
-      y = int(y1);
-
-      }
-      break;
-#else
-
-      x = (points.at(0).x + points.at(1).x) >> 1;
-      y = (points.at(0).y + points.at(1).y) >> 1;
-      break;
-#endif
-    case 1:
-      break;
-
-    }
-  } else
-    if (irAlghoritm == mouseEmulationAlghoritm1point) {
-      x = points.at(0).x;
-      y = points.at(0).y;
-    }
-
-
-  switch (irMode)
-  {
-  case mouseEmulationModeAbs:
-    virtualAbsoluteMouse->moveMousePointerAbs(-(x - 0x0200), y - 0x0180);
-    break;
-
-  case mouseEmulationModeAcc:
-    if (cursor.x() == 0) cursor.setX(x);
-    if (cursor.y() == 0) cursor.setY(y);
-
-    moveX = -((x) - cursor.x());
-    moveY = (y) - cursor.y();
-
-    cursor.setX(x);
-    cursor.setY(y);
-
-    moveX -= acc_plus(512 + irXFreeZone, 1024, cursor.x(), irXSensitivity);
-    moveX -= acc_minus(512 - irXFreeZone, 0, cursor.x(), irXSensitivity);
-    moveY += acc_plus(384 + irYFreeZone, 768, cursor.y(), irYSensitivity);
-    moveY += acc_minus(384 - irYFreeZone, 0, cursor.y(), irYSensitivity);
-  }
-}
-
-void UInputProfileManager::infraredAccSection()
-{
-  if (timeout)
-    return;
-
-
-  virtualEvent->moveMousePointerRel(moveX, moveY);
+  foreach (InfraredVirtualMouse *dev, virtualMouses)
+    delete dev;
+  virtualMouses.clear();
 }

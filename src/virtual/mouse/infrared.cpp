@@ -28,39 +28,30 @@ InfraredVirtualMouse::InfraredVirtualMouse(UInputEvent *device, quint32 id) :
   accelerationTimeout(2000),
   deadzoneXRange(50),
   deadzoneYRange(20),
-  aimHelperXRange(50),
+  aimHelperXRange(30),
   aimHelperYRange(20),
-  aimHelperSensitivityXMultiplier(0.5),
-  aimHelperSensitivityYMultiplier(0.5),
-  sensitivityXPower(1.1),
+  aimHelperSensitivityXMultiplier(0.75),
+  aimHelperSensitivityYMultiplier(0.75),
+  sensitivityXPower(1.3),
   sensitivityYPower(1.0),
-  sensitivityXMultiplier(2),
-  sensitivityYMultiplier(0.5),
+  sensitivityXMultiplier(8),
+  sensitivityYMultiplier(8),
   calibrationState(CalibrationNeeded),
-  interfaceEnabled(false),
-  useAcceleration(false),
-  useAimHelper(false),
-  useAccelerationTimeout(false)
+  interfaceEnabled(true),
+  useAcceleration(true),
+  useAimHelper(true),
+  useAccelerationTimeout(true)
 {
-  connect(&axisClockX, SIGNAL(timeout()), this, SLOT(axisAccelerationX()));
-  connect(&axisClockY, SIGNAL(timeout()), this, SLOT(axisAccelerationY()));
   connect(&accelerationClockTimeout, SIGNAL(timeout()), this, SLOT(axisAccelerationTimeout()));
-  axisClockX.setInterval(1);
-  axisClockY.setInterval(1);
-  if (useAcceleration) {
-    axisClockX.start();
-    axisClockY.start();
-    if (accelerationTimeout)
-      accelerationClockTimeout.start(accelerationTimeout);
-  }
-
+  if (useAcceleration && accelerationTimeout)
+    accelerationClockTimeout.start(accelerationTimeout);
   lastsx1 = -1;
   memset(&wiimote_acc, 0, sizeof(wiimote_acc));
 }
 
 InfraredVirtualMouse::~InfraredVirtualMouse()
 {
-
+  accelerationClockTimeout.stop();
 }
 
 
@@ -120,13 +111,7 @@ void InfraredVirtualMouse::setAccelerationSensitivityYMultiplier(double sensitiv
 }
 
 void InfraredVirtualMouse::setAccelerationFeatureEnabled(bool enabled) {
-  if (useAcceleration = enabled) {
-    axisClockX.start();
-    axisClockY.start();
-  } else {
-    axisClockX.stop();
-    axisClockY.stop();
-  }
+  useAcceleration = enabled;
 }
 
 void InfraredVirtualMouse::setAimHelperFeatureEnabled(bool enabled) {
@@ -148,7 +133,7 @@ void InfraredVirtualMouse::dbusWiimoteAcc(quint32 _id, const accdata &table)
 
 void InfraredVirtualMouse::dbusWiimoteInfrared(quint32 _id, QList< irpoint> points)
 {
-  if (id != _id)
+  if ((id != _id) || (!interfaceEnabled))
     return;
 
   qint16 x1, x2, y1, y2, sx1, sy1;
@@ -209,7 +194,7 @@ void InfraredVirtualMouse::dbusWiimoteInfrared(quint32 _id, QList< irpoint> poin
   if (diff < 0)
     diff *= -1;
 
-  double ax, ay, x, y, moveX, moveY;
+  double ax, ay, x, y, moveX, moveY, bounceX = 0, bounceY = 0;
 
   if (calibrationState == CalibrationNeeded) {
     if (diff < 0.2)
@@ -243,6 +228,31 @@ void InfraredVirtualMouse::dbusWiimoteInfrared(quint32 _id, QList< irpoint> poin
   lastY = ay;
   lastPointCount = points.count();
 
+  if (useAcceleration) {
+    useAccelerationTimeout = false;
+    if (ax < -deadzoneXRange || ax > deadzoneXRange) {
+      if (ax < -deadzoneXRange) ax += deadzoneXRange;
+      if (ax > deadzoneXRange) ax -= deadzoneXRange;
+      bool invert = (ax > 0.0);
+      if (!invert) ax *= -1;
+      bounceX = (ax / (512.0 -  deadzoneXRange));
+      accVectorX = pow(bounceX * sensitivityXMultiplier, sensitivityXPower);
+      if (accVectorX >= 0.0 && invert) accVectorX = accVectorX * -1;
+    } else
+      accVectorX = 0;
+
+    if (ay < -deadzoneYRange || ay > deadzoneYRange) {
+      if (ay < -deadzoneYRange) ay += deadzoneYRange;
+      if (ay > deadzoneYRange) ay -= deadzoneYRange;
+      bool invert = (ay > 0.0);
+      if (!invert) ay *= -1;
+      bounceY = (ay / (384.0 -  deadzoneYRange));
+      accVectorY = pow(bounceY * sensitivityYMultiplier, sensitivityYPower);
+      if (accVectorY >= 0.0 && invert) accVectorY = accVectorY * -1;
+    } else
+      accVectorY = 0;
+  }
+
   if (useAimHelper) {
     int helperX = moveX * aimHelperSensitivityXMultiplier;
     int helperY = moveY * aimHelperSensitivityYMultiplier;
@@ -255,28 +265,9 @@ void InfraredVirtualMouse::dbusWiimoteInfrared(quint32 _id, QList< irpoint> poin
     device->moveMousePointerRel(moveX, moveY);
   }
 
-  if (useAcceleration) {
-    useAccelerationTimeout = false;
-    if (ax < -deadzoneXRange || ax > deadzoneXRange) {
-      if (ax < -deadzoneXRange) ax += deadzoneXRange;
-      if (ax > deadzoneXRange) ax -= deadzoneXRange;
-      bool invert = (ax > 0.0);
-      if (!invert) ax *= -1;
-      accVectorX = pow((ax / (512.0 -  deadzoneXRange) * sensitivityXMultiplier), sensitivityXPower);
-      if (accVectorX >= 0.0 && invert) accVectorX = accVectorX * -1;
-    } else
-      accVectorX = 0;
+  axisAccelerationX();
+  axisAccelerationY();
 
-    if (ay < -deadzoneYRange || ay > deadzoneYRange) {
-      if (ay < -deadzoneYRange) ay += deadzoneYRange;
-      if (ay > deadzoneYRange) ay -= deadzoneYRange;
-      bool invert = (ay > 0.0);
-      if (!invert) ay *= -1;
-      accVectorY = pow((ay / (384.0 -  deadzoneYRange) * sensitivityYMultiplier), sensitivityYPower);
-      if (accVectorY >= 0.0 && invert) accVectorY = accVectorY * -1;
-    } else
-      accVectorY = 0;
-  }
   lastPoints = points;
 }
 

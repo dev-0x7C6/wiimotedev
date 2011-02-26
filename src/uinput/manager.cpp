@@ -67,14 +67,9 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   disableKeyboardModule(true),
   enableWiiremoteInfraredMouse(false),
   rumbleStatus(false),
-  virtualEvent(new UInputEvent()),
-  virtualAbsoluteMouse(new UInputMouse())
+  virtualEvent(new UInputEvent())
 {
-  connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredTimeoutSection()));
-  connect(&infraredTimer, SIGNAL(timeout()), this, SLOT(infraredAccSection()));
-
   connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteInfrared(quint32,QList<irpoint>)), this, SLOT(dbusWiimoteInfrared(quint32,QList<irpoint>)));
   connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteButtons(quint32,quint64)), this, SLOT(dbusWiimoteButtons(quint32,quint64)));
   connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), this, SLOT(dbusWiimoteAcc(quint32,accdata)));
   connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukButtons(quint32,quint64)), this, SLOT(dbusNunchukButtons(quint32,quint64)));
@@ -89,13 +84,7 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   initializeCommandEvents();
 
   QDBusConnection::systemBus().registerService("org.wiimotedev.uinput");
-
   dbusWiimoteGeneralButtons(1, 0);
-
-//  mouse = new InfraredVirtualMouse(virtualEvent, 1);
-//  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), mouse , SLOT(dbusWiimoteAcc(quint32,accdata)));
-//  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteInfrared(quint32,QList<irpoint>)), mouse , SLOT(dbusWiimoteInfrared(quint32,QList<irpoint>)));
-//  loadProfile("/fear.ini");
 }
 
 void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons) {
@@ -142,12 +131,8 @@ bool UInputProfileManager::unloadProfile() {
 UInputProfileManager::~UInputProfileManager()
 {
   unloadProfile();
-  disconnect(&infraredTimeout, 0, 0, 0);
-  disconnect(&infraredTimer, 0, 0, 0);
 
-  virtualAbsoluteMouse->uinput_close(false);
   virtualEvent->uinput_close(false);
 
   delete virtualEvent;
-  delete virtualAbsoluteMouse;
 }

@@ -120,30 +120,7 @@ private:
   bool enableWiiremoteInfraredMouse;
   bool rumbleStatus;
 
-
-//Infrared
-  qint32 x;
-  qint32 y;
-
-  quint32 irWiimoteId;
-  quint8 irMode;
-  quint8 irAlghoritm;
-  double irXSensitivity;
-  double irYSensitivity;
-  quint32 irXFreeZone;
-  quint32 irYFreeZone;
-  quint32 irTimeout;
-  quint32 irLatency;
-
-  qint32 moveX;
-  qint32 moveY;
-  QTimer infraredTimer;
-  QTimer infraredTimeout;
-  QRect irRange;
-
-  bool timeout;
-
-  InfraredVirtualMouse *mouse;
+  QList < InfraredVirtualMouse*> virtualMouses;
 
 //Keyboard section
   const static char *keyboardSection;
@@ -171,7 +148,6 @@ private:
 
   QList < KeyboardAction*> keyboardActions;
   QList < CommandAction*> commandActions;
-
   QHash< quint32, quint64> lastWiiremoteButtons;
 
 
@@ -181,14 +157,10 @@ private:
 
 
   UInputEvent *virtualEvent;
-  UInputMouse *virtualAbsoluteMouse;
 
 /* General variables --------------------------------------------- */
 
   QString profileName;
-
-  qint32 lastX;
-  qint32 lastY;
   QPoint cursor;
 
 public:
@@ -228,7 +200,6 @@ private:
 
 private Q_SLOTS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
-  void dbusWiimoteInfrared(quint32, QList< irpoint>);
 
   void dbusClassicControllerButtons(quint32, quint64);
   void dbusWiimoteAcc(quint32, accdata);
@@ -238,9 +209,6 @@ private Q_SLOTS:
   void dbusNunchukStick(quint32, stickdata);
   void dbusClassicControllerLStick(quint32, stickdata);
   void dbusClassicControllerRStick(quint32, stickdata);
-
-  void infraredTimeoutSection(){ timeout = true; }
-  void infraredAccSection();
 
 public Q_SLOTS:
   inline bool isWiimotedevServiceAvailable(){ return dbusDeviceEventsIface->isValid(); }

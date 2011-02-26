@@ -103,7 +103,6 @@ set(uinput_sources
   uinput/keyboard.cpp
   uinput/manager.cpp
   uinput/actions.cpp
-  virtual/mouse.cpp
   virtual/mouse/infrared.cpp
   uinput.cpp
 )
@@ -114,7 +113,6 @@ set(uinput_headers
   adaptors/uinputservice.h
   interfaces/deviceevents.h
   uinput/manager.h
-  virtual/mouse.h
   virtual/mouse/infrared.h
 )
 

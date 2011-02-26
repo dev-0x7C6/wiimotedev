@@ -36,8 +36,6 @@ class InfraredVirtualMouse: public QObject
   quint32 id;
 
 // timers
-  QTimer axisClockX;
-  QTimer axisClockY;
   QTimer accelerationClockTimeout;
 
 //variables
@@ -109,9 +107,11 @@ public Q_SLOTS:
   void dbusWiimoteInfrared(quint32, QList< irpoint>);
   void dbusWiimoteAcc(quint32, const accdata&);
 
-private Q_SLOTS:
+private:
   void axisAccelerationX();
   void axisAccelerationY();
+
+private Q_SLOTS:
   void axisAccelerationTimeout();
 
 
