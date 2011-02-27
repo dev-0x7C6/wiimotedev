@@ -486,20 +486,6 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
       show();
     }
   }
-
-  if (isVisible())
-  {
-//      if ((value & WIIMOTE_BTN_B) || (value & WIIMOTE_BTN_PLUS))
-//          ui->stackedWidget->setCurrentIndex(1); else
-//          ui->stackedWidget->setCurrentIndex(0);
-      if ((value & WIIMOTE_BTN_LEFT) || (value & WIIMOTE_BTN_UP)) previousProfile();
-      if ((value & WIIMOTE_BTN_RIGHT) || (value & WIIMOTE_BTN_DOWN)) nextProfile();
-      if ((value & WIIMOTE_BTN_A) || (value & WIIMOTE_BTN_2))
-      {
-          profileInterface->loadProfile(profileList.at(index - 1).ProfilePath);
-          setVisible(false);
-      }
-  }
 }
 
 void MainWindow::timerEvent(QTimerEvent *event)
