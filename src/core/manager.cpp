@@ -193,7 +193,7 @@ bool ConnectionManager::registerConnection(WiimoteConnection *connection)
   systemlog::information(QString("wiiremote %1 connected, id %2").arg(addr, QString::number(id)));
 
   if (settings->dbusInterfaceSupport()) {
-    connect(connection, SIGNAL(dbusVirtualCursorPosition(quint32,qint32,qint32,quint32,double)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorPosition(quint32,qint32,qint32,quint32,double)), Qt::QueuedConnection);
+    connect(connection, SIGNAL(dbusVirtualCursorPosition(quint32, double, double, double, double)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorPosition(quint32,double, double, double, double)), Qt::QueuedConnection);
     connect(connection, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::QueuedConnection);
     connect(connection, SIGNAL(dbusWiimoteConnected(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteConnected(quint32)), Qt::QueuedConnection);
     connect(connection, SIGNAL(dbusWiimoteDisconnected(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteDisconnected(quint32)), Qt::QueuedConnection);
