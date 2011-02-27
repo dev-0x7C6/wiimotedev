@@ -294,7 +294,7 @@ void WiimoteConnection::run()
           } else {
             if (lastPointCount == 0) {
               lastPoints = wiimoteIrTable;
-              return;
+              break;
             }
 
             sx1 = wiimoteIrTable.at(0).x;
@@ -360,6 +360,7 @@ void WiimoteConnection::run()
           lastPointCount = wiimoteIrTable.count();
 
           emit dbusVirtualCursorPosition(sequence, ax, ay, sqrt(pow(abs(x2 - x1), 2) + pow(abs(y2 - y1), 2)), p);
+          qDebug() << x << "x" << y;
 
           lastPoints = wiimoteIrTable;
         }
