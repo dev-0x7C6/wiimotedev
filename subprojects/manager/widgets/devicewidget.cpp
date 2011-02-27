@@ -25,7 +25,7 @@ DeviceWidget::~DeviceWidget()
 
 void DeviceWidget::runToolkit() {
   QStringList args;
-  args << QString::number(id+1);
+  args << QString::number(id);
   process.start("wiimotedev-toolkit", args);
 }
 
