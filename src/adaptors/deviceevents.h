@@ -270,7 +270,7 @@ Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
   void dbusWiimoteGeneralButtons(quint32, quint64);
 
-  void dbusVirtualCursorPosition(quint32, quint32, quint32, quint32, double);
+  void dbusVirtualCursorPosition(quint32, qint32, qint32, quint32, double);
 
   void dbusWiimoteAcc(quint32, struct accdata);
   void dbusWiimoteBatteryLife(quint32, quint8);
