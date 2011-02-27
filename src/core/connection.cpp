@@ -32,6 +32,15 @@ extern bool additional_debug;
 WiimoteConnection::WiimoteConnection(quint32 powersave)
  :powersavevalue(powersave),
   wiimote(new WiimoteDevice(this)),
+  lastx1(0),
+  lastx2(0),
+  lasty1(0),
+  lasty2(0),
+  lastsx1(-1),
+  lastsy1(-1),
+  lastPointCount(0),
+  lastX(0),
+  lastY(0),
   currentLatency(0),
   averageLatency(0),
   nunchukPlugged(false),
@@ -261,62 +270,105 @@ void WiimoteConnection::run()
           wiimoteIrTable << wiimotePoint;
         }
 
-        if (sendIrSignal && wiimoteIrTable.count() == 2) {
-          double tmproll = -stableroll;
+        {
+          qint16 x1, x2, y1, y2, sx1, sy1;
 
-          if (tmproll < 0)
-            tmproll = 360 -stableroll;
+          if (wiimoteIrTable.count() > 2)
+            break;
 
-          if (timer.elapsed() > 40) {
-            if (cos(tmproll*PI/180) > 0) {
-              if (wiimoteIrTable.at(1).x < wiimoteIrTable.at(0).x)
-                order = RightToLeft; else
-                order = LeftToRight;
-            } else {
-              if (wiimoteIrTable.at(1).x > wiimoteIrTable.at(0).x)
-                order = RightToLeft; else
-                order = LeftToRight;
+          if (wiimoteIrTable.count() == 2) {
+            if (lastPoints.count() == 1)
+              calibrationState = CalibrationNeeded;
+
+            x1 = wiimoteIrTable.at(0).x;
+            x2 = wiimoteIrTable.at(1).x;
+            y1 = wiimoteIrTable.at(0).y;
+            y2 = wiimoteIrTable.at(1).y;
+
+            lastsx1 = -1;
+            lastsy1 = -1;
+            lastx1 = x1;
+            lastx2 = x2;
+            lasty1 = y1;
+            lasty2 = y2;
+          } else {
+            if (lastPointCount == 0) {
+              lastPoints = wiimoteIrTable;
+              return;
             }
+
+            sx1 = wiimoteIrTable.at(0).x;
+            sy1 = wiimoteIrTable.at(0).y;
+
+            if (lastsx1 == -1)
+              lastsx1 = sx1;
+            if (lastsy1 == -1)
+              lastsy1 = sy1;
+
+            x1 = lastx1 + (sx1 - lastsx1);
+            x2 = lastx2 + (sx1 - lastsx1);
+            y1 = lasty1 + (sy1 - lastsy1);
+            y2 = lasty2 + (sy1 - lastsy1);
           }
 
-          switch(order) {
-          case RightToLeft:
-            p = -(atan2(wiimoteIrTable.at(1).y - wiimoteIrTable.at(0).y, wiimoteIrTable.at(1).x - wiimoteIrTable.at(0).x)-PI);
-            break;
-          case LeftToRight:
-            p = -(atan2(wiimoteIrTable.at(0).y - wiimoteIrTable.at(1).y, wiimoteIrTable.at(0).x - wiimoteIrTable.at(1).x)-PI);
-            break;
-          default:
-            break;
-          }
+          double p = -(atan2(y2 - y1, x2 - x1) - M_PI);
 
-          register short unsigned int ax = (wiimoteIrTable.at(0).x + wiimoteIrTable.at(1).x) >> 1;
-          register short unsigned int ay = (wiimoteIrTable.at(0).y + wiimoteIrTable.at(1).y) >> 1;
-
-
-    #ifdef __amd64 // 64-bit processors
+        #ifdef __amd64 // 64-bit processors only
           register double cosp = cos(p);
           register double sinp = sin(p);
-    #endif
+        #endif
 
-    #ifdef i386  // 32-bit processors
+        #ifdef i386  // 32-bit processors
           register float cosp = cos(p);
           register float sinp = sin(p);
-    #endif
+        #endif
+          register float sx = (x1 + x2) / 2.0;
+          register float sy = (y1 + y2) / 2.0;
 
-          emit dbusVirtualCursorPosition(sequence, (1024 - (ax*cosp - ay*sinp + 512*(1-cosp) + 384*sinp)),
-                                         (ax*sinp + ay*cosp - 512*sinp + 384*(1-cosp)),
-                                         sqrt(pow(abs(wiimoteIrTable.at(1).x - wiimoteIrTable.at(0).x), 2) + pow(abs(wiimoteIrTable.at(1).y - wiimoteIrTable.at(0).y), 2)),
-                                         -p*180/PI);
-          timer.start();
+          double diff = cosp + cos(wiimote_acc.roll*(M_PI/180));
+          if (diff < 0)
+            diff *= -1;
+
+          double ax, ay, x, y;
+
+          if (calibrationState == CalibrationNeeded) {
+            if (diff < 0.2)
+              calibrationState = CalibrationInverted; else
+              calibrationState = CalibrationNormal;
+          }
+
+          switch (calibrationState) {
+          case CalibrationNormal:
+            x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
+            y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
+            ax = 512.0 - x;
+            ay = 384.0 - y;
+            break;
+          case CalibrationInverted:
+            p = -(atan2(y1 - y2, x1 - x2) - M_PI);
+            x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
+            y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
+            ax = (512.0 - x) *-1;
+            ay = (384.0 - y) *-1;
+            break;
+          }
+
+          if (lastX == -1.0) lastX = ax;
+          if (lastY == -1.0) lastY = ay;
+          lastX = ax;
+          lastY = ay;
+          lastPointCount = wiimoteIrTable.count();
+
+          emit dbusVirtualCursorPosition(sequence, ax, ay, sqrt(pow(abs(x2 - x1), 2) + pow(abs(y2 - y1), 2)), p);
+
+          lastPoints = wiimoteIrTable;
         }
+
 
         if (sendIrSignal) {
           emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
           sendIrSignal = false;
         }
-
-
 
         break;
 
@@ -382,6 +434,8 @@ void WiimoteConnection::run()
           acc.pitch = wiimoteAccData.pitch;
           acc.roll = wiimoteAccData.roll;
 
+
+          memcpy(&wiimote_acc, &acc, sizeof(acc));
           emit dbusWiimoteAcc(sequence, acc);
 
           WiimoteButtonsTmp = WiimoteButtons;

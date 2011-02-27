@@ -43,6 +43,19 @@ class WiimoteConnection : public QThread
 private:
   DBusDeviceEventsAdaptorWrapper *adaptor;
 
+  int calibrationState;
+  qint16 lastx1;
+  qint16 lastx2;
+  qint16 lasty1;
+  qint16 lasty2;
+  qint16 lastsx1;
+  qint16 lastsy1;
+  int lastPointCount;
+  double lastX;
+  double lastY;
+  QList< irpoint> lastPoints;
+  struct accdata wiimote_acc;
+
   bool quitRequest;
 
   QList < double> wfXmotion; QList < double> nfXmotion;
@@ -69,6 +82,12 @@ private:
 public:
   WiimoteConnection(quint32 powersave);
  ~WiimoteConnection();
+
+  enum Calibration {
+    CalibrationNeeded,
+    CalibrationNormal,
+    CalibrationInverted
+  };
 
   WiimoteDevice *wiimote;
 
