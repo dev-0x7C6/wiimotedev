@@ -282,11 +282,8 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
       if (daemon->dbusIsClassicConnected(id))
         extensions = "Classic Controller";
 
-      DeviceWidget *widget = new DeviceWidget(ui->scrollAreaWidgetContents);
+      DeviceWidget *widget = new DeviceWidget(physicalAddress, id, extensions, ui->scrollAreaWidgetContents);
       widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-      widget->ui->physicalAddress->setText(QString("Physical address: %1").arg(physicalAddress));
-      widget->ui->id->setText(QString("Ident number: %1").arg(ident));
-      widget->ui->extensions->setText(QString("Extensions: %1").arg(extensions));
       widget->setGraphicsEffect(new QGraphicsOpacityEffect());
       static_cast< QGraphicsOpacityEffect*>(widget->graphicsEffect())->setOpacity(1.0);
 
@@ -314,15 +311,15 @@ void MainWindow::setTrayTooltip() {
 
 
   if (daemon->isValid())
-    stream << "connected"; else
-    stream << "waiting for connection";
+    stream << "available"; else
+    stream << "not available";
   stream << '\n';
 
   stream << "\torg.wiimotedev.uinput service: ";
 
   if (profileInterface->isValid())
-    stream << "connected"; else
-    stream << "waiting for connection";
+    stream << "available"; else
+    stream << "not available";
   stream << '\n' << '\n';
 
 
@@ -363,11 +360,10 @@ void MainWindow::dbusWiimoteConnected(quint32 id) {
     extensions = "Classic Controller";
 
 
-  DeviceWidget *widget = new DeviceWidget(ui->scrollAreaWidgetContents);
+  DeviceWidget *widget = new DeviceWidget(physicalAddress, id, extensions, ui->scrollAreaWidgetContents);
   widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
-  widget->ui->physicalAddress->setText(QString("Physical address: %1").arg(physicalAddress));
-  widget->ui->id->setText(QString("Ident number: %1").arg(ident));
-  widget->ui->extensions->setText(QString("Extensions: %1").arg(extensions));
+  widget->setGraphicsEffect(new QGraphicsOpacityEffect());
+  static_cast< QGraphicsOpacityEffect*>(widget->graphicsEffect())->setOpacity(1.0);
 
   deviceVerticalLayout->addWidget(widget, 0, Qt::AlignTop);
   deviceWidgets[id] = widget;
