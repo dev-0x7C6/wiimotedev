@@ -19,7 +19,6 @@
 
 #include "classes/hashcompare.h"
 #include "uinput/manager.h"
-#include "QDebug"
 
 extern QMap < QString, quint32> scancodes;
 
@@ -32,9 +31,22 @@ void UInputProfileManager::loadKeyboardEvents(QSettings &settings) {
       settings.beginGroup(key);
       EventVirtualKeyboard *kbd = new EventVirtualKeyboard(virtualEvent);
       foreach (const QString &string, settings.allKeys()) {
+        if (string.toLower() == "module")
+          continue;
+
         KeyboardAction action;
         action.event = extractDeviceEvent(string);
+        if (action.event.isEmpty()) {
+          qWarning(QString("Warning: entry \"%1\" is not valid!").arg(string).toAscii().constData());
+          continue;
+        }
+
         action.keys = extractScancodes(settings.value(string, QStringList()).toStringList());
+        if (action.keys.isEmpty()) {
+          qWarning(QString("Warning: nothing to do in \"%1\"").arg(string).toAscii().constData());
+          continue;
+        }
+
         action.pushed = false;
         kbd->addKeyboardAction(action);
       }
