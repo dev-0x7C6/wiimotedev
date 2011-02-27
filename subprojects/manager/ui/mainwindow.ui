@@ -79,20 +79,20 @@
         </property>
         <item>
          <property name="text">
-          <string>Devices</string>
+          <string>Connections</string>
          </property>
          <property name="icon">
           <iconset resource="../data/data.qrc">
-           <normaloff>:/wiimotedev.png</normaloff>:/wiimotedev.png</iconset>
+           <normaloff>:/connections.png</normaloff>:/connections.png</iconset>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>UInput Profiles</string>
+          <string>Profiles</string>
          </property>
          <property name="icon">
           <iconset resource="../data/data.qrc">
-           <normaloff>:/profiles.png</normaloff>:/profiles.png</iconset>
+           <normaloff>:/profile.png</normaloff>:/profile.png</iconset>
          </property>
         </item>
         <item>
