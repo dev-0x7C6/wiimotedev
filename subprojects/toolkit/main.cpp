@@ -57,8 +57,8 @@ int main(int argc, char *argv[])
     id = select.getSelectedWiimote();
   }
 
-  if (application.arguments().count())
-    id = application.arguments().at(0).toInt();
+  if (application.arguments().count() > 1)
+    id = application.arguments().at(1).toInt();
 
   MainWindow window(&interface, id);
   QObject::connect(&interface, SIGNAL(dbusClassicControllerPlugged(quint32)), &window, SLOT(dbusClassicPlugged(quint32)));
