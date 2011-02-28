@@ -336,7 +336,7 @@ void WiimoteConnection::run()
             y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
             ax = 512.0 - x;
             ay = 384.0 - y;
-          } else if (calibrationState == CalibrationInvert) {
+          } else if (calibrationState == CalibrationInverted) {
             p = -(atan2(y1 - y2, x1 - x2) - M_PI);
             x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
             y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
