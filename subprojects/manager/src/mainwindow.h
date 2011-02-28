@@ -74,6 +74,9 @@ private:
   qreal logoOpacity;
   bool logoGlow;
 
+  double mouseX;
+  double mouseY;
+
   QVBoxLayout *deviceVerticalLayout;
   QHash < quint32, DeviceWidget*> deviceWidgets;
   QHash < quint32, QString> storeMacAddresses;
@@ -103,6 +106,7 @@ protected:
   void timerEvent(QTimerEvent *event);
 
 public slots:
+  void dbusVirtualCursorPosition(quint32, double, double, double, double);
   void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
   void dbusWiimoteConnected(quint32 id);
   void dbusWiimoteDisconnected(quint32 id);

@@ -10,6 +10,9 @@
     <height>399</height>
    </rect>
   </property>
+  <property name="mouseTracking">
+   <bool>true</bool>
+  </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
@@ -144,6 +147,9 @@
       </item>
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
         <widget class="QWidget" name="page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
@@ -174,7 +180,36 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="page_2"/>
+        <widget class="QWidget" name="page_2">
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QScrollArea" name="scrollArea_2">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+            <property name="verticalScrollBarPolicy">
+             <enum>Qt::ScrollBarAsNeeded</enum>
+            </property>
+            <property name="horizontalScrollBarPolicy">
+             <enum>Qt::ScrollBarAsNeeded</enum>
+            </property>
+            <property name="widgetResizable">
+             <bool>true</bool>
+            </property>
+            <widget class="QWidget" name="scrollAreaWidgetContents_2">
+             <property name="geometry">
+              <rect>
+               <x>0</x>
+               <y>0</y>
+               <width>100</width>
+               <height>30</height>
+              </rect>
+             </property>
+            </widget>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </item>
      </layout>

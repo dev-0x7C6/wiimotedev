@@ -8,5 +8,12 @@
         <file>toolkit.png</file>
         <file>connections.png</file>
         <file>profile.png</file>
+        <file>exts/controller.png</file>
+        <file>exts/controller_active.png</file>
+        <file>exts/nunchuk.png</file>
+        <file>exts/nunchuk_active.png</file>
+        <file>exts/remote.png</file>
+        <file>exts/remote_active.png</file>
+        <file>cursor.png</file>
     </qresource>
 </RCC>

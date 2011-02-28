@@ -24,7 +24,9 @@
 #include <QPointer>
 #include <QTextStream>
 #include <QCursor>
-
+#include <QMouseEvent>
+#include <QDebug>
+#include <QPaintEngine>
 #include "config.h"
 
 #include "mainwindow.h"
@@ -44,6 +46,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   logoOpacity(0.5),
   logoGlow(true)
 {
+  this->setCursor(QCursor(QPixmap(":/cursor.png"), 0, 0));
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
   brush.setStyle(Qt::SolidPattern);
@@ -192,6 +195,14 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   devicebuttons.insert("classic.rstick.left", CLASSIC_BTN_RSTICK_LEFT);
   devicebuttons.insert("classic.rstick.right", CLASSIC_BTN_RSTICK_RIGHT);
 
+
+
+  setWindowOpacity(0.95);
+  setWindowFlags(Qt::WindowStaysOnTopHint
+             //    | Qt::X11BypassWindowManagerHint
+                 | Qt::Popup);
+ // setAttribute(Qt::X11BypassWindowManagerHint, true);
+
   QDir dir(QChar('/'));
 
   for (register qint8 i = 0; i < directoryList.count(); ++i)
@@ -217,7 +228,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   }
 
   windowAtMousePosition = true;
-  moveToCenter();
+ // moveToCenter();
 
   index = 0;
 //  ui->previousProfile->setEnabled(false);
@@ -276,15 +287,19 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
     foreach (quint32 id, list) {
       QString physicalAddress = daemon->dbusWiimoteGetMacAddress(id);
       QString ident = QString::number(id);
-      QString extensions = "none";
+      quint32 exts = ExtNone;
       if (daemon->dbusIsNunchukConnected(id))
-        extensions = "Nunchuk"; else
+        exts = ExtNunchuk;
       if (daemon->dbusIsClassicConnected(id))
-        extensions = "Classic Controller";
+        exts = ExtClassic;
 
-      DeviceWidget *widget = new DeviceWidget(physicalAddress, id, extensions, ui->scrollAreaWidgetContents);
+      DeviceWidget *widget = new DeviceWidget(physicalAddress, id, exts, ui->scrollAreaWidgetContents);
       widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
       widget->setGraphicsEffect(new QGraphicsOpacityEffect());
+      connect(daemon, SIGNAL(dbusNunchukPlugged(quint32)), widget, SLOT(dbusNunchukPlugged(quint32)));
+      connect(daemon, SIGNAL(dbusNunchukUnplugged(quint32)), widget, SLOT(dbusNunchukUnplugged(quint32)));
+      connect(daemon, SIGNAL(dbusClassicControllerPlugged(quint32)), widget, SLOT(dbusClassicControllerPlugged(quint32)));
+      connect(daemon, SIGNAL(dbusClassicControllerUnplugged(quint32)), widget, SLOT(dbusClassicControllerUnplugged(quint32)));
       static_cast< QGraphicsOpacityEffect*>(widget->graphicsEffect())->setOpacity(1.0);
 
       deviceVerticalLayout->addWidget(widget, 0, Qt::AlignTop);
@@ -353,14 +368,13 @@ void MainWindow::dbusWiimoteConnected(quint32 id) {
 
   QString physicalAddress = daemon->dbusWiimoteGetMacAddress(id);
   QString ident = QString::number(id);
-  QString extensions = "none";
+  quint32 exts = ExtNone;
   if (daemon->dbusIsNunchukConnected(id))
-    extensions = "Nunchuk"; else
+    exts = ExtNunchuk;
   if (daemon->dbusIsClassicConnected(id))
-    extensions = "Classic Controller";
+    exts = ExtClassic;
 
-
-  DeviceWidget *widget = new DeviceWidget(physicalAddress, id, extensions, ui->scrollAreaWidgetContents);
+  DeviceWidget *widget = new DeviceWidget(physicalAddress, id, exts, ui->scrollAreaWidgetContents);
   widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
   widget->setGraphicsEffect(new QGraphicsOpacityEffect());
   static_cast< QGraphicsOpacityEffect*>(widget->graphicsEffect())->setOpacity(1.0);
@@ -404,12 +418,15 @@ void MainWindow::dbusWiimoteDisconnected(quint32 id) {
 
 void MainWindow::paintEvent(QPaintEvent *event) {
   QPainter p;
+
   p.begin(this);
 
   p.setOpacity(logoOpacity);
   p.drawPixmap(geometry().width() - logo->width() - 10, geometry().height() - logo->height() - 10,
                logo->width(), logo->height(), *logo);
   p.end();
+
+
 }
 
 void MainWindow::slotMousePosition()
@@ -424,26 +441,16 @@ void MainWindow::slotMousePosition()
 
 QRect MainWindow::calcGeometry()
 {
-  int screenId = 0;
+  int screenId = QApplication::desktop()->screenNumber(cursor().pos());
 
-  for (register int i = QApplication::desktop()->screenCount(); i > 0; --i)
-  {
-      if (QApplication::desktop()->screenGeometry(i - 1).x() <= QCursor::pos().x())
-      {
-          screenId = i - 1;
-          break;
-      }
-  }
+  QRect rect = QApplication::desktop()->screenGeometry(screenId);
+  QRect pos;
+  pos.setX(rect.x() + ((rect.width()/2 ) - (geometry().width()/2)));
+  pos.setY(rect.y() + ((rect.height()/2 ) - (geometry().height()/2)));
+  pos.setWidth(geometry().width());
+  pos.setHeight(geometry().height());
 
-  QRect desktopRect = QApplication::desktop()->screenGeometry(screenId);
-  QRect windowPos;
-
-  windowPos.setX(desktopRect.x() + ((desktopRect.width() / 2) - (geometry().width() / 2)));
-  windowPos.setY(desktopRect.y() + ((desktopRect.height() / 2) - (geometry().height() / 2)));
-  windowPos.setWidth(geometry().width());
-  windowPos.setHeight(geometry().height());
-
-  return windowPos;
+  return pos;
 }
 
 void MainWindow::moveToCenter()
@@ -470,6 +477,55 @@ void MainWindow::executeRequest(QStringList list)
   QProcess::execute(process, list);
 }
 
+
+void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, double size, double angle) {
+  if (!isVisible())
+    return;
+  x = 512.0 - x;
+  y = 384.0 - y;
+
+  if (x > 512)
+    x = 512;
+  if (x < -512)
+    x =-512;
+  if (y > 384)
+    y = 384;
+  if (y < -384)
+    y = -384;
+
+  mouseX =  (geometry().width()/2) - (x * (double(geometry().width()) / 1024.0 * (1.3+(double(abs(512-size))/2)/512)));
+  mouseY =  (geometry().height()/2) - (y * (double(geometry().height()) / 768.0 * (1.0+(double(abs(386-size))/2)/384)));
+
+  if (mouseX  < 0)
+    mouseX  = 0;
+  if (mouseY < 0)
+    mouseY = 0;
+  if (mouseY >  (geometry().height()))
+    mouseY = geometry().height();
+  if (mouseX  > (geometry().width()))
+    mouseX  = geometry().width();
+
+  QPixmap pcursor(":/cursor.png");
+
+  angle = angle*(180/3.14);
+
+  if (angle > 180)
+    angle = angle-360;
+
+  if (angle > 30)
+    angle = 30;
+  if (angle < -30)
+    angle = -30;
+
+ // qDebug() << angle;
+  QMatrix matrix;
+  matrix.rotate(-angle);
+
+  setCursor(QCursor(pcursor.transformed(matrix, Qt::SmoothTransformation), 11, 0));
+
+  cursor().setPos(this->mapToParent(QPoint(mouseX, mouseY)));
+}
+
 void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
 {
   buttons = value & WIIMOTE_BUTTON_MASK;
@@ -480,11 +536,25 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
   if (value & WIIMOTE_BTN_HOME) {
     if (isVisible()) {
       hide();
+      qDebug() << "?";
     } else
-    {
+    {//
       moveToCenter();
       show();
     }
+  }
+
+  if (value & WIIMOTE_BTN_A) {
+    qDebug() << "?";
+    QPoint p = QPoint(mouseX, mouseY);
+    QWidget *widget = childAt(p);
+    qDebug() << widget << ui->list;
+
+
+    QMouseEvent *e = new QMouseEvent(QEvent::MouseButtonPress, QPoint(0, 0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    QApplication::postEvent(widget, e);
+    e = new QMouseEvent(QEvent::MouseButtonRelease, QPoint(0, 0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+    QApplication::postEvent(widget, e);
   }
 }
 
@@ -552,7 +622,7 @@ void MainWindow::showProfile(struct ProfileItem item)
 //  ui->profileEmail->setText(item.ProfileEmail);
 //  ui->profileAuthor->setText(item.ProfileAuthor);
 //  ui->largeProfileName->setText(item.ProfileName);
-  this->repaint();
-  if (geometry() != defaultGeometry) moveToCenter();
+ //this->repaint();
+ // if (geometry() != defaultGeometry) moveToCenter();
 }
 
