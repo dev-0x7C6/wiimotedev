@@ -32,13 +32,14 @@ extern bool additional_debug;
 WiimoteConnection::WiimoteConnection(quint32 powersave)
  :powersavevalue(powersave),
   wiimote(new WiimoteDevice(this)),
+  calibrationState(CalibrationNeeded),
   lastx1(0),
   lastx2(0),
   lasty1(0),
   lasty2(0),
   lastsx1(-1),
   lastsy1(-1),
-  lastPointCount(1),
+  lastPointCount(0),
   lastX(0),
   lastY(0),
   currentLatency(0),
@@ -270,6 +271,7 @@ void WiimoteConnection::run()
         if (wiimoteIrTable.count()) {
           emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
 
+
           if (wiimoteIrTable.count() > 2)
             break;
 
@@ -319,7 +321,7 @@ void WiimoteConnection::run()
           register float sx = (x1 + x2) / 2.0;
           register float sy = (y1 + y2) / 2.0;
 
-          double diff = cosp + cos(wiimote_acc.roll*(M_PI/180));
+          double diff = cosp + cos(wiimoteAccData.roll*(M_PI/180));
           if (diff < 0)
             diff *= -1;
 
@@ -353,6 +355,18 @@ void WiimoteConnection::run()
           emit dbusVirtualCursorPosition(sequence, (1024.0  - (ax + 512.0)), (768.0 - (ay + 384.0)), sqrt(pow(abs(x2 - x1), 2) + pow(abs(y2 - y1), 2)), p);
 
           lastPoints = wiimoteIrTable;
+        } else {
+          calibrationState = CalibrationNeeded;
+          lastx1 = 0;
+          lastx2 = 0;
+          lasty1 = 0;
+          lasty2 = 0;
+          lastsx1 = -1;
+          lastsy1 = -1;
+          lastPointCount = 0;
+          lastX = 0;
+          lastY = 0;
+          lastPoints.clear();
         }
 
         break;
@@ -419,8 +433,6 @@ void WiimoteConnection::run()
           acc.pitch = wiimoteAccData.pitch;
           acc.roll = wiimoteAccData.roll;
 
-
-          memcpy(&wiimote_acc, &acc, sizeof(acc));
           emit dbusWiimoteAcc(sequence, acc);
 
           WiimoteButtonsTmp = WiimoteButtons;

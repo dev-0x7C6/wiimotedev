@@ -54,7 +54,6 @@ private:
   double lastX;
   double lastY;
   QList< irpoint> lastPoints;
-  struct accdata wiimote_acc;
 
   bool quitRequest;
 
