@@ -459,7 +459,7 @@ void WiimoteConnection::run()
 
           vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 
-          if (vacc < 1.5)
+          if (vacc > 0.8 && vacc < 1.2)
             stableroll = acc.roll;
 
           if (vacc > 2.2) WiimoteButtons |= WIIMOTE_BTN_SHIFT_SHAKE;
