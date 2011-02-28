@@ -321,7 +321,7 @@ void WiimoteConnection::run()
           register float sx = (x1 + x2) / 2.0;
           register float sy = (y1 + y2) / 2.0;
 
-          double diff = cosp + cos(wiimoteAccData.roll*(M_PI/180));
+          double diff = cosp + cos(stableroll*(M_PI/180));
           if (diff < 0)
             diff *= -1;
 
