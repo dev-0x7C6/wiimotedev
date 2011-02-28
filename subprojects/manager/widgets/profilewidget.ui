@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DeviceWidget</class>
- <widget class="QWidget" name="DeviceWidget">
+ <class>ProfileWidget</class>
+ <widget class="QWidget" name="ProfileWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>459</width>
-    <height>72</height>
+    <width>449</width>
+    <height>110</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
         </property>
         <property name="minimumSize">
          <size>
-          <width>35</width>
+          <width>50</width>
           <height>0</height>
          </size>
         </property>
@@ -44,7 +44,7 @@
          <string/>
         </property>
         <property name="pixmap">
-         <pixmap resource="../data/data.qrc">:/connections.png</pixmap>
+         <pixmap resource="../data/data.qrc">:/profiles.png</pixmap>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -54,16 +54,19 @@
       <item row="0" column="1">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
-         <widget class="QLabel" name="physicalAddress">
+         <widget class="QLabel" name="info">
           <property name="text">
-           <string>Physical address: %1</string>
+           <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Sans Serif'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Profile name: %1&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Version: %2&lt;br /&gt;Author: %3&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;EMail: %4&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Filename: %5&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="id">
-          <property name="text">
-           <string>Ident number: %1</string>
+          <property name="wordWrap">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -82,7 +85,7 @@
         </item>
        </layout>
       </item>
-      <item row="0" column="4">
+      <item row="0" column="3">
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout">
@@ -126,8 +129,8 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="../data/data.qrc">
-              <normaloff>:/toolkit.png</normaloff>:/toolkit.png</iconset>
+             <iconset resource="../../toolkit/data/data.qrc">
+              <normaloff>:/led_on.png</normaloff>:/led_on.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -159,7 +162,7 @@
             </property>
             <property name="icon">
              <iconset resource="../data/data.qrc">
-              <normaloff>:/disconnect.png</normaloff>:/disconnect.png</iconset>
+              <normaloff>:/toolkit.png</normaloff>:/toolkit.png</iconset>
             </property>
             <property name="iconSize">
              <size>
@@ -187,63 +190,13 @@
        </layout>
       </item>
       <item row="0" column="2">
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLabel" name="wiimoteIcon">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap resource="../data/data.qrc">:/exts/remote_active.png</pixmap>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="nunchukIcon">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap resource="../data/data.qrc">:/exts/nunchuk.png</pixmap>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="classicIcon">
-          <property name="text">
-           <string/>
-          </property>
-          <property name="pixmap">
-           <pixmap resource="../data/data.qrc">:/exts/controller.png</pixmap>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item row="0" column="3">
-       <spacer name="horizontalSpacer_3">
+       <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <property name="sizeType">
-         <enum>QSizePolicy::Maximum</enum>
-        </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>15</width>
+          <width>0</width>
           <height>0</height>
          </size>
         </property>
@@ -256,6 +209,7 @@
  </widget>
  <resources>
   <include location="../data/data.qrc"/>
+  <include location="../../toolkit/data/data.qrc"/>
  </resources>
  <connections/>
 </ui>

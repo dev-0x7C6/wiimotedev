@@ -38,7 +38,7 @@ WiimoteConnection::WiimoteConnection(quint32 powersave)
   lasty2(0),
   lastsx1(-1),
   lastsy1(-1),
-  lastPointCount(0),
+  lastPointCount(1),
   lastX(0),
   lastY(0),
   currentLatency(0),
@@ -271,6 +271,9 @@ void WiimoteConnection::run()
         }
 
         if (sendIrSignal) {
+          emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
+          sendIrSignal = false;
+
           qint16 x1, x2, y1, y2, sx1, sy1;
 
           if (wiimoteIrTable.count() > 2)
@@ -292,8 +295,8 @@ void WiimoteConnection::run()
             lasty1 = y1;
             lasty2 = y2;
           } else {
-            if (lastPointCount == 0) {
-              lastPoints = wiimoteIrTable;
+            if (wiimoteIrTable.count() == 0) {
+              calibrationState = CalibrationNeeded;
               break;
             }
 
@@ -362,12 +365,6 @@ void WiimoteConnection::run()
           emit dbusVirtualCursorPosition(sequence, (1024.0  - (ax + 512.0)), (768.0 - (ay + 384.0)), sqrt(pow(abs(x2 - x1), 2) + pow(abs(y2 - y1), 2)), p);
 
           lastPoints = wiimoteIrTable;
-        }
-
-
-        if (sendIrSignal) {
-          emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
-          sendIrSignal = false;
         }
 
         break;

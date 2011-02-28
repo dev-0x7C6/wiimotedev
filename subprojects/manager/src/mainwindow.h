@@ -33,6 +33,7 @@
 #include "src/interfaces/profilemanager.h"
 
 #include "widgets/devicewidget.h"
+#include "widgets/profilewidget.h"
 #include "ui_devicewidget.h"
 #include <QVBoxLayout>
 #include <QSpacerItem>
@@ -74,12 +75,19 @@ private:
   qreal logoOpacity;
   bool logoGlow;
 
+  double x, y;
   double mouseX;
   double mouseY;
+  double mouseAccX;
+  double mouseAccY;
+
+  QTimer scrollTimer;
 
   QVBoxLayout *deviceVerticalLayout;
+  QVBoxLayout *profileVerticalLayout;
   QHash < quint32, DeviceWidget*> deviceWidgets;
   QHash < quint32, QString> storeMacAddresses;
+
 
 // Window
   Ui::MainWindow *ui;
@@ -111,6 +119,7 @@ public slots:
   void dbusWiimoteConnected(quint32 id);
   void dbusWiimoteDisconnected(quint32 id);
   void slotMousePosition();
+  void scroll();
 
   void executeRequest(QStringList list);
 

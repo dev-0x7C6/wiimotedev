@@ -78,7 +78,6 @@ void DeviceWidget::runToolkit() {
 
 void DeviceWidget::startToolkit() {
   ui->runToolkit->setEnabled(false);
-  QApplication::activeWindow()->hide();
 }
 
 void DeviceWidget::closeToolkit() {

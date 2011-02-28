@@ -26,7 +26,7 @@
 #include <QCursor>
 #include <QMouseEvent>
 #include <QDebug>
-#include <QPaintEngine>
+#include <QScrollBar>
 #include "config.h"
 
 #include "mainwindow.h"
@@ -44,7 +44,8 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   logo(new QPixmap(":/logo.png")),
   daemon(daemon),
   logoOpacity(0.5),
-  logoGlow(true)
+  logoGlow(true),
+  lastButtons(0)
 {
   this->setCursor(QCursor(QPixmap(":/cursor.png"), 0, 0));
   QPalette windowColor;
@@ -195,58 +196,9 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   devicebuttons.insert("classic.rstick.left", CLASSIC_BTN_RSTICK_LEFT);
   devicebuttons.insert("classic.rstick.right", CLASSIC_BTN_RSTICK_RIGHT);
 
-
-
-  setWindowOpacity(0.95);
-  setWindowFlags(Qt::WindowStaysOnTopHint
-             //    | Qt::X11BypassWindowManagerHint
-                 | Qt::Popup);
- // setAttribute(Qt::X11BypassWindowManagerHint, true);
-
-  QDir dir(QChar('/'));
-
-  for (register qint8 i = 0; i < directoryList.count(); ++i)
-    if (!dir.exists(directoryList.at(i)))
-      dir.mkdir(directoryList.at(i));
-
-  dir.setPath(directoryList.at(2));
-
-  QFileInfoList list = dir.entryInfoList();
-
-  foreach (const QFileInfo &file, dir.entryInfoList()) {
-    if (!file.isFile() || (file.suffix().toLower() != "ini"))
-      continue;
-
-    QSettings settings(file.absoluteFilePath(), QSettings::IniFormat);
-    Profile profile;
-    profile.name = settings.value("name", "undefined").toString();
-    profile.author = settings.value("author", "undefined").toString();
-    profile.email = settings.value("email", "undefined").toString();
-    profile.version = settings.value("version", "undefined").toString();
-    profile.path = file.absoluteFilePath();
-    uinputProfileList << profile;
-  }
-
-  windowAtMousePosition = true;
- // moveToCenter();
-
-  index = 0;
-//  ui->previousProfile->setEnabled(false);
-
-  if (!uinputProfileList.count());
-//    ui->nextProfile->setEnabled(false);
-
-  if (profileList.count() > 0) {
-//    ui->nextProfile->setEnabled(false);
-//    showProfile(profileList.at(0));
-  }
-
-//  ui->nextProfile->setVisible(false);
-//  ui->previousProfile->setVisible(false);
-
-//  connect(ui->nextProfile, SIGNAL(clicked()), this, SLOT(nextProfile()));
-//  connect(ui->previousProfile, SIGNAL(clicked()), this, SLOT(previousProfile()));
-
+  mouseAccY = 0;
+  setWindowOpacity(0.85);
+  setWindowFlags(Qt::WindowStaysOnTopHint | Qt::Popup);
 
   profileInterface = new DBusProfileManagerInterface("org.wiimotedev.uinput",
                                                      "/profileManager",
@@ -257,7 +209,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
                                                     QDBusConnection::systemBus(), this);
 
 
-
   connect(customJobsInterface, SIGNAL(executeRequest(QStringList)), this, SLOT(executeRequest(QStringList)));
 
   connectedWithService = false;
@@ -266,21 +217,56 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   checkMousePos.start(100);
   startTimer(1000);
   setTrayTooltip();
+  scrollTimer.setInterval(1);
+  scrollTimer.start();
+
+  connect(&scrollTimer, SIGNAL(timeout()), this, SLOT(scroll()));
+
+
+  profileVerticalLayout = new QVBoxLayout(ui->profileScrollArea);
+  profileVerticalLayout->setSpacing(4);
+  profileVerticalLayout->setObjectName(QString::fromUtf8("profileVerticalLayout"));
+  profileVerticalLayout->setContentsMargins(4, 4, -1, -1);
+  profileVerticalLayout->addSpacing(0);
+
+  QDir dir(QDir::homePath() + "/.wiimotedev/profiles");
+
+  dir.setPath(directoryList.at(2));
+
+  QFileInfoList list = dir.entryInfoList();
+
+  foreach (const QFileInfo &file, dir.entryInfoList()) {
+    if (!file.isFile())
+      continue;
+
+    QSettings settings(file.absoluteFilePath(), QSettings::IniFormat);
+    foreach (const QString &key, settings.childGroups()) {
+      settings.beginGroup(key);
+      if (settings.value("module", QString()).toString().toLower() == "manager") {
+        ProfileWidget *widget =
+            new ProfileWidget(settings.value("name", QString("not definited")).toString(),
+                              file.fileName(),
+                              settings.value("author", QString("not definited")).toString(),
+                              settings.value("version", QString("not definited")).toString(),
+                              settings.value("email", QString("not definited")).toString(), ui->profileScrollArea);
+        widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
+        widget->setGraphicsEffect(new QGraphicsOpacityEffect());
+        profileVerticalLayout->addWidget(widget, 0, Qt::AlignTop);
+
+        continue;
+      }
+      settings.endGroup();
+    }
 
 
 
-  //for (register int i = 0; i < ui->connections->columnCount(); ++i) {
-  //  QHeaderView *view = ui->connections->header();
-  //  view->setResizeMode(i, QHeaderView::ResizeToContents);
-  //  view->setMinimumSectionSize(50);
- // }
-
+  }
 
   deviceVerticalLayout = new QVBoxLayout(ui->scrollAreaWidgetContents);
-  deviceVerticalLayout->setSpacing(6);
-  deviceVerticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+  deviceVerticalLayout->setSpacing(4);
+  deviceVerticalLayout->setObjectName(QString::fromUtf8("deviceVerticalLayout"));
   deviceVerticalLayout->setContentsMargins(4, 4, -1, -1);
-  deviceVerticalLayout->addSpacing(10);
+  deviceVerticalLayout->addSpacing(0);
 
   {
     QList <quint32> list = daemon->dbusGetWiimoteList();
@@ -306,11 +292,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
       deviceWidgets[id] = widget;
     }
   }
-
- // deviceVerticalLayout->addStretch(0);
-
-
-
 
 }
 
@@ -477,12 +458,29 @@ void MainWindow::executeRequest(QStringList list)
   QProcess::execute(process, list);
 }
 
+void MainWindow::scroll() {
+  double ay = 0;
+
+  if (y < -20)
+    ay = y;
+  if (y > 20)
+    ay = y;
+
+  mouseAccY -= (ay / (384 - 20))*4.0;
+
+  ui->scrollArea_2->verticalScrollBar()->setValue( ui->scrollArea_2->verticalScrollBar()->value() +mouseAccY  );
+  mouseAccY  -= static_cast< int>(mouseAccY);
+}
 
 void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, double size, double angle) {
   if (!isVisible())
     return;
+
   x = 512.0 - x;
   y = 384.0 - y;
+
+  this->x = x;
+  this->y = y;
 
   if (x > 512)
     x = 512;
@@ -492,6 +490,7 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
     y = 384;
   if (y < -384)
     y = -384;
+
 
   mouseX =  (geometry().width()/2) - (x * (double(geometry().width()) / 1024.0 * (1.3+(double(abs(512-size))/2)/512)));
   mouseY =  (geometry().height()/2) - (y * (double(geometry().height()) / 768.0 * (1.0+(double(abs(386-size))/2)/384)));
@@ -504,6 +503,8 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
     mouseY = geometry().height();
   if (mouseX  > (geometry().width()))
     mouseX  = geometry().width();
+
+
 
   QPixmap pcursor(":/cursor.png");
 
@@ -523,6 +524,8 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
 
   setCursor(QCursor(pcursor.transformed(matrix, Qt::SmoothTransformation), 11, 0));
 
+
+
   cursor().setPos(this->mapToParent(QPoint(mouseX, mouseY)));
 }
 
@@ -531,7 +534,7 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
   buttons = value & WIIMOTE_BUTTON_MASK;
 
   if ((id != 1) || (buttons == lastButtons)) return;
-  lastButtons = buttons;
+
 
   if (value & WIIMOTE_BTN_HOME) {
     if (isVisible()) {
@@ -553,9 +556,20 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
 
     QMouseEvent *e = new QMouseEvent(QEvent::MouseButtonPress, QPoint(0, 0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
     QApplication::postEvent(widget, e);
-    e = new QMouseEvent(QEvent::MouseButtonRelease, QPoint(0, 0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+
+  }
+
+  if ((lastButtons & WIIMOTE_BTN_A) && !(value & WIIMOTE_BTN_A)) {
+    qDebug() << "?";
+    QPoint p = QPoint(mouseX, mouseY);
+    QWidget *widget = childAt(p);
+    qDebug() << widget << ui->list;
+
+    QMouseEvent *e = new QMouseEvent(QEvent::MouseButtonRelease, QPoint(0, 0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
     QApplication::postEvent(widget, e);
   }
+
+  lastButtons = buttons;
 }
 
 void MainWindow::timerEvent(QTimerEvent *event)
