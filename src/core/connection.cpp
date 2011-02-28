@@ -260,19 +260,14 @@ void WiimoteConnection::run()
 
       case CWIID_MESG_IR:
         for (register int j = 0; j < 4; ++j) if (mesg[i].ir_mesg.src[j].valid) {
-          if (!sendIrSignal)
-            wiimoteIrTable.clear();
-
           wiimotePoint.size =  (mesg[i].ir_mesg.src[j].size <= 0) ? 1 : mesg[i].ir_mesg.src[j].size;
           wiimotePoint.x = mesg[i].ir_mesg.src[j].pos[0];
           wiimotePoint.y = mesg[i].ir_mesg.src[j].pos[1];
-          sendIrSignal = true;
           wiimoteIrTable << wiimotePoint;
         }
 
-        if (sendIrSignal) {
+        if (wiimoteIrTable.count()) {
           emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
-          sendIrSignal = false;
 
           qint16 x1, x2, y1, y2, sx1, sy1;
 
@@ -367,6 +362,7 @@ void WiimoteConnection::run()
           lastPoints = wiimoteIrTable;
         }
 
+        wiimoteIrTable.clear();
         break;
 
       case CWIID_MESG_BTN:
