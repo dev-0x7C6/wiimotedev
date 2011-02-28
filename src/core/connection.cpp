@@ -259,6 +259,7 @@ void WiimoteConnection::run()
         break;
 
       case CWIID_MESG_IR:
+        wiimoteIrTable.clear();
         for (register int j = 0; j < 4; ++j) if (mesg[i].ir_mesg.src[j].valid) {
           wiimotePoint.size =  (mesg[i].ir_mesg.src[j].size <= 0) ? 1 : mesg[i].ir_mesg.src[j].size;
           wiimotePoint.x = mesg[i].ir_mesg.src[j].pos[0];
@@ -269,10 +270,10 @@ void WiimoteConnection::run()
         if (wiimoteIrTable.count()) {
           emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
 
-          qint16 x1, x2, y1, y2, sx1, sy1;
-
           if (wiimoteIrTable.count() > 2)
             break;
+
+          qint16 x1, x2, y1, y2, sx1, sy1;
 
           if (wiimoteIrTable.count() == 2) {
             if (lastPoints.count() == 1)
@@ -290,11 +291,6 @@ void WiimoteConnection::run()
             lasty1 = y1;
             lasty2 = y2;
           } else {
-            if (wiimoteIrTable.count() == 0) {
-              calibrationState = CalibrationNeeded;
-              break;
-            }
-
             sx1 = wiimoteIrTable.at(0).x;
             sy1 = wiimoteIrTable.at(0).y;
 
@@ -335,20 +331,17 @@ void WiimoteConnection::run()
               calibrationState = CalibrationNormal;
           }
 
-          switch (calibrationState) {
-          case CalibrationNormal:
+          if (calibrationState == CalibrationNormal) {
             x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
             y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
             ax = 512.0 - x;
             ay = 384.0 - y;
-            break;
-          case CalibrationInverted:
+          } else if (calibrationState == CalibrationInvert) {
             p = -(atan2(y1 - y2, x1 - x2) - M_PI);
             x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
             y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
             ax = (512.0 - x) *-1;
             ay = (384.0 - y) *-1;
-            break;
           }
 
           if (lastX == -1.0) lastX = ax;
@@ -362,7 +355,6 @@ void WiimoteConnection::run()
           lastPoints = wiimoteIrTable;
         }
 
-        wiimoteIrTable.clear();
         break;
 
       case CWIID_MESG_BTN:
