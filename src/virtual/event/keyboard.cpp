@@ -38,6 +38,12 @@ EventVirtualKeyboard::EventVirtualKeyboard(UInputEvent *device) :
 
 EventVirtualKeyboard::~EventVirtualKeyboard() {
   disconnect(this, 0, 0, 0);
+  foreach (struct KeyboardAction* action, keyboardActions) {
+    if (action->pushed)
+      EventVirtualKeyboard::releaseKeyboardButtons(action->keys);
+    delete action;
+  }
+  keyboardActions.clear();
 }
 
 void EventVirtualKeyboard::setCompareType(QString type) {
