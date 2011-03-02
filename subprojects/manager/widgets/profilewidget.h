@@ -21,6 +21,8 @@
 #define PROFILEWIDGET_H
 
 #include <QWidget>
+#include "headers/consts.h"
+#include "src/interfaces/profilemanager.h"
 
 namespace Ui {
     class ProfileWidget;
@@ -30,15 +32,31 @@ class ProfileWidget : public QWidget
 {
   Q_OBJECT
   QString profileName;
-  QString profileFile;
   QString profileAuthor;
   QString profileVersion;
   QString profileEMail;
+  DBusProfileManagerInterface *profile;
 
 public:
   explicit ProfileWidget(QString profileName, QString profileFile,
-                         QString profileAuthor, QString profileVersion, QString profileEMail, QWidget *parent = 0);
+                         QString profileAuthor, QString profileVersion,
+                         QString profileEMail, DBusProfileManagerInterface *profile, QWidget *parent = 0);
   ~ProfileWidget();
+    QString profileFile;
+
+
+protected:
+  virtual void mouseMoveEvent (QMouseEvent * event);
+
+public slots:
+  void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
+  void selectProfile();
+
+  void setActive();
+  void setInactive();
+
+signals:
+  void loadProfile(ProfileWidget*);
 
 private:
   Ui::ProfileWidget *ui;

@@ -36,16 +36,11 @@ const QString wiimotedevDirectory = ".wiimotedev/";
 const QString profileDirectory = "profiles/";
 
 MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWindow),
-  profileName(""),
-  profileAuthor(""),
-  profileEmail(""),
-  profileVersion(""),
-  profilePath(""),
   logo(new QPixmap(":/logo.png")),
   daemon(daemon),
   logoOpacity(0.5),
-  logoGlow(true),
-  lastButtons(0)
+  lastButtons(0),
+  currentProfile(0)
 {
   this->setCursor(QCursor(QPixmap(":/cursor.png"), 0, 0));
   QPalette windowColor;
@@ -103,37 +98,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   windowColor.setBrush(QPalette::Disabled, QPalette::ToolTipBase, brush2);
   windowColor.setBrush(QPalette::Disabled, QPalette::ToolTipText, brush1);
   setPalette(windowColor);
-//
-  ui->setupUi(this);
-//  ui->nextProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-right.png"));
-//  ui->previousProfile->setIcon(QIcon("/usr/share/qwiimotedev/arrow-left.png"));
-
-
-  setWindowTitle(QString("Wiimotedev Manager %1.%2.%3").arg(
-                   QString::number(WIIMOTEDEV_VERSION_MAJOR),
-                   QString::number(WIIMOTEDEV_VERSION_MINOR),
-                   QString::number(WIIMOTEDEV_VERSION_PATCH)));
-  setWindowIcon(QIcon("/usr/share/qwiimotedev/tray.png"));
-
-  tray = new QSystemTrayIcon(QIcon("/usr/share/qwiimotedev/tray.png"));
-  menu = new QMenu();
-
-  QMenu *subMenu;
-  subMenu = menu->addMenu("Screen");
-  subMenu->addAction("At mouse position")->setCheckable(true);
-  for (register int i = 0; i < QApplication::desktop()->screenCount(); ++i)
-    subMenu->addAction(QString("Screen %1").arg(i + 1))->setCheckable(true);
-
-  connect(menu->addAction("Quit"), SIGNAL(triggered()), this, SLOT(close()));
-
-  tray->setContextMenu(menu);
-  tray->show();
-
-  QStringList directoryList;
-
-  directoryList << QDir::homePath() + QString::fromUtf8("/");
-  directoryList << directoryList.at(0) + wiimotedevDirectory;
-  directoryList << directoryList.at(1) + profileDirectory;
 
   devicebuttons.insert("wiimote.1", WIIMOTE_BTN_1);
   devicebuttons.insert("wiimote.2", WIIMOTE_BTN_2);
@@ -196,34 +160,51 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   devicebuttons.insert("classic.rstick.left", CLASSIC_BTN_RSTICK_LEFT);
   devicebuttons.insert("classic.rstick.right", CLASSIC_BTN_RSTICK_RIGHT);
 
+  ui->setupUi(this);
+
+  setWindowTitle(QString("Wiimotedev Manager %1.%2.%3").arg(
+                   QString::number(WIIMOTEDEV_VERSION_MAJOR),
+                   QString::number(WIIMOTEDEV_VERSION_MINOR),
+                   QString::number(WIIMOTEDEV_VERSION_PATCH)));
+  setWindowIcon(QIcon("/usr/share/qwiimotedev/tray.png"));
+
+  pageMap["Profiles"] = 1;
+  pageMap["Connections"] = 0;
+
+  tray = new QSystemTrayIcon(QIcon("/usr/share/qwiimotedev/tray.png"));
+  menu = new QMenu();
+
+  QMenu *subMenu;
+  connect(menu->addAction("Quit"), SIGNAL(triggered()), this, SLOT(close()));
+
+  tray->setContextMenu(menu);
+  tray->show();
+
   mouseAccY = 0;
-  setWindowOpacity(0.85);
+  setWindowOpacity(0.92);
   setWindowFlags(Qt::WindowStaysOnTopHint | Qt::Popup);
 
-  profileInterface = new DBusProfileManagerInterface("org.wiimotedev.uinput",
-                                                     "/profileManager",
-                                                     QDBusConnection::systemBus(), this);
+  profileInterface = new DBusProfileManagerInterface("org.wiimotedev.uinput",  "/profileManager", QDBusConnection::systemBus(), this);
+  customJobsInterface = new DBusCustomJobsInterface("org.wiimotedev.uinput",  "/customJobs", QDBusConnection::systemBus(), this);
 
-  customJobsInterface = new DBusCustomJobsInterface("org.wiimotedev.uinput",
-                                                    "/customJobs",
-                                                    QDBusConnection::systemBus(), this);
-
+  ui->profilePage->setEnabled(profileInterface->isValid());
 
   connect(customJobsInterface, SIGNAL(executeRequest(QStringList)), this, SLOT(executeRequest(QStringList)));
+  connect(ui->list, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(selectPage(QListWidgetItem*)));
 
   connectedWithService = false;
 
   connect(&checkMousePos, SIGNAL(timeout()), this, SLOT(slotMousePosition()));
   checkMousePos.start(100);
-  startTimer(1000);
+  startTimer(3000);
   setTrayTooltip();
-  scrollTimer.setInterval(1);
+  scrollTimer.setInterval(5);
   scrollTimer.start();
 
   connect(&scrollTimer, SIGNAL(timeout()), this, SLOT(scroll()));
 
 
-  profileVerticalLayout = new QVBoxLayout(ui->profileScrollArea);
+  profileVerticalLayout = new QVBoxLayout(ui->profileScrollAreaContents);
   profileVerticalLayout->setSpacing(4);
   profileVerticalLayout->setObjectName(QString::fromUtf8("profileVerticalLayout"));
   profileVerticalLayout->setContentsMargins(4, 4, -1, -1);
@@ -231,7 +212,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
 
   QDir dir(QDir::homePath() + "/.wiimotedev/profiles");
 
-  dir.setPath(directoryList.at(2));
 
   QFileInfoList list = dir.entryInfoList();
 
@@ -245,24 +225,26 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
       if (settings.value("module", QString()).toString().toLower() == "manager") {
         ProfileWidget *widget =
             new ProfileWidget(settings.value("name", QString("not definited")).toString(),
-                              file.fileName(),
+                              file.absoluteFilePath(),
                               settings.value("author", QString("not definited")).toString(),
                               settings.value("version", QString("not definited")).toString(),
-                              settings.value("email", QString("not definited")).toString(), ui->profileScrollArea);
+                              settings.value("email", QString("not definited")).toString(),
+                              profileInterface, ui->profileScrollAreaContents);
         widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
         widget->setGraphicsEffect(new QGraphicsOpacityEffect());
-        profileVerticalLayout->addWidget(widget, 0, Qt::AlignTop);
+        static_cast< QGraphicsOpacityEffect*>(widget->graphicsEffect())->setOpacity(1.0);
 
-        continue;
+        profileVerticalLayout->addWidget(widget, 0, Qt::AlignTop);
+        connect(widget, SIGNAL(loadProfile(ProfileWidget*)), this, SLOT(loadProfile(ProfileWidget*)));
+        connect(daemon, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), widget, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
       }
       settings.endGroup();
     }
-
-
-
   }
 
-  deviceVerticalLayout = new QVBoxLayout(ui->scrollAreaWidgetContents);
+
+
+  deviceVerticalLayout = new QVBoxLayout(ui->connectionScrollAreaContents);
   deviceVerticalLayout->setSpacing(4);
   deviceVerticalLayout->setObjectName(QString::fromUtf8("deviceVerticalLayout"));
   deviceVerticalLayout->setContentsMargins(4, 4, -1, -1);
@@ -279,7 +261,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
       if (daemon->dbusIsClassicConnected(id))
         exts = ExtClassic;
 
-      DeviceWidget *widget = new DeviceWidget(physicalAddress, id, exts, ui->scrollAreaWidgetContents);
+      DeviceWidget *widget = new DeviceWidget(physicalAddress, id, exts, ui->connectionScrollAreaContents);
       widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
       widget->setGraphicsEffect(new QGraphicsOpacityEffect());
       connect(daemon, SIGNAL(dbusNunchukPlugged(quint32)), widget, SLOT(dbusNunchukPlugged(quint32)));
@@ -293,6 +275,28 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
     }
   }
 
+}
+
+void MainWindow::timerEvent(QTimerEvent *event)
+{
+  Q_UNUSED(event);
+  if (connectedWithService != profileInterface->isValid()) {
+    ui->profilePage->setEnabled(profileInterface->isValid());
+    if (profileInterface->isValid())
+      tray->showMessage(QString::fromUtf8("D-Bus"), QString::fromUtf8("Connection with service established"), QSystemTrayIcon::Information, 5000);
+      tray->showMessage(QString::fromUtf8("D-Bus"), QString::fromUtf8("Disconnected from service"), QSystemTrayIcon::Information, 5000);
+    connectedWithService = profileInterface->isValid();
+  }
+}
+
+void MainWindow::selectPage(QListWidgetItem *item) {
+  if (!(item->flags() & Qt::ItemIsEnabled))
+    return;
+
+  if (pageMap.value(item->text(), -1) == -1)
+    return;
+
+  ui->stackedWidget->setCurrentIndex(pageMap.value(item->text(), 0));
 }
 
 
@@ -355,7 +359,7 @@ void MainWindow::dbusWiimoteConnected(quint32 id) {
   if (daemon->dbusIsClassicConnected(id))
     exts = ExtClassic;
 
-  DeviceWidget *widget = new DeviceWidget(physicalAddress, id, exts, ui->scrollAreaWidgetContents);
+  DeviceWidget *widget = new DeviceWidget(physicalAddress, id, exts, ui->connectionScrollAreaContents);
   widget->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Maximum);
   widget->setGraphicsEffect(new QGraphicsOpacityEffect());
   static_cast< QGraphicsOpacityEffect*>(widget->graphicsEffect())->setOpacity(1.0);
@@ -468,7 +472,8 @@ void MainWindow::scroll() {
 
   mouseAccY -= (ay / (384 - 20))*4.0;
 
-  ui->scrollArea_2->verticalScrollBar()->setValue( ui->scrollArea_2->verticalScrollBar()->value() +mouseAccY  );
+  ui->profileScrollArea->verticalScrollBar()->setValue(ui->profileScrollArea->verticalScrollBar()->value() + mouseAccY);
+  ui->connectionScrollArea->verticalScrollBar()->setValue(ui->connectionScrollArea->verticalScrollBar()->value() + mouseAccY);
   mouseAccY  -= static_cast< int>(mouseAccY);
 }
 
@@ -495,14 +500,14 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
   mouseX =  (geometry().width()/2) - (x * (double(geometry().width()) / 1024.0 * (1.3+(double(abs(512-size))/2)/512)));
   mouseY =  (geometry().height()/2) - (y * (double(geometry().height()) / 768.0 * (1.0+(double(abs(386-size))/2)/384)));
 
-  if (mouseX  < 0)
-    mouseX  = 0;
-  if (mouseY < 0)
-    mouseY = 0;
-  if (mouseY >  (geometry().height()))
-    mouseY = geometry().height();
-  if (mouseX  > (geometry().width()))
-    mouseX  = geometry().width();
+  if (mouseX  < 4)
+    mouseX  = 4;
+  if (mouseY < 4)
+    mouseY = 4;
+  if (mouseY >  (geometry().height() - 4))
+    mouseY = geometry().height() - 4;
+  if (mouseX  > (geometry().width() - 4))
+    mouseX  = geometry().width() - 4;
 
 
 
@@ -529,6 +534,12 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
   cursor().setPos(this->mapToParent(QPoint(mouseX, mouseY)));
 }
 
+void MainWindow::loadProfile(ProfileWidget *widget) {
+  if (currentProfile)
+    currentProfile->setInactive();
+  (currentProfile = widget)->setActive();
+}
+
 void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
 {
   buttons = value & WIIMOTE_BUTTON_MASK;
@@ -539,104 +550,47 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
   if (value & WIIMOTE_BTN_HOME) {
     if (isVisible()) {
       hide();
-      qDebug() << "?";
-    } else
-    {//
+      if (currentProfile)
+        profileInterface->loadProfile(currentProfile->profileFile);
+    } else {
+      profileInterface->loadProfile("/root/.wiimotedev/uinput.conf");
       moveToCenter();
+      ui->stackedWidget->setCurrentIndex(pageMap["Profiles"]);
       show();
     }
   }
 
   if (value & WIIMOTE_BTN_A) {
-    qDebug() << "?";
-    QPoint p = QPoint(mouseX, mouseY);
-    QWidget *widget = childAt(p);
-    qDebug() << widget << ui->list;
+    QWidget *widget = childAt(mouseX, mouseY);
+    if (widget) {
+      qDebug() << widget->objectName();
+      if (widget->objectName() == "profileInfo" ||
+          widget->objectName() == "profileIcon")
+        widget = static_cast< QWidget*>( widget->parent());
 
+      if (widget->objectName() == "profileGroupBox")
+        widget = static_cast< QWidget*>( widget->parent());
 
-    QMouseEvent *e = new QMouseEvent(QEvent::MouseButtonPress, QPoint(0, 0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    QApplication::postEvent(widget, e);
-
+      if (widget->objectName() == "ProfileWidget") {
+        if (currentProfile)
+          currentProfile->setInactive();
+        (currentProfile = static_cast< ProfileWidget*>( widget))->setActive();
+      }
+    }
   }
+////    QMouseEvent *e = new QMouseEvent(QEvent::MouseButtonPress, QPoint(0, 0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+////    QPoint p = QPoint(mouseX, mouseY);
+////    QWidget *widget = childAt(p);
+////    QApplication::postEvent(widget, e);
+//  }
 
-  if ((lastButtons & WIIMOTE_BTN_A) && !(value & WIIMOTE_BTN_A)) {
-    qDebug() << "?";
-    QPoint p = QPoint(mouseX, mouseY);
-    QWidget *widget = childAt(p);
-    qDebug() << widget << ui->list;
+////  if ((lastButtons & WIIMOTE_BTN_A) && !(value & WIIMOTE_BTN_A)) {
+////    QPoint p = QPoint(mouseX, mouseY);
+////    QWidget *widget = childAt(p);
 
-    QMouseEvent *e = new QMouseEvent(QEvent::MouseButtonRelease, QPoint(0, 0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
-    QApplication::postEvent(widget, e);
-  }
+////    QMouseEvent *e = new QMouseEvent(QEvent::MouseButtonRelease, QPoint(0, 0), Qt::LeftButton, Qt::LeftButton, Qt::NoModifier);
+////    QApplication::postEvent(widget, e);
+////  }
 
   lastButtons = buttons;
 }
-
-void MainWindow::timerEvent(QTimerEvent *event)
-{
-  Q_UNUSED(event);
-
-  if (logoGlow) {
-    logoOpacity += 0.001;
-
-    if (logoOpacity > 0.5)
-      logoGlow = false;
-  } else
-  {
-    logoOpacity -= 0.001;
-
-    if (logoOpacity < 0.1)
-      logoGlow = true;
-  }
-
-  repaint(QRect(geometry().width() - logo->width() - 10, geometry().height() - logo->height() - 10,
-          logo->width(), logo->height()));
-
-
-
-  if (connectedWithService != profileInterface->isValid())
-  {
-      if (profileInterface->isValid())
-          tray->showMessage(QString::fromUtf8("D-Bus"), QString::fromUtf8("Connection with service established"), QSystemTrayIcon::Information, 5000); else
-          tray->showMessage(QString::fromUtf8("D-Bus"), QString::fromUtf8("Disconnected from service"), QSystemTrayIcon::Information, 5000);
-      connectedWithService = profileInterface->isValid();
-  }
-}
-
-void MainWindow::nextProfile()
-{
-  if (index < profileList.count()) {
-      index++;
-//      if (index == profileList.count())
-//          ui->nextProfile->setEnabled(false);
-//      if (index > 1)
-//          ui->previousProfile->setEnabled(true);
-      showProfile(profileList.at(index - 1));
-  }
-}
-
-void MainWindow::previousProfile()
-{
-  if (index > 1)
-  {
-      index--;
-//      if (index == 1)
-//          ui->previousProfile->setEnabled(false);
-//      if (index < profileList.count())
-//          ui->nextProfile->setEnabled(true);
-      showProfile(profileList.at(index - 1));
-  }
-}
-
-void MainWindow::showProfile(struct ProfileItem item)
-{
-//  ui->profileName->setText(item.ProfileName);
-//  ui->profileVersion->setText(item.ProfileVersion);
-//  ui->profilePath->setText(item.ProfilePath);
-//  ui->profileEmail->setText(item.ProfileEmail);
-//  ui->profileAuthor->setText(item.ProfileAuthor);
-//  ui->largeProfileName->setText(item.ProfileName);
- //this->repaint();
- // if (geometry() != defaultGeometry) moveToCenter();
-}
-

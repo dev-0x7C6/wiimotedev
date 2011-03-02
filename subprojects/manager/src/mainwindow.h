@@ -40,27 +40,12 @@
 
 #include <QGraphicsOpacityEffect>
 #include <QPropertyAnimation>
+#include <QSettings>
+#include <QListWidgetItem>
 
 namespace Ui {
     class MainWindow;
 }
-
-struct ProfileItem {
-  QString ProfileName;
-  QString ProfileAuthor;
-  QString ProfileEmail;
-  QString ProfileVersion;
-  QString ProfilePath;
-};
-
-struct Profile {
-  QString name;
-  QString author;
-  QString email;
-  QString version;
-  QString path;
-};
-
 
 class MainWindow :public QMainWindow {
   Q_OBJECT
@@ -70,10 +55,10 @@ private:
   QAction *menuExitAction;
   QPixmap *logo;
 
+
   DBusDeviceEventsInterface *daemon;
 
   qreal logoOpacity;
-  bool logoGlow;
 
   double x, y;
   double mouseX;
@@ -88,26 +73,18 @@ private:
   QHash < quint32, DeviceWidget*> deviceWidgets;
   QHash < quint32, QString> storeMacAddresses;
 
-
 // Window
   Ui::MainWindow *ui;
+  QSettings *globalSettings;
+  QString profileFile;
 
-// Profile
-  QString profileName;
-  QString profileAuthor;
-  QString profileEmail;
-  QString profileVersion;
-  QString profilePath;
+  ProfileWidget *currentProfile;
 
-  QList< Profile> uinputProfileList;
+  QMap <QString, int> pageMap;
 
 public:
   MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent = 0);
   ~MainWindow();
-
-public slots:
-  void nextProfile();
-  void previousProfile();
 
 protected:
   virtual void paintEvent(QPaintEvent*);
@@ -120,6 +97,9 @@ public slots:
   void dbusWiimoteDisconnected(quint32 id);
   void slotMousePosition();
   void scroll();
+  void loadProfile(ProfileWidget*);
+
+  void selectPage(QListWidgetItem*);
 
   void executeRequest(QStringList list);
 
@@ -137,7 +117,6 @@ private:
   QRect defaultGeometry;
 
   QMap< QString, quint64> devicebuttons;
-  QList< struct ProfileItem> profileList;
 
   bool connectedWithService;
 
