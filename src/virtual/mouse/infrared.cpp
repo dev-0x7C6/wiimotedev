@@ -76,8 +76,7 @@ void InfraredVirtualMouse::setInterfaceEnabled(bool enabled) {
 }
 
 void InfraredVirtualMouse::setAccelerationTimeoutValue(int value) {
-  if (accelerationTimeout = value)
-      accelerationClockTimeout.start(accelerationTimeout);
+  accelerationTimeout = value;
 }
 
 void InfraredVirtualMouse::setAimHelperXRange(int value) {
