@@ -644,8 +644,6 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
     }
   }
 
-  cursor->setVisible(points.count() == 2);
-
   switch (points.count()) {
   case ir0source:
   case ir1source:
@@ -658,65 +656,6 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
       if (infraredLine[i]->isVisible()) infraredLine[i]->hide();
 
     infraredLine[0]->setLine(infraredPoints[0]->x(), infraredPoints[0]->y(), infraredPoints[1]->x(), infraredPoints[1]->y());
-
-    {
-
-      double roll = -wiimote_acc.roll;
-
-      if (roll < 0)
-        roll = 360 - wiimote_acc.roll;
-
-      //qDebug()<< roll;
-
-      if (timer.elapsed() > 40) {
-        if (cos(roll*PI/180) > 0) {
-          if (points.at(1).x < points.at(0).x)
-            order = RightToLeft; else
-            order = LeftToRight;
-        } else {
-          if (points.at(1).x > points.at(0).x)
-            order = RightToLeft; else
-            order = LeftToRight;
-        }
-      }
-
-      if (order == RightToLeft) {
-
-      p = -(atan2(points.at(1).y - points.at(0).y,
-                  points.at(1).x - points.at(0).x)-PI);
-    } else {
-      p = -(atan2(points.at(0).y - points.at(1).y,
-                  points.at(0).x - points.at(1).x)-PI);
-    }
-
-      lineLength = sqrt(pow(abs(points.at(1).x - points.at(0).x), 2) +
-                        pow(abs(points.at(1).y - points.at(0).y), 2));
-
-
-     // p = -wiimote_acc.roll*PI/180;
-      register short unsigned int ax = (points.at(0).x + points.at(1).x) >> 1;
-      register short unsigned int ay = (points.at(0).y + points.at(1).y) >> 1;
-
-
-#ifdef __amd64 // 64-bit processors only
-      register double cosp = cos(p);
-      register double sinp = sin(p);
-#endif
-
-#ifdef i386  // 32-bit processors
-      register float cosp = cos(p);
-      register float sinp = sin(p);
-#endif
-
-      angleDiff = roll - (p*180/PI);
-
-      cursor->setX((1024 - (ax*cosp - ay*sinp + 512*(1-cosp) + 384*sinp)) * widthMultiplier - 7);
-      cursor->setY(((ax*sinp + ay*cosp - 512*sinp + 384*(1-cosp))) * heightMultiplier - 2);
-      cursor->setScale((1024-lineLength)/500);
-      cursor->setRotation(-p*180/PI);
-      timer.start();
-    }
-
     if (!infraredLine[0]->isVisible()) infraredLine[0]->show();
     break;
 
@@ -744,6 +683,37 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
     if (!infraredLine[3]->isVisible()) infraredLine[3]->show();
   }
 
+}
+
+void MainWindow::dbusVirtualCursorFound(quint32 id) {
+  if (id != wiimoteId)
+    return;
+
+  cursor->setVisible(true);
+}
+
+void MainWindow::dbusVirtualCursorLost(quint32 id) {
+  if (id != wiimoteId)
+    return;
+
+  cursor->setVisible(false);
+}
+
+
+void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, double size, double angle)
+{
+  if (id != wiimoteId)
+    return;
+
+  if (!cursor->isVisible())
+    cursor->setVisible(true);
+
+  cursor->setX((512.0 - x) * (geometry().width()/1024.0));
+  cursor->setY((384.0 - y) * (geometry().width()/768.0));
+
+
+  cursor->setScale((1024-size)/500);
+  cursor->setRotation(-angle*180/M_PI);
 }
 
 void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {

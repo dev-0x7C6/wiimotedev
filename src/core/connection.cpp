@@ -465,7 +465,7 @@ void WiimoteConnection::run()
 
           vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 
-          if (vacc >= 0.9 && vacc <= 1.1) {
+          if (vacc >= 0.9 && vacc <= 1.1 && acc.pitch >= -65.0 && acc.pitch <= 65.0) {
             stablecounter++;
             if (stablecounter >= 3) {
               newstableroll = true;

@@ -71,6 +71,10 @@ int main(int argc, char *argv[])
   QObject::connect(&interface, SIGNAL(dbusNunchukUnplugged(quint32)), &window, SLOT(dbusNunchukUnplugged(quint32)));
   QObject::connect(&interface, SIGNAL(dbusNunchukStick(quint32, const stickdata&)), &window, SLOT(dbusNunchukStick(quint32,const stickdata&)));
 
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(quint32,double,double,double,double)), &window, SLOT(dbusVirtualCursorPosition(quint32,double,double,double,double)));
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(quint32)), &window, SLOT(dbusVirtualCursorFound(quint32)));
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(quint32)), &window, SLOT(dbusVirtualCursorLost(quint32)));
+
   QObject::connect(&interface, SIGNAL(dbusWiimoteConnected(quint32)), &window, SLOT(dbusWiimoteConnected(quint32)));
   QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(quint32)), &window, SLOT(dbusWiimoteDisconnected(quint32)));
   QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(quint32,const accdata&)), &window, SLOT(dbusWiimoteAcc(quint32,const accdata&)));

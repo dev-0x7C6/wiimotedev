@@ -143,6 +143,10 @@ private slots:
   void toggleLed3(bool);
   void toggleLed4(bool);
 
+  void dbusVirtualCursorPosition(quint32 id, double x, double y, double size, double angle);
+  void dbusVirtualCursorLost(quint32 id);
+  void dbusVirtualCursorFound(quint32 id);
+
   void dbusWiimoteAcc(quint32 id, const accdata &acc);
   void dbusWiimoteBatteryLife(quint32 id, quint8 life);
   void dbusWiimoteConnected(quint32 id);

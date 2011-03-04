@@ -38,7 +38,7 @@ const QString profileDirectory = "profiles/";
 MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMainWindow(parent), ui(new Ui::MainWindow),
   logo(new QPixmap(":/logo.png")),
   daemon(daemon),
-  logoOpacity(0.5),
+  logoOpacity(0.05),
   lastButtons(0),
   currentProfile(0)
 {
@@ -181,7 +181,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   tray->show();
 
   mouseAccY = 0;
-  setWindowOpacity(0.95);
+  setWindowOpacity(0.96);
   setWindowFlags(Qt::WindowStaysOnTopHint | Qt::Popup);
 
   profileInterface = new DBusProfileManagerInterface("org.wiimotedev.uinput",  "/profileManager", QDBusConnection::systemBus(), this);
@@ -470,7 +470,7 @@ void MainWindow::scroll() {
   if (y > 20)
     ay = y;
 
-  mouseAccY -= (ay / (384 - 20))*4.0;
+  mouseAccY -= (ay / 384)*4.0;
 
   ui->profileScrollArea->verticalScrollBar()->setValue(ui->profileScrollArea->verticalScrollBar()->value() + mouseAccY);
   ui->connectionScrollArea->verticalScrollBar()->setValue(ui->connectionScrollArea->verticalScrollBar()->value() + mouseAccY);
@@ -480,8 +480,6 @@ void MainWindow::scroll() {
 void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, double size, double angle) {
   if (!isVisible())
     return;
-
-
 
   x = x;
   y = y;
@@ -560,6 +558,7 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
       moveToCenter();
       ui->stackedWidget->setCurrentIndex(pageMap["Profiles"]);
       show();
+      this->clearFocus();
     }
   }
 

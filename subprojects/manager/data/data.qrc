@@ -15,5 +15,7 @@
         <file>exts/remote.png</file>
         <file>exts/remote_active.png</file>
         <file>cursor.png</file>
+        <file>arrow-down.png</file>
+        <file>arrow-up.png</file>
     </qresource>
 </RCC>
