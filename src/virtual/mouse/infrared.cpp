@@ -55,8 +55,7 @@ InfraredVirtualMouse::InfraredVirtualMouse(UInputEvent *device, quint32 id) :
   useAccelerationTimeout(true)
 {
   connect(&accelerationClockTimeout, SIGNAL(timeout()), this, SLOT(axisAccelerationTimeout()));
-  if (useAcceleration && accelerationTimeout)
-    accelerationClockTimeout.start(accelerationTimeout);
+  accelerationClockTimeout.setInterval(10);
   memset(&wiimote_acc, 0, sizeof(wiimote_acc));
 }
 
@@ -130,8 +129,7 @@ void InfraredVirtualMouse::setAimHelperFeatureEnabled(bool enabled) {
 }
 
 void InfraredVirtualMouse::setAccelerationTimeoutFeatureEnabled(bool enabled) {
-  if (accelerationTimeout = enabled)
-    accelerationClockTimeout.start(accelerationTimeout);
+  accelerationTimeout = enabled;
 }
 
 void InfraredVirtualMouse::dbusWiimoteAcc(quint32 _id, const accdata &table)
@@ -140,6 +138,15 @@ void InfraredVirtualMouse::dbusWiimoteAcc(quint32 _id, const accdata &table)
     return;
 
   memcpy(&wiimote_acc, &table, sizeof(table));
+}
+
+void InfraredVirtualMouse::dbusVirtualCursorLost(quint32 _id) {
+  if ((id != _id) || (!interfaceEnabled))
+    return;
+
+   accelerationTimeoutValue = 0;
+  if (useAcceleration && accelerationTimeout)
+    accelerationClockTimeout.start();
 }
 
 void InfraredVirtualMouse::dbusVirtualCursorPosition(quint32 _id, double x, double y, double size, double angle) {
@@ -190,6 +197,7 @@ void InfraredVirtualMouse::dbusVirtualCursorPosition(quint32 _id, double x, doub
     device->moveMousePointerRel(moveX, moveY);
   }
 
+  accelerationClockTimeout.stop();
   axisAccelerationX();
   axisAccelerationY();
 }
@@ -214,6 +222,11 @@ void InfraredVirtualMouse::axisAccelerationY()
 
 void InfraredVirtualMouse::axisAccelerationTimeout()
 {
-  useAccelerationTimeout = true;
+   accelerationTimeoutValue += accelerationClockTimeout.interval();
+   if (accelerationTimeoutValue <= accelerationTimeout) {
+     axisAccelerationX();
+     axisAccelerationY();
+   } else
+     accelerationClockTimeout.stop();
 }
 
