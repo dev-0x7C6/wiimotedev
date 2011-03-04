@@ -370,7 +370,7 @@ void WiimoteConnection::run()
         } else {
           if (!virtualCursorLost)
             emit dbusVirtualCursorLost(sequence);
-          virtualCursorLost = true;q
+          virtualCursorLost = true;
         }
 
         lastPoints = wiimoteIrTable;
