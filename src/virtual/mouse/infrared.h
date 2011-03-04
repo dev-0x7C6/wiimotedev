@@ -40,14 +40,6 @@ class InfraredVirtualMouse: public QObject
   int accelerationTimeoutValue;
 
 //variables
-  int calibrationState;
-  qint16 lastx1;
-  qint16 lastx2;
-  qint16 lasty1;
-  qint16 lasty2;
-  qint16 lastsx1;
-  qint16 lastsy1;
-  int lastPointCount;
   double lastX;
   double lastY;
   double accVectorX;
@@ -80,12 +72,6 @@ class InfraredVirtualMouse: public QObject
 public:
   InfraredVirtualMouse(UInputEvent *device, quint32 id);
  ~InfraredVirtualMouse();
-
-  enum Calibration {
-    CalibrationNeeded,
-    CalibrationNormal,
-    CalibrationInverted
-  };
 
   void setDeviceId(int);
   void setInterfaceEnabled(bool);

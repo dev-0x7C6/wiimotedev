@@ -24,13 +24,6 @@
 InfraredVirtualMouse::InfraredVirtualMouse(UInputEvent *device, quint32 id) :
   device(device),
   id(id),
-  lastx1(0),
-  lastx2(0),
-  lasty1(0),
-  lasty2(0),
-  lastsx1(-1),
-  lastsy1(-1),
-  lastPointCount(0),
   lastX(0),
   lastY(0),
   accVectorX(0),
@@ -48,7 +41,6 @@ InfraredVirtualMouse::InfraredVirtualMouse(UInputEvent *device, quint32 id) :
   sensitivityYPower(1.0),
   sensitivityXMultiplier(8),
   sensitivityYMultiplier(8),
-  calibrationState(CalibrationNeeded),
   interfaceEnabled(true),
   useAcceleration(true),
   useAimHelper(true),
@@ -71,8 +63,7 @@ void InfraredVirtualMouse::setDeviceId(int _id) {
 }
 
 void InfraredVirtualMouse::setInterfaceEnabled(bool enabled) {
-  if (interfaceEnabled = enabled)
-    calibrationState = CalibrationNeeded;
+  interfaceEnabled = enabled;
 }
 
 void InfraredVirtualMouse::setAccelerationTimeoutValue(int value) {
