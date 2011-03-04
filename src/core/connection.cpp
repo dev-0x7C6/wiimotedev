@@ -288,8 +288,11 @@ void WiimoteConnection::run()
           }
 
           if (wiimoteIrTable.count() == 2) {
-            if (lastPoints.count() == 1)
+            if (lastPoints.count() == 1) {
               calibrationState = CalibrationNeeded;
+              if (!newstableroll)
+                break;
+            }
 
             x1 = wiimoteIrTable.at(0).x;
             x2 = wiimoteIrTable.at(1).x;
@@ -317,6 +320,7 @@ void WiimoteConnection::run()
             x2 = lastx2 + (sx1 - lastsx1);
             y1 = lasty1 + (sy1 - lastsy1);
             y2 = lasty2 + (sy1 - lastsy1);
+            stableroll = false;
           }
 
           double p = -(atan2(y2 - y1, x2 - x1) - M_PI);
