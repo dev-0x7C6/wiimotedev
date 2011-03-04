@@ -54,6 +54,8 @@ Q_SIGNALS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
 
   void dbusVirtualCursorPosition(quint32, double, double, double, double);
+  void dbusVirtualCursorFound(quint32);
+  void dbusVirtualCursorLost(quint32);
 
   void dbusWiimoteConnected(quint32);
   void dbusWiimoteDisconnected(quint32);

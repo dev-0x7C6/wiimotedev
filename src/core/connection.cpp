@@ -99,6 +99,8 @@ void WiimoteConnection::run()
 
   struct accdata wiimoteAccdata;
 
+  bool virtualCursorLost = false;
+
   wiimoteAccdata.x = 0xFF >> 1;
   wiimoteAccdata.y = 0xFF >> 1;
   wiimoteAccdata.z = 0xFF >> 1;
@@ -359,8 +361,17 @@ void WiimoteConnection::run()
             ay = (384.0 - y) *-1;
           }
 
+          if (virtualCursorLost) {
+            virtualCursorLost = false;
+            emit dbusVirtualCursorFound(sequence);
+          }
+
           emit dbusVirtualCursorPosition(sequence, ax, ay, sqrt(pow(abs(x2 - x1), 2) + pow(abs(y2 - y1), 2)), p);
-        };
+        } else {
+          if (!virtualCursorLost)
+            emit dbusVirtualCursorLost(sequence);
+          virtualCursorLost = true;q
+        }
 
         lastPoints = wiimoteIrTable;
 

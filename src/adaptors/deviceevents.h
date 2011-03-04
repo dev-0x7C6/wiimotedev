@@ -172,6 +172,12 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "      <arg direction=\"out\" type=\"d\" name=\"length\" />\n"
 "      <arg direction=\"out\" type=\"d\" name=\"angle\" />\n"
 "    </signal>\n"
+"    <signal name=\"dbusVirtualCursorFound\">\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"    </signal>\n"
+"    <signal name=\"dbusVirtualCursorLost\">\n"
+"      <arg direction=\"out\" type=\"u\" name=\"id\" />\n"
+"    </signal>\n"
 "    <signal name=\"dbusReportUnregistredWiimote\">\n"
 "      <arg direction=\"out\" type=\"s\" name=\"mac\" />\n"
 "    </signal>\n"
@@ -207,6 +213,8 @@ Q_SIGNALS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
 
   void dbusVirtualCursorPosition(quint32, double, double, double, double);
+  void dbusVirtualCursorFound(quint32);
+  void dbusVirtualCursorLost(quint32);
 
   void dbusWiimoteAcc(quint32, struct accdata);
   void dbusWiimoteBatteryLife(quint32, quint8);
@@ -271,6 +279,8 @@ Q_SIGNALS:
   void dbusWiimoteGeneralButtons(quint32, quint64);
 
   void dbusVirtualCursorPosition(quint32, double, double, double, double);
+  void dbusVirtualCursorFound(quint32);
+  void dbusVirtualCursorLost(quint32);
 
   void dbusWiimoteAcc(quint32, struct accdata);
   void dbusWiimoteBatteryLife(quint32, quint8);
