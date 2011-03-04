@@ -40,8 +40,8 @@ WiimoteConnection::WiimoteConnection(quint32 powersave)
   lastsx1(-1),
   lastsy1(-1),
   lastPointCount(0),
-  lastX(0),
-  lastY(0),
+  lastX(-1),
+  lastY(-1),
   currentLatency(0),
   averageLatency(0),
   nunchukPlugged(false),
@@ -157,6 +157,8 @@ void WiimoteConnection::run()
 
 
   double stableroll = 0;
+  bool newstableroll = false;
+  quint8 stablecounter = 0;
 
   qint32 wcounter, ncounter = 0;
 
@@ -269,13 +271,19 @@ void WiimoteConnection::run()
         }
 
         if (wiimoteIrTable.count()) {
+          qDebug() << wiimoteIrTable.count();
           emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
-
 
           if (wiimoteIrTable.count() > 2)
             break;
 
           qint16 x1, x2, y1, y2, sx1, sy1;
+
+          if (lastPoints.count() == 0) {
+            calibrationState = CalibrationNeeded;
+            if (!newstableroll)
+              break;
+          }
 
           if (wiimoteIrTable.count() == 2) {
             if (lastPoints.count() == 1)
@@ -292,7 +300,9 @@ void WiimoteConnection::run()
             lastx2 = x2;
             lasty1 = y1;
             lasty2 = y2;
-          } else {
+          } else
+
+          if (wiimoteIrTable.count() == 1) {
             sx1 = wiimoteIrTable.at(0).x;
             sy1 = wiimoteIrTable.at(0).y;
 
@@ -327,10 +337,13 @@ void WiimoteConnection::run()
 
           double ax, ay, x, y;
 
+          qDebug() << diff << " -- " << stableroll;
           if (calibrationState == CalibrationNeeded) {
             if (diff < 0.2)
               calibrationState = CalibrationInverted; else
               calibrationState = CalibrationNormal;
+          } else {
+            newstableroll = false;
           }
 
           if (calibrationState == CalibrationNormal) {
@@ -346,28 +359,10 @@ void WiimoteConnection::run()
             ay = (384.0 - y) *-1;
           }
 
-          if (lastX == -1.0) lastX = ax;
-          if (lastY == -1.0) lastY = ay;
-          lastX = ax;
-          lastY = ay;
-          lastPointCount = wiimoteIrTable.count();
+          emit dbusVirtualCursorPosition(sequence, ax, ay, sqrt(pow(abs(x2 - x1), 2) + pow(abs(y2 - y1), 2)), p);
+        };
 
-          emit dbusVirtualCursorPosition(sequence, (1024.0  - (ax + 512.0)), (768.0 - (ay + 384.0)), sqrt(pow(abs(x2 - x1), 2) + pow(abs(y2 - y1), 2)), p);
-
-          lastPoints = wiimoteIrTable;
-        } else {
-          calibrationState = CalibrationNeeded;
-          lastx1 = 0;
-          lastx2 = 0;
-          lasty1 = 0;
-          lasty2 = 0;
-          lastsx1 = -1;
-          lastsy1 = -1;
-          lastPointCount = 0;
-          lastX = 0;
-          lastY = 0;
-          lastPoints.clear();
-        }
+        lastPoints = wiimoteIrTable;
 
         break;
 
@@ -459,8 +454,15 @@ void WiimoteConnection::run()
 
           vacc = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
 
-          if (vacc > 0.8 && vacc < 1.2)
-            stableroll = acc.roll;
+          if (vacc >= 0.9 && vacc <= 1.1) {
+            stablecounter++;
+            if (stablecounter >= 3) {
+              newstableroll = true;
+              stableroll = acc.roll;
+              stablecounter = 0;
+            }
+          } else
+            stablecounter = 0;
 
           if (vacc > 2.2) WiimoteButtons |= WIIMOTE_BTN_SHIFT_SHAKE;
 

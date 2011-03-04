@@ -104,7 +104,7 @@ public:
   void setAccelerationTimeoutFeatureEnabled(bool);
 
 public Q_SLOTS:
-  void dbusWiimoteInfrared(quint32, QList< irpoint>);
+  void dbusVirtualCursorPosition(quint32, double, double, double, double);
   void dbusWiimoteAcc(quint32, const accdata&);
 
 private:

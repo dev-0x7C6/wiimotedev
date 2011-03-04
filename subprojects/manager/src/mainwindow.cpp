@@ -181,7 +181,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *daemon, QWidget *parent) :QMai
   tray->show();
 
   mouseAccY = 0;
-  setWindowOpacity(0.92);
+  setWindowOpacity(0.95);
   setWindowFlags(Qt::WindowStaysOnTopHint | Qt::Popup);
 
   profileInterface = new DBusProfileManagerInterface("org.wiimotedev.uinput",  "/profileManager", QDBusConnection::systemBus(), this);
@@ -283,7 +283,7 @@ void MainWindow::timerEvent(QTimerEvent *event)
   if (connectedWithService != profileInterface->isValid()) {
     ui->profilePage->setEnabled(profileInterface->isValid());
     if (profileInterface->isValid())
-      tray->showMessage(QString::fromUtf8("D-Bus"), QString::fromUtf8("Connection with service established"), QSystemTrayIcon::Information, 5000);
+      tray->showMessage(QString::fromUtf8("D-Bus"), QString::fromUtf8("Connection with service established"), QSystemTrayIcon::Information, 5000); else
       tray->showMessage(QString::fromUtf8("D-Bus"), QString::fromUtf8("Disconnected from service"), QSystemTrayIcon::Information, 5000);
     connectedWithService = profileInterface->isValid();
   }
@@ -481,8 +481,10 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
   if (!isVisible())
     return;
 
-  x = 512.0 - x;
-  y = 384.0 - y;
+
+
+  x = x;
+  y = y;
 
   this->x = x;
   this->y = y;
@@ -549,6 +551,7 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
 
   if (value & WIIMOTE_BTN_HOME) {
     if (isVisible()) {
+      profileInterface->unloadProfile();
       hide();
       if (currentProfile)
         profileInterface->loadProfile(currentProfile->profileFile);
@@ -571,10 +574,13 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value)
       if (widget->objectName() == "profileGroupBox")
         widget = static_cast< QWidget*>( widget->parent());
 
-      if (widget->objectName() == "ProfileWidget") {
+      if (widget->objectName() == "ProfileWidget" && ui->profilePage->isEnabled()) {
         if (currentProfile)
           currentProfile->setInactive();
-        (currentProfile = static_cast< ProfileWidget*>( widget))->setActive();
+
+        if (currentProfile != static_cast< ProfileWidget*>( widget))
+          (currentProfile = static_cast< ProfileWidget*>( widget))->setActive(); else
+          currentProfile = 0;
       }
     }
   }

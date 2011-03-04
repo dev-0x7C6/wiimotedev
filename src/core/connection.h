@@ -78,6 +78,8 @@ private:
   bool nunchukPlugged;
   bool classicPlugged;
 
+
+
 public:
   WiimoteConnection(quint32 powersave);
  ~WiimoteConnection();

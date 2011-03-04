@@ -142,122 +142,36 @@ void InfraredVirtualMouse::dbusWiimoteAcc(quint32 _id, const accdata &table)
   memcpy(&wiimote_acc, &table, sizeof(table));
 }
 
-void InfraredVirtualMouse::dbusWiimoteInfrared(quint32 _id, QList< irpoint> points)
-{
+void InfraredVirtualMouse::dbusVirtualCursorPosition(quint32 _id, double x, double y, double size, double angle) {
   if ((id != _id) || (!interfaceEnabled))
     return;
 
-  qint16 x1, x2, y1, y2, sx1, sy1;
-
-  if (points.count() > 2)
-    return;
-
-  if (points.count() == 2) {
-    if (lastPoints.count() == 1)
-      calibrationState = CalibrationNeeded;
-
-    x1 = points.at(0).x;
-    x2 = points.at(1).x;
-    y1 = points.at(0).y;
-    y2 = points.at(1).y;
-
-    lastsx1 = -1;
-    lastsy1 = -1;
-    lastx1 = x1;
-    lastx2 = x2;
-    lasty1 = y1;
-    lasty2 = y2;
-  } else {
-    if (lastPointCount == 0) {
-      lastPoints = points;
-      return;
-    }
-
-    sx1 = points.at(0).x;
-    sy1 = points.at(0).y;
-
-    if (lastsx1 == -1)
-      lastsx1 = sx1;
-    if (lastsy1 == -1)
-      lastsy1 = sy1;
-
-    x1 = lastx1 + (sx1 - lastsx1);
-    x2 = lastx2 + (sx1 - lastsx1);
-    y1 = lasty1 + (sy1 - lastsy1);
-    y2 = lasty2 + (sy1 - lastsy1);
-  }
-
-  double p = -(atan2(y2 - y1, x2 - x1) - M_PI);
-
-#ifdef __amd64 // 64-bit processors only
-  register double cosp = cos(p);
-  register double sinp = sin(p);
-#endif
-
-#ifdef i386  // 32-bit processors
-  register float cosp = cos(p);
-  register float sinp = sin(p);
-#endif
-  register float sx = (x1 + x2) / 2.0;
-  register float sy = (y1 + y2) / 2.0;
-
-  double diff = cosp + cos(wiimote_acc.roll*(M_PI/180));
-  if (diff < 0)
-    diff *= -1;
-
-  double ax, ay, x, y, moveX, moveY, bounceX = 0, bounceY = 0;
-
-  if (calibrationState == CalibrationNeeded) {
-    if (diff < 0.2)
-      calibrationState = CalibrationInverted; else
-      calibrationState = CalibrationNormal;
-  }
-
-  switch (calibrationState) {
-  case CalibrationNormal:
-    x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
-    y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
-    ax = 512.0 - x;
-    ay = 384.0 - y;
-    moveX = lastX - ax;
-    moveY = lastY - ay;
-    break;
-  case CalibrationInverted:
-    p = -(atan2(y1 - y2, x1 - x2) - M_PI);
-    x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
-    y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
-    ax = (512.0 - x) *-1;
-    ay = (384.0 - y) *-1;
-    moveX = lastX - ax;
-    moveY = lastY - ay;
-    break;
-  }
-
-  if (lastX == -1.0) lastX = ax;
-  if (lastY == -1.0) lastY = ay;
-  lastX = ax;
-  lastY = ay;
-  lastPointCount = points.count();
+  if (lastX == -1.0) lastX = x;
+  if (lastY == -1.0) lastY = y;
+  double moveX = lastX - x;
+  double moveY = lastY - y;
+  lastX = x;
+  lastY = y;
 
   if (useAcceleration) {
     useAccelerationTimeout = false;
-    if (ax < -deadzoneXRange || ax > deadzoneXRange) {
-      if (ax < -deadzoneXRange) ax += deadzoneXRange;
-      if (ax > deadzoneXRange) ax -= deadzoneXRange;
-      bool invert = (ax > 0.0);
-      if (!invert) ax *= -1;
-      bounceX = (ax / (512.0 -  deadzoneXRange));
+    if (x < -deadzoneXRange || x > deadzoneXRange) {
+      if (x < -deadzoneXRange) x += deadzoneXRange;
+      if (x > deadzoneXRange) x -= deadzoneXRange;
+      bool invert = (x > 0.0);
+      if (!invert) x *= -1;
+      double bounceX = (x / (512.0 -  deadzoneXRange));
       accVectorX = pow(bounceX * sensitivityXMultiplier, sensitivityXPower);
       if (accVectorX >= 0.0 && invert) accVectorX = accVectorX * -1;
     } else
       accVectorX = 0;
 
-    if (ay < -deadzoneYRange || ay > deadzoneYRange) {
-      if (ay < -deadzoneYRange) ay += deadzoneYRange;
-      if (ay > deadzoneYRange) ay -= deadzoneYRange;
-      bool invert = (ay > 0.0);
-      if (!invert) ay *= -1;
-      bounceY = (ay / (384.0 -  deadzoneYRange));
+    if (y < -deadzoneYRange || y > deadzoneYRange) {
+      if (y < -deadzoneYRange) y += deadzoneYRange;
+      if (y > deadzoneYRange) y -= deadzoneYRange;
+      bool invert = (y > 0.0);
+      if (!invert) y *= -1;
+      double bounceY = (y / (384.0 -  deadzoneYRange));
       accVectorY = pow(bounceY * sensitivityYMultiplier, sensitivityYPower);
       if (accVectorY >= 0.0 && invert) accVectorY = accVectorY * -1;
     } else
@@ -267,9 +181,9 @@ void InfraredVirtualMouse::dbusWiimoteInfrared(quint32 _id, QList< irpoint> poin
   if (useAimHelper) {
     int helperX = moveX * aimHelperSensitivityXMultiplier;
     int helperY = moveY * aimHelperSensitivityYMultiplier;
-    if (ax < -aimHelperXRange || ax > aimHelperXRange)
+    if (x < -aimHelperXRange || x > aimHelperXRange)
       helperX = moveX;
-    if (ay < -aimHelperYRange || ay > aimHelperYRange)
+    if (y < -aimHelperYRange || y > aimHelperYRange)
       helperY = moveY;
     device->moveMousePointerRel(helperX, helperY);
   } else {
@@ -278,8 +192,6 @@ void InfraredVirtualMouse::dbusWiimoteInfrared(quint32 _id, QList< irpoint> poin
 
   axisAccelerationX();
   axisAccelerationY();
-
-  lastPoints = points;
 }
 
 void InfraredVirtualMouse::axisAccelerationX()
