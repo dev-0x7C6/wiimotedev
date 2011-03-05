@@ -29,6 +29,7 @@ set(qwiimotedev_sources
   widgets/devicewidget.cpp
   widgets/profilewidget.cpp
   src/mainwindow.cpp
+  src/infraredsettings.cpp
   main.cpp
 )
 
@@ -37,6 +38,7 @@ set(qwiimotedev_headers
   ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
   ${CMAKE_SOURCE_DIR}/src/interfaces/profilemanager.h
   src/mainwindow.h
+  src/infraredsettings.h
   widgets/devicewidget.h
   widgets/profilewidget.h
 )
@@ -45,6 +47,7 @@ set(qwiimotedev_uis
   widgets/devicewidget.ui
   widgets/profilewidget.ui
   ui/mainwindow.ui
+  ui/infraredsettings.ui
 )
 
 set(resources

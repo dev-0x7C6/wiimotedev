@@ -40,6 +40,8 @@ class InfraredVirtualMouse: public QObject
   int accelerationTimeoutValue;
 
 //variables
+  double moveX;
+  double moveY;
   double lastX;
   double lastY;
   double accVectorX;
@@ -54,8 +56,12 @@ class InfraredVirtualMouse: public QObject
   int accelerationTimeout;
   int aimHelperXRange;
   int aimHelperYRange;
+
   int deadzoneXRange;
   int deadzoneYRange;
+  int outzoneXRange;
+  int outzoneYRange;
+
   double aimHelperSensitivityXMultiplier;
   double aimHelperSensitivityYMultiplier;
   double sensitivityXPower;
@@ -80,6 +86,8 @@ public:
   void setAimHelperYRange(int);
   void setDeadzoneXRange(int);
   void setDeadzoneYRange(int);
+  void setOutzoneXRange(int);
+  void setOutzoneYRange(int);
   void setAimHelperSensitivityXMultiplier(double);
   void setAimHelperSensitivityYMultiplier(double);
   void setAccelerationSensitivityXPower(double);

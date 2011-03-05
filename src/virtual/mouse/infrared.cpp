@@ -145,11 +145,17 @@ void InfraredVirtualMouse::dbusVirtualCursorPosition(quint32 _id, double x, doub
 
   if (lastX == -1.0) lastX = x;
   if (lastY == -1.0) lastY = y;
-  double moveX = lastX - x;
-  double moveY = lastY - y;
+  moveX = lastX - x;
+  moveY = lastY - y;
   lastX = x;
   lastY = y;
 
+  if (useAimHelper) {
+    if (x >= -aimHelperXRange && x <= aimHelperXRange)
+      moveX *= aimHelperSensitivityXMultiplier;
+    if (y >= -aimHelperYRange && y <= aimHelperYRange)
+      moveY *= aimHelperSensitivityYMultiplier;
+  }
   if (useAcceleration) {
     useAccelerationTimeout = false;
     if (x < -deadzoneXRange || x > deadzoneXRange) {
@@ -157,8 +163,7 @@ void InfraredVirtualMouse::dbusVirtualCursorPosition(quint32 _id, double x, doub
       if (x > deadzoneXRange) x -= deadzoneXRange;
       bool invert = (x > 0.0);
       if (!invert) x *= -1;
-      double bounceX = (x / (512.0 -  deadzoneXRange));
-      accVectorX = pow(bounceX * sensitivityXMultiplier, sensitivityXPower);
+      accVectorX = pow((x / ((512.0 * 1.2) -  deadzoneXRange))* sensitivityXMultiplier, sensitivityXPower);
       if (accVectorX >= 0.0 && invert) accVectorX = accVectorX * -1;
     } else
       accVectorX = 0;
@@ -168,46 +173,39 @@ void InfraredVirtualMouse::dbusVirtualCursorPosition(quint32 _id, double x, doub
       if (y > deadzoneYRange) y -= deadzoneYRange;
       bool invert = (y > 0.0);
       if (!invert) y *= -1;
-      double bounceY = (y / (384.0 -  deadzoneYRange));
-      accVectorY = pow(bounceY * sensitivityYMultiplier, sensitivityYPower);
+      accVectorY = pow((y / (384.0 -  deadzoneYRange)) * sensitivityYMultiplier, sensitivityYPower);
       if (accVectorY >= 0.0 && invert) accVectorY = accVectorY * -1;
     } else
       accVectorY = 0;
+
+    accelerationClockTimeout.stop();
   }
 
-  if (useAimHelper) {
-    int helperX = moveX * aimHelperSensitivityXMultiplier;
-    int helperY = moveY * aimHelperSensitivityYMultiplier;
-    if (x < -aimHelperXRange || x > aimHelperXRange)
-      helperX = moveX;
-    if (y < -aimHelperYRange || y > aimHelperYRange)
-      helperY = moveY;
-    device->moveMousePointerRel(helperX, helperY);
-  } else {
-    device->moveMousePointerRel(moveX, moveY);
-  }
 
-  accelerationClockTimeout.stop();
   axisAccelerationX();
   axisAccelerationY();
 }
 
 void InfraredVirtualMouse::axisAccelerationX()
 {
-  if (!useAccelerationTimeout) {
+  if (useAcceleration)
     accVectorXAccumulation += accVectorX;
-    device->moveMousePointerRel(accVectorXAccumulation, 0);
-    accVectorXAccumulation -= static_cast< int>(accVectorXAccumulation);
-  }
+  accVectorXAccumulation += moveX;
+  device->moveMousePointerRel(accVectorXAccumulation, 0);
+  accVectorXAccumulation -= static_cast< int>(accVectorXAccumulation);
+
+  moveX = 0;
 }
 
 void InfraredVirtualMouse::axisAccelerationY()
 {
-  if (!useAccelerationTimeout) {
+  if (useAcceleration)
     accVectorYAccumulation += accVectorY;
-    device->moveMousePointerRel(0, accVectorYAccumulation);
-    accVectorYAccumulation -= static_cast< int>(accVectorYAccumulation);
-  }
+  accVectorYAccumulation += moveY;
+  device->moveMousePointerRel(0, accVectorYAccumulation);
+  accVectorYAccumulation -= static_cast< int>(accVectorYAccumulation);
+
+  moveY = 0;
 }
 
 void InfraredVirtualMouse::axisAccelerationTimeout()
