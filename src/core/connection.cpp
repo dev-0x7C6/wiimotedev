@@ -50,6 +50,15 @@ WiimoteConnection::WiimoteConnection(quint32 powersave)
   setTerminationEnabled(false);
 }
 
+
+double angleDiff(double a, double b) {
+  double diff = b - a;
+  while (diff > 180) { diff -= 360; }
+  while (diff <= -180) { diff += 360; }
+
+  return diff;
+}
+
 WiimoteConnection::~WiimoteConnection() {
   delete wiimote;
 }
@@ -273,7 +282,7 @@ void WiimoteConnection::run()
         }
 
         if (wiimoteIrTable.count()) {
-          qDebug() << wiimoteIrTable.count();
+        //  qDebug() << wiimoteIrTable.count();
           emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
 
           if (wiimoteIrTable.count() > 2)
@@ -324,6 +333,13 @@ void WiimoteConnection::run()
           }
 
           double p = -(atan2(y2 - y1, x2 - x1) - M_PI);
+          double roll = -stableroll;
+          if (roll < 0);
+            roll = 360 - stableroll;
+
+          if (abs(angleDiff((p*180/M_PI), roll)) > 90)
+            p = -(atan2(y1 - y2, x1 - x2) - M_PI);
+          qDebug() << angleDiff((p*180/M_PI), roll);
 
         #ifdef __amd64 // 64-bit processors only
           register double cosp = cos(p);
@@ -337,33 +353,47 @@ void WiimoteConnection::run()
           register float sx = (x1 + x2) / 2.0;
           register float sy = (y1 + y2) / 2.0;
 
-          double diff = cosp + cos(stableroll*(M_PI/180));
-          if (diff < 0)
-            diff *= -1;
 
-          double ax, ay, x, y;
+          x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
+          y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
 
-          qDebug() << diff << " -- " << stableroll;
-          if (calibrationState == CalibrationNeeded) {
-            if (diff < 0.2)
-              calibrationState = CalibrationInverted; else
-              calibrationState = CalibrationNormal;
-          } else {
-            newstableroll = false;
-          }
+          double ax = (512.0 - x);
+          double ay = (384.0 - y);
 
-          if (calibrationState == CalibrationNormal) {
-            x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
-            y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
-            ax = 512.0 - x;
-            ay = 384.0 - y;
-          } else if (calibrationState == CalibrationInverted) {
-            p = -(atan2(y1 - y2, x1 - x2) - M_PI);
-            x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
-            y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
-            ax = (512.0 - x) *-1;
-            ay = (384.0 - y) *-1;
-          }
+//          double roll = stableroll;
+//          if (roll < 0)
+//            roll *= -1;
+
+//          double roll2 = (p*180/M_PI);
+//          if (roll2 > 180)
+//            roll2 = 360 - (p*180/M_PI);
+
+
+//          double ax, ay, x, y;
+
+//          //qDebug() << diff << " -- " << stableroll;
+//       //   if (calibrationState == CalibrationNeeded) {
+//            if (abs(roll - roll2) > 35)
+//              calibrationState = CalibrationInverted; else
+//              calibrationState = CalibrationNormal;
+//        //  } else {
+//        //    newstableroll = false;
+//        //  }
+
+//          if (calibrationState == CalibrationNormal) {
+//            x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
+//            y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
+//            ax = 512.0 - x;
+//            ay = 384.0 - y;
+//          } else if (calibrationState == CalibrationInverted) {
+//            p = -(atan2(y1 - y2, x1 - x2) - M_PI);
+//            cosp = cos(p);
+//            sinp = sin(p);
+//            x = ((1024 - (sx*cosp - sy*sinp + 512*(1-cosp) + 384*sinp)));
+//            y = (((sx*sinp + sy*cosp - 512*sinp + 384*(1-cosp))));
+//            ax = (512.0 - x);
+//            ay = (384.0 - y);
+//          }
 
           if (virtualCursorLost) {
             virtualCursorLost = false;

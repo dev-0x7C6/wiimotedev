@@ -181,7 +181,6 @@ void InfraredVirtualMouse::dbusVirtualCursorPosition(quint32 _id, double x, doub
     accelerationClockTimeout.stop();
   }
 
-
   axisAccelerationX();
   axisAccelerationY();
 }
