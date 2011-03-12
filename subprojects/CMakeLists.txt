@@ -3,7 +3,7 @@
 # Contact: dev.strikeu@gmail.com
 
 if(BUILD_QWIIMOTEDEV)
-  add_subdirectory(manager)
+  add_subdirectory(newmanager)
 endif(BUILD_QWIIMOTEDEV)
 
 if(BUILD_REGISTER)
