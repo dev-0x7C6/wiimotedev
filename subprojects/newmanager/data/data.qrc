@@ -5,5 +5,9 @@
         <file>arrow-left.png</file>
         <file>arrow-right.png</file>
         <file>profile.png</file>
+        <file>enabled.png</file>
+        <file>disabled.png</file>
+        <file>connections.png</file>
+        <file>preferences.png</file>
     </qresource>
 </RCC>

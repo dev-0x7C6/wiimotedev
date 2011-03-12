@@ -37,29 +37,35 @@ class ProfileGraphicsItem :public QObject, public QGraphicsItem
 {
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
-
-  Q_PROPERTY (qreal opacity READ opacity WRITE setOpacity)
   Q_PROPERTY (QPointF pos READ pos WRITE setPos)
-
 public:
-  ProfileGraphicsItem (quint32 width, quint32 height, QObject *parent = 0);
+  ProfileGraphicsItem (quint32 width, quint32 height, quint32 fsize, QString file, QString name, QString icon, QObject *parent = 0);
   QRectF boundingRect() const;
 
   void setFocus(bool);
   void setActive(bool);
+  void setGradient(bool);
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
 private:
+  QString profileFile;
+  QString profileName;
+
   quint32 width;
   quint32 height;
+  quint32 fsize;
 
   bool focused;
   bool actived;
+  bool useGradient;
 
   QPixmap *pixmap;
   int apos;
+
+
+
 };
 
 class GraphicsBarItem :public QObject, public QGraphicsItem
@@ -115,8 +121,15 @@ private:
 
   QList < ProfileGraphicsItem*> profiles;
 
+  ProfileGraphicsItem *ProfilesMenuItem;
+  ProfileGraphicsItem *ConnectionsMenuItem;
+  ProfileGraphicsItem *PreferencesMenuItem;
+
   ProfileGraphicsItem *lastFocusedProfile;
   ProfileGraphicsItem *lastActivedProfile;
+
+  QPixmap *enabledPixmap;
+  QPixmap *disabledPixmap;
 
   quint32 profileGroupHeight;
 

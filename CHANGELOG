@@ -1,7 +1,15 @@
 Wiimotedev Project Changelog
 ============================
 
-1.3 (IS HIGHLY RECOMMENDED)
+1.4 Wiimotedev-uinput
+- auto calibration (it' using wiiremote accelerometer and sensorbar data to define angle)
+- X/Y axis translation on the fly (it's using wiiremote angle to translate x/y axis)
+- extended X axis area (when two points is lost, algorithm make use of 1 point date in other to extend X axis )
+- hot corners
+- timeout alghoritm (cut down scrolling when timer hit timeout value, this only will happen when wiiremote lose track of points)
+- special AIM algorithm (very useful for fps games)
+
+1.3 
 - added auto-registration feaure
 - added powersave mode feature
 - added init.d script for archlinux
