@@ -17,5 +17,7 @@
         <file>cursor.png</file>
         <file>arrow-down.png</file>
         <file>arrow-up.png</file>
+        <file>disabled.png</file>
+        <file>enabled.png</file>
     </qresource>
 </RCC>

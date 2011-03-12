@@ -31,6 +31,8 @@ ProfileWidget::ProfileWidget(QString profileName, QString profileFile,
   profileVersion(profileVersion),
   profileEMail(profileEMail),
   profile(profile),
+  fontSize(7),
+  lastButtons(0),
  // QWidget(parent),
   ui(new Ui::ProfileWidget)
 {
@@ -38,6 +40,7 @@ ProfileWidget::ProfileWidget(QString profileName, QString profileFile,
     ui->profileInfo->setText(QString(
      "%1\nVersion: %2\nAuthor: %3\nEMail: %4\nFilename: %5").arg(
       profileName, profileVersion, profileAuthor, profileEMail, profileFile));
+
 }
 
 
@@ -170,12 +173,24 @@ void ProfileWidget::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
   if (id != 1)
     return;
 
+  if ((value & WIIMOTE_BTN_PLUS)) {
+    fontSize++;
+    qDebug() << fontSize;
+  }
+
+  if ((value & WIIMOTE_BTN_MINUS)) {
+    fontSize--;
+    qDebug() << fontSize;
+  }
+
+  lastButtons = value;
+
   if (value & WIIMOTE_BTN_B) {
     ui->profileInfo->setText(QString(
-     "<font size=7>%1</font>").arg(profileName));
+     "<font size=%1>%2</font>").arg(QString::number(fontSize), profileName));
   } else {
     ui->profileInfo->setText(QString(
-     "%1\nVersion: %2\nAuthor: %3\nEMail: %4\nFilename: %5").arg(
+      "%1\nVersion: %2\nAuthor: %3\nEMail: %4\nFilename: %5").arg(
       profileName, profileVersion, profileAuthor, profileEMail, profileFile));
   }
 }

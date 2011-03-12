@@ -37,6 +37,9 @@ class ProfileWidget : public QWidget
   QString profileEMail;
   DBusProfileManagerInterface *profile;
 
+  quint32 fontSize;
+  quint64 lastButtons;
+
 public:
   explicit ProfileWidget(QString profileName, QString profileFile,
                          QString profileAuthor, QString profileVersion,

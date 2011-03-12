@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>styled_bg.png</file>
+        <file>cursor.png</file>
+        <file>arrow-left.png</file>
+        <file>arrow-right.png</file>
+        <file>profile.png</file>
+    </qresource>
+</RCC>

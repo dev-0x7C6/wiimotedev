@@ -23,6 +23,9 @@
     </property>
     <item>
      <widget class="QListWidget" name="list">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="maximumSize">
        <size>
         <width>180</width>
@@ -37,6 +40,15 @@
       </property>
       <property name="autoScrollMargin">
        <number>19</number>
+      </property>
+      <property name="editTriggers">
+       <set>QAbstractItemView::NoEditTriggers</set>
+      </property>
+      <property name="showDropIndicator" stdset="0">
+       <bool>false</bool>
+      </property>
+      <property name="selectionMode">
+       <enum>QAbstractItemView::NoSelection</enum>
       </property>
       <property name="iconSize">
        <size>
@@ -116,7 +128,7 @@
       <item>
        <widget class="QStackedWidget" name="stackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="page">
          <layout class="QVBoxLayout" name="verticalLayout_3">
@@ -190,8 +202,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>100</width>
-               <height>26</height>
+               <width>617</width>
+               <height>362</height>
               </rect>
              </property>
             </widget>
@@ -199,6 +211,17 @@
           </item>
          </layout>
         </widget>
+        <widget class="QWidget" name="settingsPage"/>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="pixmap">
+         <pixmap resource="../data/data.qrc">:/enabled.png</pixmap>
+        </property>
        </widget>
       </item>
      </layout>
