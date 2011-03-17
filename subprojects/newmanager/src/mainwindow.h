@@ -33,57 +33,115 @@
 #include "src/interfaces/profilemanager.h"
 
 
-class ProfileGraphicsItem :public QObject, public QGraphicsItem
+class ProfileItem :public QObject, public QGraphicsItem
 {
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
   Q_PROPERTY (QPointF pos READ pos WRITE setPos)
-public:
-  ProfileGraphicsItem (quint32 width, quint32 height, quint32 fsize, QString file, QString name, QString icon, QObject *parent = 0);
-  QRectF boundingRect() const;
-
-  void setFocus(bool);
-  void setActive(bool);
-  void setGradient(bool);
-
-protected:
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-
-private:
-  QString profileFile;
-  QString profileName;
 
   quint32 width;
   quint32 height;
-  quint32 fsize;
+  QFont font;
+  QString text;
+  QPixmap icon;
+  quint32 state;
+
+  QColor focusColor;
+  QColor activeColor;
+  QColor inactiveColor;
 
   bool focused;
   bool actived;
-  bool useGradient;
 
-  QPixmap *pixmap;
-  int apos;
-
-
-
-};
-
-class GraphicsBarItem :public QObject, public QGraphicsItem
-{
-  Q_OBJECT
-  Q_INTERFACES(QGraphicsItem)
 public:
-  GraphicsBarItem (quint32 width, quint32 height, quint32 location, QObject *parent = 0);
-  QRectF boundingRect() const;
+  ProfileItem (QObject *parent = 0);
+  QRectF boundingRect() const { return QRectF(0, 0, width, height); }
+
+  enum States {
+    itemActive = 0,
+    itemInactive,
+    itemFocus
+  };
+
+  void setWidth(int w) { width = w; }
+  void setHeight(int h) { height = h; }
+
+  void setText(QString t) { text = t; }
+  void setIcon(QPixmap i) { icon = i; apos = (height/2)-(icon.height()/2);}
+  void setFont(QFont f) { font = f; }
+
+  void setFocusColor(QColor c) { focusColor = c; }
+  void setActiveColor(QColor c) { inactiveColor = c; }
+  void setInactiveColor(QColor c) { inactiveColor = c; }
+
+  void setActiveState(bool f) { actived = f; }
+  void setFocusState(bool a) { focused = a; }
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
 private:
+  int apos;
+};
+
+class ProfileCoverItem :public QObject, public QGraphicsItem
+{
+  Q_OBJECT
+  Q_INTERFACES(QGraphicsItem)
+  Q_PROPERTY (QPointF pos READ pos WRITE setPos)
+
   quint32 width;
   quint32 height;
-  quint32 location;
+  QFont font;
+  QString text;
+  QPixmap cover;
+  quint32 state;
+
+  QColor focusColor;
+  QColor activeColor;
+  QColor inactiveColor;
+
+  bool focused;
+  bool actived;
+
+public:
+  ProfileCoverItem (QObject *parent = 0);
+  QRectF boundingRect() const { return QRectF(0, 0, width, height); }
+
+  enum States {
+    itemActive = 0,
+    itemInactive,
+    itemFocus
+  };
+
+  void setWidth(int w) { width = w; }
+  void setHeight(int h) { height = h; }
+
+  void setText(QString t) { text = t; }
+  void setFont(QFont f) { font = f; }
+  void setCover(QPixmap c);
+
+  void setFocusColor(QColor c) { focusColor = c; }
+  void setActiveColor(QColor c) { inactiveColor = c; }
+  void setInactiveColor(QColor c) { inactiveColor = c; }
+
+  void setActiveState(bool f) { actived = f; }
+  void setFocusState(bool a) { focused = a; }
+
+protected:
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+
+private:
+  int apos;
 };
+
+class QGraphicsItemGroupPlus :public QObject, public QGraphicsItemGroup
+{
+  Q_OBJECT
+  Q_INTERFACES(QGraphicsItem)
+  Q_PROPERTY (QPointF pos READ pos WRITE setPos)
+};
+
 
 class MainWindow : public QGraphicsView {
   Q_OBJECT
@@ -116,17 +174,28 @@ private:
   double mouseAccX;
   double mouseAccY;
 
+  QFont *font8;
+  QFont *font16;
+  QFont *font24;
+  QPixmap *cursorPixmap;
+
+  double cursorAngle;
+  double cursorSize;
+
+
   QGraphicsPixmapItem *cursorHandle;
-  QGraphicsItemGroup profileGroup;
 
-  QList < ProfileGraphicsItem*> profiles;
+  QGraphicsItemGroupPlus coverGroup;
+  QGraphicsItemGroupPlus profileGroup;
 
-  ProfileGraphicsItem *ProfilesMenuItem;
-  ProfileGraphicsItem *ConnectionsMenuItem;
-  ProfileGraphicsItem *PreferencesMenuItem;
+  QList < ProfileItem*> profiles;
 
-  ProfileGraphicsItem *lastFocusedProfile;
-  ProfileGraphicsItem *lastActivedProfile;
+  ProfileItem *ProfilesMenuItem;
+  ProfileItem *ConnectionsMenuItem;
+  ProfileItem *PreferencesMenuItem;
+
+  ProfileItem *lastFocusedProfile;
+  ProfileItem *lastActivedProfile;
 
   QPixmap *enabledPixmap;
   QPixmap *disabledPixmap;

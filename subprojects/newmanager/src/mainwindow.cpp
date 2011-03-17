@@ -22,108 +22,94 @@
 
 const qint32 emptyspace = 20;
 
-
-ProfileGraphicsItem::ProfileGraphicsItem (quint32 width, quint32 height, quint32 fsize, QString file, QString name, QString icon, QObject *parent) :
+ProfileItem::ProfileItem (QObject *parent) :
   QObject(parent),
   QGraphicsItem(),
-  width(width),
-  height(height),
-  fsize(fsize),
-  focused(false),
+  width(0),
+  height(0),
+  font(QFont()),
+  text(""),
+  state(itemInactive),
+  focusColor(QColor(61, 162, 235, 255)),
+  activeColor(QColor(61, 162, 235, 50)),
+  inactiveColor(QColor(0, 0, 0, 100)),
   actived(false),
-  useGradient(false),
-  pixmap(new QPixmap(icon)),
-  profileFile(file),
-  profileName(name)
-
+  focused(false)
 {
-  setObjectName("ProfileGraphicsItem");
-
-  apos = (height/2)-(pixmap->height()/2);
+  setObjectName("ProfileItem");
 }
 
-
-QRectF ProfileGraphicsItem ::boundingRect() const {
-  return QRectF(0, 0, width, height);
-}
-
-void ProfileGraphicsItem::setFocus(bool f) {
-  focused = f;
-}
-
-void ProfileGraphicsItem::setActive(bool a) {
-  actived = a;
-}
-
-void ProfileGraphicsItem ::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void ProfileItem ::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
   Q_UNUSED(option);
   Q_UNUSED(widget);
 
   painter->setPen(Qt::NoPen);
-  if (actived)
-    painter->setBrush(QColor(61, 162, 235, 255)); else
-    painter->setBrush(Qt::black);
 
-  if (useGradient) {
-    for (int i = 0; i < height; ++i) {
-      painter->setOpacity(((height - i)/double(height) * 0.2) + 0.2);
-      if (focused)
-        painter->setOpacity(painter->opacity() + 0.2);
-      if (actived)
-        painter->setOpacity(painter->opacity() + 0.6);
-      painter->drawRect(QRect(0, i, width, 1));
-    }
-  } else {
-    painter->setOpacity(0.4);
-    if (focused)
-      painter->setOpacity(painter->opacity() + 0.2);
-    if (actived)
-      painter->setOpacity(painter->opacity() + 0.6);
-    painter->drawRect(QRect(0, 0, width, height));
-  }
+  if (actived)
+    painter->setBrush(activeColor); else
+    painter->setBrush(inactiveColor);
+
+  if (focused)
+    painter->setBrush(focusColor);
+
+  painter->drawRect(QRect(0, 0, width, height));
+  painter->setOpacity(1.0);
+  painter->drawPixmap(apos+10, apos, 64, 64, icon);
+  painter->setFont(font);
+  painter->setPen(Qt::white);
+  painter->drawText(apos + 64 + 20, 0, width-(apos + 64 + 20), height, Qt::AlignVCenter | Qt::TextWordWrap,  text);
+  painter->setPen(Qt::NoPen);
+}
+
+ProfileCoverItem::ProfileCoverItem(QObject *parent) :
+  QObject(parent),
+  QGraphicsItem(),
+  width(0),
+  height(0),
+  font(QFont()),
+  text(""),
+  state(itemInactive),
+  focusColor(QColor(61, 162, 235, 255)),
+  activeColor(QColor(61, 162, 235, 50)),
+  inactiveColor(QColor(0, 0, 0, 100)),
+  actived(false),
+  focused(false)
+
+{
+  setObjectName("ProfileItem");
+
+}
+
+void ProfileCoverItem::setCover(QPixmap c)
+{
+  cover = c.scaled(QSize(width, height*0.7), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+}
+
+void ProfileCoverItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+  Q_UNUSED(option);
+  Q_UNUSED(widget);
+
+  painter->setPen(Qt::NoPen);
+
+//  if (actived)
+    painter->setBrush(activeColor); //else
+   // painter->setBrush(inactiveColor);
+
+//  if (focused)
+//    painter->setBrush(focusColor);
+
+  painter->drawRect(QRect(0, 0, width, height));
+
 
   painter->setOpacity(1.0);
-  painter->drawPixmap(apos+10, apos, 64, 64, *pixmap);
-
-  QFont font("Luxi Serif Bold Oblique", fsize, QFont::Bold);
-
+  painter->drawPixmap((width/2) - (cover.width()/2), (height/2) - (cover.height()/2), cover.width(), cover.height(), cover);
   painter->setFont(font);
-
   painter->setPen(Qt::white);
-  painter->drawText(apos + 64 + 20, 0, width-(apos + 64 + 20), height, Qt::AlignVCenter | Qt::TextWordWrap,  profileName);
+  QRectF rect2(0, height - 60, width, 60);
+  painter->drawText(rect2, Qt::AlignHCenter | Qt::TextWordWrap, text);
   painter->setPen(Qt::NoPen);
-}
-
-
-
-GraphicsBarItem::GraphicsBarItem (quint32 width, quint32 height, quint32 location, QObject *parent) :
-  QObject(parent),
-  QGraphicsItem(),
-  width(width),
-  height(height),
-  location(location)
-{
-  setObjectName("GraphicsBarItem");
-}
-
-QRectF GraphicsBarItem::boundingRect() const {
-  return QRectF(-1, 0, width+1, height);
-}
-
-void GraphicsBarItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
-{
-  Q_UNUSED(option);
-  Q_UNUSED(widget);
-
-  painter->setPen(Qt::NoPen);
-  painter->setBrush(QColor(65, 65, 65, 255));
-  painter->drawRect(-1, 0, 1, height);
-  painter->setBrush(QColor(45, 45, 45, 255));
-  painter->drawRect(0, 0, width, height);
-  painter->setBrush(QColor(65, 65, 65, 255));
-  painter->drawRect(width, 0, 1, height);
-
 }
 
 MainWindow::MainWindow(DBusDeviceEventsInterface *device):
@@ -132,7 +118,11 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   lastFocusedProfile(0),
   lastActivedProfile(0),
   enabledPixmap(new QPixmap(":/enabled.png")),
-  disabledPixmap(new QPixmap(":/disabled.png"))
+  disabledPixmap(new QPixmap(":/disabled.png")),
+  font8(new QFont("Luxi Serif Bold Oblique", 8, QFont::Bold)),
+  font16(new QFont("Luxi Serif Bold Oblique", 16, QFont::Bold)),
+  font24(new QFont("Luxi Serif Bold Oblique", 16, QFont::Bold)),
+  cursorPixmap(new QPixmap(":/cursor.png"))
 {
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
@@ -219,8 +209,12 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
     foreach (const QString &key, settings.childGroups()) {
       settings.beginGroup(key);
       if (settings.value("module", QString()).toString().toLower() == "manager") {
-        ProfileGraphicsItem *item = new ProfileGraphicsItem(geometry().width() - 270, 100, 24, file.absoluteFilePath() + "/uinput.ini", settings.value("name", QString("not definited")).toString(),
-                                                            file.absoluteFilePath() + "/icon.png");
+        ProfileItem *item = new ProfileItem();
+        item->setWidth(geometry().width() - 270);
+        item->setHeight(100);
+        item->setFont(QFont("Luxi Serif Bold Oblique", 24, QFont::Bold));
+        item->setText(settings.value("name", QString()).toString());
+        item->setIcon(QPixmap(file.absoluteFilePath() + "/icon.png"));
         item->setX(geometry().width());
         item->setY(0);
         QPropertyAnimation *animation = new QPropertyAnimation(item, "pos");
@@ -230,9 +224,21 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
         animation->setEndValue(QPoint(270, (100 * i + (10*i))));
         animation->start();
         connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+        ProfileCoverItem *item2 = new ProfileCoverItem();
+
+        item2->setWidth(geometry().width() - 264);
+        item2->setHeight(height()-40);
+        item2->setX(264+ ((geometry().width() - 264)*i));
+        item2->setY(20);
+        item2->setCover(QPixmap(file.absoluteFilePath() + "/cover.jpg"));
+        item2->setFont(*font24);
+        item2->setText(settings.value("name", QString()).toString());
+
         i++;
         profiles << item;
-        profileGroup.addToGroup(item);
+    //    profileGroup.addToGroup(item);
+        coverGroup.addToGroup(item2);
       }
       settings.endGroup();
     }
@@ -240,34 +246,44 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 
   profileGroup.setY(50);
 
-  ProfilesMenuItem = new ProfileGraphicsItem(226, 50, 16, "", "Profiles", ":/profile.png");
+  ProfilesMenuItem = new ProfileItem();
+  ProfilesMenuItem->setWidth(226);
+  ProfilesMenuItem->setHeight(50);
+  ProfilesMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
+  ProfilesMenuItem->setText("Profiles");  ProfilesMenuItem->setIcon(QPixmap(":/profile.png"));
   ProfilesMenuItem->setX(30);
   ProfilesMenuItem->setY(150);
-  ProfilesMenuItem->setActive(true);
+  ProfilesMenuItem->setFocusState(true);
+
   scene()->addItem(ProfilesMenuItem);
 
-  PreferencesMenuItem = new ProfileGraphicsItem(226, 50, 16, "", "Preferences", ":/preferences.png");
+  PreferencesMenuItem = new ProfileItem();
+  PreferencesMenuItem->setWidth(226);
+  PreferencesMenuItem->setHeight(50);
+  PreferencesMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
+  PreferencesMenuItem->setText("Preferences");
+  PreferencesMenuItem->setIcon(QPixmap(":/preferences.png"));
   PreferencesMenuItem->setX(30);
   PreferencesMenuItem->setY(220);
-  PreferencesMenuItem->setActive(false);
+
+
   scene()->addItem(PreferencesMenuItem);
 
-  ConnectionsMenuItem = new ProfileGraphicsItem(226, 50, 16, "", "Connections", ":/connections.png");
+  ConnectionsMenuItem = new ProfileItem();
+  ConnectionsMenuItem->setWidth(226);
+  ConnectionsMenuItem->setHeight(50);
+  ConnectionsMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
+  ConnectionsMenuItem->setText("Connections");
+  ConnectionsMenuItem->setIcon(QPixmap(":/connections.png"));
   ConnectionsMenuItem->setX(30);
   ConnectionsMenuItem->setY(290);
   ConnectionsMenuItem->setActive(false);
   scene()->addItem(ConnectionsMenuItem);
 
 
-  GraphicsBarItem *bar = new GraphicsBarItem(2, geometry().height(), 0);
-  bar->setZValue(0);
-  bar->setX(260);
-  bar->setY(0);
-
-  scene()->addItem(bar);
-
 
   scene()->addItem(&profileGroup);
+  scene()->addItem(&coverGroup);
 
   cursorHandle = scene()->addPixmap(QPixmap(":/cursor.png"));
   cursorHandle->setTransformOriginPoint(7, 2);
@@ -309,7 +325,23 @@ void MainWindow::resizeEvent(QResizeEvent* e)
   setSceneRect(0, 0, geometry().width(), geometry().height());
 }
 
-quint32 barsize = 100.0;
+quint32 barsize = 80.0;
+
+
+void MainWindow::drawBackground(QPainter *painter, const QRectF &rect) {
+  painter->setOpacity(1);
+  painter->setPen(Qt::NoPen);
+  painter->setBrush(QColor(65, 65, 65, 255));
+  painter->drawRect(260, 0, 1, geometry().height());
+  painter->setBrush(QColor(45, 45, 45, 255));
+  painter->drawRect(261, 0, 2, geometry().height());
+  painter->setBrush(QColor(65, 65, 65, 255));
+  painter->drawRect(263, 0, 1, geometry().height());
+
+  painter->drawPixmap(rect.width() - styledBackground->width(),
+                      rect.height() - styledBackground->height(), styledBackground->width(),
+                      styledBackground->height(), *styledBackground);
+}
 
 void MainWindow::drawForeground(QPainter *painter, const QRectF &rect){
   painter->setPen(Qt::NoPen);
@@ -320,50 +352,25 @@ void MainWindow::drawForeground(QPainter *painter, const QRectF &rect){
     painter->drawRect(QRect(0, i, geometry().width(), 1));
   }
 
-
   for (register int i = 0; i < barsize; ++i) {
     painter->setOpacity((barsize-i)/double(barsize));
     painter->drawRect(QRect(0, geometry().height() - i, geometry().width(), 1));
   }
 
   painter->setOpacity(1.0);
+  painter->setPen(Qt::white);
+  painter->setFont(*font16);
+  painter->drawText(15, 40, "Services");
+  painter->drawText(15, 130, "Menu");
 
+  painter->setPen(Qt::darkGray);
+  painter->setFont(*font8);
+  painter->drawText(40, 60, "wiimotedev-daemon: avaliable");
+  painter->drawPixmap(20, 49, *enabledPixmap);
 
-  {
-    painter->setPen(Qt::white);
-    QFont font("Luxi Serif Bold Oblique", 16, QFont::Bold);
-    painter->setFont(font);
-    painter->drawText(15, 40, "Services");
-    painter->setPen(Qt::NoPen);
-  }
-
-  {
-    painter->setPen(Qt::darkGray);
-    QFont font("Luxi Serif Bold Oblique", 8, QFont::Bold);
-    painter->setFont(font);
-
-    painter->drawText(40, 60, "wiimotedev-daemon: avaliable");
-    painter->drawPixmap(20, 49, *enabledPixmap);
-
-    painter->drawText(40, 80, "wiimotedev-uinput: avaliable");
-    painter->drawPixmap(20, 69, *enabledPixmap);
-    painter->setPen(Qt::NoPen);
-  }
-
-  {
-    painter->setPen(Qt::white);
-    QFont font("Luxi Serif Bold Oblique", 16, QFont::Bold);
-    painter->setFont(font);
-    painter->drawText(15, 130, "Menu");
-    painter->setPen(Qt::NoPen);
-  }
-}
-
-void MainWindow::drawBackground(QPainter *painter, const QRectF &rect) {
-  painter->setOpacity(1);
-  painter->drawPixmap(rect.width() - styledBackground->width(),
-                      rect.height() - styledBackground->height(), styledBackground->width(),
-                      styledBackground->height(), *styledBackground);
+  painter->drawText(40, 80, "wiimotedev-uinput: avaliable");
+  painter->drawPixmap(20, 69, *enabledPixmap);
+  painter->setPen(Qt::NoPen);
 }
 
 void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
@@ -376,31 +383,85 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
   if (value & WIIMOTE_BTN_A) {
     if (lastFocusedProfile) {
       if (lastActivedProfile == lastFocusedProfile) {
-        lastActivedProfile->setActive(false);
+        lastActivedProfile->setFocusState(false);
         lastActivedProfile = 0;
       } else {
         if (lastActivedProfile)
-          lastActivedProfile->setActive(false);
+          lastActivedProfile->setFocusState(false);
         lastActivedProfile = lastFocusedProfile;
-        lastActivedProfile->setActive(true);
+        lastActivedProfile->setFocusState(true);
       }
     }
   }
 
-  lastButtons = value;
+  if (value & WIIMOTE_BTN_LEFT) {
+    QPropertyAnimation *animation = new QPropertyAnimation(&coverGroup, "pos");
+    animation->setDuration(250);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(coverGroup.pos());
+    animation->setEndValue(QPoint(coverGroup.pos().x()+(geometry().width()-260), coverGroup.pos().y()));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
 
-  //  QObject *obj = mouse
-//  QCoreApplication::postEvent()
+  if (value & WIIMOTE_BTN_RIGHT) {
+    QPropertyAnimation *animation = new QPropertyAnimation(&coverGroup, "pos");
+    animation->setDuration(250);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(coverGroup.pos());
+    animation->setEndValue(QPoint(coverGroup.pos().x()-(geometry().width()-260), coverGroup.pos().y()));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
+
+
+
+  lastButtons = value;
 }
 
 void MainWindow::mouseMoveEvent (QMouseEvent *event) {
+  mouseX = event->x();
+  mouseY = event->y();
   cursorHandle->setPos(event->x(), event->y());
   cursorHandle->setScale(1.0);
   cursorHandle->setRotation(0);
+
+  double x = ((geometry().height()/2) - event->y())*(512/double(geometry().height()));
+
+  if (mouseX > 260)
+    mouseAccY = x * 32/512; else
+    mouseAccY = 0;
+
+
+  QGraphicsItem *obj = scene()->itemAt(mouseX, mouseY);
+  if (obj) {
+    if (obj->parentItem() == reinterpret_cast< QGraphicsItem*>(&profileGroup)) {
+      if (lastFocusedProfile != static_cast< ProfileItem*>( obj) ) {
+        if (lastFocusedProfile)
+          lastFocusedProfile->setActiveState(false);
+        lastFocusedProfile = static_cast< ProfileItem*>( obj);
+        lastFocusedProfile->setActiveState(true);
+      }
+    }
+  }
 }
 
 void MainWindow::mousePressEvent (QMouseEvent *event) {
+   if (mouseX > 260)
 
+  if (lastFocusedProfile) {
+    if (lastFocusedProfile) {
+      if (lastActivedProfile == lastFocusedProfile) {
+        lastActivedProfile->setFocusState(false);
+        lastActivedProfile = 0;
+      } else {
+        if (lastActivedProfile)
+          lastActivedProfile->setFocusState(false);
+        lastActivedProfile = lastFocusedProfile;
+        lastActivedProfile->setFocusState(true);
+      }
+    }
+  }
 }
 
 void MainWindow::mouseReleaseEvent (QMouseEvent *event)
@@ -410,7 +471,6 @@ void MainWindow::mouseReleaseEvent (QMouseEvent *event)
 
 void MainWindow::timerEvent(QTimerEvent *event) {
   profileGroup.setY(profileGroup.y() + mouseAccY);
-
 
   if (profileGroup.y() < ((profiles.count() * -110) + geometry().height() - int(barsize/2)))
     profileGroup.setY((profiles.count() * -110) + geometry().height() - int(barsize/2));
@@ -429,25 +489,24 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
   mouseX = (geometry().width()/2) - (x * (double(geometry().width()) / 1024.0 * (1.3+(double(abs(512-size))/2)/512)));
   mouseY = (geometry().height()/2) - (y * (double(geometry().height()) / 768.0 * (1.0+(double(abs(386-size))/2)/384)));
 
-  if (mouseX > 240)
+  if (mouseX > 260)
     mouseAccY = y * 32/512; else
     mouseAccY = 0;
 
   QGraphicsItem *obj = scene()->itemAt(mouseX, mouseY);
-
   if (obj) {
     if (obj->parentItem() == reinterpret_cast< QGraphicsItem*>(&profileGroup)) {
-      if (lastFocusedProfile != static_cast< ProfileGraphicsItem*>( obj) )
-      {
-
+      if (lastFocusedProfile != static_cast< ProfileItem*>( obj) ) {
         if (lastFocusedProfile)
-          lastFocusedProfile->setFocus(false);
-        lastFocusedProfile = static_cast< ProfileGraphicsItem*>( obj);
-        lastFocusedProfile->setFocus(true);
+          lastFocusedProfile->setActiveState(false);
+        lastFocusedProfile = static_cast< ProfileItem*>( obj);
+        lastFocusedProfile->setActiveState(true);
       }
     }
   }
 
+  cursorSize = ((1024-size)/500)*1.3;
+  cursorAngle = -angle*180/M_PI;
 
   cursorHandle->setPos(mouseX, mouseY);
   cursorHandle->setScale(((1024-size)/500)*1.3);
