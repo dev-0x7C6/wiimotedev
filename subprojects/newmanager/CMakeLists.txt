@@ -9,6 +9,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${QT_QTCORE_INCLUDE_DIR}
 		    ${QT_QTDBUS_INCLUDE_DIR}
 		    ${QT_QTGUI_INCLUDE_DIR}
+                    ${QT_QTOPENGL_INCLUDE_DIR}
         ${QTSINGLEAPPLICATION_INCLUDE_DIRS}
 )
 
@@ -54,7 +55,7 @@ target_link_libraries(wiimotedev-manager
   ${QT_QTGUI_LIBRARY}
   ${QT_QTNETWORK_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
-
+  ${QT_QTOPENGL_LIBRARY}
   ${QTSINGLEAPPLICATION_LIBRARIES}
 )
 

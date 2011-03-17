@@ -89,6 +89,7 @@ class ProfileCoverItem :public QObject, public QGraphicsItem
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
   Q_PROPERTY (QPointF pos READ pos WRITE setPos)
+  Q_PROPERTY (qreal opacity READ opacity WRITE setOpacity)
 
   quint32 width;
   quint32 height;
@@ -189,6 +190,7 @@ private:
   QGraphicsItemGroupPlus profileGroup;
 
   QList < ProfileItem*> profiles;
+  QList < ProfileCoverItem*> covers;
 
   ProfileItem *ProfilesMenuItem;
   ProfileItem *ConnectionsMenuItem;
@@ -205,6 +207,7 @@ private:
   QPixmap *styledBackground;
 
   quint64 lastButtons;
+  quint64 currentCoverIndex;
 
 
 };

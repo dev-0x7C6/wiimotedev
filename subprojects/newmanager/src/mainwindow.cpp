@@ -20,6 +20,8 @@
 
 #include "mainwindow.h"
 
+#include <QtOpenGL>
+
 const qint32 emptyspace = 20;
 
 ProfileItem::ProfileItem (QObject *parent) :
@@ -103,7 +105,7 @@ void ProfileCoverItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
   painter->drawRect(QRect(0, 0, width, height));
 
 
-  painter->setOpacity(1.0);
+// painter->setOpacity(1.0);
   painter->drawPixmap((width/2) - (cover.width()/2), (height/2) - (cover.height()/2), cover.width(), cover.height(), cover);
   painter->setFont(font);
   painter->setPen(Qt::white);
@@ -122,8 +124,11 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   font8(new QFont("Luxi Serif Bold Oblique", 8, QFont::Bold)),
   font16(new QFont("Luxi Serif Bold Oblique", 16, QFont::Bold)),
   font24(new QFont("Luxi Serif Bold Oblique", 16, QFont::Bold)),
-  cursorPixmap(new QPixmap(":/cursor.png"))
+  cursorPixmap(new QPixmap(":/cursor.png")),
+  currentCoverIndex(0)
 {
+  setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
   brush.setStyle(Qt::SolidPattern);
@@ -181,7 +186,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 
   //setWindowFlags(Qt::FramelessWindowHint );
   setWindowFlags(Qt::WindowStaysOnTopHint);
-  setWindowOpacity(0.98);
+  setWindowOpacity(1);
 
   setFrameStyle(QFrame::NoFrame);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -199,10 +204,10 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 
   QFileInfoList list = dir.entryInfoList();
 
-  int i = 0;
-  foreach (const QFileInfo &file, dir.entryInfoList()) {
-    if (!file.isDir())
-      continue;
+      int i = 0;
+      foreach (const QFileInfo &file, dir.entryInfoList()) {
+        if (!file.isDir())
+          continue;
 
 
     QSettings settings(file.absoluteFilePath() + "/uinput.ini", QSettings::IniFormat);
@@ -228,21 +233,26 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
         ProfileCoverItem *item2 = new ProfileCoverItem();
 
         item2->setWidth(geometry().width() - 264);
-        item2->setHeight(height()-40);
-        item2->setX(264+ ((geometry().width() - 264)*i));
-        item2->setY(20);
-        item2->setCover(QPixmap(file.absoluteFilePath() + "/cover.jpg"));
+        item2->setHeight(height());
+        item2->setX(264 + ((geometry().width() - 264)*i));
+        item2->setY(0);
+        item2->setCover(QPixmap(file.absoluteFilePath() + "/cover.png"));
         item2->setFont(*font24);
         item2->setText(settings.value("name", QString()).toString());
+        item2->setOpacity(0.4);
+        item2->setZValue(-100);
 
         i++;
         profiles << item;
-    //    profileGroup.addToGroup(item);
+        covers << item2;
+        profileGroup.addToGroup(item);
         coverGroup.addToGroup(item2);
       }
       settings.endGroup();
     }
   }
+
+  covers.at(currentCoverIndex)->setOpacity(1.0);
 
   profileGroup.setY(50);
 
@@ -282,7 +292,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 
 
 
-  scene()->addItem(&profileGroup);
+  //scene()->addItem(&profileGroup);
   scene()->addItem(&coverGroup);
 
   cursorHandle = scene()->addPixmap(QPixmap(":/cursor.png"));
@@ -394,24 +404,58 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
     }
   }
 
-  if (value & WIIMOTE_BTN_LEFT) {
+  if ((value & WIIMOTE_BTN_LEFT) && (currentCoverIndex > 0)) {
+    currentCoverIndex--;
     QPropertyAnimation *animation = new QPropertyAnimation(&coverGroup, "pos");
     animation->setDuration(250);
     animation->setEasingCurve(QEasingCurve::OutQuart);
     animation->setStartValue(coverGroup.pos());
-    animation->setEndValue(QPoint(coverGroup.pos().x()+(geometry().width()-260), coverGroup.pos().y()));
+    animation->setEndValue(QPoint(264+(currentCoverIndex*264), coverGroup.pos().y()));
     animation->start();
     connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+    for (register int i = 0; i < covers.count(); ++i) {
+        QPropertyAnimation *animation = new QPropertyAnimation(covers.at(i), "opacity");
+        animation->setDuration(250);
+        animation->setEasingCurve(QEasingCurve::Linear);
+        animation->setStartValue(covers.at(i)->opacity());
+        animation->setEndValue((i == currentCoverIndex) ? 1 : 0.4);
+        animation->start();
+        connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+        animation = new QPropertyAnimation(covers.at(i), "pos");
+        animation->setDuration(250);
+        animation->setEasingCurve(QEasingCurve::OutQuart);
+        animation->setStartValue(covers.at(i)->pos());
+        animation->setEndValue(QPoint(264 + ((geometry().width() - 264)*i), coverGroup.pos().y()));
+        animation->start();
+        connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+    }
+
   }
 
-  if (value & WIIMOTE_BTN_RIGHT) {
-    QPropertyAnimation *animation = new QPropertyAnimation(&coverGroup, "pos");
-    animation->setDuration(250);
-    animation->setEasingCurve(QEasingCurve::OutQuart);
-    animation->setStartValue(coverGroup.pos());
-    animation->setEndValue(QPoint(coverGroup.pos().x()-(geometry().width()-260), coverGroup.pos().y()));
-    animation->start();
-    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  if ((value & WIIMOTE_BTN_RIGHT) && (currentCoverIndex < (covers.count()-1))) {
+    currentCoverIndex++;
+
+    for (register int i = 0; i < covers.count(); ++i) {
+        QPropertyAnimation *animation = new QPropertyAnimation(covers.at(i), "opacity");
+        animation->setDuration(250);
+        animation->setEasingCurve(QEasingCurve::Linear);
+        animation->setStartValue(covers.at(i)->opacity());
+        animation->setEndValue((i == currentCoverIndex) ? 1 : 0.4);
+        animation->start();
+        connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+        animation = new QPropertyAnimation(covers.at(i), "pos");
+        animation->setDuration(250);
+        animation->setEasingCurve(QEasingCurve::OutQuart);
+        animation->setStartValue(covers.at(i)->pos());
+        animation->setEndValue(QPoint(264 + ((geometry().width() - 264)*i) - ((geometry().width() - 264)*currentCoverIndex), coverGroup.pos().y()));
+        animation->start();
+        connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+    }
+
   }
 
 
@@ -434,9 +478,11 @@ void MainWindow::mouseMoveEvent (QMouseEvent *event) {
 
 
   QGraphicsItem *obj = scene()->itemAt(mouseX, mouseY);
+  qDebug() << obj;
   if (obj) {
-    if (obj->parentItem() == reinterpret_cast< QGraphicsItem*>(&profileGroup)) {
+    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&profileGroup)) {
       if (lastFocusedProfile != static_cast< ProfileItem*>( obj) ) {
+        qDebug() << "abc";
         if (lastFocusedProfile)
           lastFocusedProfile->setActiveState(false);
         lastFocusedProfile = static_cast< ProfileItem*>( obj);
