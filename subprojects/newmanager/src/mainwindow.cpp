@@ -204,12 +204,10 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 
   QFileInfoList list = dir.entryInfoList();
 
-      int i = 0;
-      foreach (const QFileInfo &file, dir.entryInfoList()) {
-        if (!file.isDir())
-          continue;
-
-
+  int i = 0;
+  foreach (const QFileInfo &file, dir.entryInfoList()) {
+    if (!file.isDir())
+      continue;
     QSettings settings(file.absoluteFilePath() + "/uinput.ini", QSettings::IniFormat);
     foreach (const QString &key, settings.childGroups()) {
       settings.beginGroup(key);
@@ -239,8 +237,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
         item2->setCover(QPixmap(file.absoluteFilePath() + "/cover.png"));
         item2->setFont(*font24);
         item2->setText(settings.value("name", QString()).toString());
-        item2->setOpacity(0.4);
-        item2->setZValue(-100);
+        item2->setOpacity(0.2);
 
         i++;
         profiles << item;
@@ -255,6 +252,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   covers.at(currentCoverIndex)->setOpacity(1.0);
 
   profileGroup.setY(50);
+  coverGroup.setZValue(-1000);
 
   ProfilesMenuItem = new ProfileItem();
   ProfilesMenuItem->setWidth(226);
@@ -292,8 +290,12 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 
 
 
-  //scene()->addItem(&profileGroup);
+  scene()->addItem(&profileGroup);
   scene()->addItem(&coverGroup);
+
+  profileGroup.setVisible(true);
+  coverGroup.setVisible(false);
+
 
   cursorHandle = scene()->addPixmap(QPixmap(":/cursor.png"));
   cursorHandle->setTransformOriginPoint(7, 2);
@@ -404,13 +406,31 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
     }
   }
 
+  if (value & WIIMOTE_BTN_1) {
+    profileGroup.setVisible(true);
+    coverGroup.setVisible(false);
+  }
+
+  if (value & WIIMOTE_BTN_2) {
+    profileGroup.setVisible(false);
+    coverGroup.setVisible(true);
+  }
+
   if ((value & WIIMOTE_BTN_LEFT) && (currentCoverIndex > 0)) {
     currentCoverIndex--;
     QPropertyAnimation *animation = new QPropertyAnimation(&coverGroup, "pos");
     animation->setDuration(250);
     animation->setEasingCurve(QEasingCurve::OutQuart);
     animation->setStartValue(coverGroup.pos());
-    animation->setEndValue(QPoint(264+(currentCoverIndex*264), coverGroup.pos().y()));
+    animation->setEndValue(QPoint(-(currentCoverIndex*264), coverGroup.pos().y()));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+    animation = new QPropertyAnimation(&coverGroup, "pos");
+    animation->setDuration(250);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(coverGroup.pos());
+    animation->setEndValue(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup.pos().y()));
     animation->start();
     connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
@@ -419,15 +439,7 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
         animation->setDuration(250);
         animation->setEasingCurve(QEasingCurve::Linear);
         animation->setStartValue(covers.at(i)->opacity());
-        animation->setEndValue((i == currentCoverIndex) ? 1 : 0.4);
-        animation->start();
-        connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
-
-        animation = new QPropertyAnimation(covers.at(i), "pos");
-        animation->setDuration(250);
-        animation->setEasingCurve(QEasingCurve::OutQuart);
-        animation->setStartValue(covers.at(i)->pos());
-        animation->setEndValue(QPoint(264 + ((geometry().width() - 264)*i), coverGroup.pos().y()));
+        animation->setEndValue((i == currentCoverIndex) ? 1 : 0.2);
         animation->start();
         connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
     }
@@ -437,20 +449,20 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
   if ((value & WIIMOTE_BTN_RIGHT) && (currentCoverIndex < (covers.count()-1))) {
     currentCoverIndex++;
 
+    QPropertyAnimation *animation = new QPropertyAnimation(&coverGroup, "pos");
+    animation->setDuration(250);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(coverGroup.pos());
+    animation->setEndValue(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup.pos().y()));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
     for (register int i = 0; i < covers.count(); ++i) {
-        QPropertyAnimation *animation = new QPropertyAnimation(covers.at(i), "opacity");
+        animation = new QPropertyAnimation(covers.at(i), "opacity");
         animation->setDuration(250);
         animation->setEasingCurve(QEasingCurve::Linear);
         animation->setStartValue(covers.at(i)->opacity());
-        animation->setEndValue((i == currentCoverIndex) ? 1 : 0.4);
-        animation->start();
-        connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
-
-        animation = new QPropertyAnimation(covers.at(i), "pos");
-        animation->setDuration(250);
-        animation->setEasingCurve(QEasingCurve::OutQuart);
-        animation->setStartValue(covers.at(i)->pos());
-        animation->setEndValue(QPoint(264 + ((geometry().width() - 264)*i) - ((geometry().width() - 264)*currentCoverIndex), coverGroup.pos().y()));
+        animation->setEndValue((i == currentCoverIndex) ? 1 : 0.2);
         animation->start();
         connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
@@ -540,9 +552,11 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
     mouseAccY = 0;
 
   QGraphicsItem *obj = scene()->itemAt(mouseX, mouseY);
+  qDebug() << obj;
   if (obj) {
-    if (obj->parentItem() == reinterpret_cast< QGraphicsItem*>(&profileGroup)) {
+    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&profileGroup)) {
       if (lastFocusedProfile != static_cast< ProfileItem*>( obj) ) {
+        qDebug() << "abc";
         if (lastFocusedProfile)
           lastFocusedProfile->setActiveState(false);
         lastFocusedProfile = static_cast< ProfileItem*>( obj);
@@ -550,7 +564,6 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
       }
     }
   }
-
   cursorSize = ((1024-size)/500)*1.3;
   cursorAngle = -angle*180/M_PI;
 
