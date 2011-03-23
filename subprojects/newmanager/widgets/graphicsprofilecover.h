@@ -1,0 +1,79 @@
+/**********************************************************************************
+ * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
+ * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
+ * Contact: dev.strikeu@gmail.com                                                 *
+ *                                                                                *
+ * This program is free software; you can redistribute it and/or                  *
+ * modify it under the terms of the GNU Lesser General Public                     *
+ * License as published by the Free Software Foundation; either                   *
+ * version 2.1 of the License, or (at your option) any later version.             *
+ *                                                                                *
+ * This program is distributed in the hope that it will be useful,                *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                 *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU              *
+ * Lesser General Public License for more details.                                *
+ *                                                                                *
+ * You should have received a copy of the GNU Lesser General Public               *
+ * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
+ **********************************************************************************/
+
+#ifndef GRAPHICSPROFILECOVER_H
+#define GRAPHICSPROFILECOVER_H
+
+#include <QGraphicsItem>
+#include <QWidget>
+
+class GraphicsProfileCover :public QObject, public QGraphicsItem
+{
+  Q_OBJECT
+  Q_INTERFACES(QGraphicsItem)
+  Q_PROPERTY (QPointF pos READ pos WRITE setPos)
+  Q_PROPERTY (qreal opacity READ opacity WRITE setOpacity)
+
+  quint32 width;
+  quint32 height;
+  QFont font;
+  QString text;
+  QPixmap cover;
+  QPixmap orginal;
+  quint32 state;
+
+  QColor focusColor;
+  QColor activeColor;
+  QColor inactiveColor;
+
+  bool focused;
+  bool actived;
+
+public:
+  GraphicsProfileCover (QObject *parent = 0);
+  QRectF boundingRect() const { return QRectF(0, 0, width, height); }
+
+  enum States {
+    itemActive = 0,
+    itemInactive,
+    itemFocus
+  };
+
+  void setWidth(int w) { width = w; }
+  void setHeight(int h) { height = h; }
+  void rescale(bool smooth = true);
+
+  void setText(QString t) { text = t; }
+  void setFont(QFont f) { font = f; }
+  void setCover(QPixmap c);
+
+  void setFocusColor(QColor c) { focusColor = c; }
+  void setActiveColor(QColor c) { inactiveColor = c; }
+  void setInactiveColor(QColor c) { inactiveColor = c; }
+
+  void setActiveState(bool f) { actived = f; }
+  void setFocusState(bool a) { focused = a; }
+
+protected:
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+
+private:
+  int apos;
+};
+#endif // GRAPHICSPROFILECOVER_H

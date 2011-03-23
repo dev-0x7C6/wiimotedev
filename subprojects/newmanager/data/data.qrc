@@ -9,5 +9,9 @@
         <file>disabled.png</file>
         <file>connections.png</file>
         <file>preferences.png</file>
+        <file>nocover.png</file>
+        <file>running.png</file>
+        <file>background.jpg</file>
+        <file>media-optical.png</file>
     </qresource>
 </RCC>

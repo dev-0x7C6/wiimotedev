@@ -22,6 +22,10 @@ set(manager_sources
   ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
   ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.cpp
   ${CMAKE_SOURCE_DIR}/src/interfaces/profilemanager.cpp
+  widgets/graphicsprofilecover.cpp
+  widgets/graphicsprofileitem.cpp
+  widgets/graphicsbaritem.cpp
+  widgets/graphicsmanagermenu.cpp
   src/mainwindow.cpp
   main.cpp
 )
@@ -30,6 +34,10 @@ set(manager_headers
   ${CMAKE_SOURCE_DIR}/src/interfaces/customjobs.h
   ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
   ${CMAKE_SOURCE_DIR}/src/interfaces/profilemanager.h
+  widgets/graphicsprofileitem.h
+  widgets/graphicsprofilecover.h
+  widgets/graphicsbaritem.h
+  widgets/graphicsmanagermenu.h
   src/mainwindow.h
 )
 
