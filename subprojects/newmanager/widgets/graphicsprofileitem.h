@@ -22,13 +22,17 @@
 #define GRAPHICSPROFILEITEM_H
 
 #include <QGraphicsItem>
+#include <QPropertyAnimation>
 #include <QWidget>
+#include <QPainterPath>
+#include <QStyleOptionGraphicsItem>
 
 class GraphicsProfileItem :public QObject, public QGraphicsItem
 {
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
   Q_PROPERTY (QPointF pos READ pos WRITE setPos)
+  Q_PROPERTY (qreal scale READ scale WRITE setScale)
 
   quint32 width;
   quint32 height;
@@ -46,13 +50,18 @@ class GraphicsProfileItem :public QObject, public QGraphicsItem
 
 public:
   GraphicsProfileItem (QObject *parent = 0);
-  QRectF boundingRect() const { return QRectF(0, 0, width, height); }
+  QRectF boundingRect() const;
+  QPainterPath shape() const;
 
   enum States {
     itemActive = 0,
     itemInactive,
     itemFocus
   };
+
+
+  void hoverEnter();
+  void hoverLeave();
 
   void setWidth(int w) { width = w; }
   void setHeight(int h) { height = h; }
@@ -71,6 +80,8 @@ public:
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+  void virtual hoverEnterEvent (QGraphicsSceneHoverEvent * event);
+  void virtual hoverLeaveEvent (QGraphicsSceneHoverEvent * event);
 
 private:
   int apos;

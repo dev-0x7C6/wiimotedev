@@ -36,11 +36,63 @@
 #include "src/interfaces/deviceevents.h"
 #include "src/interfaces/profilemanager.h"
 
+#include <QTimeLine>
+#include <QObject>
+#include <QGraphicsItem>
+
+
 class QGraphicsItemGroupPlus :public QObject, public QGraphicsItemGroup
 {
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
+  Q_PROPERTY (qreal x READ x WRITE setX)
   Q_PROPERTY (QPointF pos READ pos WRITE setPos)
+
+private:
+  GraphicsProfileItem* lastItem;
+
+public:
+  QGraphicsItemGroupPlus() {
+    lastItem = 0;
+  }
+
+protected:
+  void hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
+
+    QGraphicsItem* item = scene()->itemAt(event->scenePos().x(), event->scenePos().y());
+    if (item)
+      if (item->parentItem() == static_cast< QGraphicsItem *>(this)) {
+        GraphicsProfileItem* obj = dynamic_cast< GraphicsProfileItem*>(item);
+        if (obj) {
+          if (lastItem)
+            lastItem->hoverLeave();
+          lastItem = obj;
+          lastItem->hoverEnter();
+        }
+      }
+
+    QGraphicsItem::hoverEnterEvent(event);
+  }
+
+  void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
+
+    if (lastItem) {
+      lastItem->hoverLeave();
+      lastItem = 0;
+    }
+
+    QGraphicsItem::hoverLeaveEvent(event);
+  }
+};
+
+class QGraphicsPixmapItemPlus :public QObject, public QGraphicsPixmapItem
+{
+  Q_OBJECT
+  Q_INTERFACES(QGraphicsItem)
+  Q_PROPERTY (QPointF pos READ pos WRITE setPos)
+  Q_PROPERTY (qreal x READ x WRITE setX)
+  Q_PROPERTY (qreal opacity READ opacity WRITE setOpacity)
+
 };
 
 
@@ -50,9 +102,25 @@ public:
   MainWindow(DBusDeviceEventsInterface *device);
   ~MainWindow();
 
+private slots:
+  void showMenu(int duration);
+  void hideMenu(int duration);
+
+
 private:
   QRect calculateWindowSize();
+
+
   void confineCursor();
+  void moveCursor();
+  void scaleCursor(double scale);
+  void rotateCursor(double angle);
+
+
+  void setCoverIndex(int index);
+  void nextCover();
+  void prevCover();
+
 
 protected:
   virtual void drawForeground(QPainter *painter, const QRectF &rect);
@@ -67,6 +135,8 @@ public slots:
   void dbusVirtualCursorPosition(quint32,double, double, double, double);
   void dbusWiimoteGeneralButtons(quint32,quint64);
 
+  void setRumbleStatus(int status);
+
 private:
   DBusDeviceEventsInterface *device;
   double x, y;
@@ -78,6 +148,12 @@ private:
   QFont *font8;
   QFont *font16;
   QFont *font24;
+  QFont *font32;
+  QFont *font48;
+  QFont *font64;
+
+  bool visibleMenu;
+
   QPixmap *cursorPixmap;
 
   double cursorAngle;
@@ -86,6 +162,7 @@ private:
 
   QGraphicsPixmapItem *cursorHandle;
 
+  QGraphicsItemGroupPlus menuGroup;
   QGraphicsItemGroupPlus coverGroup;
   QGraphicsItemGroupPlus profileGroup;
 
@@ -100,7 +177,7 @@ private:
   GraphicsProfileItem *lastActivedProfile;
   GraphicsManagerMenu *menu;
 
-  QGraphicsPixmapItem *profileRunning;
+  QGraphicsPixmapItemPlus *profileRunning;
 
   QPixmap *enabledPixmap;
   QPixmap *disabledPixmap;
@@ -111,6 +188,7 @@ private:
 
   quint64 lastButtons;
   qint32 currentCoverIndex;
+  QTimeLine rumble;
 
 
 };

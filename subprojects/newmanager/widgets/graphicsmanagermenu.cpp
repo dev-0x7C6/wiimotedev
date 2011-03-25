@@ -52,7 +52,7 @@ void GraphicsManagerMenuItem::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void GraphicsManagerMenuItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-  Q_UNUSED(option);
+  painter->setClipRect( option->exposedRect );
   Q_UNUSED(widget);
 
   QFont font = painter->font();
@@ -105,19 +105,20 @@ void GraphicsManagerMenu::paint(QPainter *painter, const QStyleOptionGraphicsIte
   qreal sOpacity = opacity();
 
   if (hovered)
-    painter->setOpacity(0.5); else
-    painter->setOpacity(0.5);
+    painter->setOpacity(0.4); else
+    painter->setOpacity(0.4);
 
   painter->setBrush(Qt::black);
   painter->drawRect(0, 0, width, height);
 
-
   for (register int i = 0; i < 200; i++) {
-    painter->setBrush(QColor(235, 162, 61, (double(i)/200)*150));
+  //  painter->setBrush(QColor(235, 162, 61, (double(i)/200)*150));
+    painter->setBrush(QColor(61, 162, 235, (double(i)/200)*150));
     painter->drawRect(width-200+i, 0, 1, height);
   }
 
   painter->setOpacity(1.0);
-  painter->setBrush(QColor(235, 162, 61, 255));
-  painter->drawRect(width, 0, 3, height);
+ // painter->setBrush(QColor(235, 162, 61, 255));
+  painter->setBrush(QColor(61, 162, 235, 255));
+  painter->drawRect(width, 0, 4, height);
 }

@@ -34,13 +34,58 @@ GraphicsProfileItem::GraphicsProfileItem (QObject *parent) :
   actived(false),
   focused(false)
 {
-  setObjectName("ProfileItem");
+  setObjectName("GraphicsProfileItem");
+  setAcceptHoverEvents(true);
+}
+
+void GraphicsProfileItem::hoverEnterEvent (QGraphicsSceneHoverEvent * event) {
+}
+
+void GraphicsProfileItem::hoverLeaveEvent (QGraphicsSceneHoverEvent * event)
+{
+
+}
+
+void GraphicsProfileItem::hoverEnter() {
+  setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2);
+  QPropertyAnimation *animation = new QPropertyAnimation(this, "scale");
+  animation->setDuration(200);
+  animation->setEasingCurve(QEasingCurve::OutQuart);
+  animation->setStartValue(1.0);
+  animation->setEndValue(1.2);
+  animation->start();
+  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+}
+
+void GraphicsProfileItem::hoverLeave() {
+  setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2);
+  QPropertyAnimation *animation = new QPropertyAnimation(this, "scale");
+  animation->setDuration(200);
+  animation->setEasingCurve(QEasingCurve::OutQuart);
+  animation->setStartValue(1.2);
+  animation->setEndValue(1.0);
+  animation->start();
+  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+}
+
+QPainterPath GraphicsProfileItem::shape() const {
+  QPainterPath path;
+  path.addRect(boundingRect());
+  return path;
+}
+
+QRectF GraphicsProfileItem::boundingRect() const {
+  if (height < 64)
+    return QRectF(0, -16, width, height+32);
+    return QRectF(0, 0, width, height);
 }
 
 void GraphicsProfileItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-  Q_UNUSED(option);
+  painter->setClipRect( option->exposedRect );
   Q_UNUSED(widget);
+
 
   painter->setPen(Qt::NoPen);
 

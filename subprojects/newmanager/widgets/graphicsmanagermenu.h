@@ -23,6 +23,7 @@
 
 #include <QGraphicsItem>
 #include <QGraphicsSceneHoverEvent>
+#include <QStyleOptionGraphicsItem>
 #include <QTimeLine>
 
 class GraphicsManagerMenuItem :public QObject, public QGraphicsItem

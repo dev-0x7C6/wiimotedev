@@ -30,7 +30,7 @@ GraphicsProfileCover::GraphicsProfileCover(QObject *parent) :
   text(""),
   state(itemInactive),
   focusColor(QColor(61, 162, 235, 255)),
-  activeColor(QColor(61, 162, 235, 50)),
+  activeColor(QColor(61, 162, 235, 25)),
   inactiveColor(QColor(0, 0, 0, 100)),
   actived(false),
   focused(false)
@@ -43,24 +43,25 @@ GraphicsProfileCover::GraphicsProfileCover(QObject *parent) :
 void GraphicsProfileCover::setCover(QPixmap c)
 {
   orginal = c;
-  cover = orginal.scaled(QSize(width, height*0.7), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+  cover = orginal.scaled(QSize(width, height-120), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 void GraphicsProfileCover::rescale(bool smooth) {
   if (smooth)
-    cover = orginal.scaled(QSize(width, height*0.7), Qt::KeepAspectRatio, Qt::SmoothTransformation); else
-    cover = orginal.scaled(QSize(width, height*0.7), Qt::KeepAspectRatio, Qt::FastTransformation);
+    cover = orginal.scaled(QSize(width, height-120), Qt::KeepAspectRatio, Qt::SmoothTransformation); else
+    cover = orginal.scaled(QSize(width, height-120), Qt::KeepAspectRatio, Qt::FastTransformation);
 }
 
 void GraphicsProfileCover::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-  Q_UNUSED(option);
+  painter->setClipRect( option->exposedRect );
   Q_UNUSED(widget);
 
   painter->setPen(Qt::NoPen);
 
 //  if (actived)
     painter->setBrush(activeColor); //else
+
    // painter->setBrush(inactiveColor);
 
 //  if (focused)
@@ -69,11 +70,17 @@ void GraphicsProfileCover::paint(QPainter *painter, const QStyleOptionGraphicsIt
   painter->drawRect(QRect(0, 0, width, height));
 
 
-// painter->setOpacity(1.0);
-  painter->drawPixmap((width/2) - (cover.width()/2), (height/2) - (cover.height()/2), cover.width(), cover.height(), cover);
+// painter->setOpacity(1.0)
+  QRectF rect2(0, height - 75, width, 75);
+  QRectF rect1(0, height - 70, width, 70);
+  painter->setBrush(QColor(0, 0, 0, 150));
+  painter->drawRect(rect2);
+
+  painter->drawPixmap((width/2) - (cover.width()/2), boundingRect().height()-cover.height()-80, cover.width(), cover.height(), cover);
+
   painter->setFont(font);
   painter->setPen(Qt::white);
-  QRectF rect2(0, height - 60, width, 60);
-  painter->drawText(rect2, Qt::AlignHCenter | Qt::TextWordWrap, text);
+
+  painter->drawText(rect1, Qt::AlignHCenter | Qt::AlignTop | Qt::TextWordWrap, text);
   painter->setPen(Qt::NoPen);
 }

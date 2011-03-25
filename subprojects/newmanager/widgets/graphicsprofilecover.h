@@ -22,6 +22,7 @@
 
 #include <QGraphicsItem>
 #include <QWidget>
+#include <QStyleOptionGraphicsItem>
 
 class GraphicsProfileCover :public QObject, public QGraphicsItem
 {
