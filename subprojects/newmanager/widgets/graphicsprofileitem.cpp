@@ -28,14 +28,15 @@ GraphicsProfileItem::GraphicsProfileItem (QObject *parent) :
   font(QFont()),
   text(""),
   state(itemInactive),
-  focusColor(QColor(61, 162, 235, 255)),
+  focusColor(QColor(61, 162, 235,  150)),
   activeColor(QColor(61, 162, 235, 50)),
-  inactiveColor(QColor(0, 0, 0, 100)),
+  inactiveColor(QColor(61, 235, 162, 25)),
   actived(false),
   focused(false)
 {
   setObjectName("GraphicsProfileItem");
   setAcceptHoverEvents(true);
+
 }
 
 void GraphicsProfileItem::hoverEnterEvent (QGraphicsSceneHoverEvent * event) {
@@ -47,8 +48,9 @@ void GraphicsProfileItem::hoverLeaveEvent (QGraphicsSceneHoverEvent * event)
 }
 
 void GraphicsProfileItem::hoverEnter() {
-  setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2);
-  QPropertyAnimation *animation = new QPropertyAnimation(this, "scale");
+    if ((scale() == 1.2) && focused)
+        return;
+    QPropertyAnimation *animation = new QPropertyAnimation(this, "scale");
   animation->setDuration(200);
   animation->setEasingCurve(QEasingCurve::OutQuart);
   animation->setStartValue(1.0);
@@ -59,7 +61,8 @@ void GraphicsProfileItem::hoverEnter() {
 }
 
 void GraphicsProfileItem::hoverLeave() {
-  setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2);
+  if (focused)
+      return;
   QPropertyAnimation *animation = new QPropertyAnimation(this, "scale");
   animation->setDuration(200);
   animation->setEasingCurve(QEasingCurve::OutQuart);
@@ -97,6 +100,14 @@ void GraphicsProfileItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->setBrush(focusColor);
 
   painter->drawRect(QRect(0, 0, width, height));
+  QColor color = painter->brush().color();
+  for (register int i = 0; i < 10; ++i) {
+
+    color.setAlpha(10.0/double(i));
+
+    painter->drawRect(QRect(height+i, 0, width, 1));
+  }
+
   painter->setOpacity(1.0);
   painter->drawPixmap(apos+10, apos, 64, 64, icon);
   painter->setFont(font);

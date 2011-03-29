@@ -141,7 +141,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
         animation->setDuration(1000);
         animation->setEasingCurve(QEasingCurve::OutQuart);
         animation->setStartValue(item->pos());
-        animation->setEndValue(QPoint(270, (100 * i + (10*i))));
+        animation->setEndValue(QPoint(290, (100 * i + (10*i))));
         animation->start();
         connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
@@ -333,7 +333,7 @@ void MainWindow::resizeEvent(QResizeEvent* e)
     i++;
   }
 
-  menu->setWidth(260);
+  menu->setWidth(290);
   menu->setHeight(geometry().height());
 
   profileRunning->setPos(400, geometry().height() - 400);

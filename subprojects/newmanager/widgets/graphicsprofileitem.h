@@ -27,7 +27,9 @@
 #include <QPainterPath>
 #include <QStyleOptionGraphicsItem>
 
-class GraphicsProfileItem :public QObject, public QGraphicsItem
+/*
+
+class GraphicsStyleButton :public QObject, public QGraphicsItem
 {
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
@@ -77,6 +79,68 @@ public:
 
   void setActiveState(bool f) { actived = f; }
   void setFocusState(bool a) { focused = a; }
+
+protected:
+  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+  void virtual hoverEnterEvent (QGraphicsSceneHoverEvent * event);
+  void virtual hoverLeaveEvent (QGraphicsSceneHoverEvent * event);
+
+private:
+  int apos;
+};
+
+*/
+
+class GraphicsProfileItem :public QObject, public QGraphicsItem
+{
+  Q_OBJECT
+  Q_INTERFACES(QGraphicsItem)
+  Q_PROPERTY (QPointF pos READ pos WRITE setPos)
+  Q_PROPERTY (qreal scale READ scale WRITE setScale)
+
+  quint32 width;
+  quint32 height;
+  QFont font;
+  QString text;
+  QPixmap icon;
+  quint32 state;
+
+  QColor focusColor;
+  QColor activeColor;
+  QColor inactiveColor;
+
+  bool focused;
+  bool actived;
+
+public:
+  GraphicsProfileItem (QObject *parent = 0);
+  QRectF boundingRect() const;
+  QPainterPath shape() const;
+
+  enum States {
+    itemActive = 0,
+    itemInactive,
+    itemFocus
+  };
+
+
+  void hoverEnter();
+  void hoverLeave();
+
+  void setWidth(int w) { width = w; setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2); }
+  void setHeight(int h) { height = h; setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2); }
+
+
+  void setText(QString t) { text = t; }
+  void setIcon(QPixmap i) { icon = i; apos = (height/2)-(icon.height()/2);}
+  void setFont(QFont f) { font = f; }
+
+  void setFocusColor(QColor c) { focusColor = c;  }
+  void setActiveColor(QColor c) { inactiveColor = c; }
+  void setInactiveColor(QColor c) { inactiveColor = c; }
+
+  void setActiveState(bool f) { actived = f; }
+  void setFocusState(bool a) { focused = a; if (a) hoverEnter();}
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
