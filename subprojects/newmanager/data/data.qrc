@@ -13,5 +13,6 @@
         <file>running.png</file>
         <file>background.jpg</file>
         <file>media-optical.png</file>
+        <file>covers.png</file>
     </qresource>
 </RCC>

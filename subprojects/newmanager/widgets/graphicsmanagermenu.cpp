@@ -59,15 +59,11 @@ void GraphicsManagerMenuItem::paint(QPainter *painter, const QStyleOptionGraphic
   font.setPixelSize(double(timeline.currentFrame())/100.0);
 
   font.setBold(true);
-
-
   painter->setFont(font);
 
   if (hovered)
     painter->setPen(Qt::white); else
     painter->setPen(Qt::darkGray);
-
-
 
   painter->drawText(boundingRect(), Qt::AlignRight | Qt::AlignBottom, "PROFILES");
 }
@@ -113,12 +109,13 @@ void GraphicsManagerMenu::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
   for (register int i = 0; i < 200; i++) {
   //  painter->setBrush(QColor(235, 162, 61, (double(i)/200)*150));
-    painter->setBrush(QColor(61, 162, 235, (double(i)/200)*150));
+    painter->setBrush(QColor(255, 255, 255, (double(i)/200)*50));
+    //painter->setBrush(QColor(61, 162, 235, (double(i)/200)*150));
     painter->drawRect(width-200+i, 0, 1, height);
   }
 
   painter->setOpacity(1.0);
  // painter->setBrush(QColor(235, 162, 61, 255));
-  painter->setBrush(QColor(61, 162, 235, 255));
-  painter->drawRect(width, 0, 4, height);
+  painter->setBrush(QColor(255, 255, 255, 100));
+  painter->drawRect(width-4, 0, 4, height);
 }

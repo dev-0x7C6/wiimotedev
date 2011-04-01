@@ -57,32 +57,37 @@ public:
   }
 
 protected:
+
   void hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
-
-    QGraphicsItem* item = scene()->itemAt(event->scenePos().x(), event->scenePos().y());
-    if (item)
-      if (item->parentItem() == static_cast< QGraphicsItem *>(this)) {
-        GraphicsProfileItem* obj = dynamic_cast< GraphicsProfileItem*>(item);
-        if (obj) {
-          if (lastItem)
-            lastItem->hoverLeave();
-          lastItem = obj;
-          lastItem->hoverEnter();
-        }
-      }
-
     QGraphicsItem::hoverEnterEvent(event);
+    QGraphicsItem* item = scene()->itemAt(event->scenePos().x(), event->scenePos().y());
+
+    if (!item)
+      return;
+
+    if (item->parentItem() != dynamic_cast< QGraphicsItem *>(this))
+      return;
+
+    GraphicsProfileItem* obj = dynamic_cast< GraphicsProfileItem*>(item);
+
+    if (obj) {
+      if (lastItem)
+        lastItem->hoverLeave();
+      lastItem = obj;
+      lastItem->hoverEnter();
+    }
+
   }
 
   void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
+    QGraphicsItem::hoverLeaveEvent(event);
+      if (lastItem) {
+        lastItem->hoverLeave();
+        lastItem = 0;
+      }
 
-    if (lastItem) {
-      lastItem->hoverLeave();
-      lastItem = 0;
     }
 
-    QGraphicsItem::hoverLeaveEvent(event);
-  }
 };
 
 class QGraphicsPixmapItemPlus :public QObject, public QGraphicsPixmapItem
@@ -120,6 +125,10 @@ private:
   void setCoverIndex(int index);
   void nextCover();
   void prevCover();
+
+private slots:
+  void showCovers();
+  void showProfiles();
 
 
 protected:
@@ -171,10 +180,13 @@ private:
 
   GraphicsProfileItem *ProfilesMenuItem;
   GraphicsProfileItem *ConnectionsMenuItem;
+  GraphicsProfileItem *CoversMenuItem;
   GraphicsProfileItem *PreferencesMenuItem;
 
   GraphicsProfileItem *lastFocusedProfile;
   GraphicsProfileItem *lastActivedProfile;
+  GraphicsProfileItem *lastFocusedMenu;
+  GraphicsProfileItem *lastActivedMenu;
   GraphicsManagerMenu *menu;
 
   QGraphicsPixmapItemPlus *profileRunning;

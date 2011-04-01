@@ -31,6 +31,8 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   styledBackground(new QPixmap(":/styled_bg.png")),
   lastFocusedProfile(0),
   lastActivedProfile(0),
+  lastFocusedMenu(0),
+  lastActivedMenu(0),
   enabledPixmap(new QPixmap(":/enabled.png")),
   disabledPixmap(new QPixmap(":/disabled.png")),
   font8(new QFont("Luxi Serif Bold Oblique", 8, QFont::Bold)),
@@ -137,6 +139,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
         item->setIcon(QPixmap(file.absoluteFilePath() + "/icon.png"));
         item->setX(geometry().width());
         item->setY(0);
+        item->setAlignFlags(AlignLeft | AlignHCenter);
         QPropertyAnimation *animation = new QPropertyAnimation(item, "pos");
         animation->setDuration(1000);
         animation->setEasingCurve(QEasingCurve::OutQuart);
@@ -173,40 +176,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   profileGroup.setY(50);
   coverGroup.setZValue(-1000);
 
-//  ProfilesMenuItem = new GraphicsProfileItem();
-//  ProfilesMenuItem->setWidth(226);
-//  ProfilesMenuItem->setHeight(50);
-//  ProfilesMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
-//  ProfilesMenuItem->setText("Profiles");  ProfilesMenuItem->setIcon(QPixmap(":/profile.png"));
-//  ProfilesMenuItem->setX(30);
-//  ProfilesMenuItem->setY(50);
-//  ProfilesMenuItem->setFocusState(true);
-
-//  scene()->addItem(ProfilesMenuItem);
-
-//  PreferencesMenuItem = new GraphicsProfileItem();
-//  PreferencesMenuItem->setWidth(226);
-//  PreferencesMenuItem->setHeight(50);
-//  PreferencesMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
-//  PreferencesMenuItem->setText("Preferences");
-//  PreferencesMenuItem->setIcon(QPixmap(":/preferences.png"));
-//  PreferencesMenuItem->setX(30);
-//  PreferencesMenuItem->setY(130);
-
-
-//  scene()->addItem(PreferencesMenuItem);
-
-//  ConnectionsMenuItem = new GraphicsProfileItem();
-//  ConnectionsMenuItem->setWidth(226);
-//  ConnectionsMenuItem->setHeight(50);
-//  ConnectionsMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
-//  ConnectionsMenuItem->setText("Connections");
-//  ConnectionsMenuItem->setIcon(QPixmap(":/connections.png"));
-//  ConnectionsMenuItem->setX(30);
-//  ConnectionsMenuItem->setY(210);
-//  ConnectionsMenuItem->setActive(false);
-//  scene()->addItem(ConnectionsMenuItem);
-
 
   profileRunning = new QGraphicsPixmapItemPlus();
   profileRunning->setPixmap(QPixmap(":/media-optical.png"));
@@ -232,13 +201,27 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   ProfilesMenuItem->setFocusState(true);
   scene()->addItem(ProfilesMenuItem);
 
+  connect(ProfilesMenuItem, SIGNAL(enter()), this, SLOT(showProfiles()));
   menuGroup.addToGroup(ProfilesMenuItem);
   ProfilesMenuItem->setHandlesChildEvents(true);
 
 
+  GraphicsProfileItem* CoversMenuItem = new GraphicsProfileItem();
+  CoversMenuItem->setX(33);
+  CoversMenuItem->setY(140);
+  CoversMenuItem->setActive(false);
+  CoversMenuItem->setWidth(226);
+  CoversMenuItem->setHeight(50);
+  CoversMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
+  CoversMenuItem->setText("Covers");
+  CoversMenuItem->setIcon(QPixmap(":/covers.png"));
+  scene()->addItem(CoversMenuItem);
+  connect(CoversMenuItem, SIGNAL(enter()), this, SLOT(showCovers()));
+  menuGroup.addToGroup(CoversMenuItem);
+
   GraphicsProfileItem* PreferencesMenuItem = new GraphicsProfileItem();
   PreferencesMenuItem->setX(33);
-  PreferencesMenuItem->setY(140);
+  PreferencesMenuItem->setY(230);
   PreferencesMenuItem->setActive(false);
   PreferencesMenuItem->setWidth(226);
   PreferencesMenuItem->setHeight(50);
@@ -250,7 +233,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 
   GraphicsProfileItem* ConnectionsMenuItem = new GraphicsProfileItem();
   ConnectionsMenuItem->setX(33);
-  ConnectionsMenuItem->setY(230);
+  ConnectionsMenuItem->setY(320);
   ConnectionsMenuItem->setWidth(226);
   ConnectionsMenuItem->setHeight(50);
   ConnectionsMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
@@ -345,6 +328,16 @@ void MainWindow::resizeEvent(QResizeEvent* e)
 
 quint32 barsize = 80.0;
 
+
+void MainWindow::showProfiles() {
+  profileGroup.setVisible(true);
+  coverGroup.setVisible(false);
+}
+
+void MainWindow::showCovers() {
+  profileGroup.setVisible(false);
+  coverGroup.setVisible(true);
+}
 
 void MainWindow::drawBackground(QPainter *painter, const QRectF &rect) {
 //  painter->setOpacity(1);
@@ -456,7 +449,25 @@ void MainWindow::mousePressEvent (QMouseEvent *event) {
       }
     }
   }
-   QGraphicsView::mousePressEvent(event);
+
+  if (lastFocusedMenu) {
+     if (lastFocusedMenu) {
+       if (lastActivedMenu == lastFocusedMenu) {
+         lastActivedMenu->setFocusState(false);
+         lastActivedMenu = 0;
+       } else {
+         if (lastActivedMenu)
+           lastActivedMenu->setFocusState(false);
+         lastActivedMenu = lastFocusedMenu;
+         lastActivedMenu->setFocusState(true);
+         lastActivedMenu->press();
+       }
+     }
+   }
+
+
+
+  QGraphicsView::mousePressEvent(event);
 }
 
 void MainWindow::mouseReleaseEvent (QMouseEvent *event)
@@ -654,6 +665,16 @@ void MainWindow::moveCursor() {
           lastFocusedProfile->setActiveState(false);
         lastFocusedProfile = static_cast< GraphicsProfileItem*>( obj);
         lastFocusedProfile->setActiveState(true);
+      }
+    }
+
+    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&menuGroup)) {
+      if (lastFocusedMenu != static_cast< GraphicsProfileItem*>( obj) ) {
+        rumble.start();
+        if (lastFocusedMenu)
+          lastFocusedMenu->setActiveState(false);
+        lastFocusedMenu = static_cast< GraphicsProfileItem*>( obj);
+        lastFocusedMenu->setActiveState(true);
       }
     }
   }

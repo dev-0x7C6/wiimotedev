@@ -19,6 +19,7 @@
 
 #include "graphicsprofileitem.h"
 #include <QPainter>
+#include <QDebug>
 
 GraphicsProfileItem::GraphicsProfileItem (QObject *parent) :
   QObject(parent),
@@ -28,13 +29,15 @@ GraphicsProfileItem::GraphicsProfileItem (QObject *parent) :
   font(QFont()),
   text(""),
   state(itemInactive),
-  focusColor(QColor(61, 162, 235,  150)),
+  focusColor(QColor(61, 162, 235,  100)),
   activeColor(QColor(61, 162, 235, 50)),
-  inactiveColor(QColor(61, 235, 162, 25)),
+  inactiveColor(QColor(255, 255, 255, 10)),
   actived(false),
-  focused(false)
+  focused(false),
+  hoverAlign(AlignVCenter | AlignHCenter),
+  hoverScale(1.2)
 {
-  setObjectName("GraphicsProfileItem");
+  setObjectName("GraphicProfileItem");
   setAcceptHoverEvents(true);
 
 }
@@ -48,25 +51,48 @@ void GraphicsProfileItem::hoverLeaveEvent (QGraphicsSceneHoverEvent * event)
 }
 
 void GraphicsProfileItem::hoverEnter() {
-    if ((scale() == 1.2) && focused)
-        return;
-    QPropertyAnimation *animation = new QPropertyAnimation(this, "scale");
+  QPointF p;
+  if (hoverAlign & AlignLeft) p.setX(0); else
+  if (hoverAlign & AlignVCenter) p.setX(width/2); else
+  if (hoverAlign & AlignRight) p.setX(width);
+
+  if (hoverAlign & AlignTop) p.setY(0); else
+  if (hoverAlign & AlignHCenter) p.setY(height/2); else
+  if (hoverAlign & AlignBottom) p.setY(height);
+
+  setTransformOriginPoint(p);
+
+  if ((scale() == hoverScale) && focused)
+    return;
+  QPropertyAnimation *animation = new QPropertyAnimation(this, "scale");
   animation->setDuration(200);
   animation->setEasingCurve(QEasingCurve::OutQuart);
   animation->setStartValue(1.0);
-  animation->setEndValue(1.2);
+  animation->setEndValue(hoverScale);
   animation->start();
   connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
 }
 
 void GraphicsProfileItem::hoverLeave() {
+  QPointF p;
+  if (hoverAlign & AlignLeft) p.setX(0); else
+  if (hoverAlign & AlignVCenter) p.setX(width/2); else
+  if (hoverAlign & AlignRight) p.setX(width);
+
+  if (hoverAlign & AlignTop) p.setY(0); else
+  if (hoverAlign & AlignHCenter) p.setY(height/2); else
+  if (hoverAlign & AlignBottom) p.setY(height);
+
+  setTransformOriginPoint(p);
+
+
   if (focused)
       return;
   QPropertyAnimation *animation = new QPropertyAnimation(this, "scale");
   animation->setDuration(200);
   animation->setEasingCurve(QEasingCurve::OutQuart);
-  animation->setStartValue(1.2);
+  animation->setStartValue(hoverScale);
   animation->setEndValue(1.0);
   animation->start();
   connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
@@ -99,14 +125,18 @@ void GraphicsProfileItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
   if (focused)
     painter->setBrush(focusColor);
 
-  painter->drawRect(QRect(0, 0, width, height));
   QColor color = painter->brush().color();
-  for (register int i = 0; i < 10; ++i) {
+  int alpha = color.alpha();
 
-    color.setAlpha(10.0/double(i));
+  painter->setBrush(color);
+  painter->drawRect(QRect(0, height/3*2, width, height/3));
 
-    painter->drawRect(QRect(height+i, 0, width, 1));
+  for (register int i = 0; i < height/3*2; i++) {
+    color.setAlpha(alpha+(30 * (double(i)/double(height/3*2))));
+    painter->setBrush(color);
+    painter->drawRect(QRect(0, i, width, 1));
   }
+
 
   painter->setOpacity(1.0);
   painter->drawPixmap(apos+10, apos, 64, 64, icon);

@@ -90,6 +90,13 @@ private:
 };
 
 */
+const quint8 AlignLeft = 1 << 0;
+const quint8 AlignVCenter = 1 << 1;
+const quint8 AlignRight = 1 << 2;
+const quint8 AlignTop = 1 << 3;
+const quint8 AlignHCenter = 1 << 4;
+const quint8 AlignBottom = 1 << 5;
+
 
 class GraphicsProfileItem :public QObject, public QGraphicsItem
 {
@@ -112,6 +119,10 @@ class GraphicsProfileItem :public QObject, public QGraphicsItem
   bool focused;
   bool actived;
 
+  quint32 hoverAlign;
+  double hoverScale;
+
+
 public:
   GraphicsProfileItem (QObject *parent = 0);
   QRectF boundingRect() const;
@@ -123,9 +134,14 @@ public:
     itemFocus
   };
 
+  void setAlignFlags(quint32 flags) { hoverAlign = flags; }
+  void setHoverScale(double scale) { hoverScale = scale; }
+
 
   void hoverEnter();
   void hoverLeave();
+  void press() { emit enter(); }
+  void release() { emit leave(); }
 
   void setWidth(int w) { width = w; setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2); }
   void setHeight(int h) { height = h; setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2); }
@@ -140,7 +156,7 @@ public:
   void setInactiveColor(QColor c) { inactiveColor = c; }
 
   void setActiveState(bool f) { actived = f; }
-  void setFocusState(bool a) { focused = a; if (a) hoverEnter();}
+  void setFocusState(bool a) { focused = a; if (a) hoverEnter(); if (!a) hoverLeave(); }
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -149,6 +165,10 @@ protected:
 
 private:
   int apos;
+
+signals:
+  void enter();
+  void leave();
 };
 
 #endif // GRAPHICSPROFILEITEM_H
