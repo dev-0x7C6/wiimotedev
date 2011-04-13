@@ -27,69 +27,7 @@
 #include <QPainterPath>
 #include <QStyleOptionGraphicsItem>
 
-/*
 
-class GraphicsStyleButton :public QObject, public QGraphicsItem
-{
-  Q_OBJECT
-  Q_INTERFACES(QGraphicsItem)
-  Q_PROPERTY (QPointF pos READ pos WRITE setPos)
-  Q_PROPERTY (qreal scale READ scale WRITE setScale)
-
-  quint32 width;
-  quint32 height;
-  QFont font;
-  QString text;
-  QPixmap icon;
-  quint32 state;
-
-  QColor focusColor;
-  QColor activeColor;
-  QColor inactiveColor;
-
-  bool focused;
-  bool actived;
-
-public:
-  GraphicsProfileItem (QObject *parent = 0);
-  QRectF boundingRect() const;
-  QPainterPath shape() const;
-
-  enum States {
-    itemActive = 0,
-    itemInactive,
-    itemFocus
-  };
-
-
-  void hoverEnter();
-  void hoverLeave();
-
-  void setWidth(int w) { width = w; }
-  void setHeight(int h) { height = h; }
-
-
-  void setText(QString t) { text = t; }
-  void setIcon(QPixmap i) { icon = i; apos = (height/2)-(icon.height()/2);}
-  void setFont(QFont f) { font = f; }
-
-  void setFocusColor(QColor c) { focusColor = c; }
-  void setActiveColor(QColor c) { inactiveColor = c; }
-  void setInactiveColor(QColor c) { inactiveColor = c; }
-
-  void setActiveState(bool f) { actived = f; }
-  void setFocusState(bool a) { focused = a; }
-
-protected:
-  void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
-  void virtual hoverEnterEvent (QGraphicsSceneHoverEvent * event);
-  void virtual hoverLeaveEvent (QGraphicsSceneHoverEvent * event);
-
-private:
-  int apos;
-};
-
-*/
 const quint8 AlignLeft = 1 << 0;
 const quint8 AlignVCenter = 1 << 1;
 const quint8 AlignRight = 1 << 2;
@@ -122,6 +60,11 @@ class GraphicsProfileItem :public QObject, public QGraphicsItem
   quint32 hoverAlign;
   double hoverScale;
 
+  quint32 groupId;
+
+
+  QPropertyAnimation *scaleAnimation;
+  bool lockScaleAnimation;
 
 public:
   GraphicsProfileItem (QObject *parent = 0);
@@ -134,14 +77,19 @@ public:
     itemFocus
   };
 
+  static QHash< int, GraphicsProfileItem*>  profiles;
+
+
+  void setScaleAnimationEnabled(bool lock);
+  void runScaleAnimation(double scale);
+
+
   void setAlignFlags(quint32 flags) { hoverAlign = flags; }
   void setHoverScale(double scale) { hoverScale = scale; }
 
 
-  void hoverEnter();
-  void hoverLeave();
-  void press() { emit enter(); }
-  void release() { emit leave(); }
+
+  void setGroupId(quint32 id ) { groupId = id; };
 
   void setWidth(int w) { width = w; setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2); }
   void setHeight(int h) { height = h; setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2); }
@@ -156,10 +104,12 @@ public:
   void setInactiveColor(QColor c) { inactiveColor = c; }
 
   void setActiveState(bool f) { actived = f; }
-  void setFocusState(bool a) { focused = a; if (a) hoverEnter(); if (!a) hoverLeave(); }
+  void setFocusState(bool a) { focused = a; }
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+  void virtual mousePressEvent(QGraphicsSceneMouseEvent *event);
+  void virtual mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
   void virtual hoverEnterEvent (QGraphicsSceneHoverEvent * event);
   void virtual hoverLeaveEvent (QGraphicsSceneHoverEvent * event);
 
@@ -167,8 +117,8 @@ private:
   int apos;
 
 signals:
-  void enter();
-  void leave();
+  void buttonPressed();
 };
+
 
 #endif // GRAPHICSPROFILEITEM_H

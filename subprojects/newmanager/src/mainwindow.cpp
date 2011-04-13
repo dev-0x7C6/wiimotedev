@@ -144,7 +144,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
         animation->setDuration(1000);
         animation->setEasingCurve(QEasingCurve::OutQuart);
         animation->setStartValue(item->pos());
-        animation->setEndValue(QPoint(290, (100 * i + (10*i))));
+        animation->setEndValue(QPoint(290, (100 * i + (25*i))));
         animation->start();
         connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
@@ -164,8 +164,8 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
         i++;
         profiles << item;
         covers << item2;
-        profileGroup.addToGroup(item);
-        coverGroup.addToGroup(item2);
+        scene()->addItem(item);
+        item->setGroupId(1);
       }
       settings.endGroup();
     }
@@ -173,8 +173,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 
   covers.at(currentCoverIndex)->setOpacity(1.0);
 
-  profileGroup.setY(50);
-  coverGroup.setZValue(-1000);
 
 
   profileRunning = new QGraphicsPixmapItemPlus();
@@ -186,7 +184,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   profileRunning->setZValue(-1000);
 
   menu = new GraphicsManagerMenu();
-  menuGroup.addToGroup(menu);
+  scene()->addItem(menu);
 
 
   GraphicsProfileItem* ProfilesMenuItem = new GraphicsProfileItem();
@@ -197,13 +195,10 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 
   ProfilesMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
   ProfilesMenuItem->setText("Profiles");  ProfilesMenuItem->setIcon(QPixmap(":/profile.png"));
-  ProfilesMenuItem->setActive(true);
-  ProfilesMenuItem->setFocusState(true);
   scene()->addItem(ProfilesMenuItem);
 
   connect(ProfilesMenuItem, SIGNAL(enter()), this, SLOT(showProfiles()));
-  menuGroup.addToGroup(ProfilesMenuItem);
-  ProfilesMenuItem->setHandlesChildEvents(true);
+
 
 
   GraphicsProfileItem* CoversMenuItem = new GraphicsProfileItem();
@@ -217,7 +212,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   CoversMenuItem->setIcon(QPixmap(":/covers.png"));
   scene()->addItem(CoversMenuItem);
   connect(CoversMenuItem, SIGNAL(enter()), this, SLOT(showCovers()));
-  menuGroup.addToGroup(CoversMenuItem);
 
   GraphicsProfileItem* PreferencesMenuItem = new GraphicsProfileItem();
   PreferencesMenuItem->setX(33);
@@ -229,7 +223,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   PreferencesMenuItem->setText("Preferences");
   PreferencesMenuItem->setIcon(QPixmap(":/preferences.png"));
   scene()->addItem(PreferencesMenuItem);
-  menuGroup.addToGroup(PreferencesMenuItem);
 
   GraphicsProfileItem* ConnectionsMenuItem = new GraphicsProfileItem();
   ConnectionsMenuItem->setX(33);
@@ -241,25 +234,19 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   ConnectionsMenuItem->setIcon(QPixmap(":/connections.png"));
   ConnectionsMenuItem->setActive(false);
   scene()->addItem(ConnectionsMenuItem);
-  menuGroup.addToGroup(ConnectionsMenuItem);
 
 
 
-  scene()->addItem(&menuGroup);
-  scene()->addItem(&profileGroup);
-  scene()->addItem(&coverGroup);
 
-  QPropertyAnimation *animation = new QPropertyAnimation(&menuGroup, "pos");
-  animation->setDuration(1000);
-  animation->setEasingCurve(QEasingCurve::OutQuart);
-  animation->setStartValue(QPoint(-260, 0));
-  animation->setEndValue(QPoint(0, 0));
-  animation->start();
-  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
-  profileGroup.setVisible(true);
-  coverGroup.setVisible(false);
 
+//  QPropertyAnimation *animation = new QPropertyAnimation(menuGroup, "pos");
+//  animation->setDuration(1000);
+//  animation->setEasingCurve(QEasingCurve::OutQuart);
+//  animation->setStartValue(QPoint(-260, 0));
+//  animation->setEndValue(QPoint(0, 0));
+//  animation->start();
+//  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
   cursorHandle = scene()->addPixmap(QPixmap(":/cursor.png"));
   cursorHandle->setTransformOriginPoint(7, 2);
@@ -322,21 +309,21 @@ void MainWindow::resizeEvent(QResizeEvent* e)
   profileRunning->setPos(400, geometry().height() - 400);
 
 
-  coverGroup.setPos(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup.pos().y()));
+//  coverGroup->setPos(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup->pos().y()));
 
 }
 
-quint32 barsize = 80.0;
+quint32 barsize = 60.0;
 
 
 void MainWindow::showProfiles() {
-  profileGroup.setVisible(true);
-  coverGroup.setVisible(false);
+//  profileGroup->setVisible(true);
+//  coverGroup->setVisible(false);
 }
 
 void MainWindow::showCovers() {
-  profileGroup.setVisible(false);
-  coverGroup.setVisible(true);
+//  profileGroup->setVisible(false);
+//  coverGroup->setVisible(true);
 }
 
 void MainWindow::drawBackground(QPainter *painter, const QRectF &rect) {
@@ -409,13 +396,13 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
   }
 
   if (value & WIIMOTE_BTN_1) {
-    profileGroup.setVisible(true);
-    coverGroup.setVisible(false);
+//    profileGroup->setVisible(true);
+//    coverGroup->setVisible(false);
   }
 
   if (value & WIIMOTE_BTN_2) {
-    profileGroup.setVisible(false);
-    coverGroup.setVisible(true);
+//    profileGroup->setVisible(false);
+//    coverGroup->setVisible(true);
   }
 
   if (value & WIIMOTE_BTN_LEFT) {
@@ -434,40 +421,36 @@ void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
 
 
 void MainWindow::mousePressEvent (QMouseEvent *event) {
-   if (mouseX > 260)
-
-  if (lastFocusedProfile) {
-    if (lastFocusedProfile) {
-      if (lastActivedProfile == lastFocusedProfile) {
-        lastActivedProfile->setFocusState(false);
-        lastActivedProfile = 0;
-      } else {
-        if (lastActivedProfile)
-          lastActivedProfile->setFocusState(false);
-        lastActivedProfile = lastFocusedProfile;
-        lastActivedProfile->setFocusState(true);
-      }
-    }
-  }
-
-  if (lastFocusedMenu) {
-     if (lastFocusedMenu) {
-       if (lastActivedMenu == lastFocusedMenu) {
-         lastActivedMenu->setFocusState(false);
-         lastActivedMenu = 0;
-       } else {
-         if (lastActivedMenu)
-           lastActivedMenu->setFocusState(false);
-         lastActivedMenu = lastFocusedMenu;
-         lastActivedMenu->setFocusState(true);
-         lastActivedMenu->press();
-       }
-     }
-   }
-
-
-
   QGraphicsView::mousePressEvent(event);
+
+//  if (lastFocusedProfile) {
+//    if (lastFocusedProfile) {
+//      if (lastActivedProfile == lastFocusedProfile) {
+//        lastActivedProfile->setFocusState(false);
+//        lastActivedProfile = 0;
+//      } else {
+//        if (lastActivedProfile)
+//          lastActivedProfile->setFocusState(false);
+//        lastActivedProfile = lastFocusedProfile;
+//        lastActivedProfile->setFocusState(true);
+//      }
+//    }
+//  }
+
+//  if (lastFocusedMenu) {
+//     if (lastFocusedMenu) {
+//       if (lastActivedMenu == lastFocusedMenu) {
+//         lastActivedMenu->setFocusState(false);
+//         lastActivedMenu = 0;
+//       } else {
+//         if (lastActivedMenu)
+//           lastActivedMenu->setFocusState(false);
+//         lastActivedMenu = lastFocusedMenu;
+//         lastActivedMenu->setFocusState(true);
+//         lastActivedMenu->press();
+//       }
+//     }
+//   }
 }
 
 void MainWindow::mouseReleaseEvent (QMouseEvent *event)
@@ -476,53 +459,53 @@ QGraphicsView::mouseReleaseEvent(event);
 }
 
 void MainWindow::timerEvent(QTimerEvent *event) {
-  profileGroup.setY(profileGroup.y() + mouseAccY);
+//  profileGroup->setY(profileGroup->y() + mouseAccY);
 
-  if (profileGroup.y() < ((profiles.count() * -110) + geometry().height() - int(barsize/2)))
-    profileGroup.setY((profiles.count() * -110) + geometry().height() - int(barsize/2));
+//  if (profileGroup->y() < ((profiles.count() * -110) + geometry().height() - int(barsize/2)))
+//    profileGroup->setY((profiles.count() * -110) + geometry().height() - int(barsize/2));
 
-  if (profileGroup.y() > (barsize/2))
-    profileGroup.setY(barsize/2);
+//  if (profileGroup->y() > (barsize/2))
+//    profileGroup->setY(barsize/2);
 
   //profileRunning->setRotation(profileRunning->rotation()+1);
 }
 
 
 void MainWindow::showMenu(int duration) {
-  QPropertyAnimation *animation = new QPropertyAnimation(&menuGroup, "pos");
-  animation->setDuration(duration);
-  animation->setEasingCurve(QEasingCurve::OutQuart);
-  animation->setStartValue(QPoint(menuGroup.pos().x(), 0));
-  animation->setEndValue(QPoint(-260, 0));
-  animation->start();
-  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+//  QPropertyAnimation *animation = new QPropertyAnimation(menuGroup, "pos");
+//  animation->setDuration(duration);
+//  animation->setEasingCurve(QEasingCurve::OutQuart);
+//  animation->setStartValue(QPoint(menuGroup->pos().x(), 0));
+//  animation->setEndValue(QPoint(-260, 0));
+//  animation->start();
+//  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
-  animation = new QPropertyAnimation(&profileGroup, "x");
-  animation->setDuration(duration);
-  animation->setEasingCurve(QEasingCurve::OutQuart);
-  animation->setStartValue(profileGroup.pos().x());
-  animation->setEndValue(-264);
-  animation->start();
-  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+//  animation = new QPropertyAnimation(profileGroup, "x");
+//  animation->setDuration(duration);
+//  animation->setEasingCurve(QEasingCurve::OutQuart);
+//  animation->setStartValue(profileGroup->pos().x());
+//  animation->setEndValue(-264);
+//  animation->start();
+//  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 }
 
 void MainWindow::hideMenu(int duration) {
-  QPropertyAnimation *animation = new QPropertyAnimation(&menuGroup, "pos");
-  animation->setDuration(duration);
-  animation->setEasingCurve(QEasingCurve::OutQuart);
-  animation->setStartValue(QPoint(menuGroup.pos().x(), 0));
-  animation->setEndValue(QPoint(0, 0));
-  animation->start();
-  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
-  visibleMenu = true;
+//  QPropertyAnimation *animation = new QPropertyAnimation(menuGroup, "pos");
+//  animation->setDuration(duration);
+//  animation->setEasingCurve(QEasingCurve::OutQuart);
+//  animation->setStartValue(QPoint(menuGroup->pos().x(), 0));
+//  animation->setEndValue(QPoint(0, 0));
+//  animation->start();
+//  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+//  visibleMenu = true;
 
-  animation = new QPropertyAnimation(&profileGroup, "x");
-  animation->setDuration(duration);
-  animation->setEasingCurve(QEasingCurve::OutQuart);
-  animation->setStartValue(profileGroup.pos().x());
-  animation->setEndValue(0);
-  animation->start();
-  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+//  animation = new QPropertyAnimation(profileGroup, "x");
+//  animation->setDuration(duration);
+//  animation->setEasingCurve(QEasingCurve::OutQuart);
+//  animation->setStartValue(profileGroup->pos().x());
+//  animation->setEndValue(0);
+//  animation->start();
+//  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 }
 
 void MainWindow::setCoverIndex(int index) {
@@ -530,58 +513,58 @@ void MainWindow::setCoverIndex(int index) {
 }
 
 void MainWindow::nextCover() {
-  currentCoverIndex++;
+//  currentCoverIndex++;
 
-  if (currentCoverIndex >= covers.count()) {
-    currentCoverIndex = 0;
-    coverGroup.setPos(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup.pos().y()));
-  }
-  rumble.start();
+//  if (currentCoverIndex >= covers.count()) {
+//    currentCoverIndex = 0;
+//    coverGroup->setPos(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup->pos().y()));
+//  }
+//  rumble.start();
 
-  QPropertyAnimation *animation = new QPropertyAnimation(&coverGroup, "pos");
-  animation->setDuration(250);
-  animation->setEasingCurve(QEasingCurve::OutQuart);
-  animation->setStartValue(coverGroup.pos());
-  animation->setEndValue(QPoint(-(currentCoverIndex*(geometry().width())), coverGroup.pos().y()));
-  animation->start();
-  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+//  QPropertyAnimation *animation = new QPropertyAnimation(coverGroup, "pos");
+//  animation->setDuration(250);
+//  animation->setEasingCurve(QEasingCurve::OutQuart);
+//  animation->setStartValue(coverGroup->pos());
+//  animation->setEndValue(QPoint(-(currentCoverIndex*(geometry().width())), coverGroup->pos().y()));
+//  animation->start();
+//  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
-  for (register int i = 0; i < covers.count(); ++i) {
-    animation = new QPropertyAnimation(covers.at(i), "opacity");
-    animation->setDuration(500);
-    animation->setEasingCurve(QEasingCurve::Linear);
-    animation->setStartValue(covers.at(i)->opacity());
-    animation->setEndValue((i == currentCoverIndex) ? 1 : 0.0);
-    animation->start();
-    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
-  }
+//  for (register int i = 0; i < covers.count(); ++i) {
+//    animation = new QPropertyAnimation(covers.at(i), "opacity");
+//    animation->setDuration(500);
+//    animation->setEasingCurve(QEasingCurve::Linear);
+//    animation->setStartValue(covers.at(i)->opacity());
+//    animation->setEndValue((i == currentCoverIndex) ? 1 : 0.0);
+//    animation->start();
+//    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+//  }
 }
 
 void MainWindow::prevCover() {
-  currentCoverIndex--;
-  if (currentCoverIndex < 0) {
-    currentCoverIndex = covers.count() - 1;
-    coverGroup.setPos(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup.pos().y()));
-  }
-  rumble.start();
+//  currentCoverIndex--;
+//  if (currentCoverIndex < 0) {
+//    currentCoverIndex = covers.count() - 1;
+//    coverGroup->setPos(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup->pos().y()));
+//  }
+//  rumble.start();
 
-  QPropertyAnimation *animation = new QPropertyAnimation(&coverGroup, "pos");
-  animation->setDuration(250);
-  animation->setEasingCurve(QEasingCurve::OutQuart);
-  animation->setStartValue(coverGroup.pos());
-  animation->setEndValue(QPoint(-(currentCoverIndex*(geometry().width())), coverGroup.pos().y()));
-  animation->start();
-  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+//  QPropertyAnimation *animation = new QPropertyAnimation(coverGroup, "pos");
+//  animation->setDuration(250);
+//  animation->setEasingCurve(QEasingCurve::OutQuart);
+//  animation->setStartValue(coverGroup->pos());
+//  animation->setEndValue(QPoint(-(currentCoverIndex*(geometry().width())), coverGroup->pos().y()));
+//  animation->start();
+//  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
 
-  for (register int i = 0; i < covers.count(); ++i) {
-    QPropertyAnimation *animation = new QPropertyAnimation(covers.at(i), "opacity");
-    animation->setDuration(250);
-    animation->setEasingCurve(QEasingCurve::Linear);
-    animation->setStartValue(covers.at(i)->opacity());
-    animation->setEndValue((i == currentCoverIndex) ? 1 : 0.0);
-    animation->start();
-    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
-  }
+//  for (register int i = 0; i < covers.count(); ++i) {
+//    QPropertyAnimation *animation = new QPropertyAnimation(covers.at(i), "opacity");
+//    animation->setDuration(250);
+//    animation->setEasingCurve(QEasingCurve::Linear);
+//    animation->setStartValue(covers.at(i)->opacity());
+//    animation->setEndValue((i == currentCoverIndex) ? 1 : 0.0);
+//    animation->start();
+//    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+//  }
 }
 
 
@@ -656,28 +639,28 @@ void MainWindow::moveCursor() {
   }
 
 
-  QGraphicsItem *obj = scene()->itemAt(mouseX, mouseY);
-  if (obj) {
-    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&profileGroup)) {
-      if (lastFocusedProfile != static_cast< GraphicsProfileItem*>( obj) ) {
-        rumble.start();
-        if (lastFocusedProfile)
-          lastFocusedProfile->setActiveState(false);
-        lastFocusedProfile = static_cast< GraphicsProfileItem*>( obj);
-        lastFocusedProfile->setActiveState(true);
-      }
-    }
+//  QGraphicsItem *obj = scene()->itemAt(mouseX, mouseY);
+//  if (obj) {
+//    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&profileGroup)) {
+//      if (lastFocusedProfile != static_cast< GraphicsProfileItem*>( obj) ) {
+//        rumble.start();
+//        if (lastFocusedProfile)
+//          lastFocusedProfile->setActiveState(false);
+//        lastFocusedProfile = static_cast< GraphicsProfileItem*>( obj);
+//        lastFocusedProfile->setActiveState(true);
+//      }
+//    }
 
-    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&menuGroup)) {
-      if (lastFocusedMenu != static_cast< GraphicsProfileItem*>( obj) ) {
-        rumble.start();
-        if (lastFocusedMenu)
-          lastFocusedMenu->setActiveState(false);
-        lastFocusedMenu = static_cast< GraphicsProfileItem*>( obj);
-        lastFocusedMenu->setActiveState(true);
-      }
-    }
-  }
+//    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&menuGroup)) {
+//      if (lastFocusedMenu != static_cast< GraphicsProfileItem*>( obj) ) {
+//        rumble.start();
+//        if (lastFocusedMenu)
+//          lastFocusedMenu->setActiveState(false);
+//        lastFocusedMenu = static_cast< GraphicsProfileItem*>( obj);
+//        lastFocusedMenu->setActiveState(true);
+//      }
+//    }
+//  }
   cursorHandle->setPos(mouseX, mouseY);
 
 

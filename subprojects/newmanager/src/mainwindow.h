@@ -40,56 +40,6 @@
 #include <QObject>
 #include <QGraphicsItem>
 
-
-class QGraphicsItemGroupPlus :public QObject, public QGraphicsItemGroup
-{
-  Q_OBJECT
-  Q_INTERFACES(QGraphicsItem)
-  Q_PROPERTY (qreal x READ x WRITE setX)
-  Q_PROPERTY (QPointF pos READ pos WRITE setPos)
-
-private:
-  GraphicsProfileItem* lastItem;
-
-public:
-  QGraphicsItemGroupPlus() {
-    lastItem = 0;
-  }
-
-protected:
-
-  void hoverEnterEvent(QGraphicsSceneHoverEvent* event) {
-    QGraphicsItem::hoverEnterEvent(event);
-    QGraphicsItem* item = scene()->itemAt(event->scenePos().x(), event->scenePos().y());
-
-    if (!item)
-      return;
-
-    if (item->parentItem() != dynamic_cast< QGraphicsItem *>(this))
-      return;
-
-    GraphicsProfileItem* obj = dynamic_cast< GraphicsProfileItem*>(item);
-
-    if (obj) {
-      if (lastItem)
-        lastItem->hoverLeave();
-      lastItem = obj;
-      lastItem->hoverEnter();
-    }
-
-  }
-
-  void hoverLeaveEvent(QGraphicsSceneHoverEvent* event) {
-    QGraphicsItem::hoverLeaveEvent(event);
-      if (lastItem) {
-        lastItem->hoverLeave();
-        lastItem = 0;
-      }
-
-    }
-
-};
-
 class QGraphicsPixmapItemPlus :public QObject, public QGraphicsPixmapItem
 {
   Q_OBJECT
@@ -171,9 +121,7 @@ private:
 
   QGraphicsPixmapItem *cursorHandle;
 
-  QGraphicsItemGroupPlus menuGroup;
-  QGraphicsItemGroupPlus coverGroup;
-  QGraphicsItemGroupPlus profileGroup;
+
 
   QList < GraphicsProfileItem*> profiles;
   QList < GraphicsProfileCover*> covers;

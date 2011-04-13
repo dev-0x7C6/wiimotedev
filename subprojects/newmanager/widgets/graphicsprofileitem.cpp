@@ -21,6 +21,10 @@
 #include <QPainter>
 #include <QDebug>
 
+#include <QGraphicsSceneMouseEvent>
+
+QHash< int, GraphicsProfileItem*>  GraphicsProfileItem::profiles = QHash< int, GraphicsProfileItem*>();
+
 GraphicsProfileItem::GraphicsProfileItem (QObject *parent) :
   QObject(parent),
   QGraphicsItem(),
@@ -35,68 +39,74 @@ GraphicsProfileItem::GraphicsProfileItem (QObject *parent) :
   actived(false),
   focused(false),
   hoverAlign(AlignVCenter | AlignHCenter),
-  hoverScale(1.2)
+  hoverScale(1.2),
+  groupId(0),
+  scaleAnimation(new QPropertyAnimation(this, "scale")),
+  lockScaleAnimation(false)
 {
   setObjectName("GraphicProfileItem");
   setAcceptHoverEvents(true);
-
 }
+
+void GraphicsProfileItem::setScaleAnimationEnabled(bool lock) {
+  lockScaleAnimation = lock;
+}
+
+void GraphicsProfileItem::runScaleAnimation(double scale) {
+  if (lockScaleAnimation)
+    return;
+
+  QPointF p;
+  if (hoverAlign & AlignLeft) p.setX(0); else
+  if (hoverAlign & AlignVCenter) p.setX(width/2); else
+  if (hoverAlign & AlignRight) p.setX(width);
+  if (hoverAlign & AlignTop) p.setY(0); else
+  if (hoverAlign & AlignHCenter) p.setY(height/2); else
+  if (hoverAlign & AlignBottom) p.setY(height);
+  setTransformOriginPoint(p);
+
+  if (scaleAnimation->state() == QAbstractAnimation::Running)
+    scaleAnimation->stop();
+
+  scaleAnimation->setDuration(250);
+  scaleAnimation->setEasingCurve(QEasingCurve::OutQuart);
+  scaleAnimation->setStartValue(this->scale());
+  scaleAnimation->setEndValue(scale);
+  scaleAnimation->start();
+}
+
 
 void GraphicsProfileItem::hoverEnterEvent (QGraphicsSceneHoverEvent * event) {
+  this->setActiveState(true);
+  runScaleAnimation(hoverScale);
 }
 
-void GraphicsProfileItem::hoverLeaveEvent (QGraphicsSceneHoverEvent * event)
-{
-
+void GraphicsProfileItem::hoverLeaveEvent (QGraphicsSceneHoverEvent * event) {
+  this->setActiveState(false);
+  runScaleAnimation(1.0);
 }
 
-void GraphicsProfileItem::hoverEnter() {
-  QPointF p;
-  if (hoverAlign & AlignLeft) p.setX(0); else
-  if (hoverAlign & AlignVCenter) p.setX(width/2); else
-  if (hoverAlign & AlignRight) p.setX(width);
-
-  if (hoverAlign & AlignTop) p.setY(0); else
-  if (hoverAlign & AlignHCenter) p.setY(height/2); else
-  if (hoverAlign & AlignBottom) p.setY(height);
-
-  setTransformOriginPoint(p);
-
-  if ((scale() == hoverScale) && focused)
+void GraphicsProfileItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+  if ((event->button() != Qt::LeftButton) ||
+      (this == profiles[groupId]))
     return;
-  QPropertyAnimation *animation = new QPropertyAnimation(this, "scale");
-  animation->setDuration(200);
-  animation->setEasingCurve(QEasingCurve::OutQuart);
-  animation->setStartValue(1.0);
-  animation->setEndValue(hoverScale);
-  animation->start();
-  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+  if (profiles[groupId]) {
+    profiles[groupId]->setFocusState(false);
+    profiles[groupId]->setScaleAnimationEnabled(false);
+    profiles[groupId]->runScaleAnimation(1.0);
+  }
+  setFocusState(true);
+  setScaleAnimationEnabled(true);
+  profiles[groupId] = this;
+
+  emit buttonPressed();
+}
+
+void GraphicsProfileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 
 }
 
-void GraphicsProfileItem::hoverLeave() {
-  QPointF p;
-  if (hoverAlign & AlignLeft) p.setX(0); else
-  if (hoverAlign & AlignVCenter) p.setX(width/2); else
-  if (hoverAlign & AlignRight) p.setX(width);
-
-  if (hoverAlign & AlignTop) p.setY(0); else
-  if (hoverAlign & AlignHCenter) p.setY(height/2); else
-  if (hoverAlign & AlignBottom) p.setY(height);
-
-  setTransformOriginPoint(p);
-
-
-  if (focused)
-      return;
-  QPropertyAnimation *animation = new QPropertyAnimation(this, "scale");
-  animation->setDuration(200);
-  animation->setEasingCurve(QEasingCurve::OutQuart);
-  animation->setStartValue(hoverScale);
-  animation->setEndValue(1.0);
-  animation->start();
-  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
-}
 
 QPainterPath GraphicsProfileItem::shape() const {
   QPainterPath path;
@@ -132,7 +142,7 @@ void GraphicsProfileItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
   painter->drawRect(QRect(0, height/3*2, width, height/3));
 
   for (register int i = 0; i < height/3*2; i++) {
-    color.setAlpha(alpha+(30 * (double(i)/double(height/3*2))));
+    color.setAlpha(alpha+(10 * (double(i)/double(height/3*2))));
     painter->setBrush(color);
     painter->drawRect(QRect(0, i, width, 1));
   }
