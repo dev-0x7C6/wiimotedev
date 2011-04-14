@@ -65,6 +65,8 @@ private slots:
 private:
   QRect calculateWindowSize();
 
+  void loadProfiles();
+
 
   void confineCursor();
   void moveCursor();
@@ -77,9 +79,22 @@ private:
   void prevCover();
 
 private slots:
+  void profileButtonClicked();
+  void coverButtonClicked();
+  void preferenceButtonClicked();
+  void connectionButtonClicked();
+
   void showCovers();
   void showProfiles();
 
+  void showProfilesPage();
+  void hideProfilesPage();
+  void showCoversPage();
+  void hideCoversPage();
+  void showPreferencesPage();
+  void hidePreferencesPage();
+  void showConnectionsPage();
+  void hideConnectionsPage();
 
 protected:
   virtual void drawForeground(QPainter *painter, const QRectF &rect);
@@ -97,6 +112,33 @@ public slots:
   void setRumbleStatus(int status);
 
 private:
+// General
+  QFont *font64;
+  QFont *font48;
+  QFont *font32;
+  QFont *font24;
+  QFont *font16;
+  QFont *font8;
+
+// Menu componets
+  GraphicsButton *profileButton;
+  GraphicsButton *coverButton;
+  GraphicsButton *preferencesButton;
+  GraphicsButton *connectionButton;
+  GraphicsManagerMenu *menuBackground;
+
+  QList < QGraphicsItem*> menuComponents;
+
+// Profiles page
+  QList < GraphicsButton*> profiles;
+
+// Covers page
+  QList < GraphicsProfileCover*> covers;
+
+// Connections page
+  QList < GraphicsButton*> connections;
+
+
   DBusDeviceEventsInterface *device;
   double x, y;
   double mouseX;
@@ -104,12 +146,6 @@ private:
   double mouseAccX;
   double mouseAccY;
 
-  QFont *font8;
-  QFont *font16;
-  QFont *font24;
-  QFont *font32;
-  QFont *font48;
-  QFont *font64;
 
   bool visibleMenu;
 
@@ -123,19 +159,12 @@ private:
 
 
 
-  QList < GraphicsProfileItem*> profiles;
-  QList < GraphicsProfileCover*> covers;
 
-  GraphicsProfileItem *ProfilesMenuItem;
-  GraphicsProfileItem *ConnectionsMenuItem;
-  GraphicsProfileItem *CoversMenuItem;
-  GraphicsProfileItem *PreferencesMenuItem;
 
-  GraphicsProfileItem *lastFocusedProfile;
-  GraphicsProfileItem *lastActivedProfile;
-  GraphicsProfileItem *lastFocusedMenu;
-  GraphicsProfileItem *lastActivedMenu;
-  GraphicsManagerMenu *menu;
+  GraphicsButton *lastFocusedProfile;
+  GraphicsButton *lastActivedProfile;
+  GraphicsButton *lastFocusedMenu;
+  GraphicsButton *lastActivedMenu;
 
   QGraphicsPixmapItemPlus *profileRunning;
 

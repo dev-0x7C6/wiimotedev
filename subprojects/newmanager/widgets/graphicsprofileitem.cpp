@@ -23,37 +23,39 @@
 
 #include <QGraphicsSceneMouseEvent>
 
-QHash< int, GraphicsProfileItem*>  GraphicsProfileItem::profiles = QHash< int, GraphicsProfileItem*>();
+QHash< int, GraphicsButton*>  GraphicsButton::profiles = QHash< int, GraphicsButton*>();
 
-GraphicsProfileItem::GraphicsProfileItem (QObject *parent) :
+GraphicsButton::GraphicsButton (QObject *parent) :
   QObject(parent),
   QGraphicsItem(),
   width(0),
   height(0),
-  font(QFont()),
   text(""),
-  state(itemInactive),
-  focusColor(QColor(61, 162, 235,  100)),
-  activeColor(QColor(61, 162, 235, 50)),
-  inactiveColor(QColor(255, 255, 255, 10)),
+  pixmap(0),
   actived(false),
   focused(false),
   hoverAlign(AlignVCenter | AlignHCenter),
-  hoverScale(1.2),
   groupId(0),
   scaleAnimation(new QPropertyAnimation(this, "scale")),
-  lockScaleAnimation(false)
+  scaleLock(false)
 {
-  setObjectName("GraphicProfileItem");
+
+  theme.buttonColorFocus = QColor(61, 162, 235,  100);
+  theme.buttonColorActive = QColor(61, 162, 235,  50);
+  theme.buttonColorInactive = QColor(255, 255, 255, 10);
+  theme.buttonFont = QFont("Luxi Serif Bold Oblique", 16, QFont::Bold);
+  theme.maxScaleSize = 1.2;
+  theme.minScaleSize = 1.0;
+
+  setObjectName("GraphicsButton");
   setAcceptHoverEvents(true);
+
+  scaleAnimation->setDuration(250);
+  scaleAnimation->setEasingCurve(QEasingCurve::OutQuart);
 }
 
-void GraphicsProfileItem::setScaleAnimationEnabled(bool lock) {
-  lockScaleAnimation = lock;
-}
-
-void GraphicsProfileItem::runScaleAnimation(double scale) {
-  if (lockScaleAnimation)
+void GraphicsButton::setScaleAnim(double scale) {
+  if (scaleLock)
     return;
 
   QPointF p;
@@ -68,72 +70,67 @@ void GraphicsProfileItem::runScaleAnimation(double scale) {
   if (scaleAnimation->state() == QAbstractAnimation::Running)
     scaleAnimation->stop();
 
-  scaleAnimation->setDuration(250);
-  scaleAnimation->setEasingCurve(QEasingCurve::OutQuart);
   scaleAnimation->setStartValue(this->scale());
   scaleAnimation->setEndValue(scale);
   scaleAnimation->start();
 }
 
-
-void GraphicsProfileItem::hoverEnterEvent (QGraphicsSceneHoverEvent * event) {
+void GraphicsButton::hoverEnterEvent (QGraphicsSceneHoverEvent * event) {
   this->setActiveState(true);
-  runScaleAnimation(hoverScale);
+  this->setScaleAnim(theme.maxScaleSize);
 }
 
-void GraphicsProfileItem::hoverLeaveEvent (QGraphicsSceneHoverEvent * event) {
+void GraphicsButton::hoverLeaveEvent (QGraphicsSceneHoverEvent * event) {
   this->setActiveState(false);
-  runScaleAnimation(1.0);
+  this->setScaleAnim(theme.minScaleSize);
 }
 
-void GraphicsProfileItem::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+void GraphicsButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
   if ((event->button() != Qt::LeftButton) ||
       (this == profiles[groupId]))
     return;
 
   if (profiles[groupId]) {
     profiles[groupId]->setFocusState(false);
-    profiles[groupId]->setScaleAnimationEnabled(false);
-    profiles[groupId]->runScaleAnimation(1.0);
+    profiles[groupId]->setScaleLock(false);
+    profiles[groupId]->setScaleAnim(theme.minScaleSize);
   }
   setFocusState(true);
-  setScaleAnimationEnabled(true);
+  setScaleLock(true);
   profiles[groupId] = this;
 
-  emit buttonPressed();
+  emit clicked();
 }
 
-void GraphicsProfileItem::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+void GraphicsButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 
 }
 
 
-QPainterPath GraphicsProfileItem::shape() const {
+QPainterPath GraphicsButton::shape() const {
   QPainterPath path;
   path.addRect(boundingRect());
   return path;
 }
 
-QRectF GraphicsProfileItem::boundingRect() const {
+QRectF GraphicsButton::boundingRect() const {
   if (height < 64)
     return QRectF(0, -16, width, height+32);
     return QRectF(0, 0, width, height);
 }
 
-void GraphicsProfileItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void GraphicsButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-  painter->setClipRect( option->exposedRect );
   Q_UNUSED(widget);
-
-
+  painter->setClipRect(option->exposedRect);
   painter->setPen(Qt::NoPen);
 
   if (actived)
-    painter->setBrush(activeColor); else
-    painter->setBrush(inactiveColor);
+    painter->setBrush(theme.buttonColorActive); else
+    painter->setBrush(theme.buttonColorInactive);
 
   if (focused)
-    painter->setBrush(focusColor);
+    painter->setBrush(theme.buttonColorFocus);
 
   QColor color = painter->brush().color();
   int alpha = color.alpha();
@@ -147,11 +144,16 @@ void GraphicsProfileItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
     painter->drawRect(QRect(0, i, width, 1));
   }
 
-
   painter->setOpacity(1.0);
-  painter->drawPixmap(apos+10, apos, 64, 64, icon);
-  painter->setFont(font);
+
+  register float pos = (height/2.0) - (pixmap->height()/2.0);
+
+  if (pixmap) {
+     painter->drawPixmap(pos+10, pos, pixmap->width(), pixmap->height(), *pixmap);
+     painter->setFont(theme.buttonFont);
+  }
+
   painter->setPen(Qt::white);
-  painter->drawText(apos + 64 + 20, 0, width-(apos + 64 + 20), height, Qt::AlignVCenter | Qt::TextWordWrap,  text);
+  painter->drawText(pos + 64 + 20, 0, width-(pos + 64 + 20), height, Qt::AlignVCenter | Qt::TextWordWrap,  text);
   painter->setPen(Qt::NoPen);
 }

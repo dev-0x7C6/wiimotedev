@@ -18,8 +18,8 @@
  **********************************************************************************/
 
 
-#ifndef GRAPHICSPROFILEITEM_H
-#define GRAPHICSPROFILEITEM_H
+#ifndef GraphicsButton_H
+#define GraphicsButton_H
 
 #include <QGraphicsItem>
 #include <QPropertyAnimation>
@@ -35,76 +35,65 @@ const quint8 AlignTop = 1 << 3;
 const quint8 AlignHCenter = 1 << 4;
 const quint8 AlignBottom = 1 << 5;
 
+struct GraphicsButtonTheme {
+  QFont buttonFont;
+  QColor buttonColorFocus;
+  QColor buttonColorActive;
+  QColor buttonColorInactive;
+  double maxScaleSize;
+  double minScaleSize;
+};
 
-class GraphicsProfileItem :public QObject, public QGraphicsItem
+class GraphicsButton :public QObject, public QGraphicsItem
 {
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
   Q_PROPERTY (QPointF pos READ pos WRITE setPos)
   Q_PROPERTY (qreal scale READ scale WRITE setScale)
 
+  static QHash< int, GraphicsButton*>  profiles;
+
+
+  GraphicsButtonTheme theme;
   quint32 width;
   quint32 height;
-  QFont font;
   QString text;
-  QPixmap icon;
-  quint32 state;
-
-  QColor focusColor;
-  QColor activeColor;
-  QColor inactiveColor;
 
   bool focused;
   bool actived;
-
   quint32 hoverAlign;
-  double hoverScale;
 
   quint32 groupId;
 
-
   QPropertyAnimation *scaleAnimation;
-  bool lockScaleAnimation;
+  bool scaleLock;
+
+  QPixmap *pixmap;
 
 public:
-  GraphicsProfileItem (QObject *parent = 0);
+  GraphicsButton (QObject *parent = 0);
   QRectF boundingRect() const;
   QPainterPath shape() const;
 
-  enum States {
-    itemActive = 0,
-    itemInactive,
-    itemFocus
-  };
-
-  static QHash< int, GraphicsProfileItem*>  profiles;
-
-
-  void setScaleAnimationEnabled(bool lock);
-  void runScaleAnimation(double scale);
-
-
   void setAlignFlags(quint32 flags) { hoverAlign = flags; }
-  void setHoverScale(double scale) { hoverScale = scale; }
-
-
 
   void setGroupId(quint32 id ) { groupId = id; };
 
-  void setWidth(int w) { width = w; setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2); }
-  void setHeight(int h) { height = h; setTransformOriginPoint(boundingRect().width()/2, boundingRect().height()/2); }
-
-
-  void setText(QString t) { text = t; }
-  void setIcon(QPixmap i) { icon = i; apos = (height/2)-(icon.height()/2);}
-  void setFont(QFont f) { font = f; }
-
-  void setFocusColor(QColor c) { focusColor = c;  }
-  void setActiveColor(QColor c) { inactiveColor = c; }
-  void setInactiveColor(QColor c) { inactiveColor = c; }
-
   void setActiveState(bool f) { actived = f; }
   void setFocusState(bool a) { focused = a; }
+
+
+public:
+  void setWidth(int w);
+  void setHeight(int h);
+
+  void setFont(QFont &font);
+  void setIconFromPath(QString path);
+  void setText(QString string);
+
+  void setScaleLock(bool lock);
+  void setScaleAnim(double scale);
+
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
@@ -113,12 +102,33 @@ protected:
   void virtual hoverEnterEvent (QGraphicsSceneHoverEvent * event);
   void virtual hoverLeaveEvent (QGraphicsSceneHoverEvent * event);
 
-private:
-  int apos;
-
 signals:
-  void buttonPressed();
+  void clicked();
+  void subClicked(int);
 };
 
+inline void GraphicsButton::setScaleLock(bool lock) {
+  scaleLock = lock;
+}
 
-#endif // GRAPHICSPROFILEITEM_H
+inline void GraphicsButton::setWidth(int w) {
+  width = w;
+}
+
+inline void GraphicsButton::setHeight(int h) {
+  height = h;
+}
+
+inline void GraphicsButton::setFont(QFont &font) {
+  theme.buttonFont = font;
+}
+
+inline void GraphicsButton::setIconFromPath(QString path) {
+  pixmap = new QPixmap(path);
+}
+
+inline void GraphicsButton::setText(QString string) {
+  text = string;
+}
+
+#endif // GraphicsButton_H

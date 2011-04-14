@@ -118,60 +118,83 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   scene()->setBackgroundBrush(Qt::white);
 
 
-  QDir dir(QDir::homePath() + "/.wiimotedev/profiles");
+  loadProfiles();
 
+  QList <quint32> list = device->dbusGetWiimoteList();
+  foreach (quint32 id, list) {
+    QString ext = "none";
+    if (device->dbusIsClassicConnected(id))
+      ext = "Classic Controller";
+    if (device->dbusIsNunchukConnected(id))
+      ext = "Nunchuk";
 
-  QFileInfoList list = dir.entryInfoList();
-
-  int i = 0;
-  foreach (const QFileInfo &file, dir.entryInfoList()) {
-    if (!file.isDir())
-      continue;
-    QSettings settings(file.absoluteFilePath() + "/uinput.ini", QSettings::IniFormat);
-    foreach (const QString &key, settings.childGroups()) {
-      settings.beginGroup(key);
-      if (settings.value("module", QString()).toString().toLower() == "manager") {
-        GraphicsProfileItem *item = new GraphicsProfileItem();
-        item->setWidth(geometry().width());
-        item->setHeight(100);
-        item->setFont(QFont("Luxi Serif Bold Oblique", 24, QFont::Bold));
-        item->setText(settings.value("name", QString()).toString());
-        item->setIcon(QPixmap(file.absoluteFilePath() + "/icon.png"));
-        item->setX(geometry().width());
-        item->setY(0);
-        item->setAlignFlags(AlignLeft | AlignHCenter);
-        QPropertyAnimation *animation = new QPropertyAnimation(item, "pos");
-        animation->setDuration(1000);
-        animation->setEasingCurve(QEasingCurve::OutQuart);
-        animation->setStartValue(item->pos());
-        animation->setEndValue(QPoint(290, (100 * i + (25*i))));
-        animation->start();
-        connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
-
-        GraphicsProfileCover *item2 = new GraphicsProfileCover();
-
-        item2->setWidth(geometry().width() - 264);
-        item2->setHeight(height());
-        item2->setX(264 + ((geometry().width() - 264)*i));
-        item2->setY(0);
-        if (QFile::exists(file.absoluteFilePath() + "/cover.png"))
-          item2->setCover(QPixmap(file.absoluteFilePath() + "/cover.png")); else
-          item2->setCover(QPixmap(":/nocover.png"));
-        item2->setFont(*font24);
-        item2->setText(settings.value("name", QString()).toString());
-        item2->setOpacity(0.2);
-
-        i++;
-        profiles << item;
-        covers << item2;
-        scene()->addItem(item);
-        item->setGroupId(1);
-      }
-      settings.endGroup();
-    }
+    GraphicsButton *item = new GraphicsButton();
+    item->setWidth(geometry().width());
+    item->setHeight(50);
+    item->setFont(*font8);
+    item->setText(QString("Wiiremote: %1; MAC: %2; Ext: %3").arg(QString::number(id), device->dbusWiimoteGetMacAddress(id), ext));
+    item->setIconFromPath(":/profile.png");
+    item->setX(geometry().width());
+    item->setY(0);
+    item->setAlignFlags(AlignLeft | AlignHCenter);
+    scene()->addItem(item);
+    connections << item;
   }
 
-  covers.at(currentCoverIndex)->setOpacity(1.0);
+//  QDir dir(QDir::homePath() + "/.wiimotedev/profiles");
+
+
+//  QFileInfoList list = dir.entryInfoList();
+
+//  int i = 0;
+//  foreach (const QFileInfo &file, dir.entryInfoList()) {
+//    if (!file.isDir())
+//      continue;
+//    QSettings settings(file.absoluteFilePath() + "/uinput.ini", QSettings::IniFormat);
+//    foreach (const QString &key, settings.childGroups()) {
+//      settings.beginGroup(key);
+//      if (settings.value("module", QString()).toString().toLower() == "manager") {
+//        GraphicsButton *item = new GraphicsButton();
+//        item->setWidth(geometry().width());
+//        item->setHeight(100);
+//        item->setFont(QFont("Luxi Serif Bold Oblique", 24, QFont::Bold));
+//        item->setText(settings.value("name", QString()).toString());
+//        item->setIcon(QPixmap(file.absoluteFilePath() + "/icon.png"));
+//        item->setX(geometry().width());
+//        item->setY(0);
+//        item->setAlignFlags(AlignLeft | AlignHCenter);
+//        QPropertyAnimation *animation = new QPropertyAnimation(item, "pos");
+//        animation->setDuration(1000);
+//        animation->setEasingCurve(QEasingCurve::OutQuart);
+//        animation->setStartValue(item->pos());
+//        animation->setEndValue(QPoint(290, (100 * i + (25*i))));
+//        animation->start();
+//        connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+//        GraphicsProfileCover *item2 = new GraphicsProfileCover();
+
+//        item2->setWidth(geometry().width() - 264);
+//        item2->setHeight(height());
+//        item2->setX(264 + ((geometry().width() - 264)*i));
+//        item2->setY(0);
+//        if (QFile::exists(file.absoluteFilePath() + "/cover.png"))
+//          item2->setCover(QPixmap(file.absoluteFilePath() + "/cover.png")); else
+//          item2->setCover(QPixmap(":/nocover.png"));
+//        item2->setFont(*font24);
+//        item2->setText(settings.value("name", QString()).toString());
+//        item2->setOpacity(0.2);
+
+//        i++;
+//        profiles << item;
+//        covers << item2;
+//        scene()->addItem(item);
+//        item->setGroupId(1);
+//      }
+//      settings.endGroup();
+//    }
+//  }
+
+  //covers.at(currentCoverIndex)->setOpacity(1.0);
 
 
 
@@ -183,61 +206,84 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   profileRunning->setScale(1.0);
   profileRunning->setZValue(-1000);
 
-  menu = new GraphicsManagerMenu();
-  scene()->addItem(menu);
+  menuBackground = new GraphicsManagerMenu();
+  scene()->addItem(menuBackground);
 
 
-  GraphicsProfileItem* ProfilesMenuItem = new GraphicsProfileItem();
-  ProfilesMenuItem->setX(33);
-  ProfilesMenuItem->setY(50);
-  ProfilesMenuItem->setWidth(226);
-  ProfilesMenuItem->setHeight(50);
+  profileButton = new GraphicsButton();
+  profileButton->setX(33);
+  profileButton->setY(50);
+  profileButton->setWidth(226);
+  profileButton->setHeight(50);
 
-  ProfilesMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
-  ProfilesMenuItem->setText("Profiles");  ProfilesMenuItem->setIcon(QPixmap(":/profile.png"));
-  scene()->addItem(ProfilesMenuItem);
+  profileButton->setFont(*font16);
+  profileButton->setText("Profiles");
+  profileButton->setIconFromPath(":/profile.png");
+  scene()->addItem(profileButton);
 
-  connect(ProfilesMenuItem, SIGNAL(enter()), this, SLOT(showProfiles()));
+  connect(profileButton, SIGNAL(enter()), this, SLOT(showProfiles()));
 
-
-
-  GraphicsProfileItem* CoversMenuItem = new GraphicsProfileItem();
-  CoversMenuItem->setX(33);
-  CoversMenuItem->setY(140);
-  CoversMenuItem->setActive(false);
-  CoversMenuItem->setWidth(226);
-  CoversMenuItem->setHeight(50);
-  CoversMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
-  CoversMenuItem->setText("Covers");
-  CoversMenuItem->setIcon(QPixmap(":/covers.png"));
-  scene()->addItem(CoversMenuItem);
-  connect(CoversMenuItem, SIGNAL(enter()), this, SLOT(showCovers()));
-
-  GraphicsProfileItem* PreferencesMenuItem = new GraphicsProfileItem();
-  PreferencesMenuItem->setX(33);
-  PreferencesMenuItem->setY(230);
-  PreferencesMenuItem->setActive(false);
-  PreferencesMenuItem->setWidth(226);
-  PreferencesMenuItem->setHeight(50);
-  PreferencesMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
-  PreferencesMenuItem->setText("Preferences");
-  PreferencesMenuItem->setIcon(QPixmap(":/preferences.png"));
-  scene()->addItem(PreferencesMenuItem);
-
-  GraphicsProfileItem* ConnectionsMenuItem = new GraphicsProfileItem();
-  ConnectionsMenuItem->setX(33);
-  ConnectionsMenuItem->setY(320);
-  ConnectionsMenuItem->setWidth(226);
-  ConnectionsMenuItem->setHeight(50);
-  ConnectionsMenuItem->setFont(QFont("Luxi Serif Bold Oblique", 16, QFont::Bold));
-  ConnectionsMenuItem->setText("Connections");
-  ConnectionsMenuItem->setIcon(QPixmap(":/connections.png"));
-  ConnectionsMenuItem->setActive(false);
-  scene()->addItem(ConnectionsMenuItem);
+  connect(profileButton, SIGNAL(clicked()), this, SLOT(showProfilesPage()));
+  connect(profileButton, SIGNAL(clicked()), this, SLOT(hideCoversPage()));
+  connect(profileButton, SIGNAL(clicked()), this, SLOT(hideConnectionsPage()));
+  connect(profileButton, SIGNAL(clicked()), this, SLOT(hidePreferncesPage()));
 
 
+  coverButton = new GraphicsButton();
+  coverButton->setX(33);
+  coverButton->setY(140);
+  coverButton->setActive(false);
+  coverButton->setWidth(226);
+  coverButton->setHeight(50);
+  coverButton->setFont(*font16);
+  coverButton->setText("Covers");
+  coverButton->setIconFromPath(":/covers.png");
+  scene()->addItem(coverButton);
+  connect(coverButton, SIGNAL(enter()), this, SLOT(showCovers()));
 
 
+  connect(coverButton, SIGNAL(clicked()), this, SLOT(hideProfilesPage()));
+  connect(coverButton, SIGNAL(clicked()), this, SLOT(showCoversPage()));
+  connect(coverButton, SIGNAL(clicked()), this, SLOT(hidePreferencesPage()));
+  connect(coverButton, SIGNAL(clicked()), this, SLOT(hideConnectionsPage()));
+
+  preferencesButton = new GraphicsButton();
+  preferencesButton->setX(33);
+  preferencesButton->setY(230);
+  preferencesButton->setActive(false);
+  preferencesButton->setWidth(226);
+  preferencesButton->setHeight(50);
+  preferencesButton->setFont(*font16);
+  preferencesButton->setText("Preferences");
+  preferencesButton->setIconFromPath(":/preferences.png");
+  scene()->addItem(preferencesButton);
+
+  connect(preferencesButton, SIGNAL(clicked()), this, SLOT(hideProfilesPage()));
+  connect(preferencesButton, SIGNAL(clicked()), this, SLOT(hideCoversPage()));
+  connect(preferencesButton, SIGNAL(clicked()), this, SLOT(showPreferencesPage()));
+  connect(preferencesButton, SIGNAL(clicked()), this, SLOT(hideConnectionsPage()));
+
+
+  connectionButton = new GraphicsButton();
+  connectionButton->setX(33);
+  connectionButton->setY(320);
+  connectionButton->setWidth(226);
+  connectionButton->setHeight(50);
+  connectionButton->setFont(*font16);
+  connectionButton->setText("Connections");
+  connectionButton->setIconFromPath(":/connections.png");
+  connectionButton->setActive(false);
+  scene()->addItem(connectionButton);
+
+
+  connect(connectionButton, SIGNAL(clicked()), this, SLOT(hideProfilesPage()));
+  connect(connectionButton, SIGNAL(clicked()), this, SLOT(hideCoversPage()));
+  connect(connectionButton, SIGNAL(clicked()), this, SLOT(hidePreferencesPage()));
+  connect(connectionButton, SIGNAL(clicked()), this, SLOT(showConnectionsPage()));
+
+
+
+  QList < QGraphicsItem*> menuComponents;
 
 
 //  QPropertyAnimation *animation = new QPropertyAnimation(menuGroup, "pos");
@@ -247,6 +293,8 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 //  animation->setEndValue(QPoint(0, 0));
 //  animation->start();
 //  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+
+
 
   cursorHandle = scene()->addPixmap(QPixmap(":/cursor.png"));
   cursorHandle->setTransformOriginPoint(7, 2);
@@ -262,14 +310,161 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 }
 
 void MainWindow::confineCursor() {
-  cursorHandle->setZValue(
-        300);
+  cursorHandle->setZValue(300);
   cursorHandle->setX((geometry().width() / 2));
   cursorHandle->setY((geometry().height() / 2));
 }
 
 MainWindow::~MainWindow()
 {  
+}
+
+
+void MainWindow::profileButtonClicked() {
+  showProfilesPage();
+
+}
+
+void MainWindow::coverButtonClicked() {
+}
+
+void MainWindow::preferenceButtonClicked() {
+}
+
+void MainWindow::connectionButtonClicked() {
+}
+
+void MainWindow::loadProfiles() {
+  QDir dir(QDir::homePath() + "/.wiimotedev/profiles");
+  QFileInfoList list = dir.entryInfoList();
+
+  int i = 0;
+  foreach (const QFileInfo &file, dir.entryInfoList()) {
+    if (!file.isDir())
+      continue;
+    QSettings settings(file.absoluteFilePath() + "/uinput.ini", QSettings::IniFormat);
+    foreach (const QString &key, settings.childGroups()) {
+      settings.beginGroup(key);
+      if (settings.value("module", QString()).toString().toLower() == "manager") {
+        GraphicsButton *item = new GraphicsButton();
+        item->setWidth(geometry().width());
+        item->setHeight(100);
+        item->setFont(*font24);
+        item->setText(settings.value("name", QString()).toString());
+        item->setIconFromPath(file.absoluteFilePath() + "/icon.png");
+        item->setX(geometry().width());
+        item->setY(0);
+        item->setAlignFlags(AlignLeft | AlignHCenter);
+
+        GraphicsProfileCover *item2 = new GraphicsProfileCover();
+
+        item2->setWidth(geometry().width() - 264);
+        item2->setHeight(height());
+        item2->setX(264 + ((geometry().width() - 264)*i));
+        item2->setY(0);
+        if (QFile::exists(file.absoluteFilePath() + "/cover.png"))
+          item2->setCover(QPixmap(file.absoluteFilePath() + "/cover.png")); else
+          item2->setCover(QPixmap(":/nocover.png"));
+        item2->setFont(*font24);
+        item2->setText(settings.value("name", QString()).toString());
+        item2->setOpacity(0);
+
+
+        covers << item2;
+        scene()->addItem(item2);
+
+        profiles << item;
+        scene()->addItem(item);
+        item->setGroupId(1);
+        i++;
+
+
+      }
+      settings.endGroup();
+    }
+  }
+
+  showProfilesPage();
+}
+
+void MainWindow::showProfilesPage() {
+  for (register int i = 0; i < profiles.count(); ++i) {
+    QPropertyAnimation *animation = new QPropertyAnimation(profiles.at(i), "pos");
+    animation->setDuration(1000);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(profiles.at(i)->pos());
+    animation->setEndValue(QPoint(290, (100 * i + (25*i))));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
+}
+
+void MainWindow::hideProfilesPage() {
+  for (register int i = 0; i < profiles.count(); ++i) {
+    QPropertyAnimation *animation = new QPropertyAnimation(profiles.at(i), "pos");
+    animation->setDuration(1000);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(profiles.at(i)->pos());
+    animation->setEndValue(QPoint(geometry().width(), -profiles.at(i)->boundingRect().height()));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
+}
+
+void MainWindow::showCoversPage() {
+  for (register int i = 0; i < covers.count(); ++i) {
+    QPropertyAnimation *animation = new QPropertyAnimation(covers.at(i), "opacity");
+    animation->setDuration(500);
+    animation->setEasingCurve(QEasingCurve::Linear);
+    animation->setStartValue(covers.at(i)->opacity());
+    animation->setEndValue(1.0);
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
+}
+
+void MainWindow::hideCoversPage() {
+  for (register int i = 0; i < profiles.count(); ++i) {
+    QPropertyAnimation *animation = new QPropertyAnimation(covers.at(i), "opacity");
+    animation->setDuration(500);
+    animation->setEasingCurve(QEasingCurve::Linear);
+    animation->setStartValue(covers.at(i)->opacity());
+    animation->setEndValue(0.0);
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
+}
+
+void MainWindow::showConnectionsPage() {
+  for (register int i = 0; i < connections.count(); ++i) {
+    QPropertyAnimation *animation = new QPropertyAnimation(connections.at(i), "pos");
+    animation->setDuration(1000);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(connections.at(i)->pos());
+    animation->setEndValue(QPoint(290, (100 * i + (25*i))));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
+}
+
+void MainWindow::hideConnectionsPage() {
+  for (register int i = 0; i < connections.count(); ++i) {
+    QPropertyAnimation *animation = new QPropertyAnimation(connections.at(i), "pos");
+    animation->setDuration(1000);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(connections.at(i)->pos());
+    animation->setEndValue(QPoint(geometry().width(), -connections.at(i)->boundingRect().height()));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
+}
+
+void MainWindow::showPreferencesPage() {
+
+}
+
+void MainWindow::hidePreferencesPage() {
+
 }
 
 QRect MainWindow::calculateWindowSize() {
@@ -303,18 +498,14 @@ void MainWindow::resizeEvent(QResizeEvent* e)
     i++;
   }
 
-  menu->setWidth(290);
-  menu->setHeight(geometry().height());
+  menuBackground->setWidth(290);
+  menuBackground->setHeight(geometry().height());
 
   profileRunning->setPos(400, geometry().height() - 400);
-
-
-//  coverGroup->setPos(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup->pos().y()));
 
 }
 
 quint32 barsize = 60.0;
-
 
 void MainWindow::showProfiles() {
 //  profileGroup->setVisible(true);
@@ -642,21 +833,21 @@ void MainWindow::moveCursor() {
 //  QGraphicsItem *obj = scene()->itemAt(mouseX, mouseY);
 //  if (obj) {
 //    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&profileGroup)) {
-//      if (lastFocusedProfile != static_cast< GraphicsProfileItem*>( obj) ) {
+//      if (lastFocusedProfile != static_cast< GraphicsButton*>( obj) ) {
 //        rumble.start();
 //        if (lastFocusedProfile)
 //          lastFocusedProfile->setActiveState(false);
-//        lastFocusedProfile = static_cast< GraphicsProfileItem*>( obj);
+//        lastFocusedProfile = static_cast< GraphicsButton*>( obj);
 //        lastFocusedProfile->setActiveState(true);
 //      }
 //    }
 
 //    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&menuGroup)) {
-//      if (lastFocusedMenu != static_cast< GraphicsProfileItem*>( obj) ) {
+//      if (lastFocusedMenu != static_cast< GraphicsButton*>( obj) ) {
 //        rumble.start();
 //        if (lastFocusedMenu)
 //          lastFocusedMenu->setActiveState(false);
-//        lastFocusedMenu = static_cast< GraphicsProfileItem*>( obj);
+//        lastFocusedMenu = static_cast< GraphicsButton*>( obj);
 //        lastFocusedMenu->setActiveState(true);
 //      }
 //    }
