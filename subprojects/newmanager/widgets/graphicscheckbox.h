@@ -17,9 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-
-#ifndef GraphicsButton_H
-#define GraphicsButton_H
+#ifndef GRAPHICSCHECKBOX_H
+#define GRAPHICSCHECKBOX_H
 
 #include <QGraphicsItem>
 #include <QPropertyAnimation>
@@ -27,15 +26,7 @@
 #include <QPainterPath>
 #include <QStyleOptionGraphicsItem>
 
-
-const quint8 AlignLeft = 1 << 0;
-const quint8 AlignVCenter = 1 << 1;
-const quint8 AlignRight = 1 << 2;
-const quint8 AlignTop = 1 << 3;
-const quint8 AlignHCenter = 1 << 4;
-const quint8 AlignBottom = 1 << 5;
-
-struct GraphicsButtonTheme {
+struct GraphicsCheckboxTheme {
   QFont buttonFont;
   QColor buttonColorFocus;
   QColor buttonColorActive;
@@ -44,17 +35,14 @@ struct GraphicsButtonTheme {
   double minScaleSize;
 };
 
-class GraphicsButton :public QObject, public QGraphicsItem
+class GraphicsCheckbox :public QObject, public QGraphicsItem
 {
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
   Q_PROPERTY (QPointF pos READ pos WRITE setPos)
   Q_PROPERTY (qreal scale READ scale WRITE setScale)
 
-  static QHash< int, GraphicsButton*>  profiles;
-
-
-  GraphicsButtonTheme theme;
+  GraphicsCheckboxTheme theme;
   quint32 width;
   quint32 height;
   QString text;
@@ -65,13 +53,12 @@ class GraphicsButton :public QObject, public QGraphicsItem
 
   quint32 groupId;
 
-  QPropertyAnimation *scaleAnimation;
-  bool scaleLock;
-
   QPixmap *pixmap;
 
+  bool checked;
+
 public:
-  GraphicsButton (QObject *parent = 0);
+  GraphicsCheckbox (QObject *parent = 0);
   QRectF boundingRect() const;
   QPainterPath shape() const;
 
@@ -82,7 +69,6 @@ public:
   void setActiveState(bool f) { actived = f; }
   void setFocusState(bool a) { focused = a; }
 
-
 public:
   void setWidth(int w);
   void setHeight(int h);
@@ -90,9 +76,6 @@ public:
   void setFont(QFont &font);
   void setIconFromPath(QString path);
   void setText(QString string);
-
-  void setScaleLock(bool lock);
-  void setScaleAnim(double scale);
 
 
 protected:
@@ -107,28 +90,24 @@ signals:
   void subClicked(int);
 };
 
-inline void GraphicsButton::setScaleLock(bool lock) {
-  scaleLock = lock;
-}
-
-inline void GraphicsButton::setWidth(int w) {
+inline void GraphicsCheckbox::setWidth(int w) {
   width = w;
 }
 
-inline void GraphicsButton::setHeight(int h) {
+inline void GraphicsCheckbox::setHeight(int h) {
   height = h;
 }
 
-inline void GraphicsButton::setFont(QFont &font) {
+inline void GraphicsCheckbox::setFont(QFont &font) {
   theme.buttonFont = font;
 }
 
-inline void GraphicsButton::setIconFromPath(QString path) {
+inline void GraphicsCheckbox::setIconFromPath(QString path) {
   pixmap = new QPixmap(path);
 }
 
-inline void GraphicsButton::setText(QString string) {
+inline void GraphicsCheckbox::setText(QString string) {
   text = string;
 }
 
-#endif // GraphicsButton_H
+#endif // GRAPHICSCHECKBOX_H

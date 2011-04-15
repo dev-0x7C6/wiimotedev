@@ -128,17 +128,21 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
     if (device->dbusIsNunchukConnected(id))
       ext = "Nunchuk";
 
+    for (int i = 0; i < 12; ++i) {
     GraphicsButton *item = new GraphicsButton();
     item->setWidth(geometry().width());
     item->setHeight(50);
     item->setFont(*font8);
     item->setText(QString("Wiiremote: %1; MAC: %2; Ext: %3").arg(QString::number(id), device->dbusWiimoteGetMacAddress(id), ext));
-    item->setIconFromPath(":/profile.png");
+    item->setIconFromPath(":/connections.png");
     item->setX(geometry().width());
     item->setY(0);
     item->setAlignFlags(AlignLeft | AlignHCenter);
     scene()->addItem(item);
-    connections << item;
+    connections << item;}
+
+
+
   }
 
 //  QDir dir(QDir::homePath() + "/.wiimotedev/profiles");
@@ -282,6 +286,37 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   connect(connectionButton, SIGNAL(clicked()), this, SLOT(showConnectionsPage()));
 
 
+  prefAutoHideMenu = new GraphicsCheckbox();
+  prefAutoHideMenu->setX(300);
+  prefAutoHideMenu->setY(40);
+  prefAutoHideMenu->setWidth(550);
+  prefAutoHideMenu->setHeight(40);
+  prefAutoHideMenu->setFont(*font8);
+  prefAutoHideMenu->setText("Enable auto-hide feature for main menu");
+
+  prefAutoHideMenu->setActive(false);
+  scene()->addItem(prefAutoHideMenu);
+
+  prefDisplayBatteryStatus = new GraphicsCheckbox();
+  prefDisplayBatteryStatus->setX(300);
+  prefDisplayBatteryStatus->setY(90);
+  prefDisplayBatteryStatus->setWidth(550);
+  prefDisplayBatteryStatus->setHeight(40);
+  prefDisplayBatteryStatus->setFont(*font8);
+  prefDisplayBatteryStatus->setText("Display additional battery status");
+
+  prefDisplayBatteryStatus->setActive(false);
+  scene()->addItem(prefDisplayBatteryStatus);
+
+  prefDisplayBatteryStatus = new GraphicsCheckbox();
+  prefDisplayBatteryStatus->setX(300);
+  prefDisplayBatteryStatus->setY(140);
+  prefDisplayBatteryStatus->setWidth(550);
+  prefDisplayBatteryStatus->setHeight(40);
+  prefDisplayBatteryStatus->setFont(*font8);
+  prefDisplayBatteryStatus->setText("Display additional service status");
+  prefDisplayBatteryStatus->setActive(false);
+  scene()->addItem(prefDisplayBatteryStatus);
 
   QList < QGraphicsItem*> menuComponents;
 
@@ -441,7 +476,7 @@ void MainWindow::showConnectionsPage() {
     animation->setDuration(1000);
     animation->setEasingCurve(QEasingCurve::OutQuart);
     animation->setStartValue(connections.at(i)->pos());
-    animation->setEndValue(QPoint(290, (100 * i + (25*i))));
+    animation->setEndValue(QPoint(290, (50 * i + (25*i))));
     animation->start();
     connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
   }

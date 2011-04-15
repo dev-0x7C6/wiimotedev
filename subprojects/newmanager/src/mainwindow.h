@@ -27,7 +27,8 @@
 #include <QtCore/QDir>
 #include <QtGui>
 
-#include "widgets/graphicsprofileitem.h"
+#include "widgets/graphicsbutton.h"
+#include "widgets/graphicscheckbox.h"
 #include "widgets/graphicsprofilecover.h"
 #include "widgets/graphicsmanagermenu.h"
 
@@ -131,6 +132,11 @@ private:
 
 // Profiles page
   QList < GraphicsButton*> profiles;
+
+// Preferences page
+  GraphicsCheckbox *prefAutoHideMenu;
+  GraphicsCheckbox *prefDisplayBatteryStatus;
+  GraphicsCheckbox *prefDisplayServiceStatus;
 
 // Covers page
   QList < GraphicsProfileCover*> covers;
