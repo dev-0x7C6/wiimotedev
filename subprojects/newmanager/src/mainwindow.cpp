@@ -582,20 +582,25 @@ void MainWindow::drawForeground(QPainter *painter, const QRectF &rect){
   }
 
 
-//  painter->setOpacity(1.0);
-//  painter->setPen(Qt::white);
-//  painter->setFont(*font16);
-////  painter->drawText(15, 40, "Services");
-//  painter->drawText(15, 10, "Menu");
+  painter->setOpacity(0.5);
+  painter->setBrush(Qt::black);
 
-//  painter->setPen(Qt::darkGray);
-//  painter->setFont(*font8);
-//  painter->drawText(40, 60, "wiimotedev-daemon: avaliable");
-//  painter->drawPixmap(20, 49, *enabledPixmap);
+  painter->drawRect(QRect(20, geometry().height() - 95, 230, 80));
 
-//  painter->drawText(40, 80, "wiimotedev-uinput: avaliable");
-//  painter->drawPixmap(20, 69, *enabledPixmap);
-//  painter->setPen(Qt::NoPen);
+  painter->setOpacity(1.0);
+
+  painter->setPen(Qt::white);
+  painter->setFont(*font8);
+  painter->drawText(30, geometry().height()-80, "Services status");
+
+  painter->setPen(Qt::darkGray);
+  painter->setFont(*font8);
+  painter->drawText(60, geometry().height()-60, "wiimotedev-daemon: avaliable");
+  painter->drawPixmap(40, geometry().height()-71, *enabledPixmap);
+
+  painter->drawText(60, geometry().height()-40, "wiimotedev-uinput: avaliable");
+  painter->drawPixmap(40, geometry().height()-51, *enabledPixmap);
+  painter->setPen(Qt::NoPen);
 }
 
 
