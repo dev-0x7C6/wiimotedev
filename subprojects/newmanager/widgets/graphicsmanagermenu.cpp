@@ -109,13 +109,13 @@ void GraphicsManagerMenu::paint(QPainter *painter, const QStyleOptionGraphicsIte
 
   for (register int i = 0; i < 200; i++) {
   //  painter->setBrush(QColor(235, 162, 61, (double(i)/200)*150));
-    painter->setBrush(QColor(255, 255, 255, (double(i)/200)*50));
+    painter->setBrush(QColor(255, 255, 255, (double(i)/200)*15));
     //painter->setBrush(QColor(61, 162, 235, (double(i)/200)*150));
     painter->drawRect(width-200+i, 0, 1, height);
   }
 
   painter->setOpacity(1.0);
  // painter->setBrush(QColor(235, 162, 61, 255));
-  painter->setBrush(QColor(255, 255, 255, 100));
+  painter->setBrush(QColor(255, 255, 255, 25));
   painter->drawRect(width-4, 0, 4, height);
 }

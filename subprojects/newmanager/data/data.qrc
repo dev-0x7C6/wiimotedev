@@ -14,5 +14,11 @@
         <file>background.jpg</file>
         <file>media-optical.png</file>
         <file>covers.png</file>
+        <file>battery-020.png</file>
+        <file>battery-000.png</file>
+        <file>battery-040.png</file>
+        <file>battery-060.png</file>
+        <file>battery-080.png</file>
+        <file>battery-100.png</file>
     </qresource>
 </RCC>

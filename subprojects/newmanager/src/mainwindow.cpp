@@ -42,7 +42,10 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   font48(new QFont("Luxi Serif Bold Oblique", 48, QFont::Bold)),
   font64(new QFont("Luxi Serif Bold Oblique", 64, QFont::Bold)),
   cursorPixmap(new QPixmap(":/cursor.png")),
-  currentCoverIndex(0)
+  battery100(new QPixmap(":/battery-100.png")),
+  currentCoverIndex(0),
+  displayServiceStatus(true),
+  displayBatteryStatus(true)
 {
   setViewport(new QGLWidget(QGLFormat(QGL::DoubleBuffer)));
 
@@ -116,6 +119,45 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   setScene(new QGraphicsScene(0, 0, geometry().width(), geometry().height()));
 
   scene()->setBackgroundBrush(Qt::white);
+
+  prefAutoHideMenu = new GraphicsCheckbox();
+  prefAutoHideMenu->setX(300);
+  prefAutoHideMenu->setY(40);
+  prefAutoHideMenu->setWidth(550);
+  prefAutoHideMenu->setHeight(40);
+  prefAutoHideMenu->setFont(*font8);
+  prefAutoHideMenu->setText("Enable auto-hide feature for main menu");
+  prefAutoHideMenu->setOpacity(0.0);
+
+  prefAutoHideMenu->setActive(false);
+  prefCheckboxs << prefAutoHideMenu;
+  scene()->addItem(prefAutoHideMenu);
+
+  prefDisplayBatteryStatus = new GraphicsCheckbox();
+  prefDisplayBatteryStatus->setX(300);
+  prefDisplayBatteryStatus->setY(90);
+  prefDisplayBatteryStatus->setWidth(550);
+  prefDisplayBatteryStatus->setHeight(40);
+  prefDisplayBatteryStatus->setFont(*font8);
+  prefDisplayBatteryStatus->setText("Display additional battery status");
+  prefDisplayBatteryStatus->setOpacity(0.0);
+  prefDisplayBatteryStatus->setActive(false);
+  prefCheckboxs << prefDisplayBatteryStatus;
+  scene()->addItem(prefDisplayBatteryStatus);
+  connect(prefDisplayBatteryStatus, SIGNAL(checked(bool)), this, SLOT(setdisplayBatteryStatus(bool)));
+
+  prefDisplayServiceStatus = new GraphicsCheckbox();
+  prefDisplayServiceStatus->setX(300);
+  prefDisplayServiceStatus->setY(140);
+  prefDisplayServiceStatus->setWidth(550);
+  prefDisplayServiceStatus->setHeight(40);
+  prefDisplayServiceStatus->setFont(*font8);
+  prefDisplayServiceStatus->setText("Display additional service status");
+  prefDisplayServiceStatus->setActive(false);
+  prefCheckboxs << prefDisplayServiceStatus;
+  prefDisplayServiceStatus->setOpacity(0.0);
+  scene()->addItem(prefDisplayServiceStatus);
+  connect(prefDisplayServiceStatus, SIGNAL(checked(bool)), this, SLOT(setdisplayServiceStatus(bool)));
 
 
   loadProfiles();
@@ -225,11 +267,10 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   profileButton->setIconFromPath(":/profile.png");
   scene()->addItem(profileButton);
 
-  connect(profileButton, SIGNAL(enter()), this, SLOT(showProfiles()));
 
   connect(profileButton, SIGNAL(clicked()), this, SLOT(showProfilesPage()));
   connect(profileButton, SIGNAL(clicked()), this, SLOT(hideCoversPage()));
-  connect(profileButton, SIGNAL(clicked()), this, SLOT(hideConnectionsPage()));
+  connect(profileButton, SIGNAL(clicked()), this, SLOT(hidePreferencesPage()));
   connect(profileButton, SIGNAL(clicked()), this, SLOT(hidePreferncesPage()));
 
 
@@ -243,8 +284,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   coverButton->setText("Covers");
   coverButton->setIconFromPath(":/covers.png");
   scene()->addItem(coverButton);
-  connect(coverButton, SIGNAL(enter()), this, SLOT(showCovers()));
-
 
   connect(coverButton, SIGNAL(clicked()), this, SLOT(hideProfilesPage()));
   connect(coverButton, SIGNAL(clicked()), this, SLOT(showCoversPage()));
@@ -279,44 +318,12 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   connectionButton->setActive(false);
   scene()->addItem(connectionButton);
 
-
   connect(connectionButton, SIGNAL(clicked()), this, SLOT(hideProfilesPage()));
   connect(connectionButton, SIGNAL(clicked()), this, SLOT(hideCoversPage()));
   connect(connectionButton, SIGNAL(clicked()), this, SLOT(hidePreferencesPage()));
   connect(connectionButton, SIGNAL(clicked()), this, SLOT(showConnectionsPage()));
 
 
-  prefAutoHideMenu = new GraphicsCheckbox();
-  prefAutoHideMenu->setX(300);
-  prefAutoHideMenu->setY(40);
-  prefAutoHideMenu->setWidth(550);
-  prefAutoHideMenu->setHeight(40);
-  prefAutoHideMenu->setFont(*font8);
-  prefAutoHideMenu->setText("Enable auto-hide feature for main menu");
-
-  prefAutoHideMenu->setActive(false);
-  scene()->addItem(prefAutoHideMenu);
-
-  prefDisplayBatteryStatus = new GraphicsCheckbox();
-  prefDisplayBatteryStatus->setX(300);
-  prefDisplayBatteryStatus->setY(90);
-  prefDisplayBatteryStatus->setWidth(550);
-  prefDisplayBatteryStatus->setHeight(40);
-  prefDisplayBatteryStatus->setFont(*font8);
-  prefDisplayBatteryStatus->setText("Display additional battery status");
-
-  prefDisplayBatteryStatus->setActive(false);
-  scene()->addItem(prefDisplayBatteryStatus);
-
-  prefDisplayBatteryStatus = new GraphicsCheckbox();
-  prefDisplayBatteryStatus->setX(300);
-  prefDisplayBatteryStatus->setY(140);
-  prefDisplayBatteryStatus->setWidth(550);
-  prefDisplayBatteryStatus->setHeight(40);
-  prefDisplayBatteryStatus->setFont(*font8);
-  prefDisplayBatteryStatus->setText("Display additional service status");
-  prefDisplayBatteryStatus->setActive(false);
-  scene()->addItem(prefDisplayBatteryStatus);
 
   QList < QGraphicsItem*> menuComponents;
 
@@ -373,6 +380,8 @@ void MainWindow::loadProfiles() {
   QDir dir(QDir::homePath() + "/.wiimotedev/profiles");
   QFileInfoList list = dir.entryInfoList();
 
+  profilesHeight = 0;
+  profilesY = 0;
   int i = 0;
   foreach (const QFileInfo &file, dir.entryInfoList()) {
     if (!file.isDir())
@@ -390,6 +399,7 @@ void MainWindow::loadProfiles() {
         item->setX(geometry().width());
         item->setY(0);
         item->setAlignFlags(AlignLeft | AlignHCenter);
+        profilesHeight += 100 + 25;
 
         GraphicsProfileCover *item2 = new GraphicsProfileCover();
 
@@ -423,6 +433,7 @@ void MainWindow::loadProfiles() {
 }
 
 void MainWindow::showProfilesPage() {
+  profilesY = 0;
   for (register int i = 0; i < profiles.count(); ++i) {
     QPropertyAnimation *animation = new QPropertyAnimation(profiles.at(i), "pos");
     animation->setDuration(1000);
@@ -495,11 +506,41 @@ void MainWindow::hideConnectionsPage() {
 }
 
 void MainWindow::showPreferencesPage() {
-
+  for (register int i = 0; i < prefCheckboxs.count(); ++i) {
+    QPropertyAnimation *animation = new QPropertyAnimation(prefCheckboxs.at(i), "pos");
+    animation->setDuration(500);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(prefCheckboxs.at(i)->pos());
+    animation->setEndValue(QPoint(290, 30+(prefCheckboxs.at(i)->boundingRect().height() * i + (5*i))));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+    animation = new QPropertyAnimation(prefCheckboxs.at(i), "opacity");
+    animation->setDuration(250);
+    animation->setEasingCurve(QEasingCurve::Linear);
+    animation->setStartValue(prefCheckboxs.at(i)->opacity());
+    animation->setEndValue(1.0);
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
 }
 
 void MainWindow::hidePreferencesPage() {
-
+  for (register int i = 0; i < prefCheckboxs.count(); ++i) {
+    QPropertyAnimation *animation = new QPropertyAnimation(prefCheckboxs.at(i), "pos");
+    animation->setDuration(500);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(prefCheckboxs.at(i)->pos());
+    animation->setEndValue(QPoint(100, prefCheckboxs.at(i)->pos().y()));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+    animation = new QPropertyAnimation(prefCheckboxs.at(i), "opacity");
+    animation->setDuration(250);
+    animation->setEasingCurve(QEasingCurve::Linear);
+    animation->setStartValue(prefCheckboxs.at(i)->opacity());
+    animation->setEndValue(0.0);
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
 }
 
 QRect MainWindow::calculateWindowSize() {
@@ -581,26 +622,38 @@ void MainWindow::drawForeground(QPainter *painter, const QRectF &rect){
     painter->drawRect(QRect(0, geometry().height() - i, geometry().width(), 1));
   }
 
+  if (displayServiceStatus) {
+    painter->setOpacity(0.5);
+    painter->setBrush(Qt::black);
+    painter->drawRect(QRect(20, geometry().height() - 95, 230, 80));
+    painter->setOpacity(1.0);
 
-  painter->setOpacity(0.5);
-  painter->setBrush(Qt::black);
+    painter->setPen(Qt::white);
+    painter->setFont(*font8);
+    painter->drawText(30, geometry().height()-80, "Services status");
 
-  painter->drawRect(QRect(20, geometry().height() - 95, 230, 80));
+    painter->setPen(Qt::darkGray);
+    painter->setFont(*font8);
 
-  painter->setOpacity(1.0);
 
-  painter->setPen(Qt::white);
-  painter->setFont(*font8);
-  painter->drawText(30, geometry().height()-80, "Services status");
+    if (device->isValid()) {
+      painter->drawText(60, geometry().height()-60, "wiimotedev-daemon: avaliable");
+      painter->drawPixmap(40, geometry().height()-71, *enabledPixmap);
+    } else {
+      painter->drawText(60, geometry().height()-60, "wiimotedev-daemon: unavaliable");
+      painter->drawPixmap(40, geometry().height()-71, *disabledPixmap);
+    }
 
-  painter->setPen(Qt::darkGray);
-  painter->setFont(*font8);
-  painter->drawText(60, geometry().height()-60, "wiimotedev-daemon: avaliable");
-  painter->drawPixmap(40, geometry().height()-71, *enabledPixmap);
 
-  painter->drawText(60, geometry().height()-40, "wiimotedev-uinput: avaliable");
-  painter->drawPixmap(40, geometry().height()-51, *enabledPixmap);
-  painter->setPen(Qt::NoPen);
+    painter->drawText(60, geometry().height()-40, "wiimotedev-uinput: avaliable");
+    painter->drawPixmap(40, geometry().height()-51, *enabledPixmap);
+    painter->setPen(Qt::NoPen);
+  }
+
+  if (displayBatteryStatus) {
+    painter->setOpacity(1.0);
+    painter->drawPixmap(geometry().width()-42, geometry().height()-42, *battery100);
+  }
 }
 
 
@@ -690,6 +743,20 @@ QGraphicsView::mouseReleaseEvent(event);
 }
 
 void MainWindow::timerEvent(QTimerEvent *event) {
+  profilesY += mouseAccY;
+  if (profilesY < -(profilesHeight-geometry().height()))
+    profilesY = -(profilesHeight-geometry().height());
+
+  if (profilesY > 25)
+    profilesY = 25;
+
+  for (register int i = 0; i < profiles.count(); ++i) {
+    if (profiles.at(i)->pos().x() == 290)
+      profiles.at(i)->setPos(profiles.at(i)->pos().x(), profilesY + (i* 125));
+
+  }
+
+  qDebug() << profilesY << mouseAccY;
 //  profileGroup->setY(profileGroup->y() + mouseAccY);
 
 //  if (profileGroup->y() < ((profiles.count() * -110) + geometry().height() - int(barsize/2)))
@@ -869,31 +936,6 @@ void MainWindow::moveCursor() {
     }
   }
 
-
-//  QGraphicsItem *obj = scene()->itemAt(mouseX, mouseY);
-//  if (obj) {
-//    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&profileGroup)) {
-//      if (lastFocusedProfile != static_cast< GraphicsButton*>( obj) ) {
-//        rumble.start();
-//        if (lastFocusedProfile)
-//          lastFocusedProfile->setActiveState(false);
-//        lastFocusedProfile = static_cast< GraphicsButton*>( obj);
-//        lastFocusedProfile->setActiveState(true);
-//      }
-//    }
-
-//    if (obj->parentItem() == reinterpret_cast< QGraphicsItemGroupPlus*>(&menuGroup)) {
-//      if (lastFocusedMenu != static_cast< GraphicsButton*>( obj) ) {
-//        rumble.start();
-//        if (lastFocusedMenu)
-//          lastFocusedMenu->setActiveState(false);
-//        lastFocusedMenu = static_cast< GraphicsButton*>( obj);
-//        lastFocusedMenu->setActiveState(true);
-//      }
-//    }
-//  }
   cursorHandle->setPos(mouseX, mouseY);
-
-
 }
 

@@ -144,7 +144,6 @@ void GraphicsButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
     painter->drawRect(QRect(0, i, width, 1));
   }
 
-  painter->setOpacity(1.0);
 
   register float pos = (height/2.0) - (pixmap->height()/2.0);
 

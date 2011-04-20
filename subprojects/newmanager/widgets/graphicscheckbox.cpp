@@ -34,9 +34,11 @@ GraphicsCheckbox::GraphicsCheckbox (QObject *parent) :
   actived(false),
   focused(false),
   groupId(0),
-  checked(false)
-{
+  isChecked(false),
+  m_motion(1.0),
+  changeAnimation(new QPropertyAnimation(this, "motion"))
 
+{
   theme.buttonColorFocus = QColor(61, 162, 235,  100);
   theme.buttonColorActive = QColor(61, 162, 235,  50);
   theme.buttonColorInactive = QColor(255, 255, 255, 10);
@@ -46,7 +48,8 @@ GraphicsCheckbox::GraphicsCheckbox (QObject *parent) :
 
   setObjectName("GraphicsCheckbox");
   setAcceptHoverEvents(true);
-
+  changeAnimation->setDuration(250);
+  changeAnimation->setEasingCurve(QEasingCurve::OutQuart);
 }
 
 
@@ -59,8 +62,26 @@ void GraphicsCheckbox::hoverLeaveEvent (QGraphicsSceneHoverEvent * event) {
 }
 
 void GraphicsCheckbox::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+  if (event->pos().x() < width-(height*2))
+    return;
 
-  emit clicked();
+  if (event->pos().x() >= width-(height*2) &&
+      event->pos().x() < width-(height)) {
+    changeAnimation->setStartValue(motion());
+    changeAnimation->setEndValue(1.0);
+    isChecked = true;
+  } else {
+    changeAnimation->setStartValue(motion());
+    changeAnimation->setEndValue(0.5);
+    isChecked = false;
+  }
+
+  emit checked(isChecked);
+
+  if (changeAnimation->state() == QAbstractAnimation::Running)
+    changeAnimation->stop();
+
+  changeAnimation->start();
 }
 
 void GraphicsCheckbox::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
@@ -75,9 +96,7 @@ QPainterPath GraphicsCheckbox::shape() const {
 }
 
 QRectF GraphicsCheckbox::boundingRect() const {
-  if (height < 64)
-    return QRectF(0, -16, width, height+32);
-    return QRectF(0, 0, width, height);
+  return QRectF(0, 0, width, height);
 }
 
 void GraphicsCheckbox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -106,10 +125,6 @@ void GraphicsCheckbox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     painter->drawRect(QRect(0, i, width, 1));
   }
 
-  painter->setOpacity(1.0);
-
-
-
   register float pos = 10;
 
   if (pixmap) {
@@ -118,17 +133,11 @@ void GraphicsCheckbox::paint(QPainter *painter, const QStyleOptionGraphicsItem *
      painter->setFont(theme.buttonFont);
   }
 
-  if (checked) {
-    painter->setBrush(theme.buttonColorInactive);
-    painter->drawRect(QRect(width-(height*2), 0, height, height));
-    painter->setBrush(theme.buttonColorFocus);
-    painter->drawRect(QRect(width-(height), 0, height, height));
-  } else {
-    painter->setBrush(theme.buttonColorInactive);
-    painter->drawRect(QRect(width-(height), 0, height, height));
-    painter->setBrush(theme.buttonColorFocus);
-    painter->drawRect(QRect(width-(height*2), 0, height, height));
-  }
+
+  painter->setBrush(theme.buttonColorInactive);
+  painter->drawRect(QRect(width-(height*2), 0, height*2, height));
+  painter->setBrush(theme.buttonColorFocus);
+  painter->drawRect(QRect(width-(height*2*m_motion), 0, height, height));
 
   painter->setPen(Qt::white);
   painter->drawText(10, 0, width-(height*2), height , Qt::AlignVCenter | Qt::TextWordWrap | Qt::TextJustificationForced,  text);

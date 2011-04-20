@@ -97,6 +97,14 @@ private slots:
   void showConnectionsPage();
   void hideConnectionsPage();
 
+  void setdisplayServiceStatus(bool display) {
+    displayServiceStatus = display;
+  }
+
+  void setdisplayBatteryStatus(bool display) {
+    displayBatteryStatus = display;
+  }
+
 protected:
   virtual void drawForeground(QPainter *painter, const QRectF &rect);
   virtual void drawBackground(QPainter *painter, const QRectF &rect);
@@ -112,6 +120,7 @@ public slots:
 
   void setRumbleStatus(int status);
 
+
 private:
 // General
   QFont *font64;
@@ -120,6 +129,10 @@ private:
   QFont *font24;
   QFont *font16;
   QFont *font8;
+
+// bool
+  bool displayServiceStatus;
+  bool displayBatteryStatus;
 
 // Menu componets
   GraphicsButton *profileButton;
@@ -132,11 +145,15 @@ private:
 
 // Profiles page
   QList < GraphicsButton*> profiles;
+  int profilesHeight;
+  int profilesY;
 
 // Preferences page
   GraphicsCheckbox *prefAutoHideMenu;
   GraphicsCheckbox *prefDisplayBatteryStatus;
   GraphicsCheckbox *prefDisplayServiceStatus;
+
+  QList < GraphicsCheckbox*> prefCheckboxs;
 
 // Covers page
   QList < GraphicsProfileCover*> covers;
@@ -176,6 +193,8 @@ private:
 
   QPixmap *enabledPixmap;
   QPixmap *disabledPixmap;
+
+  QPixmap *battery100;
 
   quint32 profileGroupHeight;
 

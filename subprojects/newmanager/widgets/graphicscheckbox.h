@@ -41,6 +41,9 @@ class GraphicsCheckbox :public QObject, public QGraphicsItem
   Q_INTERFACES(QGraphicsItem)
   Q_PROPERTY (QPointF pos READ pos WRITE setPos)
   Q_PROPERTY (qreal scale READ scale WRITE setScale)
+  Q_PROPERTY (qreal opacity READ opacity WRITE setOpacity)
+
+  Q_PROPERTY (double motion READ motion WRITE setMotion)
 
   GraphicsCheckboxTheme theme;
   quint32 width;
@@ -55,7 +58,10 @@ class GraphicsCheckbox :public QObject, public QGraphicsItem
 
   QPixmap *pixmap;
 
-  bool checked;
+  bool isChecked;
+  double m_motion;
+
+  QPropertyAnimation *changeAnimation;
 
 public:
   GraphicsCheckbox (QObject *parent = 0);
@@ -68,6 +74,9 @@ public:
 
   void setActiveState(bool f) { actived = f; }
   void setFocusState(bool a) { focused = a; }
+
+  double motion() { return m_motion; update(width-height*2,0, height*2, height); }
+  void setMotion(double m) { m_motion = m; update(width-height*2,0, height*2, height);}
 
 public:
   void setWidth(int w);
@@ -86,8 +95,8 @@ protected:
   void virtual hoverLeaveEvent (QGraphicsSceneHoverEvent * event);
 
 signals:
-  void clicked();
-  void subClicked(int);
+  void checked(bool);
+
 };
 
 inline void GraphicsCheckbox::setWidth(int w) {
