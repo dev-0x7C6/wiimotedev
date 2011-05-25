@@ -57,11 +57,15 @@ class GraphicsButton :public QObject, public QGraphicsItem
   GraphicsButtonTheme theme;
   quint32 width;
   quint32 height;
+  quint32 margin;
+  quint32 bgstyle;
   QString text;
 
   bool focused;
   bool actived;
+  bool selectable;
   quint32 hoverAlign;
+  quint32 iconAlign;
 
   quint32 groupId;
 
@@ -70,22 +74,30 @@ class GraphicsButton :public QObject, public QGraphicsItem
 
   QPixmap *pixmap;
 
+  QPixmap *backgroundActive;
+  QPixmap *backgroundInactive;
+  QPixmap *backgroundFocus;
+
 public:
   GraphicsButton (QObject *parent = 0);
   QRectF boundingRect() const;
   QPainterPath shape() const;
 
   void setAlignFlags(quint32 flags) { hoverAlign = flags; }
+  void setIconAlignFlags(quint32 flags) { iconAlign = flags; }
 
   void setGroupId(quint32 id ) { groupId = id; };
 
   void setActiveState(bool f) { actived = f; }
   void setFocusState(bool a) { focused = a; }
-
+  void setSelectableMode(bool k) { selectable = k; }
 
 public:
   void setWidth(int w);
   void setHeight(int h);
+  void setMargin(int m);
+
+  void setBackgroundStyle(quint32 s);
 
   void setFont(QFont &font);
   void setIconFromPath(QString path);
@@ -102,6 +114,9 @@ protected:
   void virtual hoverEnterEvent (QGraphicsSceneHoverEvent * event);
   void virtual hoverLeaveEvent (QGraphicsSceneHoverEvent * event);
 
+private:
+  void renderBackgrounds();
+
 signals:
   void clicked();
   void subClicked(int);
@@ -117,6 +132,14 @@ inline void GraphicsButton::setWidth(int w) {
 
 inline void GraphicsButton::setHeight(int h) {
   height = h;
+}
+
+inline void GraphicsButton::setMargin(int m) {
+  margin = m;
+}
+
+inline void GraphicsButton::setBackgroundStyle(quint32 s) {
+  bgstyle = s;
 }
 
 inline void GraphicsButton::setFont(QFont &font) {

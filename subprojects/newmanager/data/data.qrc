@@ -20,5 +20,7 @@
         <file>battery-060.png</file>
         <file>battery-080.png</file>
         <file>battery-100.png</file>
+        <file>run.png</file>
+        <file>favorite.png</file>
     </qresource>
 </RCC>

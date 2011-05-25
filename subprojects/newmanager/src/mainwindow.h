@@ -76,10 +76,12 @@ private:
 
 
   void setCoverIndex(int index);
+
+
+private slots:
   void nextCover();
   void prevCover();
 
-private slots:
   void profileButtonClicked();
   void coverButtonClicked();
   void preferenceButtonClicked();
@@ -157,6 +159,10 @@ private:
 
 // Covers page
   QList < GraphicsProfileCover*> covers;
+  GraphicsButton *nextCoverButton;
+  GraphicsButton *prevCoverButton;
+  GraphicsButton *execCoverButton;
+  GraphicsButton *favCoverButton;
 
 // Connections page
   QList < GraphicsButton*> connections;

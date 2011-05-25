@@ -30,11 +30,15 @@ GraphicsButton::GraphicsButton (QObject *parent) :
   QGraphicsItem(),
   width(0),
   height(0),
+  margin(10),
+  bgstyle(1),
   text(""),
   pixmap(0),
   actived(false),
   focused(false),
+  selectable(true),
   hoverAlign(AlignVCenter | AlignHCenter),
+  iconAlign(AlignLeft | AlignHCenter),
   groupId(0),
   scaleAnimation(new QPropertyAnimation(this, "scale")),
   scaleLock(false)
@@ -86,26 +90,26 @@ void GraphicsButton::hoverLeaveEvent (QGraphicsSceneHoverEvent * event) {
 }
 
 void GraphicsButton::mousePressEvent(QGraphicsSceneMouseEvent *event) {
-  if ((event->button() != Qt::LeftButton) ||
-      (this == profiles[groupId]))
-    return;
+  if (selectable == true) {
+    if ((event->button() != Qt::LeftButton) ||
+        (this == profiles[groupId]))
+      return;
 
-  if (profiles[groupId]) {
-    profiles[groupId]->setFocusState(false);
-    profiles[groupId]->setScaleLock(false);
-    profiles[groupId]->setScaleAnim(theme.minScaleSize);
+    if (profiles[groupId]) {
+      profiles[groupId]->setFocusState(false);
+      profiles[groupId]->setScaleLock(false);
+      profiles[groupId]->setScaleAnim(theme.minScaleSize);
+    }
+    setFocusState(true);
+    setScaleLock(true);
+    profiles[groupId] = this;
   }
-  setFocusState(true);
-  setScaleLock(true);
-  profiles[groupId] = this;
-
   emit clicked();
 }
 
 void GraphicsButton::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 
 }
-
 
 QPainterPath GraphicsButton::shape() const {
   QPainterPath path;
@@ -117,6 +121,27 @@ QRectF GraphicsButton::boundingRect() const {
   if (height < 64)
     return QRectF(0, -16, width, height+32);
     return QRectF(0, 0, width, height);
+}
+
+void GraphicsButton::renderBackgrounds() {
+  QPainter *painter;
+  QColor color;
+  int alpha;
+
+  backgroundActive = new QPixmap(width, height);
+  color = theme.buttonColorActive;
+  alpha = color.alpha();
+  painter = new QPainter(backgroundActive);
+
+  painter->setBrush(color);
+  painter->drawRect(QRect(0, height/3*2, width, height/3));
+
+  for (register int i = 0; i < height/3*2; i++) {
+    color.setAlpha(alpha+(10 * (double(i)/double(height/3*2))));
+    painter->setBrush(color);
+    painter->drawRect(QRect(20, i, width, 1));
+  }
+
 }
 
 void GraphicsButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -132,27 +157,56 @@ void GraphicsButton::paint(QPainter *painter, const QStyleOptionGraphicsItem *op
   if (focused)
     painter->setBrush(theme.buttonColorFocus);
 
-  QColor color = painter->brush().color();
-  int alpha = color.alpha();
 
-  painter->setBrush(color);
-  painter->drawRect(QRect(0, height/3*2, width, height/3));
 
-  for (register int i = 0; i < height/3*2; i++) {
-    color.setAlpha(alpha+(10 * (double(i)/double(height/3*2))));
-    painter->setBrush(color);
-    painter->drawRect(QRect(0, i, width, 1));
+  if (bgstyle == 1) {
+
+
+    painter->drawRect(QRect(0, height/3*2, width, height/3));
+
+    QLinearGradient gradient(0, 0, width, height/3*2);
+    gradient.setColorAt(0, theme.buttonColorInactive);
+    QColor color = theme.buttonColorInactive;
+    color.setAlpha(0);
+    gradient.setColorAt(1, color);
+
+    painter->setBrush(gradient);
+    painter->fillRect(QRect(0, 0, width, height/3*2), gradient);
+
+
+//    QColor color = painter->brush().color();
+//    int alpha = color.alpha();
+
+//    painter->setBrush(color);
+//    painter->drawRect(QRect(0, height/3*2, width, height/3));
+
+//    for (register int i = 0; i < height/3*2; i++) {
+//      color.setAlpha(alpha+(10 * (double(i)/double(height/3*2))));
+//      painter->setBrush(color);
+//      painter->drawRect(QRect(00, i, width, 1));
+//    }
   }
+
+
 
 
   register float pos = (height/2.0) - (pixmap->height()/2.0);
 
   if (pixmap) {
-     painter->drawPixmap(pos+10, pos, pixmap->width(), pixmap->height(), *pixmap);
-     painter->setFont(theme.buttonFont);
+    QPointF p;
+    if (iconAlign & AlignLeft) p.setX(10); else
+    if (iconAlign & AlignVCenter) p.setX(width/2 - (pixmap->width()/2.0)); else
+    if (iconAlign & AlignRight) p.setX(width - (pixmap->width()));
+    if (iconAlign & AlignTop) p.setY(0); else
+    if (iconAlign & AlignHCenter) p.setY((height/2) - (pixmap->height()/2.0)); else
+    if (iconAlign & AlignBottom) p.setY(height - (pixmap->height()));
+
+     painter->drawPixmap(p.x(), p.y(), pixmap->width(), pixmap->height(), *pixmap);
   }
 
+  painter->setFont(theme.buttonFont);
   painter->setPen(Qt::white);
-  painter->drawText(pos + 64 + 20, 0, width-(pos + 64 + 20), height, Qt::AlignVCenter | Qt::TextWordWrap,  text);
-  painter->setPen(Qt::NoPen);
+
+
+  painter->drawText(pos + 64 + (margin*2), 0, width-(pos + 64 + (margin*2)), height, Qt::AlignVCenter | Qt::TextWordWrap,  text);
 }

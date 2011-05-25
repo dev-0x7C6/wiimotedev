@@ -20,6 +20,7 @@
 #include "graphicsprofilecover.h"
 
 #include <QPainter>
+#include <QDebug>
 
 GraphicsProfileCover::GraphicsProfileCover(QObject *parent) :
   QObject(parent),
@@ -37,7 +38,7 @@ GraphicsProfileCover::GraphicsProfileCover(QObject *parent) :
 
 {
   setObjectName("ProfileItem");
-
+  setAcceptHoverEvents(true);
 }
 
 void GraphicsProfileCover::setCover(QPixmap c)
@@ -50,6 +51,22 @@ void GraphicsProfileCover::rescale(bool smooth) {
   if (smooth)
     cover = orginal.scaled(QSize(width, height-120), Qt::KeepAspectRatio, Qt::SmoothTransformation); else
     cover = orginal.scaled(QSize(width, height-120), Qt::KeepAspectRatio, Qt::FastTransformation);
+}
+
+void GraphicsProfileCover::hoverEnterEvent (QGraphicsSceneHoverEvent * event) {
+}
+
+void GraphicsProfileCover::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+  QRect rect;
+  rect.setX((width/2) - (cover.width()/2));
+  rect.setY(boundingRect().height()-cover.height()-80);
+  rect.setWidth(cover.width());
+  rect.setHeight(cover.height());
+  qDebug() << rect;
+}
+
+void GraphicsProfileCover::hoverLeaveEvent (QGraphicsSceneHoverEvent * event) {
+  qDebug() << "release";
 }
 
 void GraphicsProfileCover::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)

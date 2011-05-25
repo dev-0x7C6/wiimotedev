@@ -47,8 +47,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   displayServiceStatus(true),
   displayBatteryStatus(true)
 {
-  setViewport(new QGLWidget(QGLFormat(QGL::DoubleBuffer)));
-
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
   brush.setStyle(Qt::SolidPattern);
@@ -116,6 +114,11 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   setCursor(QCursor(Qt::BlankCursor));
   setMouseTracking(true);
   setGeometry(calculateWindowSize());
+
+  setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+
+
+
   setScene(new QGraphicsScene(0, 0, geometry().width(), geometry().height()));
 
   scene()->setBackgroundBrush(Qt::white);
@@ -183,9 +186,9 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
     scene()->addItem(item);
     connections << item;}
 
-
-
   }
+
+
 
 //  QDir dir(QDir::homePath() + "/.wiimotedev/profiles");
 
@@ -284,6 +287,67 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   coverButton->setText("Covers");
   coverButton->setIconFromPath(":/covers.png");
   scene()->addItem(coverButton);
+
+  nextCoverButton = new GraphicsButton();
+  nextCoverButton->setX(1150);
+  nextCoverButton->setY(0);
+  nextCoverButton->setMargin(0);
+  nextCoverButton->setActiveState(false);
+  nextCoverButton->setHeight(480);
+  nextCoverButton->setWidth(80);
+  nextCoverButton->setAlignFlags(AlignRight| AlignHCenter);
+  nextCoverButton->setIconAlignFlags(AlignVCenter | AlignHCenter);
+  nextCoverButton->setBackgroundStyle(1);
+  nextCoverButton->setFont(*font8);
+  nextCoverButton->setSelectableMode(false);
+  nextCoverButton->setText("");
+  nextCoverButton->setIconFromPath(":/arrow-right.png");
+  scene()->addItem(nextCoverButton);
+  connect(nextCoverButton, SIGNAL(clicked()), this, SLOT(nextCover()));
+
+  prevCoverButton = new GraphicsButton();
+  prevCoverButton->setX(290);
+  prevCoverButton->setY(0);
+  prevCoverButton->setMargin(0);
+  prevCoverButton->setActiveState(false);
+  prevCoverButton->setHeight(480);
+  prevCoverButton->setWidth(80);
+  prevCoverButton->setSelectableMode(false);
+  prevCoverButton->setBackgroundStyle(1);
+  prevCoverButton->setAlignFlags(AlignLeft | AlignHCenter);
+  prevCoverButton->setIconAlignFlags(AlignVCenter | AlignHCenter);
+  prevCoverButton->setFont(*font8);
+  prevCoverButton->setText("");
+  prevCoverButton->setIconFromPath(":/arrow-left.png");
+  scene()->addItem(prevCoverButton);
+  connect(prevCoverButton, SIGNAL(clicked()), this, SLOT(prevCover()));
+
+  execCoverButton = new GraphicsButton();
+  execCoverButton->setX(900);
+  execCoverButton->setY(430);
+  execCoverButton->setMargin(0);
+  execCoverButton->setActiveState(false);
+  execCoverButton->setHeight(64);
+  execCoverButton->setWidth(64);
+  execCoverButton->setBackgroundStyle(1);
+  execCoverButton->setFont(*font16);
+  execCoverButton->setText("Next");
+  execCoverButton->setIconFromPath(":/run.png");
+  scene()->addItem(execCoverButton);
+
+  favCoverButton = new GraphicsButton();
+  favCoverButton->setX(1000);
+  favCoverButton->setY(430);
+  favCoverButton->setMargin(0);
+  favCoverButton->setActiveState(false);
+  favCoverButton->setHeight(64);
+  favCoverButton->setWidth(64);
+  favCoverButton->setBackgroundStyle(1);
+  favCoverButton->setFont(*font16);
+  favCoverButton->setText("Next");
+  favCoverButton->setIconFromPath(":/favorite.png");
+  scene()->addItem(favCoverButton);
+
 
   connect(coverButton, SIGNAL(clicked()), this, SLOT(hideProfilesPage()));
   connect(coverButton, SIGNAL(clicked()), this, SLOT(showCoversPage()));
@@ -547,8 +611,12 @@ QRect MainWindow::calculateWindowSize() {
   int screenId = QApplication::desktop()->screenNumber(cursor().pos());
 
   QRect rect = QApplication::desktop()->screenGeometry(screenId);
-  int width = rect.width() * 0.75;
+  int width = rect.width() * 0.90;
   int height = rect.height() * 0.50;
+
+  if (height < 480)
+    height = 480;
+  qDebug() << width;
   QRect pos;
 
   pos.setX(rect.x() + ((rect.width()/2 ) - (width/2)));
@@ -756,7 +824,6 @@ void MainWindow::timerEvent(QTimerEvent *event) {
 
   }
 
-  qDebug() << profilesY << mouseAccY;
 //  profileGroup->setY(profileGroup->y() + mouseAccY);
 
 //  if (profileGroup->y() < ((profiles.count() * -110) + geometry().height() - int(barsize/2)))
@@ -811,21 +878,22 @@ void MainWindow::setCoverIndex(int index) {
 }
 
 void MainWindow::nextCover() {
-//  currentCoverIndex++;
+  currentCoverIndex++;
 
-//  if (currentCoverIndex >= covers.count()) {
-//    currentCoverIndex = 0;
-//    coverGroup->setPos(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup->pos().y()));
-//  }
-//  rumble.start();
+  if (currentCoverIndex >= covers.count()) {
+    currentCoverIndex = 0;
+  }
+  rumble.start();
 
-//  QPropertyAnimation *animation = new QPropertyAnimation(coverGroup, "pos");
-//  animation->setDuration(250);
-//  animation->setEasingCurve(QEasingCurve::OutQuart);
-//  animation->setStartValue(coverGroup->pos());
-//  animation->setEndValue(QPoint(-(currentCoverIndex*(geometry().width())), coverGroup->pos().y()));
-//  animation->start();
-//  connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  for (register int i = 0; i < covers.count(); i++) {
+    QPropertyAnimation *animation = new QPropertyAnimation(covers.at(i), "pos");
+    animation->setDuration(250);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(covers.at(i)->pos());
+    animation->setEndValue(QPoint((geometry().width()*(i-currentCoverIndex)), 0));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
 
 //  for (register int i = 0; i < covers.count(); ++i) {
 //    animation = new QPropertyAnimation(covers.at(i), "opacity");
@@ -839,13 +907,21 @@ void MainWindow::nextCover() {
 }
 
 void MainWindow::prevCover() {
-//  currentCoverIndex--;
-//  if (currentCoverIndex < 0) {
-//    currentCoverIndex = covers.count() - 1;
-//    coverGroup->setPos(QPoint(-(currentCoverIndex*(geometry().width()-264)), coverGroup->pos().y()));
-//  }
-//  rumble.start();
+  currentCoverIndex--;
+  if (currentCoverIndex < 0) {
+    currentCoverIndex = covers.count() - 1;
+  }
+  rumble.start();
 
+  for (register int i = 0; i < covers.count(); i++) {
+    QPropertyAnimation *animation = new QPropertyAnimation(covers.at(i), "pos");
+    animation->setDuration(250);
+    animation->setEasingCurve(QEasingCurve::OutQuart);
+    animation->setStartValue(covers.at(i)->pos());
+    animation->setEndValue(QPoint((geometry().width()*(i-currentCoverIndex)), 0));
+    animation->start();
+    connect(animation, SIGNAL(finished()), animation, SLOT(deleteLater()));
+  }
 //  QPropertyAnimation *animation = new QPropertyAnimation(coverGroup, "pos");
 //  animation->setDuration(250);
 //  animation->setEasingCurve(QEasingCurve::OutQuart);
@@ -868,6 +944,7 @@ void MainWindow::prevCover() {
 
 
 void MainWindow::mouseMoveEvent (QMouseEvent *event) {
+   QGraphicsView::mouseMoveEvent(event);
   if (event->button() == Qt::XButton1)
     return;
 
@@ -883,7 +960,7 @@ void MainWindow::mouseMoveEvent (QMouseEvent *event) {
   moveCursor();
   rotateCursor(0);
   scaleCursor(1.0);
-  QGraphicsView::mouseMoveEvent(event);
+
 }
 
 void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, double size, double angle) {

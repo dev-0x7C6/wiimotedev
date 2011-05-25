@@ -73,6 +73,9 @@ public:
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+  void virtual hoverEnterEvent (QGraphicsSceneHoverEvent * event);
+  void virtual hoverLeaveEvent (QGraphicsSceneHoverEvent * event);
+  void virtual mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 
 private:
   int apos;
