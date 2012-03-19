@@ -88,10 +88,7 @@ bool WiimoteDevice::getMesgStruct(int *count, union cwiid_mesg *mesg[], struct t
 bool WiimoteDevice::setLedStatus(quint8 led) {
   if (isDisconnected()) return false;
 
-  if (cwiid_set_led(device, switchOnLeds = led)) {
-    disconnectFromDevice(false);
-    return false;
-  }
+  cwiid_set_led(device, switchOnLeds = led);
 
   return true;
 }
