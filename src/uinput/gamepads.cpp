@@ -111,11 +111,11 @@ void UInputProfileManager::dbusClassicControllerButtons(quint32 id, quint64 butt
 void UInputProfileManager::dbusClassicControllerLStick(quint32 id, struct stickdata stick) {
   ClassicGamepadDevice *device = 0;
   if ((device = classicGamepads.value(id, device)))
-    device->setLeftStick(stick.x, 0x3F - stick.y);
+    device->setStick(ClassicGamepadDevice::LeftStick, stick.x, /*0x3F -*/ stick.y);
 }
 
 void UInputProfileManager::dbusClassicControllerRStick(quint32 id, struct stickdata stick) {
   ClassicGamepadDevice *device = 0;
   if ((device = classicGamepads.value(id, device)))
-    device->setRightStick(stick.x, 0x1F - stick.y);
+    device->setStick(ClassicGamepadDevice::RightStick, stick.x, /*0x1F - */stick.y);
 }
