@@ -66,7 +66,7 @@ public:
 
 private:
   void centerStick(Sticks stick);
-  void syncSticks();
+  void syncAxes();
 
 };
 
