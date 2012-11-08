@@ -22,11 +22,11 @@
 
 #include "devices/general.h"
 
-const qint16 NUNCHUK_STICK_MAX = (0xFF >> 1) + (0xFF >> 2);
-const qint16 NUNCHUK_STICK_MIN = (0xFF >> 1) - (0xFF >> 2);
+const qint16 NUNCHUK_STICK_MAX = 0xFF - 0x15;
+const qint16 NUNCHUK_STICK_MIN = 0x00 + 0x15;
 
-const qint16 WIIMOTE_PITCH_MAX = 180;
-const qint16 WIIMOTE_PITCH_MIN =-180;
+const qint16 WIIMOTE_PITCH_MAX = 90;
+const qint16 WIIMOTE_PITCH_MIN =-90;
 const qint16 WIIMOTE_ROLL_MAX = 180;
 const qint16 WIIMOTE_ROLL_MIN =-180;
 
@@ -44,20 +44,78 @@ const qint8 WIIMOTE_BUTTON_RELEASED = 0;
 const qint8 WIIMOTE_DPAD_MAX = 1;
 const qint8 WIIMOTE_DPAD_MIN =-1;
 
+const int NUNCHUK_STICK_LINUX_AXIS_X = ABS_RX;
+const int NUNCHUK_STICK_LINUX_AXIS_Y = ABS_RY;
+const int WIIMOTE_DPAD_LINUX_AXIS_X = ABS_X;
+const int WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_Y;
+const int WIIMOTE_PITCH_LINUX_AXIS = ABS_HAT0X;
+const int WIIMOTE_ROLL_LINUX_AXIS = ABS_HAT1X;
+const int NUNCHUK_PITCH_LINUX_AXIS = ABS_HAT2X;
+const int NUNCHUK_ROLL_LINUX_AXIS = ABS_HAT3X;
+
+
+//void setButtons(quint64 buttons);
+//void setStick(Sticks stick, qint32 x, qint32 y);
+
+//private:
+//void centerStick(Sticks stick);
+//void syncSticks();
+
 class WiimoteGamepadDevice: public UInputObject
 {
+public:
+  enum Position {
+    GamepadHorizontal,
+    GamepadVertical
+  };
+
+  enum Mode {
+    DPadPositionConstant,
+    DPadPositionSwitchable
+  };
+
+  enum Stick {
+    NunchukStick,
+    DpadStick,
+    WiimoteAccelerometer,
+    NunchukAccelerometer
+  };
+
+  enum Device {
+    Nunchuk,
+    Wiimote
+  };
+
 private:
-  QString deviceName;
+  QString m_deviceName;
+  int m_last_stick_x;
+  int m_last_stick_y;
+  int m_last_dpad_x;
+  int m_last_dpad_y;
+  int m_last_nunchuk_acc_pitch;
+  int m_last_nunchuk_acc_roll;
+  int m_last_wiimote_acc_pitch;
+  int m_last_wiimote_acc_roll;
+  Position m_horizontal;
+  Mode m_mode;
+
+  bool m_home_pressed;
 
 public:
-  WiimoteGamepadDevice(QString deviceName);
+  WiimoteGamepadDevice(QString deviceName, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical);
   bool uinput_open();
 
+
   void setWiimoteButtons(quint64);
-  void setWiimoteTilts(double, double);
+  void setWiimoteAcc(double, double);
+
   void setNunchukButtons(quint64);
   void setNunchukStick(qint32, qint32);
-  void setNunchukTilts(double, double);
+  void setNunchukAcc(double, double);
+
+private:
+  void centerStick(Stick id);
+  void syncAxes();
 };
 
 #endif // UINPUT_WIIMOTEGAMEPAD_H

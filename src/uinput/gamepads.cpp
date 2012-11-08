@@ -30,7 +30,9 @@ void UInputProfileManager::loadGamepadEvents(QSettings &settings) {
     if (!valid)
       continue;
 
-    WiimoteGamepadDevice *device = new WiimoteGamepadDevice(settings.value(key, QString("noname")).toString());
+    WiimoteGamepadDevice *device = new WiimoteGamepadDevice(settings.value(key, QString()).toString(),
+                                                            WiimoteGamepadDevice::DPadPositionSwitchable,
+                                                            WiimoteGamepadDevice::GamepadVertical);
 
     wiimoteGamepads[id] = device;
     device->uinput_open();
@@ -49,7 +51,7 @@ void UInputProfileManager::loadGamepadEvents(QSettings &settings) {
     if (!valid)
       continue;
 
-    ClassicGamepadDevice *device = new ClassicGamepadDevice(settings.value(key, QString("noname")).toString());
+    ClassicGamepadDevice *device = new ClassicGamepadDevice(settings.value(key, QString()).toString());
     classicGamepads[id] = device;
     device->uinput_open();
   }
@@ -75,7 +77,7 @@ void UInputProfileManager::unloadGamepadEvents() {
 void UInputProfileManager::dbusWiimoteAcc(quint32 id, struct accdata acc) {
   WiimoteGamepadDevice *device = 0;
   if ((device = wiimoteGamepads.value(id, device)))
-    device->setWiimoteTilts(acc.pitch, acc.roll);
+    device->setWiimoteAcc(acc.pitch, acc.roll);
 }
 
 void UInputProfileManager::dbusWiimoteButtons(quint32 id, quint64 buttons) {
@@ -87,7 +89,7 @@ void UInputProfileManager::dbusWiimoteButtons(quint32 id, quint64 buttons) {
 void UInputProfileManager::dbusNunchukAcc(quint32 id, struct accdata acc) {
   WiimoteGamepadDevice *device = 0;
   if ((device = wiimoteGamepads.value(id, device)))
-    device->setNunchukTilts(acc.pitch, acc.roll);
+    device->setNunchukAcc(acc.pitch, acc.roll);
 }
 
 void UInputProfileManager::dbusNunchukButtons(quint32 id, quint64 buttons) {
