@@ -30,11 +30,13 @@ void UInputProfileManager::loadGamepadEvents(QSettings &settings) {
     if (!valid)
       continue;
 
-    WiimoteGamepadDevice *device = new WiimoteGamepadDevice(settings.value(key, QString()).toString(),
+    WiimoteGamepadDevice *device = new WiimoteGamepadDevice(settings.value(key, QString()).toString(), id,
                                                             WiimoteGamepadDevice::DPadPositionSwitchable,
                                                             WiimoteGamepadDevice::GamepadVertical);
 
     wiimoteGamepads[id] = device;
+
+    connect(device, SIGNAL(setLedState(quint32,quint32)), dbusDeviceEventsIface, SLOT(dbusWiimoteSetLedStatus(quint32,quint32)), Qt::QueuedConnection);
     device->uinput_open();
   }
 

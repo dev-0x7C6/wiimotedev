@@ -74,12 +74,11 @@ set(client_headers
 set(uinput_sources
   adaptors/adaptors.h
   classes/hashcompare.h
-  devices/classicgamepad.h
   devices/general.h
   devices/mouse.h
   devices/eventdevice.h
   devices/touchscreen.h
-  devices/wiimotegamepad.h
+  devices/classicgamepad.h
   interfaces/interfaces.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/headers/proto.h
@@ -109,6 +108,7 @@ set(uinput_sources
 )
 
 set(uinput_headers
+  devices/wiimotegamepad.h
   adaptors/customjobs.h
   adaptors/profilemanager.h
   adaptors/uinputservice.h

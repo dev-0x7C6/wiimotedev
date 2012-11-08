@@ -61,8 +61,9 @@ const int NUNCHUK_ROLL_LINUX_AXIS = ABS_HAT3X;
 //void centerStick(Sticks stick);
 //void syncSticks();
 
-class WiimoteGamepadDevice: public UInputObject
+class WiimoteGamepadDevice: public QObject, public UInputObject
 {
+  Q_OBJECT
 public:
   enum Position {
     GamepadHorizontal,
@@ -98,11 +99,11 @@ private:
   int m_last_wiimote_acc_roll;
   Position m_horizontal;
   Mode m_mode;
-
   bool m_home_pressed;
+  int m_id;
 
 public:
-  WiimoteGamepadDevice(QString deviceName, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical);
+  WiimoteGamepadDevice(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
   bool uinput_open();
 
 
@@ -116,6 +117,9 @@ public:
 private:
   void centerStick(Stick id);
   void syncAxes();
+
+signals:
+  void setLedState(quint32, quint32);
 };
 
 #endif // UINPUT_WIIMOTEGAMEPAD_H

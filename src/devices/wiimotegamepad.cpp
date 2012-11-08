@@ -19,15 +19,26 @@
 
 #include "devices/wiimotegamepad.h"
 
-WiimoteGamepadDevice::WiimoteGamepadDevice(QString deviceName, Mode mode, Position horizontal) :
+WiimoteGamepadDevice::WiimoteGamepadDevice(QString deviceName, int id, Mode mode, Position horizontal, QObject *parent) :
   UInputObject(),
+  QObject(parent),
   m_deviceName(deviceName),
   m_horizontal(horizontal),
   m_mode(mode),
-  m_home_pressed(false)
+  m_home_pressed(false),
+  m_id(id)
 {
   if (m_deviceName.isEmpty())
     m_deviceName = QString::fromUtf8("Wiimote Gamepad Device (undefined)");
+
+  switch (m_horizontal) {
+  case WiimoteGamepadDevice::GamepadHorizontal:
+    emit setLedState(m_id, 1 + 2);
+    break;
+  case WiimoteGamepadDevice::GamepadVertical:
+    emit setLedState(m_id, 4 + 8);
+    break;
+  }
 }
 
 
@@ -105,8 +116,6 @@ bool WiimoteGamepadDevice::uinput_open() {
   return (alreadyOpened = true);
 }
 
-#include <QDebug>
-
 void WiimoteGamepadDevice::setWiimoteButtons(quint64 buttons) {
   sendEvent(EV_KEY, BTN_A, (buttons & WIIMOTE_BTN_A) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_B, (buttons & WIIMOTE_BTN_B) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
@@ -122,19 +131,25 @@ void WiimoteGamepadDevice::setWiimoteButtons(quint64 buttons) {
   if (m_mode == WiimoteGamepadDevice::DPadPositionConstant)
     sendEvent(EV_KEY, BTN_MODE, (buttons & WIIMOTE_BTN_HOME) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
 
-  if (m_mode == WiimoteGamepadDevice::DPadPositionSwitchable)
+  if (m_mode == WiimoteGamepadDevice::DPadPositionSwitchable) {
+    if (((buttons & WIIMOTE_BTN_HOME) != WIIMOTE_BTN_HOME) && (m_home_pressed == true))
+      emit setLedState(m_id, m_id);
+
     if (((buttons & WIIMOTE_BTN_HOME) == WIIMOTE_BTN_HOME) && (m_home_pressed == false))
       switch (m_horizontal) {
       case WiimoteGamepadDevice::GamepadHorizontal:
         m_horizontal = WiimoteGamepadDevice::GamepadVertical;
+        emit setLedState(m_id, 1 + 2);
         break;
       case WiimoteGamepadDevice::GamepadVertical:
         m_horizontal = WiimoteGamepadDevice::GamepadHorizontal;
+        emit setLedState(m_id, 4 + 8);
         break;
       }
+  }
+
 
   m_home_pressed = ((buttons & WIIMOTE_BTN_HOME) == WIIMOTE_BTN_HOME);
-
   m_last_dpad_x = 0x00;
   m_last_dpad_y = 0x00;
 
