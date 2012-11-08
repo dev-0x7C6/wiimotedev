@@ -22,28 +22,52 @@
 
 #include "devices/general.h"
 
-const qint16 CLASSIC_LEFT_STICK_MAX = (0x3F >> 1) + (0x3F >> 2) + 4;
-const qint16 CLASSIC_LEFT_STICK_MIN = (0x3F >> 1) - (0x3F >> 2) - 4;
-const qint16 CLASSIC_RIGHT_STICK_MAX = (0x1F >> 1) + (0x1F >> 2) + 4;
-const qint16 CLASSIC_RIGHT_STICK_MIN = (0x1F >> 1) - (0x1F >> 2) - 4;
+const qint16 CLASSIC_LEFT_STICK_MAX = 0x3B;
+const qint16 CLASSIC_LEFT_STICK_MIN = 0x09;
+const qint16 CLASSIC_RIGHT_STICK_MAX = 0x1B;
+const qint16 CLASSIC_RIGHT_STICK_MIN = 0x02;
 
-const qint8 CLASSIC_BUTTON_PUSHED = 1;
-const qint8 CLASSIC_BUTTON_RELEASED = 0;
-const qint8 CLASSIC_DPAD_MAX = 1;
-const qint8 CLASSIC_DPAD_MIN =-1;
+const qint8 CLASSIC_BUTTON_PUSHED = 0x01;
+const qint8 CLASSIC_BUTTON_RELEASED = 0x00;
+const qint8 CLASSIC_DPAD_MAX =  0x01;
+const qint8 CLASSIC_DPAD_MIN = -0x01;
+
+const int CLASSIC_LEFT_STICK_LINUX_AXIS_X = ABS_HAT0X;
+const int CLASSIC_LEFT_STICK_LINUX_AXIS_Y = ABS_HAT0Y;
+const int CLASSIC_RIGHT_STICK_LINUX_AXIS_X = ABS_HAT1X;
+const int CLASSIC_RIGHT_STICK_LINUX_AXIS_Y = ABS_HAT1Y;
+const int CLASSIC_DPAD_LINUX_AXIS_X = ABS_HAT2X;
+const int CLASSIC_DPAD_LINUX_AXIS_Y = ABS_HAT2Y;
+
 
 class ClassicGamepadDevice: public UInputObject
 {
 private:
   QString deviceName;
+  qint32 m_last_r_stick_x;
+  qint32 m_last_r_stick_y;
+  qint32 m_last_l_stick_x;
+  qint32 m_last_l_stick_y;
+  qint32 m_last_dpad_x;
+  qint32 m_last_dpad_y;
 
 public:
   ClassicGamepadDevice(QString deviceName);
   bool uinput_open();
 
+  enum Sticks {
+    LeftStick,
+    RightStick,
+    DpadStick
+  };
+
   void setButtons(quint64);
-  void setLeftStick(qint32, qint32);
-  void setRightStick(qint32, qint32);
+  void setStick(Sticks stick, qint32 x, qint32 y);
+
+private:
+  void centerStick(Sticks stick, bool sync = false);
+  void syncSticks();
+
 };
 
 #endif // UINPUT_CLASSICGAMEPAD_H

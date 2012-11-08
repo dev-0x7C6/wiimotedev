@@ -24,7 +24,11 @@ ClassicGamepadDevice::ClassicGamepadDevice(QString deviceName) :
   deviceName(deviceName)
 {
   if (deviceName.isEmpty())
-    deviceName = "noname";
+    deviceName = QString::fromUtf8("Classic Gamepad Device (undefined)");
+
+  centerStick(ClassicGamepadDevice::LeftStick);
+  centerStick(ClassicGamepadDevice::RightStick);
+  centerStick(ClassicGamepadDevice::DpadStick);
 }
 
 bool ClassicGamepadDevice::uinput_open() {
@@ -65,22 +69,22 @@ bool ClassicGamepadDevice::uinput_open() {
   linux_register_keybit(BTN_TL2);
   linux_register_keybit(BTN_TR2);
   linux_register_keybit(BTN_SELECT);
+  linux_register_keybit(BTN_MODE);
   linux_register_keybit(BTN_START);
 
-  linux_register_absbit(ABS_X);
-  linux_register_absbit(ABS_Y);
-  linux_register_absbit(ABS_RX);
-  linux_register_absbit(ABS_RY);
+  linux_register_absbit(CLASSIC_LEFT_STICK_LINUX_AXIS_X);
+  linux_register_absbit(CLASSIC_LEFT_STICK_LINUX_AXIS_Y);
+  linux_register_absbit(CLASSIC_RIGHT_STICK_LINUX_AXIS_X);
+  linux_register_absbit(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y);
+  linux_register_absbit(CLASSIC_DPAD_LINUX_AXIS_X);
+  linux_register_absbit(CLASSIC_DPAD_LINUX_AXIS_Y);
 
-  linux_abs_set_range(ABS_X, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
-  linux_abs_set_range(ABS_Y, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
-  linux_abs_set_range(ABS_RX, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
-  linux_abs_set_range(ABS_RY, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
-
-  linux_register_absbit(ABS_HAT0X);
-  linux_register_absbit(ABS_HAT0Y);
-  linux_abs_set_range(ABS_HAT0X, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
-  linux_abs_set_range(ABS_HAT0Y, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
+  linux_abs_set_range(CLASSIC_LEFT_STICK_LINUX_AXIS_X, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
+  linux_abs_set_range(CLASSIC_LEFT_STICK_LINUX_AXIS_Y, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
+  linux_abs_set_range(CLASSIC_RIGHT_STICK_LINUX_AXIS_X, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
+  linux_abs_set_range(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
+  linux_abs_set_range(CLASSIC_DPAD_LINUX_AXIS_X, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
+  linux_abs_set_range(CLASSIC_DPAD_LINUX_AXIS_Y, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
 
   write(uinput_fd, &dev, sizeof(dev));
   if (ioctl(uinput_fd, UI_DEV_CREATE)) {
@@ -88,8 +92,15 @@ bool ClassicGamepadDevice::uinput_open() {
     uinput_close();
     return false;
   }
+
+  centerStick(ClassicGamepadDevice::LeftStick);
+  centerStick(ClassicGamepadDevice::RightStick);
+  centerStick(ClassicGamepadDevice::DpadStick);
+  syncSticks();
+
   return (alreadyOpened = true);
 }
+
 
 void ClassicGamepadDevice::setButtons(quint64 buttons) {
   sendEvent(EV_KEY, BTN_A, (buttons & CLASSIC_BTN_A) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
@@ -101,42 +112,81 @@ void ClassicGamepadDevice::setButtons(quint64 buttons) {
   sendEvent(EV_KEY, BTN_TL2, (buttons & CLASSIC_BTN_ZL) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_TR2, (buttons & CLASSIC_BTN_ZR) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_SELECT, (buttons & CLASSIC_BTN_MINUS) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+  sendEvent(EV_KEY, BTN_MODE, (buttons & CLASSIC_BTN_HOME) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_START, (buttons & CLASSIC_BTN_PLUS) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_0, (buttons & CLASSIC_BTN_RIGHT) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_1, (buttons & CLASSIC_BTN_LEFT) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_2, (buttons & CLASSIC_BTN_DOWN) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
   sendEvent(EV_KEY, BTN_3, (buttons & CLASSIC_BTN_UP) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+  sendEventSync();
 
-  register qint8 x = 0;
-  register qint8 y = 0;
 
-  if (buttons & CLASSIC_BTN_RIGHT) x = CLASSIC_DPAD_MAX; else
-  if (buttons & CLASSIC_BTN_LEFT) x = CLASSIC_DPAD_MIN;
-  if (buttons & CLASSIC_BTN_DOWN) y = CLASSIC_DPAD_MAX; else
-  if (buttons & CLASSIC_BTN_UP) y = CLASSIC_DPAD_MIN;
+  centerStick(ClassicGamepadDevice::DpadStick);
+  if (buttons & CLASSIC_BTN_RIGHT) m_last_dpad_x = CLASSIC_DPAD_MAX; else
+  if (buttons & CLASSIC_BTN_LEFT) m_last_dpad_x = CLASSIC_DPAD_MIN;
+  if (buttons & CLASSIC_BTN_DOWN) m_last_dpad_y = CLASSIC_DPAD_MAX; else
+  if (buttons & CLASSIC_BTN_UP) m_last_dpad_y = CLASSIC_DPAD_MIN;
 
-  sendEvent(EV_ABS, ABS_HAT0X, x);
-  sendEvent(EV_ABS, ABS_HAT0X, y);
+  syncSticks();
+}
 
+void ClassicGamepadDevice::centerStick(Sticks stick, bool sync) {
+  switch (stick) {
+  case ClassicGamepadDevice::LeftStick:
+    m_last_l_stick_x = (CLASSIC_LEFT_STICK_MIN + CLASSIC_LEFT_STICK_MAX) / 2;
+    m_last_l_stick_y = (CLASSIC_LEFT_STICK_MIN + CLASSIC_LEFT_STICK_MAX) / 2;
+    break;
+  case ClassicGamepadDevice::RightStick:
+    m_last_r_stick_x = (CLASSIC_RIGHT_STICK_MIN + CLASSIC_RIGHT_STICK_MAX) / 2;
+    m_last_r_stick_y = (CLASSIC_RIGHT_STICK_MIN + CLASSIC_RIGHT_STICK_MAX) / 2;
+    break;
+  case ClassicGamepadDevice::DpadStick:
+    m_last_dpad_x = 0;
+    m_last_dpad_y = 0;
+  }
+
+  if (sync)
+    sendEventSync();
+}
+
+
+void ClassicGamepadDevice::setStick(Sticks stick, qint32 x, qint32 y) {
+  switch (stick) {
+  case ClassicGamepadDevice::LeftStick:
+    y = 0x41 - y;
+    if (CLASSIC_LEFT_STICK_MAX < x) x = CLASSIC_LEFT_STICK_MAX; else
+    if (CLASSIC_LEFT_STICK_MIN > x) x = CLASSIC_LEFT_STICK_MIN;
+    if (CLASSIC_LEFT_STICK_MAX < y) y = CLASSIC_LEFT_STICK_MAX; else
+    if (CLASSIC_LEFT_STICK_MIN > y) y = CLASSIC_LEFT_STICK_MIN;
+    m_last_l_stick_x = x;
+    m_last_l_stick_y = y;
+    break;
+
+  case ClassicGamepadDevice::RightStick:
+    y = 0x1F - y;
+    if (CLASSIC_RIGHT_STICK_MAX < x) x = CLASSIC_RIGHT_STICK_MAX; else
+    if (CLASSIC_RIGHT_STICK_MIN > x) x = CLASSIC_RIGHT_STICK_MIN;
+    if (CLASSIC_RIGHT_STICK_MAX < y) y = CLASSIC_RIGHT_STICK_MAX; else
+    if (CLASSIC_RIGHT_STICK_MIN > y) y = CLASSIC_RIGHT_STICK_MIN;
+    m_last_r_stick_x = x;
+    m_last_r_stick_y = y;
+    break;
+
+  case ClassicGamepadDevice::DpadStick:
+    break;
+  }
+
+  syncSticks();
+}
+
+void ClassicGamepadDevice::syncSticks() {
+  sendEvent(EV_ABS, CLASSIC_DPAD_LINUX_AXIS_X, m_last_dpad_x);
+  sendEvent(EV_ABS, CLASSIC_DPAD_LINUX_AXIS_Y, m_last_dpad_y);
+  sendEvent(EV_ABS, CLASSIC_RIGHT_STICK_LINUX_AXIS_X, m_last_r_stick_x);
+  sendEvent(EV_ABS, CLASSIC_RIGHT_STICK_LINUX_AXIS_Y, m_last_r_stick_y);
+  sendEvent(EV_ABS, CLASSIC_LEFT_STICK_LINUX_AXIS_X, m_last_l_stick_x);
+  sendEvent(EV_ABS, CLASSIC_LEFT_STICK_LINUX_AXIS_Y, m_last_l_stick_y);
   sendEventSync();
 }
 
-void ClassicGamepadDevice::setLeftStick(qint32 x, qint32 y) {
-  if (CLASSIC_LEFT_STICK_MAX < x) x = CLASSIC_LEFT_STICK_MAX; else
-  if (CLASSIC_LEFT_STICK_MIN > x) x = CLASSIC_LEFT_STICK_MIN;
-  if (CLASSIC_LEFT_STICK_MAX < y) y = CLASSIC_LEFT_STICK_MAX; else
-  if (CLASSIC_LEFT_STICK_MIN > y) y = CLASSIC_LEFT_STICK_MIN;
-  sendEvent(EV_ABS, ABS_X, x);
-  sendEvent(EV_ABS, ABS_Y, y);
-  sendEventSync();
-}
 
-void ClassicGamepadDevice::setRightStick(qint32 x, qint32 y) {
-  if (CLASSIC_RIGHT_STICK_MAX < x) x = CLASSIC_RIGHT_STICK_MAX; else
-  if (CLASSIC_RIGHT_STICK_MIN > x) x = CLASSIC_RIGHT_STICK_MIN;
-  if (CLASSIC_RIGHT_STICK_MAX < y) y = CLASSIC_RIGHT_STICK_MAX; else
-  if (CLASSIC_RIGHT_STICK_MIN > y) y = CLASSIC_RIGHT_STICK_MIN;
-  sendEvent(EV_ABS, ABS_RX, x);
-  sendEvent(EV_ABS, ABS_RY, y);
-  sendEventSync();
-}
