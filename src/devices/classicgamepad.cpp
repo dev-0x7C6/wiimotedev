@@ -21,10 +21,10 @@
 
 ClassicGamepadDevice::ClassicGamepadDevice(QString deviceName) :
   UInputObject(),
-  deviceName(deviceName)
+  m_deviceName(deviceName)
 {
-  if (deviceName.isEmpty())
-    deviceName = QString::fromUtf8("Classic Gamepad Device (undefined)");
+  if (m_deviceName.isEmpty())
+    m_deviceName = QString::fromUtf8("Classic Gamepad Device (undefined)");
 
   centerStick(ClassicGamepadDevice::LeftStick);
   centerStick(ClassicGamepadDevice::RightStick);
@@ -36,13 +36,13 @@ bool ClassicGamepadDevice::uinput_open() {
     uinput_close();
 
   if (!(uinput_fd = open(uinputFile.toAscii().constData(), O_WRONLY | O_NDELAY))) {
-    qWarning("%s: Unable to open %s", deviceName.toAscii().constData(), uinputFile.toAscii().constData());
+    qWarning("%s: Unable to open %s", m_deviceName.toAscii().constData(), uinputFile.toAscii().constData());
     return false;
   }
 
   memset(&dev, 0, sizeof(dev));
 
-  strncpy(dev.name, deviceName.toAscii().constData(), deviceName.length());
+  strncpy(dev.name, m_deviceName.toAscii().constData(), m_deviceName.length());
 
   dev.id.product = UINPUT_PRODUCT_ID;
   dev.id.version = UINPUT_VERSION_ID;
@@ -88,7 +88,7 @@ bool ClassicGamepadDevice::uinput_open() {
 
   write(uinput_fd, &dev, sizeof(dev));
   if (ioctl(uinput_fd, UI_DEV_CREATE)) {
-    qWarning("%s: Unable to create virtual input device", deviceName.toAscii().constData());
+    qWarning("%s: Unable to create virtual input device", m_deviceName.toAscii().constData());
     uinput_close();
     return false;
   }
@@ -130,7 +130,7 @@ void ClassicGamepadDevice::setButtons(quint64 buttons) {
   syncSticks();
 }
 
-void ClassicGamepadDevice::centerStick(Sticks stick, bool sync) {
+void ClassicGamepadDevice::centerStick(Sticks stick) {
   switch (stick) {
   case ClassicGamepadDevice::LeftStick:
     m_last_l_stick_x = (CLASSIC_LEFT_STICK_MIN + CLASSIC_LEFT_STICK_MAX) / 2;
@@ -144,9 +144,6 @@ void ClassicGamepadDevice::centerStick(Sticks stick, bool sync) {
     m_last_dpad_x = 0;
     m_last_dpad_y = 0;
   }
-
-  if (sync)
-    sendEventSync();
 }
 
 

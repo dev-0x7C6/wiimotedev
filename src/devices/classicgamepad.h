@@ -43,7 +43,7 @@ const int CLASSIC_DPAD_LINUX_AXIS_Y = ABS_HAT2Y;
 class ClassicGamepadDevice: public UInputObject
 {
 private:
-  QString deviceName;
+  QString m_deviceName;
   qint32 m_last_r_stick_x;
   qint32 m_last_r_stick_y;
   qint32 m_last_l_stick_x;
@@ -61,11 +61,11 @@ public:
     DpadStick
   };
 
-  void setButtons(quint64);
+  void setButtons(quint64 buttons);
   void setStick(Sticks stick, qint32 x, qint32 y);
 
 private:
-  void centerStick(Sticks stick, bool sync = false);
+  void centerStick(Sticks stick);
   void syncSticks();
 
 };

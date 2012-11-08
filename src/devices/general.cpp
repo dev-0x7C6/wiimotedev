@@ -62,4 +62,4 @@ void UInputObject::sendEvent(quint16 type, quint16 code, qint32 value) {
 
 void UInputObject::sendEventSync() {
   sendEvent(EV_SYN, SYN_REPORT, 0);
-};
+}
