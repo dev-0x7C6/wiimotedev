@@ -19,10 +19,6 @@
 
 #include "core/settings.h"
 
-const QString dbusSupportValue("wiimotedev/DBusInterface");
-const QString tcpSupportValue("wiimotedev/TCPInterface");
-
-
 WiimotedevSettings::WiimotedevSettings(QString file, QObject *parent):
   QObject(parent),
   config(file)
@@ -34,11 +30,6 @@ WiimotedevSettings::WiimotedevSettings(QString file, QObject *parent):
 void WiimotedevSettings::reload()
 {
   settings->sync();
-
-  ifaceDBusSupport = settings->value(dbusSupportValue, false).toBool();
-  ifaceTcpSupport = settings->value(tcpSupportValue, false).toBool();
-  tcpAllowed = settings->value("tcp/allowed", QStringList()).toStringList();
-  tcpPort = settings->value("tcp/port", WIIMOTEDEV_TCP_PORT).toInt();
 
   autoregister = settings->value("features/autoregister", true).toBool();
   timeout = settings->value("features/connectiontimeout", 1).toUInt();
@@ -65,16 +56,4 @@ quint32  WiimotedevSettings::registerWiiremote(QString mac) {
   settings->endGroup();
 
   return id;
-}
-
-void WiimotedevSettings::setDBusInterfaceSupport(bool support)
-{
-  settings->setValue(dbusSupportValue, support);
-  settings->sync();
-}
-
-void WiimotedevSettings::setTcpInterfaceSupport(bool support)
-{
-  settings->setValue(tcpSupportValue, support);
-  settings->sync();
 }

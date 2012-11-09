@@ -29,8 +29,6 @@
 #include "core/connection.h"
 #include "core/settings.h"
 #include "headers/consts.h"
-#include "network/servermanager.h"
-
 
 
 class ConnectionManager : public QThread
@@ -49,8 +47,6 @@ private:
 
 // Settings ------------------------------------------------- /
   WiimotedevSettings *settings;
-  NetworkServerThread *networkServerThread;
-
   QList< WiimoteConnection*> connections;
 
   QMap< QString, bool> unregisterWiimoteList;

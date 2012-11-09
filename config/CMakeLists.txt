@@ -3,7 +3,6 @@
 # Contact: dev.strikeu@gmail.com
 
 set(FILELIST
-  client.conf
   scancode.conf
   wiimotedev.conf
 )

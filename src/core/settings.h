@@ -33,11 +33,7 @@ private:
   QSettings *settings;
   QString config;
 
-  bool ifaceDBusSupport;
-  bool ifaceTcpSupport;
-
   QMap < QString, quint32> sequence;
-  QStringList tcpAllowed;
 
   quint16 tcpPort;
 
@@ -51,13 +47,8 @@ public:
 public:
   void reload();
 
-  inline bool dbusInterfaceSupport() { return ifaceDBusSupport; }
-  inline bool tcpInterfaceSupport() { return ifaceTcpSupport; }
 
   inline QMap < QString, quint32> getWiiremoteSequence() { return sequence; }
-
-  inline QStringList tcpGetAllowedHostList() { return tcpAllowed; }
-  inline quint16 tcpGetPort() { return tcpPort; }
 
 
   inline bool getAutoRegistrationValue() { return autoregister; };
@@ -65,9 +56,6 @@ public:
   inline quint32 getPowerSaveValue() { return powersave; }
 
   quint32 registerWiiremote(QString);
-
-  void setDBusInterfaceSupport(bool support);
-  void setTcpInterfaceSupport(bool support);
 };
 
 #endif // WIIMOTEDEV_SETTINGS_H
