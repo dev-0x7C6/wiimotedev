@@ -183,6 +183,8 @@ void WiimoteConnection::run()
   powersavevalue = powersavevalue * 60000;
 
   latencyTimer.start();
+
+  wiimote->requestStatus();
   while (wiimote->getMesgStruct(&count, &mesg, &time) && !quitRequest) {
     currentLatency = latencyTimer.elapsed();
     latencyTimer.start();
