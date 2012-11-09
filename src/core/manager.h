@@ -31,7 +31,7 @@
 #include "headers/consts.h"
 #include "network/servermanager.h"
 
-template class QList< void*>;
+
 
 class ConnectionManager : public QThread
 {
