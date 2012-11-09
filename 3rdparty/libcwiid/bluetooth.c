@@ -29,6 +29,7 @@
  * than dev_count, and realloc to the actual number afterwards, since
  * reallocing to a smaller chunk should be fast. */
 #define BT_MAX_INQUIRY 256
+
 /* timeout in 2 second units */
 int cwiid_get_bdinfo_array(int dev_id, unsigned int timeout, int max_bdinfo,
                            struct cwiid_bdinfo **bdinfo, uint8_t flags)
@@ -47,7 +48,7 @@ int cwiid_get_bdinfo_array(int dev_id, unsigned int timeout, int max_bdinfo,
 
 	/* If not given (=-1), get the first available Bluetooth interface */
 	if (dev_id == -1) {
-		if ((dev_id = hci_get_route(NULL)) == -1) {
+    if ((dev_id = hci_get_route(NULL)) == -1) {
 			cwiid_err(NULL, "No Bluetooth interface found");
 			return -1;
 		}
@@ -89,7 +90,7 @@ int cwiid_get_bdinfo_array(int dev_id, unsigned int timeout, int max_bdinfo,
 		goto CODA;
 	}
 
-	/* Copy dev_list to bdinfo */
+  /* Copy dev_list to bdinfo */
 	for (bdinfo_count=i=0; (i < dev_count) && (bdinfo_count < max_bdinfo);
 	     i++) {
 		/* Filter by class */
@@ -155,14 +156,14 @@ int cwiid_find_wiimote(bdaddr_t *bdaddr, int timeout)
 	int bdinfo_count;
 
 	if (timeout == -1) {
-		while ((bdinfo_count = cwiid_get_bdinfo_array(-1, 2, 1, &bdinfo, 0))
+    while ((bdinfo_count = cwiid_get_bdinfo_array(-1, timeout, 1, &bdinfo, 0))
 		       == 0);
 		if (bdinfo_count == -1) {
 			return -1;
 		}
 	}
 	else {
-		bdinfo_count = cwiid_get_bdinfo_array(-1, timeout, 1, &bdinfo, 0);
+    bdinfo_count = cwiid_get_bdinfo_array(-1, timeout, 1, &bdinfo, 0);
 		if (bdinfo_count == -1) {
 			return -1;
 		}
