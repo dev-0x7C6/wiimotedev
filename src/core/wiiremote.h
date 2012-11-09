@@ -77,6 +77,8 @@ public:
   bool setRumbleStatus(bool rumble);
   bool setReportMode(quint8 mode);
 
+  void requestStatus();
+
   quint8 getLedStatus();
   bool getRumbleStatus();
   quint8 getReportMode();

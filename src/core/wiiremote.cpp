@@ -73,6 +73,10 @@ bool WiimoteDevice::disconnectFromDevice(const bool switchOfReport) {
   return true;
 }
 
+void WiimoteDevice::requestStatus() {
+  cwiid_request_status(device);
+}
+
 bool WiimoteDevice::getMesgStruct(int *count, union cwiid_mesg *mesg[], struct timespec *time) {
   if (isDisconnected())
     return false;
@@ -95,7 +99,9 @@ bool WiimoteDevice::setLedStatus(quint8 led) {
 
 bool WiimoteDevice::setRumbleStatus(bool rumble) {
   if (isDisconnected()) return false;
+
   cwiid_set_rumble(device, rumble);
+
   return true;
 }
 
