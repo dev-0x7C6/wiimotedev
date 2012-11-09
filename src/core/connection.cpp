@@ -18,7 +18,6 @@
  **********************************************************************************/
 
 #include <QTime>
-#include <QDebug>
 #include <math.h>
 
 #include "core/connection.h"
@@ -284,7 +283,6 @@ void WiimoteConnection::run()
         }
 
         if (wiimoteIrTable.count()) {
-        //  qDebug() << wiimoteIrTable.count();
           emit dbusWiimoteInfrared(sequence, wiimoteIrTable);
 
           if (wiimoteIrTable.count() > 2)
@@ -341,7 +339,6 @@ void WiimoteConnection::run()
 
           if (abs(angleDiff((p*180/M_PI), roll)) > 90)
             p = -(atan2(y1 - y2, x1 - x2) - M_PI);
-          qDebug() << angleDiff((p*180/M_PI), roll);
 
         #ifdef __amd64 // 64-bit processors only
           register double cosp = cos(p);
@@ -373,7 +370,7 @@ void WiimoteConnection::run()
 
 //          double ax, ay, x, y;
 
-//          //qDebug() << diff << " -- " << stableroll;
+//
 //       //   if (calibrationState == CalibrationNeeded) {
 //            if (abs(roll - roll2) > 35)
 //              calibrationState = CalibrationInverted; else
