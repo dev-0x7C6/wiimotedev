@@ -68,7 +68,6 @@ private:
 
   void loadProfiles();
 
-
   void confineCursor();
   void moveCursor();
   void scaleCursor(double scale);

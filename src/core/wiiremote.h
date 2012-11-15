@@ -75,7 +75,7 @@ public:
 
   bool setLedStatus(quint8 led);
   bool setRumbleStatus(bool rumble);
-  bool setReportMode(quint8 mode);
+  bool setReportMode(quint8 mode = defaultReportFlags);
 
   void requestStatus();
 

@@ -26,9 +26,10 @@
 
 #include "adaptors/deviceevents.h"
 #include "adaptors/daemonservice.h"
-#include "core/connection.h"
 #include "core/settings.h"
 #include "headers/consts.h"
+
+#include "service/wiimotemessagethread.h"
 
 
 class ConnectionManager : public QThread
@@ -47,14 +48,12 @@ private:
 
 // Settings ------------------------------------------------- /
   WiimotedevSettings *settings;
-  QList< WiimoteConnection*> connections;
 
   QMap< QString, bool> unregisterWiimoteList;
 
   QMap< QString, quint32> sequence;
   bdaddr_t bdaddr_any;
 
-  WiimoteConnection* findWiiremoteObject(quint32 id);
   QMutex *mutex;
   QReadWriteLock *rwlock;
 
@@ -69,13 +68,13 @@ public:
 
   static const int WaitForBluetooth = 3000;
 
+  QHash <quint32, WiimoteMessageThread*> threads;
+
 protected:
   void run();
 
 private Q_SLOTS:
-  void freeConnection(WiimoteConnection*);
-  void freeAllConnections();
-  bool registerConnection(WiimoteConnection*);
+  void wiimoteMessageThreadFinished();
 
 
 public Q_SLOTS:

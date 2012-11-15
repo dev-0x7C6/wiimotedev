@@ -709,11 +709,16 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
     cursor->setVisible(true);
 
   cursor->setX((512.0 - x) * (geometry().width()/1024.0));
-  cursor->setY((384.0 - y) * (geometry().width()/768.0));
+  cursor->setY((384.0 - y) * (geometry().height()/768.0));
+
+  qDebug() << "cursor" << cursor->pos();
 
 
   cursor->setScale((1024-size)/500);
   cursor->setRotation(-angle*180/M_PI);
+
+  p = angle;
+ lineLength = size;
 }
 
 void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {

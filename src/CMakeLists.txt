@@ -35,17 +35,22 @@ set(wiimotedev_sources
   adaptors/deviceevents.cpp
   adaptors/daemonservice.cpp
   syslog/syslog.cpp
-  core/connection.cpp
   core/manager.cpp
   core/settings.cpp
   core/wiiremote.cpp
+  service/wiimotemessagethread.cpp
+  service/classicmessages.cpp
+  service/nunchukmessages.cpp
+  service/wiimotemessages.cpp
+  service/virtualcursor.cpp
+  service/virtualcursor.h
   daemon.cpp
 )
 
 set(wiimotedev_headers
   adaptors/deviceevents.h
   adaptors/daemonservice.h
-  core/connection.h
+  service/wiimotemessagethread.h
   core/manager.h
 )
 
