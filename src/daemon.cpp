@@ -132,7 +132,6 @@ int main(int argc, char *argv[])
   qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
   qRegisterMetaType< QList< accdata> >("QList< accdata>");
   qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
-
   qRegisterMetaType< irpoint>("irpoint");
   qRegisterMetaType< accdata>("accdata");
   qRegisterMetaType< stickdata>("stickdata");

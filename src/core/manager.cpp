@@ -23,10 +23,7 @@
 
 #include "core/manager.h"
 #include "syslog/syslog.h"
-
 #include "core/wiiremote.h"
-
-extern bool additional_debug;
 
 ConnectionManager::ConnectionManager(QObject *parent):
   QThread(parent),
@@ -34,11 +31,8 @@ ConnectionManager::ConnectionManager(QObject *parent):
   dbusServiceAdaptor(0),
   terminateReq(false),
   mutex(new QMutex()),
-  rwlock(new QReadWriteLock()),
   result(EXIT_SUCCESS)
 {
-  memset(&bdaddr_any, 0x00, sizeof(uint8_t) * 6);
-
   if (!QFile::exists(WIIMOTEDEV_CONFIG_FILE)) {
     systemlog::critical(QString("missing configuration file %1").arg(WIIMOTEDEV_CONFIG_FILE));
     result = EXIT_FAILURE;
@@ -64,29 +58,23 @@ ConnectionManager::ConnectionManager(QObject *parent):
     result = EXIT_FAILURE;
     return;
   }
-
-
-  if (settings->getAutoRegistrationValue())
-    systemlog::notice("auto-register feature enabled");
 }
 
 ConnectionManager::~ConnectionManager() {
   delete mutex;
-  delete rwlock;
 }
 
 bool ConnectionManager::getTerminateRequest() {
-  rwlock->lockForRead();
+  mutex->lock();
   bool value = terminateReq;
-  rwlock->unlock();
+  mutex->unlock();
   return value;
 }
 
 void ConnectionManager::setTerminateRequest(bool value) {
-  rwlock->lockForWrite();
+  mutex->lock();
   terminateReq = value;
   mutex->unlock();
-  rwlock->unlock();
 }
 
 #include "service/wiimotemessagethread.h"

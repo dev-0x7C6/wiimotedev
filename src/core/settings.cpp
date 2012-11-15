@@ -30,9 +30,6 @@ WiimotedevSettings::WiimotedevSettings(QString file, QObject *parent):
 void WiimotedevSettings::reload()
 {
   settings->sync();
-
-  autoregister = settings->value("features/autoregister", true).toBool();
-  timeout = settings->value("features/connectiontimeout", 1).toUInt();
   powersave = settings->value("features/powersave", 15).toUInt();
 
   sequence.clear();

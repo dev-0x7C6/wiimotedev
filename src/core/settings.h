@@ -35,10 +35,6 @@ private:
 
   QMap < QString, quint32> sequence;
 
-  quint16 tcpPort;
-
-  bool autoregister;
-  quint32 timeout;
   quint32 powersave;
 
 public:
@@ -47,12 +43,8 @@ public:
 public:
   void reload();
 
-
   inline QMap < QString, quint32> getWiiremoteSequence() { return sequence; }
 
-
-  inline bool getAutoRegistrationValue() { return autoregister; };
-  inline quint32 getConnectionTimeoutValue() { return timeout; }
   inline quint32 getPowerSaveValue() { return powersave; }
 
   quint32 registerWiiremote(QString);

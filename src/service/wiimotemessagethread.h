@@ -1,3 +1,22 @@
+/**********************************************************************************
+ * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
+ * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
+ * Contact: dev.strikeu@gmail.com                                                 *
+ *                                                                                *
+ * This program is free software; you can redistribute it and/or                  *
+ * modify it under the terms of the GNU Lesser General Public                     *
+ * License as published by the Free Software Foundation; either                   *
+ * version 2.1 of the License, or (at your option) any later version.             *
+ *                                                                                *
+ * This program is distributed in the hope that it will be useful,                *
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of                 *
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU              *
+ * Lesser General Public License for more details.                                *
+ *                                                                                *
+ * You should have received a copy of the GNU Lesser General Public               *
+ * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
+ **********************************************************************************/
+
 #ifndef WIIMOTEMESSAGETHREAD_H
 #define WIIMOTEMESSAGETHREAD_H
 
@@ -26,7 +45,6 @@ const quint8 nunchukStickMaxX = (0xFF >> 1) + nunchukToleranceValue;
 const quint8 nunchukStickMinX = (0xFF >> 1) - nunchukToleranceValue;
 const quint8 nunchukStickMaxY = (0xFF >> 1) + nunchukToleranceValue;
 const quint8 nunchukStickMinY = (0xFF >> 1) - nunchukToleranceValue;
-
 
 class WiimoteMessageThread : public QThread
 {
@@ -75,7 +93,6 @@ private:
   struct acc_cal calibration[ix_all_devices - 1];
   struct accdata acc[ix_all_devices - 1];
 
-
   int m_id;
   struct acc_cal nunchukAcc;
   struct acc_cal wiimoteAcc;
@@ -117,8 +134,6 @@ private:
   void cwiid_process_nunchuk_acc(quint8 cwiid_acc[3]);
   void cwiid_process_nunchuk_status(cwiid_ext_type type);
 
-
-
   double calcVirtualCursorDiff(double c1[], double c2[]);
   void calcAccelerometerValues(quint8 acc[3], acc_cal &cal, accdata &out);
 
@@ -137,8 +152,6 @@ public:
     m_shutdown = true;
     unlock();
   }
-
-
 
 public:
   bool dbusIsClassicConnected();

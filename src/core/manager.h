@@ -22,15 +22,12 @@
 
 #include <QThread>
 #include <QMutex>
-#include <QReadWriteLock>
 
 #include "adaptors/deviceevents.h"
 #include "adaptors/daemonservice.h"
 #include "core/settings.h"
 #include "headers/consts.h"
-
 #include "service/wiimotemessagethread.h"
-
 
 class ConnectionManager : public QThread
 {
@@ -40,22 +37,13 @@ private:
   DBusDeviceEventsAdaptorWrapper *dbusDeviceEventsAdaptor;
   DBusServiceAdaptorWrapper *dbusServiceAdaptor;
 
-//
   bool terminateReq;
-
-  bool dbusInterfaceCreated;
-  bool tcpInterfaceCreated;
 
 // Settings ------------------------------------------------- /
   WiimotedevSettings *settings;
-
   QMap< QString, bool> unregisterWiimoteList;
-
   QMap< QString, quint32> sequence;
-  bdaddr_t bdaddr_any;
-
   QMutex *mutex;
-  QReadWriteLock *rwlock;
 
 public:
   ConnectionManager(QObject *parent = 0);
@@ -76,30 +64,23 @@ protected:
 private Q_SLOTS:
   void wiimoteMessageThreadFinished();
 
-
 public Q_SLOTS:
   bool dbusIsClassicConnected(quint32 id);
   bool dbusIsNunchukConnected(quint32 id);
   bool dbusIsWiimoteConnected(quint32 id);
-
   QList< uint> dbusNunchukGetAccelerometrCalibration(quint32 id);
   QList< uint> dbusWiimoteGetAccelerometrCalibration(quint32 id);
-
   quint32 dbusWiimoteGetAverageLatency(quint32 id);
   quint32 dbusWiimoteGetBatteryLife(quint32 id);
   quint32 dbusWiimoteGetCurrentLatency(quint32 id);
   QString dbusWiimoteGetMacAddress(quint32 id);
-
   bool dbusWiimoteGetRumbleStatus(quint32 id);
   bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
   bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
   quint8 dbusWiimoteGetLedStatus(quint32 id);
-
   quint8 dbusWiimoteGetStatus(quint32 id);
-
   QList < uint> dbusGetWiimoteList();
   QStringList dbusGetUnregistredWiimoteList();
-
   bool dbusReloadSequenceList();
 
 Q_SIGNALS:

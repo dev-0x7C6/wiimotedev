@@ -24,11 +24,9 @@ configure_file(config.h.in
 
 set(wiimotedev_sources
   adaptors/adaptors.h
-  core/messages.h
   core/settings.h
   core/wiiremote.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
-  ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
 
   adaptors/adaptors.cpp
@@ -64,7 +62,6 @@ set(uinput_sources
   devices/classicgamepad.h
   interfaces/interfaces.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
-  ${CMAKE_SOURCE_DIR}/headers/proto.h
   syslog/syslog.h
 
   adaptors/customjobs.cpp
