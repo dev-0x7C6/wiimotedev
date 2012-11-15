@@ -65,16 +65,12 @@ ConnectionManager::~ConnectionManager() {
 }
 
 bool ConnectionManager::getTerminateRequest() {
-  mutex->lock();
   bool value = terminateReq;
-  mutex->unlock();
   return value;
 }
 
 void ConnectionManager::setTerminateRequest(bool value) {
-  mutex->lock();
   terminateReq = value;
-  mutex->unlock();
 }
 
 #include "service/wiimotemessagethread.h"
@@ -90,7 +86,7 @@ void ConnectionManager::run() {
   mutex->lock();
   while (!getTerminateRequest()) {
     clock.start();
-    if (dev->connectToDevice(0x01)) {
+    if (dev->connectToDevice(1)) {
       quint32 id = sequence.value(dev->getWiimoteSAddr(), 0);
 
       if (!id) {
@@ -129,7 +125,6 @@ void ConnectionManager::run() {
 
     if (clock.elapsed() < 100 && !getTerminateRequest())
       mutex->tryLock(ConnectionManager::WaitForBluetooth);
-
   }
 
   dev->disconnectFromDevice();
