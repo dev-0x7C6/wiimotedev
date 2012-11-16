@@ -82,7 +82,6 @@ void WiimoteMessageThread::run() {
   QElapsedTimer *m_elapsed = new QElapsedTimer();
   m_virtualCursor = new VirtualCursor;
   m_elapsed->start();
-  m_mutex->lock();
 
   cwiid_process_wiimote_init();
   cwiid_process_classic_init();
