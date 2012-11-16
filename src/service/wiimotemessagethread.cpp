@@ -43,7 +43,6 @@ WiimoteMessageThread::WiimoteMessageThread(WiimoteDevice *device, int id, QObjec
 }
 
 void WiimoteMessageThread::run() {
-  lock();
   msleep(1000);
   m_device->setRumbleStatus(true);
 
@@ -68,9 +67,6 @@ void WiimoteMessageThread::run() {
   bool v;
   m_device->getDeviceCallibration(CWIID_EXT_NONE, &calibration[ix_wiimote_device]);
   m_device->setReportMode();
-
-
-  unlock();
 
   int count;
   union cwiid_mesg *mesg;
@@ -172,8 +168,6 @@ void WiimoteMessageThread::run() {
   delete m_elapsed;
   delete m_virtualCursor;
   m_device = 0;
-
-  m_mutex->unlock();
 }
 
 double WiimoteMessageThread::calcVirtualCursorDiff(double c1[], double c2[]) {
