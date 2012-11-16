@@ -32,7 +32,7 @@ void WiimoteMessageThread::cwiid_process_nunchuk_clear() {
   lstate[ix_nunchuk_device] = 0x00;
   stick[ix_nunchuk_stick].x = 0x00;
   stick[ix_nunchuk_stick].y = 0x00;
-  available[ix_nunchuk_device] = false;
+  setDeviceAvailable(ix_nunchuk_device, false);
 }
 
 void WiimoteMessageThread::cwiid_process_nunchuk_buttons(quint8 cwiid_buttons) {
@@ -69,15 +69,15 @@ void WiimoteMessageThread::cwiid_process_nunchuk_acc(quint8 cwiid_acc[3]) {
 void WiimoteMessageThread::cwiid_process_nunchuk_status(cwiid_ext_type type) {
   switch (type) {
   case CWIID_EXT_NONE:
-    if (available[ix_nunchuk_device]) {
+    if (deviceAvailable(ix_nunchuk_device)) {
       cwiid_process_nunchuk_clear();
       emit dbusNunchukPlugged(m_id);
     }
     break;
 
   case CWIID_EXT_NUNCHUK:
-    if (!available[ix_nunchuk_device]) {
-      available[ix_nunchuk_device] = true;
+    if (!deviceAvailable(ix_nunchuk_device)) {
+      setDeviceAvailable(ix_nunchuk_device, true);
       emit dbusNunchukPlugged(m_id);
     }
     break;

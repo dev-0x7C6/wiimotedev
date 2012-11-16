@@ -131,7 +131,7 @@ void ConnectionManager::run() {
   delete dev;
 
   foreach (WiimoteMessageThread *thread, threads.values()) {
-    thread->shutdown();
+    thread->setThreadQuitState(true);
     thread->wait();
     delete thread;
   }

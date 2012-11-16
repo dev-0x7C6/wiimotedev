@@ -34,21 +34,21 @@ void WiimoteMessageThread::cwiid_process_classic_clear() {
   stick[ix_classic_lstick].y = 0x00;
   stick[ix_classic_rstick].x = 0x00;
   stick[ix_classic_rstick].y = 0x00;
-  available[ix_classic_device] = false;
+  setDeviceAvailable(ix_classic_device, false);
 }
 
 void WiimoteMessageThread::cwiid_process_classic_status(cwiid_ext_type type) {
   switch (type) {
   case CWIID_EXT_NONE:
-    if (available[ix_classic_device]) {
+    if (deviceAvailable(ix_classic_device)) {
       cwiid_process_classic_clear();
       emit dbusClassicControllerUnplugged(m_id);
     }
     break;
 
   case CWIID_EXT_CLASSIC:
-    if (!available[ix_classic_device]) {
-      available[ix_classic_device] = true;
+    if (!deviceAvailable(ix_classic_device)) {
+      setDeviceAvailable(ix_classic_device, true);
       emit dbusClassicControllerPlugged(m_id);
     }
     break;

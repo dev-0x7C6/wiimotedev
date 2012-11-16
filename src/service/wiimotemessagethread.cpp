@@ -29,7 +29,7 @@ WiimoteMessageThread::WiimoteMessageThread(WiimoteDevice *device, int id, QObjec
   QThread(parent),
   m_device(device),
   m_mutex(new QMutex()),
-  m_shutdown(false),
+  m_threadQuit(false),
   m_nunchukConnected(false),
   m_classicConnected(false),
   m_id(id),
@@ -89,19 +89,18 @@ void WiimoteMessageThread::run() {
   cwiid_process_nunchuk_init();
 
   do {
-    m_currentLatency = m_elapsed->elapsed();
+    setDeviceCurrentLatency(m_elapsed->elapsed());
     m_elapsed->restart();
     m_bufferLatency += m_currentLatency;
     m_bufferCounter++;
 
     if (m_bufferLatency >= 1000) {
-      m_averageLatency = m_bufferLatency / m_bufferCounter;
+      setDeviceAverageLatency(m_bufferLatency / m_bufferCounter);
       m_bufferLatency = 0;
       m_bufferCounter = 0;
     }
 
     m_device->getMesgStruct(&count, &mesg, &time);
-    m_mutex->unlock();
 
     for (register int i = 0; i < count; ++i) {
         switch (mesg[i].type) {
@@ -116,21 +115,21 @@ void WiimoteMessageThread::run() {
           break;
 
         case CWIID_MESG_IR:
-          if (available[ix_wiimote_device])
+          if (deviceAvailable(ix_wiimote_device))
             cwiid_process_wiimote_ir(mesg[i].ir_mesg.src);
           break;
         case CWIID_MESG_BTN:
-          if (available[ix_wiimote_device])
+          if (deviceAvailable(ix_wiimote_device))
             cwiid_process_wiimote_buttons(mesg[i].btn_mesg.buttons);
           break;
 
         case CWIID_MESG_ACC:
-          if (available[ix_wiimote_device])
+          if (deviceAvailable(ix_wiimote_device))
             cwiid_process_wiimote_acc(mesg[i].acc_mesg.acc);
           break;
 
         case CWIID_MESG_CLASSIC:
-          if (available[ix_classic_device]) {
+          if (deviceAvailable(ix_classic_device)) {
             cwiid_process_classic_buttons(mesg[i].classic_mesg.buttons);
             cwiid_process_classic_lstick(mesg[i].classic_mesg.l_stick);
             cwiid_process_classic_rstick(mesg[i].classic_mesg.r_stick);
@@ -138,7 +137,7 @@ void WiimoteMessageThread::run() {
           break;
 
         case CWIID_MESG_NUNCHUK:
-          if (available[ix_nunchuk_device]) {
+          if (deviceAvailable(ix_nunchuk_device)) {
             cwiid_process_nunchuk_buttons(mesg[i].nunchuk_mesg.buttons);
             cwiid_process_nunchuk_stick(mesg[i].nunchuk_mesg.stick);
             cwiid_process_nunchuk_acc(mesg[i].nunchuk_mesg.acc);
@@ -161,8 +160,7 @@ void WiimoteMessageThread::run() {
     }
 
     delete mesg;
-    m_mutex->lock();
-  } while (!m_shutdown);
+  } while (!threadQuitState());
 
   cwiid_process_classic_done();
   cwiid_process_classic_done();
@@ -183,6 +181,75 @@ double WiimoteMessageThread::calcVirtualCursorDiff(double c1[], double c2[]) {
   return (sqrt(pow(abs(c2[0] - c1[0]), 2) + pow(abs(c2[1] - c1[1]), 2)));
 }
 
+void WiimoteMessageThread::setThreadQuitState(bool quit) {
+  m_mutex->lock();
+  m_threadQuit = quit;
+  m_mutex->unlock();
+}
+
+bool WiimoteMessageThread::threadQuitState() {
+  m_mutex->lock();
+  bool result = m_threadQuit;
+  m_mutex->unlock();
+
+  return result;
+}
+
+void WiimoteMessageThread::setDeviceAvailable(DeviceType dev, bool available) {
+  m_mutex->lock();
+  m_available[dev] = available;
+  m_mutex->unlock();
+}
+
+bool WiimoteMessageThread::deviceAvailable(DeviceType dev) {
+  m_mutex->lock();
+  bool result = m_available[dev];
+  m_mutex->unlock();
+
+  return result;
+}
+
+void WiimoteMessageThread::setDeviceBatteryState(double state) {
+  m_mutex->lock();
+  m_batteryLife = state;
+  m_mutex->unlock();
+}
+
+double WiimoteMessageThread::deviceBatteryState() {
+  m_mutex->lock();
+  double result = m_batteryLife;
+  m_mutex->unlock();
+
+  return result;
+}
+
+void WiimoteMessageThread::setDeviceCurrentLatency(quint32 latency) {
+  m_mutex->lock();
+  m_currentLatency = latency;
+  m_mutex->unlock();
+}
+
+quint32 WiimoteMessageThread::deviceCurrentLatency() {
+  m_mutex->lock();
+  quint32 result = m_batteryLife;
+  m_mutex->unlock();
+
+  return result;
+}
+
+void WiimoteMessageThread::setDeviceAverageLatency(quint32 latency) {
+  m_mutex->lock();
+  m_batteryLife = latency;
+  m_mutex->unlock();
+}
+
+quint32 WiimoteMessageThread::deviceAverageLatency() {
+  m_mutex->lock();
+  double result = m_averageLatency;
+  m_mutex->unlock();
+
+  return result;
+}
 
 void WiimoteMessageThread::calcAccelerometerValues(quint8 acc[3], acc_cal &cal, accdata &out) {
   register double x = double((out.x = acc[0]) - cal.zero[0]) / double(cal.one[0] - cal.zero[0]);
@@ -203,7 +270,7 @@ void WiimoteMessageThread::calcAccelerometerValues(quint8 acc[3], acc_cal &cal, 
 bool WiimoteMessageThread::dbusIsClassicConnected() {
   bool result;
   m_mutex->lock();
-  result = available[ix_classic_device];
+  result = deviceAvailable(ix_classic_device);
   m_mutex->unlock();
 
   return result;
@@ -212,7 +279,7 @@ bool WiimoteMessageThread::dbusIsClassicConnected() {
 bool WiimoteMessageThread::dbusIsNunchukConnected() {
   bool result;
   m_mutex->lock();
-  result = available[ix_nunchuk_device];
+  result = deviceAvailable(ix_nunchuk_device);
   m_mutex->unlock();
 
   return result;
@@ -222,7 +289,7 @@ bool WiimoteMessageThread::dbusIsWiimoteConnected() {
   bool result;
 
   m_mutex->lock();
-  result = available[ix_wiimote_device];
+  result = deviceAvailable(ix_wiimote_device);
   m_mutex->unlock();
 
   return result;
@@ -265,13 +332,7 @@ quint32 WiimoteMessageThread::dbusWiimoteGetAverageLatency() {
 }
 
 quint32 WiimoteMessageThread::dbusWiimoteGetBatteryLife() {
-  quint32 result;
-
-  m_mutex->lock();
-  result = m_life;
-  m_mutex->unlock();
-
-  return result;
+  return deviceBatteryState();
 }
 
 quint32 WiimoteMessageThread::dbusWiimoteGetCurrentLatency() {
@@ -316,15 +377,12 @@ bool WiimoteMessageThread::dbusWiimoteGetRumbleStatus() {
 
 quint8 WiimoteMessageThread::dbusWiimoteGetStatus() {
   bool result = 0;
-
-  m_mutex->lock();
-  if (available[ix_wiimote_device])
+  if (deviceAvailable(ix_wiimote_device))
     result |= STATUS_WIIMOTE_CONNECTED;
-  if (available[ix_nunchuk_device])
+  if (deviceAvailable(ix_nunchuk_device))
     result |= STATUS_NUNCHUK_CONNECTED;
-  if (available[ix_classic_device])
+  if (deviceAvailable(ix_classic_device))
     result |= STATUS_CLASSIC_CONNECTED;
-  m_mutex->unlock();
 
   return result;
 }

@@ -52,8 +52,8 @@ class WiimoteMessageThread : public QThread
 private:
   WiimoteDevice *m_device;
   QMutex *m_mutex;
-  bool m_shutdown;
-  double m_life;
+  bool m_threadQuit;
+  double m_batteryLife;
 
   enum DeviceType {
     ix_wiimote_device = 0,
@@ -85,10 +85,9 @@ private:
   struct stickdata stick[ix_all_sticks];
   quint64 cstate[ix_all_devices];
   quint64 lstate[ix_all_devices];
-  bool available[ix_general_device];
+  bool m_available[ix_general_device];
   bool m_nunchukConnected;
   bool m_classicConnected;
-
 
   struct acc_cal calibration[ix_all_devices - 1];
   struct accdata acc[ix_all_devices - 1];
@@ -147,11 +146,20 @@ public:
 
   quint32 id() { return m_id; }
 
-  void shutdown() {
-    lock();
-    m_shutdown = true;
-    unlock();
-  }
+  void setThreadQuitState(bool quit = true);
+  bool threadQuitState();
+
+  void setDeviceAvailable(DeviceType dev, bool available);
+  bool deviceAvailable(DeviceType dev);
+
+  void setDeviceBatteryState(double state);
+  double deviceBatteryState();
+
+  void setDeviceCurrentLatency(quint32 latency);
+  quint32 deviceCurrentLatency();
+
+  void setDeviceAverageLatency(quint32 latency);
+  quint32 deviceAverageLatency();
 
 public:
   bool dbusIsClassicConnected();
