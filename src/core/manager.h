@@ -22,6 +22,7 @@
 
 #include <QThread>
 #include <QMutex>
+#include <QMutexLocker>
 
 #include "adaptors/deviceevents.h"
 #include "adaptors/daemonservice.h"

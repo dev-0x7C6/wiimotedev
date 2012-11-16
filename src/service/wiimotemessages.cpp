@@ -103,10 +103,8 @@ void WiimoteMessageThread::cwiid_process_wiimote_ir(cwiid_ir_src ir[]) {
 }
 
 void WiimoteMessageThread::cwiid_process_wiimote_error() {
-  m_mutex->lock();
   m_device->disconnectFromDevice(false);
   setThreadQuitState(true);
-  m_mutex->unlock();
 }
 
 void WiimoteMessageThread::cwiid_process_wiimote_status(quint8 battery) {

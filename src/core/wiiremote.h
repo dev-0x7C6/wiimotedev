@@ -26,7 +26,6 @@
 #include "config.h"
 
 #include <QObject>
-#include <QReadWriteLock>
 
 #ifdef USE_STATIC_CWIID
 #include "3rdparty/libcwiid/cwiid.h"
@@ -50,7 +49,6 @@ private:
   bdaddr_t bdaddr;
   cwiid_wiimote_t *device;
   qint32 id;
-  QReadWriteLock *lock;
   bool haveWiimoteCallibration;
   bool haveNunchukCallibration;
 

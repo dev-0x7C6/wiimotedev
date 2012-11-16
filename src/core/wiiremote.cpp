@@ -22,7 +22,6 @@
 WiimoteDevice::WiimoteDevice(QObject *parent):
   QObject(parent),
   device(0),
-  lock(new QReadWriteLock()),
   haveWiimoteCallibration(false),
   haveNunchukCallibration(false),
   isRumble(false),
@@ -38,7 +37,6 @@ WiimoteDevice::~WiimoteDevice()
 {
   if (isConnected())
     disconnectFromDevice(true);
-  delete lock;
 }
 
 bool WiimoteDevice::connectToDevice(const quint32 timeout)
@@ -165,21 +163,16 @@ bool WiimoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct a
 }
 
 struct acc_cal WiimoteDevice::getLastWiimoteCallibration(bool &valid) {
-  lock->lockForRead();
   valid = haveWiimoteCallibration;
   struct acc_cal copy;
   memcpy(&copy, &wiimote_acc_cal, sizeof(acc_cal));
-  lock->unlock();
-
   return copy;
 }
 
 struct acc_cal WiimoteDevice::getLastNunchukCallibration(bool &valid) {
-  lock->lockForRead();
   valid = haveNunchukCallibration;
   struct acc_cal copy;
   memcpy(&copy, &nunchuk_acc_cal, sizeof(acc_cal));
-  lock->unlock();
 
   return copy;
 }

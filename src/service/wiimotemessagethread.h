@@ -136,13 +136,8 @@ private:
   double calcVirtualCursorDiff(double c1[], double c2[]);
   void calcAccelerometerValues(quint8 acc[3], acc_cal &cal, accdata &out);
 
-  WiimoteDevice* device();
-
 public:
   explicit WiimoteMessageThread(WiimoteDevice *device, int id, QObject *parent = 0);
-
-  void lock();
-  void unlock();
 
   quint32 id() { return m_id; }
 
