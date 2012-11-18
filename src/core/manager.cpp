@@ -97,6 +97,7 @@ void ConnectionManager::run() {
       systemlog::information(QString("wiiremote %1 connected, id %2").arg(dev->getWiimoteSAddr(), QString::number(id)));
 
       WiimoteMessageThread *thread = new WiimoteMessageThread(dev, id);
+      thread->setPowerSafeTimeout(settings->getPowerSaveValue()*60000);
       connect(thread, SIGNAL(dbusVirtualCursorPosition(quint32, double, double, double, double)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorPosition(quint32,double, double, double, double)), Qt::QueuedConnection);
       connect(thread, SIGNAL(dbusVirtualCursorFound(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorFound(quint32)), Qt::QueuedConnection);
       connect(thread, SIGNAL(dbusVirtualCursorLost(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorLost(quint32)), Qt::QueuedConnection);

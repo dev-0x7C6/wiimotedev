@@ -42,6 +42,7 @@ set(wiimotedev_sources
   service/wiimotemessages.cpp
   service/virtualcursor.cpp
   service/virtualcursor.h
+  service/features.cpp
   daemon.cpp
 )
 

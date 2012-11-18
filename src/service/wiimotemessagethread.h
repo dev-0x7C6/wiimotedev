@@ -54,6 +54,7 @@ private:
   QMutex *m_mutex;
   bool m_threadQuit;
   double m_batteryLife;
+  qint64 m_powerSaveTimeout;
 
   enum DeviceType {
     ix_wiimote_device = 0,
@@ -136,6 +137,9 @@ private:
   double calcVirtualCursorDiff(double c1[], double c2[]);
   void calcAccelerometerValues(quint8 acc[3], acc_cal &cal, accdata &out);
 
+  void connect_animation();
+  void disconnect_animation();
+
 public:
   explicit WiimoteMessageThread(WiimoteDevice *device, int id, QObject *parent = 0);
 
@@ -155,6 +159,9 @@ public:
 
   void setDeviceAverageLatency(quint32 latency);
   quint32 deviceAverageLatency();
+
+  void setPowerSafeTimeout(qint64 timeout);
+  qint64 powerSafeTimeout();
 
 public:
   bool dbusIsClassicConnected();

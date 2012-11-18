@@ -25,6 +25,9 @@
 #include "3rdparty/libcwiid/cwiid.h"
 #include <qmath.h>
 
+
+#include <QDebug>
+
 WiimoteMessageThread::WiimoteMessageThread(WiimoteDevice *device, int id, QObject *parent) :
   QThread(parent),
   m_device(device),
@@ -43,28 +46,10 @@ WiimoteMessageThread::WiimoteMessageThread(WiimoteDevice *device, int id, QObjec
 }
 
 void WiimoteMessageThread::run() {
-//  msleep(1000);
-//  m_device->setRumbleStatus(true);
+  msleep(1000);
 
-//  for (register int i = 0; i < 2; ++i) {
-//    switch (i%2) {
-//    case 0:
-//      for (register int j = 0; j < 4; ++j) {
-//        m_device->setLedStatus(1 << j);
-//        msleep(20);
-//      }
-//      break;
-//    case 1:
-//      for (register int j = 3; j >= 0; --j) {
-//        m_device->setLedStatus(1 << j);
-//        msleep(20);
-//      }
-//      break;
-//    }
-//  }
-//  m_device->setLedStatus(m_id);
-//  m_device->setRumbleStatus(false);
-//  bool v;
+  connect_animation();
+
   m_device->getDeviceCallibration(CWIID_EXT_NONE, &calibration[ix_wiimote_device]);
   m_device->setReportMode();
 
@@ -76,8 +61,10 @@ void WiimoteMessageThread::run() {
   lstate[ix_general_device] = 0x00;
 
   QElapsedTimer *m_elapsed = new QElapsedTimer();
+  QElapsedTimer *m_powersave = new QElapsedTimer();
   m_virtualCursor = new VirtualCursor;
   m_elapsed->start();
+  m_powersave->start();
 
   cwiid_process_wiimote_init();
   cwiid_process_classic_init();
@@ -143,8 +130,10 @@ void WiimoteMessageThread::run() {
       }
 
       if ((cstate[ix_general_device] = cstate[ix_wiimote_device] |
-           cstate[ix_nunchuk_device] | cstate[ix_classic_device]) != lstate[ix_general_device])
+           cstate[ix_nunchuk_device] | cstate[ix_classic_device]) != lstate[ix_general_device]) {
         emit dbusWiimoteGeneralButtons(m_id, lstate[ix_general_device] = cstate[ix_general_device]);
+        m_powersave->restart();
+      }
 
       if (cstate[ix_wiimote_device] != lstate[ix_wiimote_device])
         emit dbusWiimoteButtons(m_id, lstate[ix_wiimote_device] = cstate[ix_wiimote_device]);
@@ -157,14 +146,21 @@ void WiimoteMessageThread::run() {
     }
 
     delete mesg;
+
+    if (m_powersave->elapsed() > powerSafeTimeout())
+      break;
+
   } while (!threadQuitState());
 
   cwiid_process_classic_done();
   cwiid_process_classic_done();
   cwiid_process_nunchuk_done();
 
-  if (m_device->isConnected())
+  if (m_device->isConnected()) {
+    if (!threadQuitState())
+      disconnect_animation();
     m_device->disconnectFromDevice();
+  }
 
   delete m_device;
   delete m_elapsed;
@@ -224,6 +220,16 @@ void WiimoteMessageThread::setDeviceAverageLatency(quint32 latency) {
 quint32 WiimoteMessageThread::deviceAverageLatency() {
   QMutexLocker locker(m_mutex);
   return m_averageLatency;
+}
+
+void WiimoteMessageThread::setPowerSafeTimeout(qint64 timeout) {
+  QMutexLocker locker(m_mutex);
+  m_powerSaveTimeout = timeout;
+}
+
+qint64 WiimoteMessageThread::powerSafeTimeout() {
+  QMutexLocker locker(m_mutex);
+  return m_powerSaveTimeout;
 }
 
 void WiimoteMessageThread::calcAccelerometerValues(quint8 acc[3], acc_cal &cal, accdata &out) {

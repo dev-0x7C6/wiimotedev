@@ -45,7 +45,7 @@ bool WiimoteDevice::connectToDevice(const quint32 timeout)
 
   if ((device = cwiid_open_timeout(&bdaddr, CWIID_FLAG_MESG_IFC, timeout))) {
     id = cwiid_get_id(device);
-    return setReportMode(reportMode = defaultReportFlags);
+    return true;
   }
 
   device = 0;
