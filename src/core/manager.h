@@ -42,7 +42,6 @@ private:
 
 // Settings ------------------------------------------------- /
   WiimotedevSettings *settings;
-  QMap< QString, bool> unregisterWiimoteList;
   QMap< QString, quint32> sequence;
   QMutex *mutex;
 
@@ -81,7 +80,6 @@ public Q_SLOTS:
   quint8 dbusWiimoteGetLedStatus(quint32 id);
   quint8 dbusWiimoteGetStatus(quint32 id);
   QList < uint> dbusGetWiimoteList();
-  QStringList dbusGetUnregistredWiimoteList();
   bool dbusReloadSequenceList();
 
 Q_SIGNALS:

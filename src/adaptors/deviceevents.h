@@ -32,9 +32,6 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "      <annotation value=\"QList&lt;uint>\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\" />\n"
 "      <arg direction=\"out\" type=\"au\" name=\"id_list\" />\n"
 "    </method>\n"
-"    <method name=\"dbusGetUnregistredWiimoteList\">\n"
-"      <arg direction=\"out\" type=\"as\" name=\"list\" />\n"
-"    </method>\n"
 "    <method name=\"dbusIsClassicConnected\">\n"
 "      <arg direction=\"in\" type=\"u\" name=\"id\" />\n"
 "      <arg direction=\"out\" type=\"y\" name=\"status\" />\n"
@@ -202,8 +199,6 @@ public Q_SLOTS:
   quint8 dbusWiimoteGetLedStatus(quint32 id);
 
   QList < uint> dbusGetWiimoteList();
-  QStringList dbusGetUnregistredWiimoteList();
-
   bool dbusWiimoteGetRumbleStatus(quint32 id);
   bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
   bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);

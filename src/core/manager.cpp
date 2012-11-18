@@ -74,7 +74,6 @@ void ConnectionManager::setTerminateRequest(bool value) {
 }
 
 #include "service/wiimotemessagethread.h"
-#include <QDebug>
 
 void ConnectionManager::run() {
   if (result == EXIT_FAILURE)
@@ -155,24 +154,7 @@ bool ConnectionManager::dbusReloadSequenceList() {
   settings->reload();
   sequence = settings->getWiiremoteSequence();
 
-  foreach(const QString &key, sequence.keys())
-    unregisterWiimoteList[key] = false;
-
   return true;
-}
-
-QStringList ConnectionManager::dbusGetUnregistredWiimoteList()
-{
-  QStringList list;
-
-  QMapIterator <QString, bool> map(unregisterWiimoteList);
-
-  while (map.hasNext()) {
-    map.next();
-    if (map.value()) list << map.key();
-  }
-
-  return list;
 }
 
 QList < uint> ConnectionManager::dbusGetWiimoteList()

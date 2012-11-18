@@ -53,13 +53,6 @@ bool DBusDeviceEventsAdaptor::dbusIsWiimoteConnected(quint32 id)
   return connected;
 }
 
-QStringList DBusDeviceEventsAdaptor::dbusGetUnregistredWiimoteList()
-{
-  QStringList list;
-  QMetaObject::invokeMethod(parent(), "dbusGetUnregistredWiimoteList", Qt::AutoConnection, Q_RETURN_ARG(QStringList, list));
-  return list;
-}
-
 quint8 DBusDeviceEventsAdaptor::dbusWiimoteGetLedStatus(quint32 id)
 {
   quint8 value;
