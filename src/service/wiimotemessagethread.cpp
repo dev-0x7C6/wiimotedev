@@ -73,13 +73,13 @@ void WiimoteMessageThread::run() {
   do {
     setDeviceCurrentLatency(m_elapsed->elapsed());
     m_elapsed->restart();
-    m_bufferLatency += m_currentLatency;
+    m_bufferLatency += deviceCurrentLatency();
     m_bufferCounter++;
 
     if (m_bufferLatency >= 1000) {
       setDeviceAverageLatency(m_bufferLatency / m_bufferCounter);
-      m_bufferLatency = 0;
-      m_bufferCounter = 0;
+      m_bufferLatency = deviceCurrentLatency();
+      m_bufferCounter = 1;
     }
 
     m_mutex->lock();
@@ -209,12 +209,12 @@ void WiimoteMessageThread::setDeviceCurrentLatency(quint32 latency) {
 
 quint32 WiimoteMessageThread::deviceCurrentLatency() {
   QMutexLocker locker(m_mutex);
-  return m_batteryLife;
+  return m_currentLatency;
 }
 
 void WiimoteMessageThread::setDeviceAverageLatency(quint32 latency) {
   QMutexLocker locker(m_mutex);
-  m_batteryLife = latency;
+  m_averageLatency = latency;
 }
 
 quint32 WiimoteMessageThread::deviceAverageLatency() {
