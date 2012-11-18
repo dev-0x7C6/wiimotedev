@@ -19,7 +19,7 @@
 
 #include <QCoreApplication>
 #include <QFile>
-#include <QTime>
+#include <QElapsedTimer>
 
 #include "core/manager.h"
 #include "syslog/syslog.h"
@@ -29,8 +29,8 @@ ConnectionManager::ConnectionManager(QObject *parent):
   QThread(parent),
   dbusDeviceEventsAdaptor(0),
   dbusServiceAdaptor(0),
-  terminateReq(false),
-  mutex(new QMutex()),
+  m_threadQuitStatus(false),
+  m_mutex(new QMutex()),
   result(EXIT_SUCCESS)
 {
   if (!QFile::exists(WIIMOTEDEV_CONFIG_FILE)) {
@@ -61,30 +61,23 @@ ConnectionManager::ConnectionManager(QObject *parent):
 }
 
 ConnectionManager::~ConnectionManager() {
-  delete mutex;
+  delete m_mutex;
 }
 
-bool ConnectionManager::getTerminateRequest() {
-  bool value = terminateReq;
-  return value;
-}
-
-void ConnectionManager::setTerminateRequest(bool value) {
-  terminateReq = value;
-}
 
 #include "service/wiimotemessagethread.h"
-
+#include <QDebug>
 void ConnectionManager::run() {
   if (result == EXIT_FAILURE)
     return;
 
   WiimoteDevice *dev = new WiimoteDevice();
-  QTime clock;
+  QElapsedTimer m_bluetoothInertia;
+  QMutex m_bluetoothBlocking;
 
-  mutex->lock();
-  while (!getTerminateRequest()) {
-    clock.start();
+  m_bluetoothBlocking.lock();
+  while (!threadQuitStatus()) {
+    m_bluetoothInertia.start();
     if (dev->connectToDevice(1)) {
       quint32 id = sequence.value(dev->getWiimoteSAddr(), 0);
 
@@ -96,7 +89,7 @@ void ConnectionManager::run() {
       systemlog::information(QString("wiiremote %1 connected, id %2").arg(dev->getWiimoteSAddr(), QString::number(id)));
 
       WiimoteMessageThread *thread = new WiimoteMessageThread(dev, id);
-      thread->setPowerSafeTimeout(settings->getPowerSaveValue()*60000);
+      thread->setPowerSafeTimeout(settings->getPowerSaveValue() * 60000);
       connect(thread, SIGNAL(dbusVirtualCursorPosition(quint32, double, double, double, double)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorPosition(quint32,double, double, double, double)), Qt::QueuedConnection);
       connect(thread, SIGNAL(dbusVirtualCursorFound(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorFound(quint32)), Qt::QueuedConnection);
       connect(thread, SIGNAL(dbusVirtualCursorLost(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorLost(quint32)), Qt::QueuedConnection);
@@ -119,14 +112,20 @@ void ConnectionManager::run() {
       connect(thread, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::QueuedConnection);
       connect(thread, SIGNAL(finished()), this , SLOT(wiimoteMessageThreadFinished()), Qt::QueuedConnection);
       threads.insert(1, thread);
-      thread->start();
+      thread->start(QThread::HighPriority);
       dev = new WiimoteDevice();
     }
 
-    if (clock.elapsed() < 100 && !getTerminateRequest())
-      mutex->tryLock(ConnectionManager::WaitForBluetooth);
+    if (m_bluetoothInertia.elapsed() < ConnectionManager::BluetoothFlood && !threadQuitStatus()) {
+      for (register int i = 0; i < 100; ++i) {
+        m_bluetoothBlocking.tryLock(ConnectionManager::WaitForBluetooth / 100);
+        if (threadQuitStatus())
+          break;
+      }
+    }
   }
 
+  m_bluetoothBlocking.unlock();
   dev->disconnectFromDevice();
   delete dev;
 
@@ -137,8 +136,17 @@ void ConnectionManager::run() {
   }
 
   threads.clear();
-
   QCoreApplication::quit();
+}
+
+void ConnectionManager::setThreadQuitStatus(bool quit) {
+  QMutexLocker locker(m_mutex);
+  m_threadQuitStatus = quit;
+}
+
+bool ConnectionManager::threadQuitStatus() {
+  QMutexLocker locker(m_mutex);
+  return m_threadQuitStatus;
 }
 
 void ConnectionManager::wiimoteMessageThreadFinished() {

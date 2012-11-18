@@ -38,22 +38,23 @@ private:
   DBusDeviceEventsAdaptorWrapper *dbusDeviceEventsAdaptor;
   DBusServiceAdaptorWrapper *dbusServiceAdaptor;
 
-  bool terminateReq;
-
 // Settings ------------------------------------------------- /
   WiimotedevSettings *settings;
   QMap< QString, quint32> sequence;
-  QMutex *mutex;
+  QMutex *m_mutex;
+
+  bool m_threadQuitStatus;
 
 public:
   ConnectionManager(QObject *parent = 0);
  ~ConnectionManager();
 
-  bool getTerminateRequest();
-  void setTerminateRequest(bool);
+  void setThreadQuitStatus(bool quit = true);
+  bool threadQuitStatus();
 
   quint32 result;
 
+  static const int BluetoothFlood = 100;
   static const int WaitForBluetooth = 3000;
 
   QHash <quint32, WiimoteMessageThread*> threads;

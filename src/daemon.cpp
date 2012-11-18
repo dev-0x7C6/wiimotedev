@@ -137,9 +137,9 @@ int main(int argc, char *argv[])
   qRegisterMetaType< stickdata>("stickdata");
 
   ConnectionManager *manager_thread = new ConnectionManager();
-  manager_thread->start(QThread::HighPriority);
+  manager_thread->start(QThread::NormalPriority);
   application.exec();
-  manager_thread->setTerminateRequest(true);
+  manager_thread->setThreadQuitStatus();
   manager_thread->wait();
   int result = manager_thread->result;
 
