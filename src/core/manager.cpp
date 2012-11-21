@@ -24,6 +24,7 @@
 #include "core/manager.h"
 #include "syslog/syslog.h"
 #include "core/wiiremote.h"
+#include "service/wiimotemessagethread.h"
 
 ConnectionManager::ConnectionManager(QObject *parent):
   QThread(parent),
@@ -50,7 +51,6 @@ ConnectionManager::ConnectionManager(QObject *parent):
   dbusServiceAdaptor = new DBusServiceAdaptorWrapper(this, connection);
   bool registred = connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
 
-  connect(this, SIGNAL(dbusReportUnregistredWiimote(QString)), dbusDeviceEventsAdaptor, SIGNAL(dbusReportUnregistredWiimote(QString)));
 
   if (!(dbusDeviceEventsAdaptor->isRegistred() &&
         dbusServiceAdaptor->isRegistred() && registred)) {
@@ -64,12 +64,11 @@ ConnectionManager::~ConnectionManager() {
   delete m_mutex;
 }
 
-
-#include "service/wiimotemessagethread.h"
-#include <QDebug>
 void ConnectionManager::run() {
-  if (result == EXIT_FAILURE)
+  if (result == EXIT_FAILURE) {
+    QCoreApplication::quit();
     return;
+  }
 
   WiimoteDevice *dev = new WiimoteDevice();
   QElapsedTimer m_bluetoothInertia;
