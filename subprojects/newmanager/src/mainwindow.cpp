@@ -27,25 +27,25 @@ const qint32 emptyspace = 20;
 
 
 MainWindow::MainWindow(DBusDeviceEventsInterface *device):
+  font64(new QFont("Luxi Serif Bold Oblique", 64, QFont::Bold)),
+  font48(new QFont("Luxi Serif Bold Oblique", 48, QFont::Bold)),
+  font32(new QFont("Luxi Serif Bold Oblique", 32, QFont::Bold)),
+  font24(new QFont("Luxi Serif Bold Oblique", 24, QFont::Bold)),
+  font16(new QFont("Luxi Serif Bold Oblique", 16, QFont::Bold)),
+  font8(new QFont("Luxi Serif Bold Oblique", 8, QFont::Bold)),
+  displayServiceStatus(true),
+  displayBatteryStatus(true),
   device(device),
-  styledBackground(new QPixmap(":/styled_bg.png")),
   lastFocusedProfile(0),
   lastActivedProfile(0),
   lastFocusedMenu(0),
   lastActivedMenu(0),
+  cursorPixmap(new QPixmap(":/cursor.png")),
   enabledPixmap(new QPixmap(":/enabled.png")),
   disabledPixmap(new QPixmap(":/disabled.png")),
-  font8(new QFont("Luxi Serif Bold Oblique", 8, QFont::Bold)),
-  font16(new QFont("Luxi Serif Bold Oblique", 16, QFont::Bold)),
-  font24(new QFont("Luxi Serif Bold Oblique", 24, QFont::Bold)),
-  font32(new QFont("Luxi Serif Bold Oblique", 32, QFont::Bold)),
-  font48(new QFont("Luxi Serif Bold Oblique", 48, QFont::Bold)),
-  font64(new QFont("Luxi Serif Bold Oblique", 64, QFont::Bold)),
-  cursorPixmap(new QPixmap(":/cursor.png")),
   battery100(new QPixmap(":/battery-100.png")),
-  currentCoverIndex(0),
-  displayServiceStatus(true),
-  displayBatteryStatus(true)
+  styledBackground(new QPixmap(":/styled_bg.png")),
+  currentCoverIndex(0)
 {
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));

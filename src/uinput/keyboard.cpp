@@ -37,13 +37,11 @@ void UInputProfileManager::loadKeyboardEvents(QSettings &settings) {
         KeyboardAction action;
         action.event = extractDeviceEvent(string);
         if (action.event.isEmpty()) {
-          qWarning(QString("Warning: entry \"%1\" is not valid!").arg(string).toAscii().constData());
           continue;
         }
 
         action.keys = extractScancodes(settings.value(string, QStringList()).toStringList());
         if (action.keys.isEmpty()) {
-          qWarning(QString("Warning: nothing to do in \"%1\"").arg(string).toAscii().constData());
           continue;
         }
 

@@ -17,40 +17,33 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "core/settings.h"
+#ifndef WIIMOTEDEV_SETTINGS_H
+#define WIIMOTEDEV_SETTINGS_H
 
-WiimotedevSettings::WiimotedevSettings(QString file, QObject *parent):
-  QObject(parent),
-  config(file)
+#include <QSettings>
+#include <QStringList>
+
+#include "headers/consts.h"
+
+class QStringList;
+
+class WiimotedevSettings : public QObject
 {
-  settings = new QSettings(config, QSettings::IniFormat, this);
-  reload();
-}
+  Q_OBJECT
+private:
+  QHash < QString, quint32> m_sequence;
+  QSettings *m_settings;
+  quint32 m_powersave;
 
-void WiimotedevSettings::reload()
-{
-  settings->sync();
-  powersave = settings->value("features/powersave", 15).toUInt();
+public:
+  WiimotedevSettings(const QString &file = WIIMOTEDEV_CONFIG_FILE, QObject *parent = 0);
 
-  sequence.clear();
+public:
+  void reload();
 
-  settings->beginGroup("sequence");
-  for (register int i = 0; i < settings->allKeys().count(); ++i)
-    sequence[settings->allKeys().at(i)] = settings->value(settings->allKeys().at(i), 0).toUInt();
+  QHash < QString, quint32> getWiiremoteSequence();
+  quint32 powerSaveValue();
+  quint32 registerWiiremote(const QString&);
+};
 
-  settings->endGroup();
-}
-
-quint32  WiimotedevSettings::registerWiiremote(QString mac) {
-  quint32 id = 1;
-
-  if (!sequence.values().isEmpty())
-    while(sequence.values().indexOf(id) != -1) id++;
-  sequence[mac] = id;
-
-  settings->beginGroup("sequence");
-  settings->setValue(mac, id);
-  settings->endGroup();
-
-  return id;
-}
+#endif // WIIMOTEDEV_SETTINGS_H

@@ -49,14 +49,15 @@ class GraphicsCheckbox :public QObject, public QGraphicsItem
   quint32 width;
   quint32 height;
   QString text;
+  QPixmap *pixmap;
 
-  bool focused;
   bool actived;
+  bool focused;
+
   quint32 hoverAlign;
 
   quint32 groupId;
 
-  QPixmap *pixmap;
 
   bool isChecked;
   double m_motion;

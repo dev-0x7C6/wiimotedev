@@ -26,11 +26,12 @@
 #include <QScopedPointer>
 #include <QObject>
 #include <QDebug>
-
+#include <QKeyEvent>
 #include "src/interfaces/deviceevents.h"
 #include "car.h"
 
 const quint32 count = 4;
+
 
 int main(int argc, char *argv[])
 {
@@ -48,6 +49,7 @@ int main(int argc, char *argv[])
   scene->setSceneRect(-500, -500, 1000, 1000);
   scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
+
   for (register int i = 1; i <= count; ++i) {
     Car *item = new Car();
     item->setWiiremote(i);
@@ -59,8 +61,11 @@ int main(int argc, char *argv[])
     QObject::connect(interface, SIGNAL(dbusWiimoteButtons(quint32,quint64)), item, SLOT(dbusWiimoteButtons(quint32,quint64)), Qt::QueuedConnection);
   }
 
-  QGraphicsView view(scene);
 
+
+
+  QGraphicsView view(scene);
+  view.setRenderHints(QPainter::Antialiasing);
   view.setBackgroundBrush(Qt::darkGray);
   view.setCacheMode(QGraphicsView::CacheBackground);
   view.setWindowTitle("Wiimotedev Remote-Car example");

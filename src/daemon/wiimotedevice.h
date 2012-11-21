@@ -45,6 +45,7 @@
 
 class WiimoteDevice : public QObject
 {
+  Q_OBJECT
 private:
   bdaddr_t bdaddr;
   cwiid_wiimote_t *device;

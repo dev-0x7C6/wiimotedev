@@ -91,8 +91,6 @@ private:
 
   QMenu menu;
 
-  quint32 order;
-
   double p;
   double stableAccRoll;
 
@@ -104,12 +102,14 @@ private:
 
   QMap <quint64, QString> text_buttons_;
 
+  DBusDeviceEventsInterface *iface;
   quint32 wiimoteId;
   quint8 leds;
+  quint32 order;
 
   SelectWiimote *selectWiimote;
 
-  DBusDeviceEventsInterface *iface;
+
   QGraphicsScene scene;
 
   QTimer infraredTimeout;

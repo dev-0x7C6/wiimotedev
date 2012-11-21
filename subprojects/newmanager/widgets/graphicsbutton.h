@@ -61,8 +61,9 @@ class GraphicsButton :public QObject, public QGraphicsItem
   quint32 bgstyle;
   QString text;
 
-  bool focused;
+  QPixmap *pixmap;
   bool actived;
+  bool focused;
   bool selectable;
   quint32 hoverAlign;
   quint32 iconAlign;
@@ -71,8 +72,6 @@ class GraphicsButton :public QObject, public QGraphicsItem
 
   QPropertyAnimation *scaleAnimation;
   bool scaleLock;
-
-  QPixmap *pixmap;
 
   QPixmap *backgroundActive;
   QPixmap *backgroundInactive;

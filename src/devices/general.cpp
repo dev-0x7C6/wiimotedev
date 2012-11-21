@@ -37,6 +37,10 @@ UInputObject::UInputObject() {
   }
 }
 
+UInputObject::~UInputObject() {
+
+}
+
 void UInputObject::uinput_close(bool force)
 {
   if (!force && !alreadyOpened)

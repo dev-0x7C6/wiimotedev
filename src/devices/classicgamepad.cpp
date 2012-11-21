@@ -27,6 +27,9 @@ ClassicGamepadDevice::ClassicGamepadDevice(QString deviceName) :
     m_deviceName = QString::fromUtf8("Classic Gamepad Device (undefined)");
 }
 
+ClassicGamepadDevice::~ClassicGamepadDevice() {
+}
+
 
 void ClassicGamepadDevice::setButtons(quint64 buttons) {
   sendEvent(EV_KEY, BTN_A, (buttons & CLASSIC_BTN_A) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);

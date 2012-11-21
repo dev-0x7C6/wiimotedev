@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "core/manager.h"
+#include "daemon/wiimotemanager.h"
 #include "syslog/syslog.h"
 
 #include <QCoreApplication>
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
   qRegisterMetaType< accdata>("accdata");
   qRegisterMetaType< stickdata>("stickdata");
 
-  ConnectionManager *manager_thread = new ConnectionManager();
+  WiimoteManager *manager_thread = new WiimoteManager();
   manager_thread->start(QThread::NormalPriority);
   application.exec();
   manager_thread->setThreadQuitStatus();

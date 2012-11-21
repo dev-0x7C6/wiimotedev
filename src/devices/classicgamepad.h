@@ -52,7 +52,9 @@ private:
   qint32 m_last_dpad_y;
 
 public:
-  ClassicGamepadDevice(QString deviceName);
+  explicit ClassicGamepadDevice(QString deviceName);
+  virtual ~ClassicGamepadDevice();
+
   bool uinput_open();
 
   enum Sticks {

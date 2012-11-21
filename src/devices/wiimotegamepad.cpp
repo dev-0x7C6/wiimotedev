@@ -20,8 +20,8 @@
 #include "devices/wiimotegamepad.h"
 
 WiimoteGamepadDevice::WiimoteGamepadDevice(QString deviceName, int id, Mode mode, Position horizontal, QObject *parent) :
-  UInputObject(),
   QObject(parent),
+  UInputObject(),
   m_deviceName(deviceName),
   m_horizontal(horizontal),
   m_mode(mode),

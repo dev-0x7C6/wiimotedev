@@ -177,16 +177,11 @@ private:
 
   bool visibleMenu;
 
-  QPixmap *cursorPixmap;
-
   double cursorAngle;
   double cursorSize;
 
 
   QGraphicsPixmapItem *cursorHandle;
-
-
-
 
 
   GraphicsButton *lastFocusedProfile;
@@ -196,6 +191,7 @@ private:
 
   QGraphicsPixmapItemPlus *profileRunning;
 
+  QPixmap *cursorPixmap;
   QPixmap *enabledPixmap;
   QPixmap *disabledPixmap;
 
@@ -208,8 +204,6 @@ private:
   quint64 lastButtons;
   qint32 currentCoverIndex;
   QTimeLine rumble;
-
-
 };
 
 #endif // MAINWINDOW_H

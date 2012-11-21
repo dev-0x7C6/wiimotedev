@@ -17,7 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "core/wiiremote.h"
+#include "wiimotedevice.h"
 
 WiimoteDevice::WiimoteDevice(QObject *parent):
   QObject(parent),
@@ -156,6 +156,8 @@ bool WiimoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct a
   case CWIID_EXT_NUNCHUK:
     nunchuk_acc_cal = *acc_cal;
     haveWiimoteCallibration = true;
+    break;
+  default:
     break;
   }
 

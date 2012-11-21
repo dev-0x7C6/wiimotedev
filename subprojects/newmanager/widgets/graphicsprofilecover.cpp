@@ -33,9 +33,8 @@ GraphicsProfileCover::GraphicsProfileCover(QObject *parent) :
   focusColor(QColor(61, 162, 235, 255)),
   activeColor(QColor(61, 162, 235, 25)),
   inactiveColor(QColor(0, 0, 0, 100)),
-  actived(false),
-  focused(false)
-
+  focused(false),
+  actived(false)
 {
   setObjectName("ProfileItem");
   setAcceptHoverEvents(true);

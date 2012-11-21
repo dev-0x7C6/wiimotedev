@@ -18,7 +18,7 @@
  **********************************************************************************/
 
 #include "wiimotemessagethread.h"
-#include "core/wiiremote.h"
+#include "wiimotedevice.h"
 
 #include <QMutex>
 #include <qmath.h>

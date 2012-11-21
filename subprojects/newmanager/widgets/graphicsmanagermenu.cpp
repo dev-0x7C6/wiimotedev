@@ -23,8 +23,8 @@
 #include <QDebug>
 
 GraphicsManagerMenuItem::GraphicsManagerMenuItem(QObject *parent) :
-  QGraphicsItem(),
   QObject(parent),
+  QGraphicsItem(),
   hovered(false)
 
 {
@@ -72,8 +72,8 @@ void GraphicsManagerMenuItem::paint(QPainter *painter, const QStyleOptionGraphic
 
 
 GraphicsManagerMenu::GraphicsManagerMenu(QObject *parent) :
-  QGraphicsItem(),
   QObject(parent),
+  QGraphicsItem(),
   hovered(false)
 
 {
@@ -97,8 +97,6 @@ void GraphicsManagerMenu::paint(QPainter *painter, const QStyleOptionGraphicsIte
   Q_UNUSED(option);
   Q_UNUSED(widget);
   painter->setPen(Qt::NoPen);
-
-  qreal sOpacity = opacity();
 
   if (hovered)
     painter->setOpacity(0.4); else

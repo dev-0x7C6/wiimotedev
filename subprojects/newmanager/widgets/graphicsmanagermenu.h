@@ -33,9 +33,10 @@ class GraphicsManagerMenuItem :public QObject, public QGraphicsItem
   Q_PROPERTY (QPointF pos READ pos WRITE setPos)
   Q_PROPERTY (qreal opacity READ opacity WRITE setOpacity)
 
+  bool hovered;
   quint32 width;
   quint32 height;
-  bool hovered;
+
   QTimeLine timeline;
   quint32 currentFontSize;
 

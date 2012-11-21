@@ -17,37 +17,51 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTEDEV_SETTINGS_H
-#define WIIMOTEDEV_SETTINGS_H
+#include "wiimotemessagethread.h"
+#include "wiimotedevice.h"
 
-#include <QSettings>
-#include <QStringList>
+void WiimoteMessageThread::connect_animation() {
+  m_device->setRumbleStatus(true);
+  for (register int i = 0; i < 2; ++i) {
+    switch (i%2) {
+    case 0:
+      for (register int j = 0; j < 4; ++j) {
+        m_device->setLedStatus(1 << j);
+        msleep(30);
+      }
+      break;
+    case 1:
+      for (register int j = 3; j >= 0; --j) {
+        m_device->setLedStatus(1 << j);
+        msleep(30);
+      }
+      break;
+    }
+  }
+  m_device->setLedStatus(m_id);
+  m_device->setRumbleStatus(false);
+}
 
-#include "headers/consts.h"
+void WiimoteMessageThread::disconnect_animation() {
+  m_device->setRumbleStatus(true);
+  for (register int i = 0; i < 2; ++i) {
+    switch (i%2) {
+    case 0:
+      for (register int j = 0; j < 4; ++j) {
+        m_device->setLedStatus(1 << j);
+        msleep(30);
+      }
+      break;
+    case 1:
+      for (register int j = 3; j >= 0; --j) {
+        m_device->setLedStatus(1 << j);
+        msleep(30);
+      }
+      break;
+    }
+  }
+  m_device->setLedStatus(0x0F);
+  m_device->setRumbleStatus(false);
+}
 
-class QStringList;
 
-class WiimotedevSettings : public QObject
-{
-private:
-  QSettings *settings;
-  QString config;
-
-  QMap < QString, quint32> sequence;
-
-  quint32 powersave;
-
-public:
-  WiimotedevSettings(QString file = WIIMOTEDEV_CONFIG_FILE, QObject *parent = 0);
-
-public:
-  void reload();
-
-  inline QMap < QString, quint32> getWiiremoteSequence() { return sequence; }
-
-  inline quint32 getPowerSaveValue() { return powersave; }
-
-  quint32 registerWiiremote(QString);
-};
-
-#endif // WIIMOTEDEV_SETTINGS_H

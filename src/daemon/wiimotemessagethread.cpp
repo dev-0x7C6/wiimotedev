@@ -18,7 +18,7 @@
  **********************************************************************************/
 
 #include "wiimotemessagethread.h"
-#include "core/wiiremote.h"
+#include "wiimotedevice.h"
 
 #include <QMutex>
 #include <QElapsedTimer>
@@ -126,6 +126,8 @@ void WiimoteMessageThread::run() {
             cwiid_process_nunchuk_stick(mesg[i].nunchuk_mesg.stick);
             cwiid_process_nunchuk_acc(mesg[i].nunchuk_mesg.acc);
           }
+          break;
+        default:
           break;
       }
 

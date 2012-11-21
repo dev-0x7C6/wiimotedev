@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef CONNECTIONMANAGER_H
-#define CONNECTIONMANAGER_H
+#ifndef WIIMOTEMANAGER_H
+#define WiimoteManager_H
 
 #include <QThread>
 #include <QMutex>
@@ -26,11 +26,11 @@
 
 #include "adaptors/deviceevents.h"
 #include "adaptors/daemonservice.h"
-#include "core/settings.h"
+#include "settings.h"
 #include "headers/consts.h"
-#include "service/wiimotemessagethread.h"
+#include "wiimotemessagethread.h"
 
-class ConnectionManager : public QThread
+class WiimoteManager : public QThread
 {
   Q_OBJECT
 private:
@@ -40,14 +40,14 @@ private:
 
 // Settings ------------------------------------------------- /
   WiimotedevSettings *settings;
-  QMap< QString, quint32> sequence;
+  QHash < QString, quint32> sequence;
   QMutex *m_mutex;
 
   bool m_threadQuitStatus;
 
 public:
-  ConnectionManager(QObject *parent = 0);
- ~ConnectionManager();
+  WiimoteManager(QObject *parent = 0);
+ ~WiimoteManager();
 
   void setThreadQuitStatus(bool quit = true);
   bool threadQuitStatus();
@@ -87,4 +87,4 @@ Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
 };
 
-#endif // CONNECTIONMANAGER_H
+#endif // WiimoteManager_H

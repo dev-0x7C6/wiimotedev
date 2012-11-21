@@ -17,51 +17,48 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "wiimotemessagethread.h"
-#include "core/wiiremote.h"
+#include "settings.h"
 
-void WiimoteMessageThread::connect_animation() {
-  m_device->setRumbleStatus(true);
-  for (register int i = 0; i < 2; ++i) {
-    switch (i%2) {
-    case 0:
-      for (register int j = 0; j < 4; ++j) {
-        m_device->setLedStatus(1 << j);
-        msleep(30);
-      }
-      break;
-    case 1:
-      for (register int j = 3; j >= 0; --j) {
-        m_device->setLedStatus(1 << j);
-        msleep(30);
-      }
-      break;
-    }
-  }
-  m_device->setLedStatus(m_id);
-  m_device->setRumbleStatus(false);
+WiimotedevSettings::WiimotedevSettings(const QString &file, QObject *parent):
+  QObject(parent)
+{
+  m_settings = new QSettings(file, QSettings::IniFormat, this);
+  reload();
 }
 
-void WiimoteMessageThread::disconnect_animation() {
-  m_device->setRumbleStatus(true);
-  for (register int i = 0; i < 2; ++i) {
-    switch (i%2) {
-    case 0:
-      for (register int j = 0; j < 4; ++j) {
-        m_device->setLedStatus(1 << j);
-        msleep(30);
-      }
-      break;
-    case 1:
-      for (register int j = 3; j >= 0; --j) {
-        m_device->setLedStatus(1 << j);
-        msleep(30);
-      }
-      break;
-    }
-  }
-  m_device->setLedStatus(0x0F);
-  m_device->setRumbleStatus(false);
+void WiimotedevSettings::reload()
+{
+  m_settings->sync();
+  m_powersave = m_settings->value("features/powersave", 10).toUInt();
+
+  m_sequence.clear();
+
+  m_settings->beginGroup("sequence");
+  for (register int i = 0; i < m_settings->allKeys().count(); ++i)
+    m_sequence[m_settings->allKeys().at(i)] = m_settings->value(m_settings->allKeys().at(i), 0).toUInt();
+
+  m_settings->endGroup();
 }
 
+QHash < QString, quint32> WiimotedevSettings::getWiiremoteSequence() {
+  return m_sequence;
+}
 
+quint32 WiimotedevSettings::powerSaveValue() {
+  return m_powersave;
+}
+
+quint32  WiimotedevSettings::registerWiiremote(const QString &mac) {
+  quint32 id = 1;
+
+  if (!m_sequence.values().isEmpty())
+    while(m_sequence.values().indexOf(id) != -1) id++;
+
+  m_sequence[mac] = id;
+
+  m_settings->beginGroup("sequence");
+  m_settings->setValue(mac, id);
+  m_settings->endGroup();
+
+  return id;
+}

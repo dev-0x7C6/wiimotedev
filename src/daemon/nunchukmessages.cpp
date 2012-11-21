@@ -81,6 +81,8 @@ void WiimoteMessageThread::cwiid_process_nunchuk_status(cwiid_ext_type type) {
       emit dbusNunchukPlugged(m_id);
     }
     break;
+  default:
+    break;
   }
 }
 

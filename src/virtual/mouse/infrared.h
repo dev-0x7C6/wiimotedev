@@ -54,11 +54,10 @@ class InfraredVirtualMouse: public QObject
 
 //settings
   int accelerationTimeout;
-  int aimHelperXRange;
-  int aimHelperYRange;
-
   int deadzoneXRange;
   int deadzoneYRange;
+  int aimHelperXRange;
+  int aimHelperYRange;
   int outzoneXRange;
   int outzoneYRange;
 

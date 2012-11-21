@@ -53,7 +53,8 @@ protected:
   struct uinput_user_dev dev;
 
 public:
-  UInputObject();
+  explicit UInputObject();
+  virtual ~UInputObject();
 
   bool alreadyOpened;
   virtual void uinput_close(bool force = true);

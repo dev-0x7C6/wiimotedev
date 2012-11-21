@@ -24,8 +24,6 @@ configure_file(config.h.in
 
 set(wiimotedev_sources
   adaptors/adaptors.h
-  core/settings.h
-  core/wiiremote.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   syslog/syslog.h
 
@@ -33,24 +31,29 @@ set(wiimotedev_sources
   adaptors/deviceevents.cpp
   adaptors/daemonservice.cpp
   syslog/syslog.cpp
-  core/manager.cpp
-  core/settings.cpp
-  core/wiiremote.cpp
-  service/wiimotemessagethread.cpp
-  service/classicmessages.cpp
-  service/nunchukmessages.cpp
-  service/wiimotemessages.cpp
-  service/virtualcursor.cpp
-  service/virtualcursor.h
-  service/features.cpp
+
+
+  daemon/wiimotemanager.cpp
+  daemon/settings.cpp
+  daemon/wiimotedevice.cpp
+  daemon/wiimotemessagethread.cpp
+  daemon/classicmessages.cpp
+  daemon/nunchukmessages.cpp
+  daemon/wiimotemessages.cpp
+  daemon/virtualcursor.cpp
+  daemon/virtualcursor.h
+  daemon/features.cpp
   daemon.cpp
 )
 
 set(wiimotedev_headers
   adaptors/deviceevents.h
   adaptors/daemonservice.h
-  service/wiimotemessagethread.h
-  core/manager.h
+  daemon/wiimotemessagethread.h
+
+  daemon/wiimotemanager.h
+  daemon/settings.h
+  daemon/wiimotedevice.h
 )
 
 set(uinput_sources
