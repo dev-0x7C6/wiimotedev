@@ -174,7 +174,6 @@ private:
   void initializeCommandEvents();
 
 
-  void loadKeyboardEvents(QSettings&);
   void freeKeyboardEvents();
 
   void setupClassicJoystick(quint32 assign, const QString &name, QSettings &settings);

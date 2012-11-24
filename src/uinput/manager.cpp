@@ -133,13 +133,15 @@ bool UInputProfileManager::loadProfile(QString file) {
     module.toLower();
 
     if (module == QString::fromUtf8("joystick"))
-      assignJoystickEvents(key, settings);
+      assignJoystickEvents(key, settings); else
+    if (module == QString::fromUtf8("keyboard"))
+      assignKeyboardEvents(key, settings);
   }
+
 
   loadCommandEvents(settings);
 //  loadGamepadEvents(settings);
   loadInfraredEvents(settings);
-  loadKeyboardEvents(settings);
 
   return true;
 }
