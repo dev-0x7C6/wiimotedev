@@ -22,40 +22,38 @@
 
 extern QMap < QString, quint32> scancodes;
 
-void UInputProfileManager::loadKeyboardEvents(QSettings &settings) {
-  unloadKeyboardEvents();
-  foreach (const QString &key, settings.childGroups()) {
-    if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "keyboard" ||
-        settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "kbd" ||
-        settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "event") {
-      settings.beginGroup(key);
-      EventVirtualKeyboard *kbd = new EventVirtualKeyboard(virtualEvent);
-      foreach (const QString &string, settings.allKeys()) {
-        if (string.toLower() == "module")
-          continue;
+void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &settings) {
+  freeKeyboardEvents();
 
-        KeyboardAction action;
-        action.event = extractDeviceEvent(string);
-        if (action.event.isEmpty()) {
-          continue;
-        }
+  settings.beginGroup(key);
+  EventVirtualKeyboard *kbd = new EventVirtualKeyboard(virtualEvent);
+  foreach (const QString &string, settings.allKeys()) {
+    if (string.toLower() == "module")
+      continue;
 
-        action.keys = extractScancodes(settings.value(string, QStringList()).toStringList());
-        if (action.keys.isEmpty()) {
-          continue;
-        }
-
-        action.pushed = false;
-        kbd->addKeyboardAction(action);
-      }
-      connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), kbd, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
-      settings.endGroup();
-      virtualKeyboards << kbd;
+    KeyboardAction action;
+    action.event = extractDeviceEvent(string);
+    if (action.event.isEmpty()) {
+      continue;
     }
+
+    action.keys = extractScancodes(settings.value(string, QStringList()).toStringList());
+    if (action.keys.isEmpty()) {
+      continue;
+    }
+
+    action.pushed = false;
+    kbd->addKeyboardAction(action);
   }
+
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), kbd, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
+
+  settings.endGroup();
+  virtualKeyboards << kbd;
 }
 
-void UInputProfileManager::unloadKeyboardEvents() {
+
+void UInputProfileManager::freeKeyboardEvents() {
   foreach (EventVirtualKeyboard *kbd, virtualKeyboards)
     delete kbd;
   virtualKeyboards.clear();

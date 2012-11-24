@@ -104,7 +104,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
 
   setBackgroundBrush(Qt::black);
   setWindowFlags(Qt::WindowStaysOnTopHint);
-  setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+ // setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
   setFrameStyle(QFrame::NoFrame);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -115,7 +115,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *device):
   setMouseTracking(true);
   setGeometry(calculateWindowSize());
 
-  setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
+  //setViewport(new QGLWidget());
 
 
 

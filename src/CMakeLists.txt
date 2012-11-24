@@ -63,7 +63,7 @@ set(uinput_sources
   devices/mouse.h
   devices/eventdevice.h
   devices/touchscreen.h
-  devices/classicgamepad.h
+
   interfaces/interfaces.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   syslog/syslog.h
@@ -72,16 +72,13 @@ set(uinput_sources
   adaptors/profilemanager.cpp
   adaptors/uinputservice.cpp
   adaptors/adaptors.cpp
-  devices/classicgamepad.cpp
   devices/general.cpp
   devices/mouse.cpp
   devices/eventdevice.cpp
   devices/touchscreen.cpp
-  devices/wiimotegamepad.cpp
   interfaces/deviceevents.cpp
   interfaces/interfaces.cpp
   syslog/syslog.cpp
-  uinput/gamepads.cpp
   uinput/infrared.cpp
   uinput/keyboard.cpp
   uinput/manager.cpp
@@ -89,10 +86,19 @@ set(uinput_sources
   virtual/mouse/infrared.cpp
   virtual/event/keyboard.cpp
   uinput.cpp
+
+
+  uinput/eiojoystickassign.cpp
+  devices/eioclassicjoystick.cpp
+  devices/eionunchukjoystick.cpp
+  devices/eiowiimotejoystick.cpp
 )
 
 set(uinput_headers
-  devices/wiimotegamepad.h
+  devices/eioclassicjoystick.h
+  devices/eionunchukjoystick.h
+  devices/eiowiimotejoystick.h
+
   adaptors/customjobs.h
   adaptors/profilemanager.h
   adaptors/uinputservice.h

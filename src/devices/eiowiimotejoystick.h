@@ -22,46 +22,22 @@
 
 #include "devices/general.h"
 
-const qint16 NUNCHUK_STICK_MAX = 0xFF - 0x15;
-const qint16 NUNCHUK_STICK_MIN = 0x00 + 0x15;
-
 const qint16 WIIMOTE_PITCH_MAX = 90;
 const qint16 WIIMOTE_PITCH_MIN =-90;
 const qint16 WIIMOTE_ROLL_MAX = 180;
 const qint16 WIIMOTE_ROLL_MIN =-180;
-
-#define NUNCHUK_PITCH_MAX WIIMOTE_PITCH_MAX
-#define NUNCHUK_PITCH_MIN WIIMOTE_PITCH_MIN
-#define NUNCHUK_ROLL_MAX WIIMOTE_ROLL_MAX
-#define NUNCHUK_ROLL_MIN WIIMOTE_ROLL_MIN
-
 const qint8 WIIMOTE_BUTTON_PUSHED = 1;
 const qint8 WIIMOTE_BUTTON_RELEASED = 0;
-
-#define NUNCHUK_BUTTON_PUSHED WIIMOTE_BUTTON_PUSHED
-#define NUNCHUK_BUTTON_RELEASED WIIMOTE_BUTTON_RELEASED
-
 const qint8 WIIMOTE_DPAD_MAX = 1;
 const qint8 WIIMOTE_DPAD_MIN =-1;
 
-const int NUNCHUK_STICK_LINUX_AXIS_X = ABS_RX;
-const int NUNCHUK_STICK_LINUX_AXIS_Y = ABS_RY;
+
 const int WIIMOTE_DPAD_LINUX_AXIS_X = ABS_X;
 const int WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_Y;
 const int WIIMOTE_PITCH_LINUX_AXIS = ABS_HAT0X;
 const int WIIMOTE_ROLL_LINUX_AXIS = ABS_HAT1X;
-const int NUNCHUK_PITCH_LINUX_AXIS = ABS_HAT2X;
-const int NUNCHUK_ROLL_LINUX_AXIS = ABS_HAT3X;
 
-
-//void setButtons(quint64 buttons);
-//void setStick(Sticks stick, qint32 x, qint32 y);
-
-//private:
-//void centerStick(Sticks stick);
-//void syncSticks();
-
-class WiimoteGamepadDevice: public QObject, public UInputObject
+class EIO_WiimoteJoystick: public QObject, public UInputObject
 {
   Q_OBJECT
 public:
@@ -101,18 +77,30 @@ private:
   Mode m_mode;
   bool m_home_pressed;
   int m_id;
+  bool m_dpad_invert_x;
+  bool m_dpad_invert_y;
+  bool m_home_switch_position;
+  bool m_report_buttons;
+  bool m_report_dstick;
+  bool m_report_pitch;
+  bool m_report_roll;
 
 public:
-  WiimoteGamepadDevice(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
-  bool uinput_open();
+  EIO_WiimoteJoystick(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
+  bool create();
 
+  int assign();
+
+  void setDStickInvertX(bool option);
+  void setDStickInvertY(bool option);
+  void setHomeSwitchPosition(bool option);
+  void setReportButtons(bool report);
+  void setReportDStick(bool report);
+  void setReportPitch(bool report);
+  void setReportRoll(bool report);
 
   void setWiimoteButtons(quint64);
   void setWiimoteAcc(double, double);
-
-  void setNunchukButtons(quint64);
-  void setNunchukStick(qint32, qint32);
-  void setNunchukAcc(double, double);
 
 private:
   void centerStick(Stick id);

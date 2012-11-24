@@ -113,14 +113,31 @@ void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons
   processCommandEvents();
 }
 
+#include <QDebug>
+
 bool UInputProfileManager::loadProfile(QString file) {
   if (!QFile::exists(file))
     return false;
 
+
+  freeJoystickEvents();
+
   QSettings settings(file, QSettings::IniFormat);
 
+  foreach (const QString &key, settings.childGroups()) {
+    const QString &module = settings.value(key + "/module", QString()).toString();
+
+    if (module.isEmpty())
+      continue;
+
+    module.toLower();
+
+    if (module == QString::fromUtf8("joystick"))
+      assignJoystickEvents(key, settings);
+  }
+
   loadCommandEvents(settings);
-  loadGamepadEvents(settings);
+//  loadGamepadEvents(settings);
   loadInfraredEvents(settings);
   loadKeyboardEvents(settings);
 
@@ -129,9 +146,11 @@ bool UInputProfileManager::loadProfile(QString file) {
 
 bool UInputProfileManager::unloadProfile() {
   unloadCommandEvents();
-  unloadGamepadEvents();
+
+  freeJoystickEvents();
+
   unloadInfraredEvents();
-  unloadKeyboardEvents();
+  freeKeyboardEvents();
 
   return true;
 }

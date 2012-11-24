@@ -30,15 +30,17 @@
 #include "adaptors/profilemanager.h"
 #include "adaptors/uinputservice.h"
 #include "adaptors/adaptors.h"
-#include "devices/classicgamepad.h"
 #include "devices/eventdevice.h"
 #include "devices/mouse.h"
 #include "devices/touchscreen.h"
-#include "devices/wiimotegamepad.h"
 #include "headers/consts.h"
 #include "interfaces/deviceevents.h"
 #include "virtual/event/keyboard.h"
 #include "virtual/mouse/infrared.h"
+
+#include "devices/eioclassicjoystick.h"
+#include "devices/eionunchukjoystick.h"
+#include "devices/eiowiimotejoystick.h"
 
 enum {
   mouseEmulationModeNone = 0,
@@ -144,8 +146,11 @@ private:
   QHash< quint32, quint64> lastWiiremoteButtons;
 
 
-  QHash < quint32, ClassicGamepadDevice*> classicGamepads;
-  QHash < quint32, WiimoteGamepadDevice*> wiimoteGamepads;
+
+  QList < EIO_ClassicJoystick*> EIO_ClassicJoysticks;
+  QList < EIO_NunchukJoystick*> EIO_NunchukJoysticks;
+  QList < EIO_WiimoteJoystick*> EIO_WiimoteJoysticks;
+
 
 
 
@@ -168,11 +173,20 @@ private:
 
   void initializeCommandEvents();
 
-  void loadGamepadEvents(QSettings&);
-  void unloadGamepadEvents();
 
   void loadKeyboardEvents(QSettings&);
-  void unloadKeyboardEvents();
+  void freeKeyboardEvents();
+
+  void setupClassicJoystick(quint32 assign, const QString &name, QSettings &settings);
+  void setupWiimoteJoystick(quint32 assign, const QString &name, QSettings &settings);
+  void setupNunchukJoystick(quint32 assign, const QString &name, QSettings &settings);
+
+  void assignKeyboardEvents(const QString &key, QSettings &settings);
+  void assignJoystickEvents(const QString &key, QSettings &settings);
+
+  void freeJoystickEvents();
+  //void assignInfraredEvents(const QString &key, QSettings &settings);
+  //void assignCommandEvents(const QString &key, QSettings &settings);
 
   void loadCommandEvents(QSettings&);
   void unloadCommandEvents();

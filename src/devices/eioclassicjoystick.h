@@ -39,29 +39,51 @@ const int CLASSIC_RIGHT_STICK_LINUX_AXIS_Y = ABS_HAT1Y;
 const int CLASSIC_DPAD_LINUX_AXIS_X = ABS_HAT2X;
 const int CLASSIC_DPAD_LINUX_AXIS_Y = ABS_HAT2Y;
 
-
-class ClassicGamepadDevice: public UInputObject
+class EIO_ClassicJoystick: public UInputObject
 {
 private:
   QString m_deviceName;
+  int m_id;
   qint32 m_last_r_stick_x;
   qint32 m_last_r_stick_y;
   qint32 m_last_l_stick_x;
   qint32 m_last_l_stick_y;
   qint32 m_last_dpad_x;
   qint32 m_last_dpad_y;
+  bool m_dpad_invert_x;
+  bool m_dpad_invert_y;
+  bool m_left_stick_invert_x;
+  bool m_left_stick_invert_y;
+  bool m_right_stick_invert_x;
+  bool m_right_stick_invert_y;
+  bool m_report_buttons;
+  bool m_report_dpad;
+  bool m_report_left_stick;
+  bool m_report_right_stick;
 
 public:
-  explicit ClassicGamepadDevice(QString deviceName);
-  virtual ~ClassicGamepadDevice();
+  explicit EIO_ClassicJoystick(QString deviceName, int id);
+  virtual ~EIO_ClassicJoystick();
 
-  bool uinput_open();
+  bool create();
 
   enum Sticks {
     LeftStick,
     RightStick,
     DpadStick
   };
+
+  int assign();
+  void setDpadInvertX(bool option);
+  void setDpadInvertY(bool option);
+  void setLStickInvertX(bool option);
+  void setLStickInvertY(bool option);
+  void setRStickInvertX(bool option);
+  void setRStickInvertY(bool option);
+  void setReportButtons(bool report);
+  void setReportDStick(bool report);
+  void setReportLStick(bool report);
+  void setReportRStick(bool report);
 
   void setButtons(quint64 buttons);
   void setStick(Sticks stick, qint32 x, qint32 y);
