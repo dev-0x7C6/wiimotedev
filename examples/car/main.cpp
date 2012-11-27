@@ -27,7 +27,8 @@
 #include <QObject>
 #include <QDebug>
 #include <QKeyEvent>
-#include "dbus/interfaces/deviceevents.h"
+
+#include "interfaces/deviceevents.h"
 #include "car.h"
 
 const quint32 count = 4;

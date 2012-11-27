@@ -20,7 +20,7 @@
 #ifndef ADAPTORS_DAEMONSERVICE_H
 #define ADAPTORS_DAEMONSERVICE_H
 
-#include "dbus/adaptors/adaptors.h"
+#include "adaptors.h"
 
 class DBusServiceAdaptor : public QDBusAbstractAdaptor
 {

@@ -22,7 +22,7 @@
 
 #include <QMutex>
 #include <QElapsedTimer>
-#include "3rdparty/libcwiid/cwiid.h"
+
 #include <qmath.h>
 
 

@@ -15,7 +15,7 @@ set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FL
 
 set(sources
 ${CMAKE_SOURCE_DIR}/headers/consts.h
-${CMAKE_SOURCE_DIR}/dbus/adaptors/adaptors.h
+${CMAKE_SOURCE_DIR}/adaptors/adaptors.h
 ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
 
  eiobase/eiouinputobject.cpp
@@ -28,11 +28,11 @@ ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
  eiojoystick/eiowiimotejoystick.cpp
  
 
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/customjobs.cpp
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/profilemanager.cpp
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/uinputservice.cpp
-  ${CMAKE_SOURCE_DIR}/dbus/interfaces/deviceevents.cpp
-  ${CMAKE_SOURCE_DIR}/dbus/interfaces/interfaces.cpp
+  ${CMAKE_SOURCE_DIR}/adaptors/customjobs.cpp
+  ${CMAKE_SOURCE_DIR}/adaptors/profilemanager.cpp
+  ${CMAKE_SOURCE_DIR}/adaptors/uinputservice.cpp
+  ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/interfaces/interfaces.cpp
 
   eiomanager/infrared.cpp
   eiomanager/keyboard.cpp
@@ -60,11 +60,11 @@ set(headers_wrap
   eiojoystick/eiowiimotejoystick.h
   helper/hashcompare.h
 
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/customjobs.h
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/profilemanager.h
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/uinputservice.h
-  ${CMAKE_SOURCE_DIR}/dbus/interfaces/interfaces.h
-  ${CMAKE_SOURCE_DIR}/dbus/interfaces/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/adaptors/customjobs.h
+  ${CMAKE_SOURCE_DIR}/adaptors/profilemanager.h
+  ${CMAKE_SOURCE_DIR}/adaptors/uinputservice.h
+  ${CMAKE_SOURCE_DIR}/interfaces/interfaces.h
+  ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.h
   eiomanager/manager.h
   virtual/mouse/infrared.h
   virtual/event/keyboard.h

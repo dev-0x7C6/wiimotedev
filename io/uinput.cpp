@@ -26,7 +26,7 @@
 #include <signal.h>
 #include <stdlib.h>
 
-#include "dbus/adaptors/adaptors.h"
+#include "adaptors/adaptors.h"
 #include "headers/consts.h"
 #include "syslog/syslog.h"
 #include "eiomanager/manager.h"

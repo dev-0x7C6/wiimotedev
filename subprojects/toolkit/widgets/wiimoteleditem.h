@@ -23,7 +23,7 @@
 #include <QGraphicsPixmapItem>
 #include <QObject>
 
-#include "dbus/interfaces/deviceevents.h"
+#include "interfaces/deviceevents.h"
 
 class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
 {

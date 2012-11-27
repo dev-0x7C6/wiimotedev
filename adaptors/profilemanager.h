@@ -20,7 +20,7 @@
 #ifndef ADAPTORS_PROFILEMANAGER_H
 #define ADAPTORS_PROFILEMANAGER_H
 
-#include "dbus/adaptors/adaptors.h"
+#include "adaptors.h"
 
 class DBusProfileManagerAdaptor :public QDBusAbstractAdaptor
 {

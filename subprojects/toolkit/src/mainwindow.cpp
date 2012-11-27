@@ -21,7 +21,7 @@
 #include <QDBusReply>
 
 #include "mainwindow.h"
-#include "dbus/interfaces/deviceevents.h"
+#include "interfaces/deviceevents.h"
 
 #include <math.h>
 #include <QDebug>

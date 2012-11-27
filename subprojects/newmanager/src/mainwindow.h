@@ -33,9 +33,9 @@
 #include "widgets/graphicsmanagermenu.h"
 
 #include "headers/consts.h"
-#include "dbus/interfaces/customjobs.h"
-#include "dbus/interfaces/deviceevents.h"
-#include "dbus/interfaces/profilemanager.h"
+#include "interfaces/customjobs.h"
+#include "interfaces/deviceevents.h"
+#include "interfaces/profilemanager.h"
 
 #include <QTimeLine>
 #include <QObject>

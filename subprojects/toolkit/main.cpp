@@ -22,7 +22,7 @@
 #include <QTextCodec>
 
 #include "headers/consts.h"
-#include "dbus/interfaces/deviceevents.h"
+#include "interfaces/deviceevents.h"
 
 #include "src/mainwindow.h"
 

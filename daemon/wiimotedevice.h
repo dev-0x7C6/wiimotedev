@@ -28,7 +28,7 @@
 #include <QObject>
 
 #ifdef USE_STATIC_CWIID
-#include "3rdparty/libcwiid/cwiid.h"
+#include "libcwiid/cwiid.h"
 #else
 #include <cwiid.h>
 #endif

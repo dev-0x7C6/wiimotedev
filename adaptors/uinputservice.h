@@ -20,7 +20,7 @@
 #ifndef ADAPTORS_UINPUTSERVICE_H
 #define ADAPTORS_UINPUTSERVICE_H
 
-#include "dbus/adaptors/adaptors.h"
+#include "adaptors.h"
 
 class DBusServiceAdaptor :public QDBusAbstractAdaptor
 {

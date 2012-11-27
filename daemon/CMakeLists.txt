@@ -19,44 +19,43 @@ endif(USE_STATIC_CWIID)
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
-set(wiimotedev_sources
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/adaptors.h
+set(sources
+  ${CMAKE_SOURCE_DIR}/adaptors/adaptors.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
   ${CMAKE_SOURCE_DIR}/syslog/syslog.h
   ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
 
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/deviceevents.cpp
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/daemonservice.cpp
+  ${CMAKE_SOURCE_DIR}/adaptors/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/adaptors/daemonservice.cpp
 
-  daemon/wiimotemanager.cpp
-  daemon/settings.cpp
-  daemon/wiimotedevice.cpp
-  daemon/wiimotemessagethread.cpp
-  daemon/classicmessages.cpp
-  daemon/nunchukmessages.cpp
-  daemon/wiimotemessages.cpp
-  daemon/virtualcursor.cpp
-  daemon/virtualcursor.h
-  daemon/features.cpp
+  wiimotemanager.cpp
+  settings.cpp
+  wiimotedevice.cpp
+  wiimotemessagethread.cpp
+  classicmessages.cpp
+  nunchukmessages.cpp
+  wiimotemessages.cpp
+  virtualcursor.cpp
+  virtualcursor.h
+  features.cpp
   daemon.cpp
 )
 
-set(wiimotedev_headers
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/deviceevents.h
-  ${CMAKE_SOURCE_DIR}/dbus/adaptors/daemonservice.h
-  daemon/wiimotemessagethread.h
-  daemon/wiimotemanager.h
-  daemon/settings.h
-  daemon/wiimotedevice.h
+set(headers
+  ${CMAKE_SOURCE_DIR}/adaptors/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/adaptors/daemonservice.h
+  wiimotemessagethread.h
+  wiimotemanager.h
+  settings.h
+  wiimotedevice.h
 )
 
-qt4_wrap_cpp(wiimotedev_sources ${wiimotedev_headers})
+qt4_wrap_cpp(sources ${headers})
 
-add_executable(wiimotedev-daemon ${wiimotedev_sources})
+add_executable(wiimotedev-daemon ${sources})
 target_link_libraries(wiimotedev-daemon
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
-  ${QT_QTNETWORK_LIBRARY}
   ${CWIID_LIBRARY}
 )
 

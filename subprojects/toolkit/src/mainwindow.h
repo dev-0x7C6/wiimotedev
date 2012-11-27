@@ -28,7 +28,7 @@
 #include <QPainter>
 #include <QMenu>
 
-#include "dbus/interfaces/deviceevents.h"
+#include "interfaces/deviceevents.h"
 #include "widgets/wiimoteanalogitem.h"
 #include "widgets/wiimotebatteryitem.h"
 #include "widgets/wiimoteleditem.h"

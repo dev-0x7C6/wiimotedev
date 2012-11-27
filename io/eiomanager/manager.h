@@ -26,15 +26,15 @@
 #include <QScopedPointer>
 #include <QSettings>
 
-#include "dbus/adaptors/customjobs.h"
-#include "dbus/adaptors/profilemanager.h"
-#include "dbus/adaptors/uinputservice.h"
-#include "dbus/adaptors/adaptors.h"
+#include "adaptors/customjobs.h"
+#include "adaptors/profilemanager.h"
+#include "adaptors/uinputservice.h"
+#include "adaptors/adaptors.h"
 #include "eiobase/eioeventdevice.h"
 #include "eiobase/eiomousedevice.h"
 #include "eiobase/eiotouchscreen.h"
 #include "headers/consts.h"
-#include "dbus/interfaces/deviceevents.h"
+#include "interfaces/deviceevents.h"
 #include "virtual/event/keyboard.h"
 #include "virtual/mouse/infrared.h"
 
@@ -150,8 +150,6 @@ private:
   QList < EIO_ClassicJoystick*> EIO_ClassicJoysticks;
   QList < EIO_NunchukJoystick*> EIO_NunchukJoysticks;
   QList < EIO_WiimoteJoystick*> EIO_WiimoteJoysticks;
-
-
 
 
   EIO_EventDevice *virtualEvent;

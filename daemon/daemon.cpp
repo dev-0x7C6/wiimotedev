@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "daemon/wiimotemanager.h"
+#include "wiimotemanager.h"
 #include "syslog/syslog.h"
 
 #include <QCoreApplication>
