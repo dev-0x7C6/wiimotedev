@@ -23,7 +23,7 @@
 // This is wrapper class, for changes in cwiid API or when wiimotedev-daemon will use
 // other library like *libwiimotedev (when is done)
 
-#include "config.h"
+#include "../config.h"
 
 #include <QObject>
 

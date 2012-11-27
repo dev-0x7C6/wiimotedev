@@ -22,7 +22,7 @@
 
 #include <QList>
 #include <QPointF>
-#include "dbus/adaptors/deviceevents.h"
+#include "adaptors/deviceevents.h"
 
 #include <qmath.h>
 

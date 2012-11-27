@@ -21,7 +21,7 @@
 #define PID_FILE "/var/run/wiimotedev-uinput.pid"
 #define PID_MODE 0644
 
-#include "config.h"
+#include "../config.h"
 #include <fcntl.h>
 #include <signal.h>
 #include <stdlib.h>

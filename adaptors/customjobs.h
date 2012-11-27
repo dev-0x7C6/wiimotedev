@@ -20,7 +20,7 @@
 #ifndef ADAPTORS_CUSTOMJOBS_H
 #define ADAPTORS_CUSTOMJOBS_H
 
-#include "dbus/adaptors/adaptors.h"
+#include "adaptors.h"
 
 class DBusCustomJobsAdaptor :public QDBusAbstractAdaptor
 {

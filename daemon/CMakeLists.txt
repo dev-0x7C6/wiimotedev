@@ -39,6 +39,8 @@ set(sources
   virtualcursor.h
   features.cpp
   daemon.cpp
+
+  ${CMAKE_SOURCE_DIR}/config.h
 )
 
 set(headers
@@ -48,6 +50,8 @@ set(headers
   wiimotemanager.h
   settings.h
   wiimotedevice.h
+
+
 )
 
 qt4_wrap_cpp(sources ${headers})
