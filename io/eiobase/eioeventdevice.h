@@ -17,33 +17,23 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#ifndef UINPUT_EVENTDEVICE_H
+#define UINPUT_EVENTDEVICE_H
 
-#include <QGraphicsPixmapItem>
-#include <QObject>
+#include "eiobase/eiouinputobject.h"
 
-#include "dbus/interfaces/deviceevents.h"
-
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
+class EIO_EventDevice: public EIO_UInputObject
 {
-  Q_OBJECT
-private:
-  bool status;
-
 public:
-  WiimoteLedItem(QObject *parent = 0);
+  bool uinput_open(bool replay = true);
 
-protected:
-  virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
+  void pressKeyboardButton(quint16);
+  void pressKeyboardButtonOnce(quint16);
+  void releaseKeyboardButton(quint16);
 
-public Q_SLOTS:
-  void switchOn();
-  void switchOff();
-
-Q_SIGNALS:
-  void ledSwitched(bool);
-
+  void moveMouseVWheel(qint32);
+  void moveMouseHWheel(qint32);
+  void moveMousePointerRel(qint32, qint32);
 };
 
-#endif // WIIMOTELEDITEM_H
+#endif // UINPUT_EVENTDEVICE_H

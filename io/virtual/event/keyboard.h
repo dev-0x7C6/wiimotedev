@@ -17,33 +17,52 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#ifndef EVENT_VIRTUAL_KEYBOARD_H
+#define EVENT_VIRTUAL_KEYBOARD_H
 
-#include <QGraphicsPixmapItem>
-#include <QObject>
+#include "eiobase/eioeventdevice.h"
+#include "headers/consts.h"
+#include "helper/hashcompare.h"
 
-#include "dbus/interfaces/deviceevents.h"
+#include <QTimer>
+#include <QTime>
 
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
-{
-  Q_OBJECT
-private:
-  bool status;
+#include <QMap>
 
-public:
-  WiimoteLedItem(QObject *parent = 0);
-
-protected:
-  virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
-
-public Q_SLOTS:
-  void switchOn();
-  void switchOff();
-
-Q_SIGNALS:
-  void ledSwitched(bool);
-
+struct KeyboardAction {
+  QHash< quint32, quint64> event;
+  QList< quint32> keys;
+  bool pushed;
 };
 
-#endif // WIIMOTELEDITEM_H
+class EventVirtualKeyboard: public QObject
+{
+  Q_OBJECT
+//general
+  EIO_EventDevice *device;
+  quint32 id;
+  quint32 compareType;
+
+  QHash <quint32, quint64> buttons;
+
+  QList < KeyboardAction*> keyboardActions;
+
+public:
+  EventVirtualKeyboard(EIO_EventDevice *device);
+ ~EventVirtualKeyboard();
+
+  void addKeyboardAction(KeyboardAction&);
+  void clearKeyboardActions();
+  void setCompareType(QString);
+
+public Q_SLOTS:
+  void dbusWiimoteGeneralButtons(quint32, quint64);
+
+private:
+  void pressKeyboardButtons(QList < quint32>&);
+  void releaseKeyboardButtons(QList < quint32>&);
+  void pressKeyboardExtendedButton(quint32);
+  void releaseKeyboardExtendedButton(quint32);
+
+};
+#endif // EVENT_VIRTUAL_KEYBOARD_H

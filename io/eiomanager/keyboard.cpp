@@ -17,33 +17,44 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#include "helper/hashcompare.h"
+#include "eiomanager/manager.h"
 
-#include <QGraphicsPixmapItem>
-#include <QObject>
+extern QMap < QString, quint32> scancodes;
 
-#include "dbus/interfaces/deviceevents.h"
+void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &settings) {
+  freeKeyboardEvents();
 
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
-{
-  Q_OBJECT
-private:
-  bool status;
+  settings.beginGroup(key);
+  EventVirtualKeyboard *kbd = new EventVirtualKeyboard(virtualEvent);
+  foreach (const QString &string, settings.allKeys()) {
+    if (string.toLower() == "module")
+      continue;
 
-public:
-  WiimoteLedItem(QObject *parent = 0);
+    KeyboardAction action;
+    action.event = extractDeviceEvent(string);
+    if (action.event.isEmpty()) {
+      continue;
+    }
 
-protected:
-  virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
+    action.keys = extractScancodes(settings.value(string, QStringList()).toStringList());
+    if (action.keys.isEmpty()) {
+      continue;
+    }
 
-public Q_SLOTS:
-  void switchOn();
-  void switchOff();
+    action.pushed = false;
+    kbd->addKeyboardAction(action);
+  }
 
-Q_SIGNALS:
-  void ledSwitched(bool);
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), kbd, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
 
-};
+  settings.endGroup();
+  virtualKeyboards << kbd;
+}
 
-#endif // WIIMOTELEDITEM_H
+
+void UInputProfileManager::freeKeyboardEvents() {
+  foreach (EventVirtualKeyboard *kbd, virtualKeyboards)
+    delete kbd;
+  virtualKeyboards.clear();
+}

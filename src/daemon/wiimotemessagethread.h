@@ -21,7 +21,7 @@
 #define WIIMOTEMESSAGETHREAD_H
 
 #include <QThread>
-#include "adaptors/deviceevents.h"
+#include "dbus/adaptors/deviceevents.h"
 #include "3rdparty/libcwiid/cwiid.h"
 
 #include "virtualcursor.h"

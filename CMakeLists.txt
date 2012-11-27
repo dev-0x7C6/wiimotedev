@@ -36,6 +36,10 @@ set(QTSINGLEAPPLICATION_LIBRARIES qtsingleapplication)
 
 add_subdirectory(3rdparty)
 
+configure_file(config.h.in
+               config.h)
+
+
 option(BUILD_DAEMON "Build wiimotedev-daemon, main wiiremote manager" ON)
 option(BUILD_UINPUT "Build wiimotedev-uinput, input device emulator" ON)
 option(BUILD_TOOLKIT "Build wiimotedev-toolkit tool" ON)
@@ -43,9 +47,10 @@ option(BUILD_EXAMPLES "Build additional examples" ON)
 option(BUILD_QWIIMOTEDEV "Build qwiimotedev, front-end for wiimotedev-uinput" ON)
 
 add_subdirectory(config)
-add_subdirectory(dbus-1)
+add_subdirectory(dbus)
 add_subdirectory(headers)
 add_subdirectory(src)
+add_subdirectory(io)
 
 add_subdirectory(examples)
 add_subdirectory(subprojects)

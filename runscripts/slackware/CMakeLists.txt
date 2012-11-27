@@ -19,7 +19,7 @@ if (valid)
   endif (BUILD_DAEMON)
 
   if (BUILD_UINPUT)
-    message( "-- Init.d script for ${DISTRO} is available [wiimotedev-uinput]" )
+    message( "-- Init.d script for ${DISTRO} is available [wiimotedev-io]" )
     install(FILES wiimotedev-uinput DESTINATION "${INSTALL}"
 	      PERMISSIONS
 		OWNER_READ  OWNER_WRITE  OWNER_EXECUTE

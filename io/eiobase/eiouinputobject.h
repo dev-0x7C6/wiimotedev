@@ -17,33 +17,53 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#ifndef UINPUT_GENERAL_H
+#define UINPUT_GENERAL_H
 
-#include <QGraphicsPixmapItem>
 #include <QObject>
 
-#include "dbus/interfaces/deviceevents.h"
+#include <fcntl.h>
+#include <unistd.h>
+#include <linux/input.h>
+#include <linux/uinput.h>
 
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
+#include "headers/consts.h"
+
+#define linux_register_evbit(x) ioctl(uinput_fd, UI_SET_EVBIT, x);
+#define linux_register_keybit(x) ioctl(uinput_fd, UI_SET_KEYBIT, x);
+#define linux_register_relbit(x) ioctl(uinput_fd, UI_SET_RELBIT, x);
+#define linux_register_absbit(x) ioctl(uinput_fd, UI_SET_ABSBIT, x);
+
+#define linux_abs_set_range(abs, max, min) dev.absmax[abs] = max; \
+                                           dev.absmin[abs] = min; \
+                                           dev.absflat[abs] = 0; \
+                                           dev.absfuzz[abs] = 0;
+
+#define UINPUT_PRODUCT_ID 0x01
+#define UINPUT_VENDOR_ID 0x01
+#define UINPUT_VERSION_ID 0x01
+#define UINPUT_BUSTYPE_ID BUS_USB
+
+class EIO_UInputObject
 {
-  Q_OBJECT
-private:
-  bool status;
+protected:
+  QString uinputFile;
+
+  int uinput_fd;
+  struct uinput_user_dev dev;
 
 public:
-  WiimoteLedItem(QObject *parent = 0);
+  explicit EIO_UInputObject();
+  virtual ~EIO_UInputObject();
 
-protected:
-  virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
+  bool alreadyOpened;
+  virtual void uinput_close(bool force = true);
 
-public Q_SLOTS:
-  void switchOn();
-  void switchOff();
+  QString path(){ return uinputFile; }
 
-Q_SIGNALS:
-  void ledSwitched(bool);
+  void sendEvent(quint16 type, quint16 code, qint32 value);
+  void sendEventSync();
 
 };
 
-#endif // WIIMOTELEDITEM_H
+#endif // UINPUT_GENERAL_H

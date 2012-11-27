@@ -17,33 +17,16 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#include "customjobs.h"
 
-#include <QGraphicsPixmapItem>
-#include <QObject>
-
-#include "dbus/interfaces/deviceevents.h"
-
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
+DBusCustomJobsAdaptorWrapper::DBusCustomJobsAdaptorWrapper(QObject *parent, QDBusConnection connection):
+    QObject(parent)
 {
-  Q_OBJECT
-private:
-  bool status;
+  new DBusCustomJobsAdaptor(this);
+  registred = connection.registerObject("/customJobs", this);
+}
 
-public:
-  WiimoteLedItem(QObject *parent = 0);
-
-protected:
-  virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
-
-public Q_SLOTS:
-  void switchOn();
-  void switchOff();
-
-Q_SIGNALS:
-  void ledSwitched(bool);
-
-};
-
-#endif // WIIMOTELEDITEM_H
+DBusCustomJobsAdaptor::DBusCustomJobsAdaptor(QObject *parent): QDBusAbstractAdaptor(parent)
+{
+  setAutoRelaySignals(true);
+}

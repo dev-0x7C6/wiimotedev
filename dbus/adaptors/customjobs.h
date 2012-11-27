@@ -17,33 +17,46 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#ifndef ADAPTORS_CUSTOMJOBS_H
+#define ADAPTORS_CUSTOMJOBS_H
 
-#include <QGraphicsPixmapItem>
-#include <QObject>
+#include "dbus/adaptors/adaptors.h"
 
-#include "dbus/interfaces/deviceevents.h"
-
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
+class DBusCustomJobsAdaptor :public QDBusAbstractAdaptor
 {
   Q_OBJECT
-private:
-  bool status;
-
+  Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.customJobs")
+  Q_CLASSINFO("D-Bus Introspection", ""
+    "  <interface name=\"org.wiimotedev.customJobs\">\n"
+    "    <signal name=\"executeRequest\">\n"
+    "      <arg type=\"as\" direction=\"out\"/>\n"
+    "    </signal>"
+    "  </interface>\n"
+    "")
 public:
-  WiimoteLedItem(QObject *parent = 0);
-
-protected:
-  virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
-
-public Q_SLOTS:
-  void switchOn();
-  void switchOff();
+  DBusCustomJobsAdaptor (QObject *parent);
 
 Q_SIGNALS:
-  void ledSwitched(bool);
+  void executeRequest(QStringList);
 
 };
 
-#endif // WIIMOTELEDITEM_H
+
+class DBusCustomJobsAdaptorWrapper :public QObject
+{
+  Q_OBJECT
+private:
+  bool registred;
+
+public:
+  DBusCustomJobsAdaptorWrapper(QObject *parent, QDBusConnection connection);
+
+  inline bool isRegistred() { return registred; }
+
+  inline void slotExecuteRequest(QStringList params) { emit executeRequest(params); }
+
+Q_SIGNALS:
+  void executeRequest(QStringList);
+};
+
+#endif // ADAPTORS_CUSTOMJOBS_H

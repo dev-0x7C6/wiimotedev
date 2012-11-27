@@ -17,11 +17,11 @@ set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(manager_sources
-  ${CMAKE_SOURCE_DIR}/src/interfaces/customjobs.cpp
-  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.cpp
-  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
-  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.cpp
-  ${CMAKE_SOURCE_DIR}/src/interfaces/profilemanager.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/customjobs.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/interfaces.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/interfaces.h
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/profilemanager.cpp
   widgets/graphicsprofilecover.cpp
   widgets/graphicsbutton.cpp
   widgets/graphicscheckbox.cpp
@@ -31,9 +31,9 @@ set(manager_sources
 )
 
 set(manager_headers
-  ${CMAKE_SOURCE_DIR}/src/interfaces/customjobs.h
-  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
-  ${CMAKE_SOURCE_DIR}/src/interfaces/profilemanager.h
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/customjobs.h
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/profilemanager.h
   widgets/graphicsbutton.h
   widgets/graphicsprofilecover.h
   widgets/graphicscheckbox.h

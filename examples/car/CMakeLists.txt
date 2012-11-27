@@ -20,9 +20,9 @@ set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(car_example_sources
-  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.cpp
-  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.cpp
-  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/interfaces.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/interfaces.h
   car.cpp
   main.cpp
 )
@@ -32,7 +32,7 @@ set(car_example_headers
 )
 
 set(car_example_headers_qt
-  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/deviceevents.h
   car.h
 )
 
@@ -54,10 +54,10 @@ set(SOURCE_COPY
 )
 
 set(IFACES_COPY
-  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.cpp
-  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
-  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.cpp
-  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/interfaces.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/interfaces.h
 )
 
 set(HEADER_COPY
@@ -65,7 +65,7 @@ set(HEADER_COPY
 )
 
 install(FILES ${SOURCE_COPY} DESTINATION ${DIRECTORY} )
-install(FILES ${IFACES_COPY} DESTINATION ${DIRECTORY}/src/interfaces )
+install(FILES ${IFACES_COPY} DESTINATION ${DIRECTORY}/dbus/interfaces )
 install(FILES ${HEADER_COPY} DESTINATION ${DIRECTORY}/headers/ )
 
 install(TARGETS wiimotedev-car-example DESTINATION ${DIRECTORY})

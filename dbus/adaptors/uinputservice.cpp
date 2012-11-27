@@ -17,33 +17,27 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#include "uinputservice.h"
 
-#include <QGraphicsPixmapItem>
-#include <QObject>
-
-#include "dbus/interfaces/deviceevents.h"
-
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
+DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent): QDBusAbstractAdaptor(parent)
 {
-  Q_OBJECT
-private:
-  bool status;
+  setAutoRelaySignals(true);
+}
 
-public:
-  WiimoteLedItem(QObject *parent = 0);
+bool DBusServiceAdaptor::isWiimotedevServiceAvailable() {
+  bool value;
+  QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+  return value;
+}
 
-protected:
-  virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
+DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection connection) : QObject(parent)
+{
+  new DBusServiceAdaptor(this);
+  registred = connection.registerObject("/service", this);
+}
 
-public Q_SLOTS:
-  void switchOn();
-  void switchOff();
-
-Q_SIGNALS:
-  void ledSwitched(bool);
-
-};
-
-#endif // WIIMOTELEDITEM_H
+bool DBusServiceAdaptorWrapper::isWiimotedevServiceAvailable() {
+  bool value;
+  QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+  return value;
+}

@@ -17,33 +17,53 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#include "eiouinputobject.h"
 
-#include <QGraphicsPixmapItem>
-#include <QObject>
+#include <QStringList>
+#include <QFile>
 
-#include "dbus/interfaces/deviceevents.h"
+const QStringList UInputLocation(QStringList() << "/dev/uinput" << "/dev/input/uinput" << "/dev/misc/uinput");
 
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
+EIO_UInputObject::EIO_UInputObject() {
+  uinputFile = QString::fromUtf8("");
+  uinput_fd = 0;
+  alreadyOpened = false;
+
+  foreach (const QString &file, UInputLocation) {
+    if (QFile::exists(file)) {
+      uinputFile = file;
+      break;
+    }
+  }
+}
+
+EIO_UInputObject::~EIO_UInputObject() {
+
+}
+
+void EIO_UInputObject::uinput_close(bool force)
 {
-  Q_OBJECT
-private:
-  bool status;
+  if (!force && !alreadyOpened)
+    return;
 
-public:
-  WiimoteLedItem(QObject *parent = 0);
+  ioctl(uinput_fd, UI_DEV_DESTROY);
+  close(uinput_fd);
+  uinput_fd = 0;
+  alreadyOpened = false;
+}
 
-protected:
-  virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
+void EIO_UInputObject::sendEvent(quint16 type, quint16 code, qint32 value) {
+  if (!uinput_fd)
+      return;
 
-public Q_SLOTS:
-  void switchOn();
-  void switchOff();
+  struct input_event event;
+  memset(&event.time, 0, sizeof(event.time));
+  event.code = code;
+  event.type = type;
+  event.value = value;
+  write(uinput_fd, &event, sizeof(event));
+}
 
-Q_SIGNALS:
-  void ledSwitched(bool);
-
-};
-
-#endif // WIIMOTELEDITEM_H
+void EIO_UInputObject::sendEventSync() {
+  sendEvent(EV_SYN, SYN_REPORT, 0);
+}

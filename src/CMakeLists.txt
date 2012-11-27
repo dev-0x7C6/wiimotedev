@@ -19,19 +19,14 @@ endif(USE_STATIC_CWIID)
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
-configure_file(config.h.in
-               config.h)
-
 set(wiimotedev_sources
-  adaptors/adaptors.h
+  ${CMAKE_SOURCE_DIR}/dbus/adaptors/adaptors.h
   ${CMAKE_SOURCE_DIR}/headers/consts.h
-  syslog/syslog.h
+  ${CMAKE_SOURCE_DIR}/syslog/syslog.h
+  ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
 
-  adaptors/adaptors.cpp
-  adaptors/deviceevents.cpp
-  adaptors/daemonservice.cpp
-  syslog/syslog.cpp
-
+  ${CMAKE_SOURCE_DIR}/dbus/adaptors/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/adaptors/daemonservice.cpp
 
   daemon/wiimotemanager.cpp
   daemon/settings.cpp
@@ -47,90 +42,22 @@ set(wiimotedev_sources
 )
 
 set(wiimotedev_headers
-  adaptors/deviceevents.h
-  adaptors/daemonservice.h
+  ${CMAKE_SOURCE_DIR}/dbus/adaptors/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/dbus/adaptors/daemonservice.h
   daemon/wiimotemessagethread.h
-
   daemon/wiimotemanager.h
   daemon/settings.h
   daemon/wiimotedevice.h
 )
 
-set(uinput_sources
-  adaptors/adaptors.h
-  classes/hashcompare.h
-  devices/general.h
-  devices/mouse.h
-  devices/eventdevice.h
-  devices/touchscreen.h
+qt4_wrap_cpp(wiimotedev_sources ${wiimotedev_headers})
 
-  interfaces/interfaces.h
-  ${CMAKE_SOURCE_DIR}/headers/consts.h
-  syslog/syslog.h
-
-  adaptors/customjobs.cpp
-  adaptors/profilemanager.cpp
-  adaptors/uinputservice.cpp
-  adaptors/adaptors.cpp
-  devices/general.cpp
-  devices/mouse.cpp
-  devices/eventdevice.cpp
-  devices/touchscreen.cpp
-  interfaces/deviceevents.cpp
-  interfaces/interfaces.cpp
-  syslog/syslog.cpp
-  uinput/infrared.cpp
-  uinput/keyboard.cpp
-  uinput/manager.cpp
-  uinput/actions.cpp
-  virtual/mouse/infrared.cpp
-  virtual/event/keyboard.cpp
-  uinput.cpp
-
-
-  uinput/eiojoystickassign.cpp
-  devices/eioclassicjoystick.cpp
-  devices/eionunchukjoystick.cpp
-  devices/eiowiimotejoystick.cpp
+add_executable(wiimotedev-daemon ${wiimotedev_sources})
+target_link_libraries(wiimotedev-daemon
+  ${QT_QTCORE_LIBRARY}
+  ${QT_QTDBUS_LIBRARY}
+  ${QT_QTNETWORK_LIBRARY}
+  ${CWIID_LIBRARY}
 )
 
-set(uinput_headers
-  devices/eioclassicjoystick.h
-  devices/eionunchukjoystick.h
-  devices/eiowiimotejoystick.h
-
-  adaptors/customjobs.h
-  adaptors/profilemanager.h
-  adaptors/uinputservice.h
-  interfaces/deviceevents.h
-  uinput/manager.h
-  virtual/mouse/infrared.h
-  virtual/event/keyboard.h
-)
-
-if(BUILD_DAEMON)
-  qt4_wrap_cpp(wiimotedev_sources ${wiimotedev_headers})
-
-  add_executable(wiimotedev-daemon ${wiimotedev_sources})
-  target_link_libraries(wiimotedev-daemon
-    ${QT_QTCORE_LIBRARY}
-    ${QT_QTDBUS_LIBRARY}
-    ${QT_QTNETWORK_LIBRARY}
-    ${CWIID_LIBRARY}
-  )
-
-  install(TARGETS wiimotedev-daemon DESTINATION ${WIIMOTEDEV_SBIN_DIR})
-endif(BUILD_DAEMON)
-
-if(BUILD_UINPUT)
-  qt4_wrap_cpp(uinput_sources ${uinput_headers})
-
-  add_executable(wiimotedev-uinput ${uinput_sources})
-  target_link_libraries(wiimotedev-uinput
-    ${QT_QTGUI_LIBRARY}
-    ${QT_QTCORE_LIBRARY}
-    ${QT_QTDBUS_LIBRARY}
-  )
-
-  install(TARGETS wiimotedev-uinput DESTINATION ${WIIMOTEDEV_SBIN_DIR})
-endif(BUILD_UINPUT)
+install(TARGETS wiimotedev-daemon DESTINATION ${WIIMOTEDEV_SBIN_DIR})

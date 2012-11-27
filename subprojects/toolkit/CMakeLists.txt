@@ -15,9 +15,9 @@ set(CMAKE_C_FLAGS "-Wall -pg ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(toolkit_sources
-  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.cpp
-  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.cpp
-  ${CMAKE_SOURCE_DIR}/src/interfaces/interfaces.h
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/deviceevents.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/interfaces.cpp
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/interfaces.h
   src/mainwindow.cpp
   src/selectwiimote.cpp
   widgets/wiimoteanalogitem.cpp
@@ -32,7 +32,7 @@ set(toolkit_headers
 )
 
 set(toolkit_headers_qt
-  ${CMAKE_SOURCE_DIR}/src/interfaces/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/dbus/interfaces/deviceevents.h
   src/mainwindow.h
   src/selectwiimote.h
   widgets/wiimoteanalogitem.h

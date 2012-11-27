@@ -17,33 +17,37 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTELEDITEM_H
-#define WIIMOTELEDITEM_H
+#ifndef ADAPTORS_DAEMONSERVICE_H
+#define ADAPTORS_DAEMONSERVICE_H
 
-#include <QGraphicsPixmapItem>
-#include <QObject>
+#include "dbus/adaptors/adaptors.h"
 
-#include "dbus/interfaces/deviceevents.h"
+class DBusServiceAdaptor : public QDBusAbstractAdaptor
+{
+  Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
+  Q_CLASSINFO("D-Bus Introspection", ""
+"<interface name=\"org.wiimotedev.service\">\n"
+"    <method name=\"dbusReloadSequenceList\">\n"
+"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+"    </method>\n"
+"  </interface>");
 
-class WiimoteLedItem : public QObject, public QGraphicsPixmapItem
+public:
+  DBusServiceAdaptor(QObject *parent);
+  Q_SLOT bool dbusReloadSequenceList();
+};
+
+class DBusServiceAdaptorWrapper : public QObject
 {
   Q_OBJECT
 private:
-  bool status;
+  bool registred;
 
 public:
-  WiimoteLedItem(QObject *parent = 0);
-
-protected:
-  virtual void mousePressEvent (QGraphicsSceneMouseEvent*);
-
-public Q_SLOTS:
-  void switchOn();
-  void switchOff();
-
-Q_SIGNALS:
-  void ledSwitched(bool);
-
+  DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection);
+  inline bool isRegistred() { return registred; }
+  Q_SLOT bool dbusReloadSequenceList();
 };
 
-#endif // WIIMOTELEDITEM_H
+#endif // ADAPTORS_DAEMONSERVICE_H
