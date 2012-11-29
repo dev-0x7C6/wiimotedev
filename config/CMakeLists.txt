@@ -11,9 +11,9 @@ if(BUILD_DAEMON)
   install(FILES org.wiimotedev-daemon.conf DESTINATION ${WIIMOTEDEV_DBUS_DIR})
 endif(BUILD_DAEMON)
 
-if(BUILD_UINPUT)
+if(BUILD_IO)
   install(FILES org.wiimotedev-io.conf DESTINATION ${WIIMOTEDEV_DBUS_DIR})
-endif(BUILD_UINPUT)
+endif(BUILD_IO)
 
 
 install(FILES ${FILELIST} DESTINATION ${WIIMOTEDEV_CONF_DIR})
