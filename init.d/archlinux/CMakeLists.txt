@@ -20,7 +20,7 @@ if (valid)
 
   if (BUILD_UINPUT)
     message( "-- Init.d script for ${DISTRO} is available [wiimotedev-io]" )
-    install(FILES wiimotedev-uinput DESTINATION "${INSTALL}"
+    install(FILES wiimotedev-io DESTINATION "${INSTALL}"
 	      PERMISSIONS
 		OWNER_READ  OWNER_WRITE  OWNER_EXECUTE
 		GROUP_READ

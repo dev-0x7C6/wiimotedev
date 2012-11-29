@@ -1,7 +1,7 @@
 Wiimotedev Project Changelog
 ============================
 
-1.4 Wiimotedev-uinput
+1.4
 - auto calibration (it' using wiiremote accelerometer and sensorbar data to define angle)
 - X/Y axis translation on the fly (it's using wiiremote angle to translate x/y axis)
 - extended X axis area (when two points is lost, algorithm make use of 1 point date in other to extend X axis )

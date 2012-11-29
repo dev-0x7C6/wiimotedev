@@ -12,7 +12,7 @@ if(BUILD_DAEMON)
 endif(BUILD_DAEMON)
 
 if(BUILD_UINPUT)
-  install(FILES org.wiimotedev-uinput.conf DESTINATION ${WIIMOTEDEV_DBUS_DIR})
+  install(FILES org.wiimotedev-io.conf DESTINATION ${WIIMOTEDEV_DBUS_DIR})
 endif(BUILD_UINPUT)
 
 

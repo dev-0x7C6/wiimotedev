@@ -3,7 +3,7 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-dbus-send --system --dest=org.wiimotedev.uinput \
+dbus-send --system --dest=org.wiimotedev.io \
        --type=method_call --print-reply --reply-timeout=3000 \
        /profileManager org.wiimotedev.profileManager.loadProfile "string:$1"
 

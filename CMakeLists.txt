@@ -44,16 +44,23 @@ endif(USE_STATIC_CWIID)
 add_subdirectory(qtsingleapplication)
 
 option(BUILD_DAEMON "Build wiimotedev-daemon, main wiiremote manager" ON)
-option(BUILD_UINPUT "Build wiimotedev-uinput, input device emulator" ON)
+option(BUILD_IO "Build wiimotedev-io, I/O device emulator" ON)
 option(BUILD_TOOLKIT "Build wiimotedev-toolkit tool" ON)
 option(BUILD_EXAMPLES "Build additional examples" ON)
-option(BUILD_QWIIMOTEDEV "Build qwiimotedev, front-end for wiimotedev-uinput" ON)
+#option(BUILD_QWIIMOTEDEV "Build qwiimotedev, front-end for wiimotedev-uinput" ON)
 
 
 add_subdirectory(config)
 add_subdirectory(headers)
-add_subdirectory(daemon)
-add_subdirectory(io)
+
+if(BUILD_DAEMON)
+  add_subdirectory(daemon)
+endif()
+
+if(BUILD_IO)
+  add_subdirectory(io)
+endif()
+
 add_subdirectory(examples)
 add_subdirectory(subprojects)
 
@@ -65,7 +72,6 @@ message("-- Build wiimotedev-uinput: ${BUILD_UINPUT}")
 message("")
 message("-- Build toolkit: ${BUILD_DAEMON}")
 message("-- Build examples: ${BUILD_EXAMPLES}")
-message("-- Build qwiimotedev: ${BUILD_QWIIMOTEDEV}")
 message("")
 message("INSTALATION")
 message("-- Installation path: ${CMAKE_INSTALL_PREFIX}")

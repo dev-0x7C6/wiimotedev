@@ -73,10 +73,10 @@ set(headers_wrap
 
 qt4_wrap_cpp(headers ${headers_wrap})
 
-add_executable(wiimotedev-uinput ${headers} ${sources})
-target_link_libraries(wiimotedev-uinput
+add_executable(wiimotedev-io ${headers} ${sources})
+target_link_libraries(wiimotedev-io
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
 )
 
-install(TARGETS wiimotedev-uinput DESTINATION ${WIIMOTEDEV_SBIN_DIR})
+install(TARGETS wiimotedev-io DESTINATION ${WIIMOTEDEV_SBIN_DIR})
