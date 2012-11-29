@@ -35,7 +35,7 @@ struct KeyboardAction {
   bool pushed;
 };
 
-class EventVirtualKeyboard: public QObject
+class EIO_RemoteKeyboard: public QObject
 {
   Q_OBJECT
 //general
@@ -48,8 +48,8 @@ class EventVirtualKeyboard: public QObject
   QList < KeyboardAction*> keyboardActions;
 
 public:
-  EventVirtualKeyboard(EIO_EventDevice *device);
- ~EventVirtualKeyboard();
+  EIO_RemoteKeyboard(EIO_EventDevice *device);
+ ~EIO_RemoteKeyboard();
 
   void addKeyboardAction(KeyboardAction&);
   void clearKeyboardActions();

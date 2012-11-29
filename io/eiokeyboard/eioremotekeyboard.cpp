@@ -17,7 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "virtual/event/keyboard.h"
+#include "eioremotekeyboard.h"
 
 extern QMap < QString, quint32> scancodes;
 
@@ -29,23 +29,23 @@ enum KeyboardExtension {
   keyboardExtMouseVWheelDown
 };
 
-EventVirtualKeyboard::EventVirtualKeyboard(EIO_EventDevice *device) :
+EIO_RemoteKeyboard::EIO_RemoteKeyboard(EIO_EventDevice *device) :
   device(device)
 {
   compareType = HashCompare< quint32, quint64>::BitCompare;
 }
 
 
-EventVirtualKeyboard::~EventVirtualKeyboard() {
+EIO_RemoteKeyboard::~EIO_RemoteKeyboard() {
   disconnect(this, 0, 0, 0);
   foreach (struct KeyboardAction* action, keyboardActions) {
-    EventVirtualKeyboard::releaseKeyboardButtons(action->keys);
+    EIO_RemoteKeyboard::releaseKeyboardButtons(action->keys);
     delete action;
   }
   keyboardActions.clear();
 }
 
-void EventVirtualKeyboard::setCompareType(QString type) {
+void EIO_RemoteKeyboard::setCompareType(QString type) {
   compareType = HashCompare< quint32, quint64>::BitCompare;
 
   if (type.toLower() == QString("bitCompare").toLower())
@@ -57,7 +57,7 @@ void EventVirtualKeyboard::setCompareType(QString type) {
 
 }
 
-void EventVirtualKeyboard::addKeyboardAction(KeyboardAction &action) {
+void EIO_RemoteKeyboard::addKeyboardAction(KeyboardAction &action) {
   KeyboardAction *kbdAction = new KeyboardAction;
   kbdAction->event = action.event;
   kbdAction->keys = action.keys;
@@ -65,13 +65,13 @@ void EventVirtualKeyboard::addKeyboardAction(KeyboardAction &action) {
   keyboardActions << kbdAction;
 }
 
-void EventVirtualKeyboard::clearKeyboardActions() {
+void EIO_RemoteKeyboard::clearKeyboardActions() {
   foreach (KeyboardAction *action, keyboardActions)
     delete action;
   keyboardActions.clear();
 }
 
-void EventVirtualKeyboard::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
+void EIO_RemoteKeyboard::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
   if (value == buttons.value(id, -1))
     return;
 
@@ -95,7 +95,7 @@ void EventVirtualKeyboard::dbusWiimoteGeneralButtons(quint32 id, quint64 value) 
   }
 }
 
-void EventVirtualKeyboard::pressKeyboardExtendedButton(quint32 key) {
+void EIO_RemoteKeyboard::pressKeyboardExtendedButton(quint32 key) {
   switch (key) {
   case keyboardExtMouseHWheelUp:
     device->moveMouseHWheel(1);
@@ -112,11 +112,11 @@ void EventVirtualKeyboard::pressKeyboardExtendedButton(quint32 key) {
   }
 }
 
-void EventVirtualKeyboard::releaseKeyboardExtendedButton(quint32 key) {
+void EIO_RemoteKeyboard::releaseKeyboardExtendedButton(quint32 key) {
   Q_UNUSED(key);
 }
 
-void EventVirtualKeyboard::pressKeyboardButtons(QList < quint32> &list) {
+void EIO_RemoteKeyboard::pressKeyboardButtons(QList < quint32> &list) {
   if (list.isEmpty())
     return;
 
@@ -126,7 +126,7 @@ void EventVirtualKeyboard::pressKeyboardButtons(QList < quint32> &list) {
       pressKeyboardExtendedButton(key);
 }
 
-void EventVirtualKeyboard::releaseKeyboardButtons(QList < quint32> &list) {
+void EIO_RemoteKeyboard::releaseKeyboardButtons(QList < quint32> &list) {
   if (list.isEmpty())
     return;
 

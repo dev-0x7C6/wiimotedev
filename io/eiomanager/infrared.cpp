@@ -26,33 +26,33 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
     if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "infrared" ||
         settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "mouse") {
       settings.beginGroup(key);
-      InfraredVirtualMouse *mouse = new InfraredVirtualMouse(virtualEvent, settings.value("assignWiimote", quint32(1)).toLongLong());
-      mouse->setAccelerationFeatureEnabled(settings.value("accelerationFeature", bool(false)).toBool());
-      mouse->setAccelerationSensitivityXMultiplier(settings.value("accelerationSensitivityXMultiplier", double(8.0)).toDouble());
-      mouse->setAccelerationSensitivityYMultiplier(settings.value("accelerationSensitivityYMultiplier", double(8.0)).toDouble());
-      mouse->setAccelerationSensitivityXPower(settings.value("accelerationSensitivityXPower", double(1.1)).toDouble());
-      mouse->setAccelerationSensitivityYPower(settings.value("accelerationSensitivityYPower", double(1.0)).toDouble());
-      mouse->setAccelerationTimeoutFeatureEnabled(settings.value("accelerationTimeoutFeature", bool(true)).toBool());
-      mouse->setAccelerationTimeoutValue(settings.value("accelerationTimeoutValue", int(2000)).toULongLong());
-      mouse->setAimHelperFeatureEnabled(settings.value("aimHelperFeature", bool(false)).toBool());
-      mouse->setAimHelperSensitivityXMultiplier(settings.value("aimHelperSensitivityXMultiplier", double(0.75)).toDouble());
-      mouse->setAimHelperSensitivityYMultiplier(settings.value("aimHelperSensitivityYMultiplier", double(0.75)).toDouble());
-      mouse->setAimHelperXRange(settings.value("aimHelperXRange", int(20)).toULongLong());
-      mouse->setAimHelperYRange(settings.value("aimHelperYRange", int(15)).toULongLong());
-      mouse->setDeadzoneXRange(settings.value("deadzoneXRange", int(30)).toULongLong());
-      mouse->setDeadzoneYRange(settings.value("deadzoneYRange", int(20)).toULongLong());
-      mouse->setInterfaceEnabled(true);
-      connect(dbusDeviceEventsIface, SIGNAL(dbusVirtualCursorPosition(quint32,double,double,double,double)), mouse, SLOT(dbusVirtualCursorPosition(quint32,double,double,double,double)));
-      connect(dbusDeviceEventsIface, SIGNAL(dbusVirtualCursorLost(quint32)), mouse, SLOT(dbusVirtualCursorLost(quint32)));
-      connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), mouse, SLOT(dbusWiimoteAcc(quint32,accdata)));
+      EIO_InfraredMouse *device = new EIO_InfraredMouse(virtualEvent, settings.value("assignWiimote", quint32(1)).toLongLong());
+      device->setAccelerationFeatureEnabled(settings.value("accelerationFeature", bool(false)).toBool());
+      device->setAccelerationSensitivityXMultiplier(settings.value("accelerationSensitivityXMultiplier", double(8.0)).toDouble());
+      device->setAccelerationSensitivityYMultiplier(settings.value("accelerationSensitivityYMultiplier", double(8.0)).toDouble());
+      device->setAccelerationSensitivityXPower(settings.value("accelerationSensitivityXPower", double(1.1)).toDouble());
+      device->setAccelerationSensitivityYPower(settings.value("accelerationSensitivityYPower", double(1.0)).toDouble());
+      device->setAccelerationTimeoutFeatureEnabled(settings.value("accelerationTimeoutFeature", bool(true)).toBool());
+      device->setAccelerationTimeoutValue(settings.value("accelerationTimeoutValue", int(2000)).toULongLong());
+      device->setAimHelperFeatureEnabled(settings.value("aimHelperFeature", bool(false)).toBool());
+      device->setAimHelperSensitivityXMultiplier(settings.value("aimHelperSensitivityXMultiplier", double(0.75)).toDouble());
+      device->setAimHelperSensitivityYMultiplier(settings.value("aimHelperSensitivityYMultiplier", double(0.75)).toDouble());
+      device->setAimHelperXRange(settings.value("aimHelperXRange", int(20)).toULongLong());
+      device->setAimHelperYRange(settings.value("aimHelperYRange", int(15)).toULongLong());
+      device->setDeadzoneXRange(settings.value("deadzoneXRange", int(30)).toULongLong());
+      device->setDeadzoneYRange(settings.value("deadzoneYRange", int(20)).toULongLong());
+      device->setInterfaceEnabled(true);
+      connect(dbusDeviceEventsIface, SIGNAL(dbusVirtualCursorPosition(quint32,double,double,double,double)), device, SLOT(dbusVirtualCursorPosition(quint32,double,double,double,double)));
+      connect(dbusDeviceEventsIface, SIGNAL(dbusVirtualCursorLost(quint32)), device, SLOT(dbusVirtualCursorLost(quint32)));
+      connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), device, SLOT(dbusWiimoteAcc(quint32,accdata)));
       settings.endGroup();
-      virtualMouses << mouse;
+      EIO_InfraredMouses << device;
     }
   }
 }
 
 void UInputProfileManager::unloadInfraredEvents() {
-  foreach (InfraredVirtualMouse *mouse, virtualMouses)
-    delete mouse;
-  virtualMouses.clear();
+  foreach (EIO_InfraredMouse *device, EIO_InfraredMouses)
+    delete device;
+  EIO_InfraredMouses.clear();
 }

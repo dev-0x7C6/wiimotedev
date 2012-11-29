@@ -26,7 +26,7 @@ void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &s
   freeKeyboardEvents();
 
   settings.beginGroup(key);
-  EventVirtualKeyboard *kbd = new EventVirtualKeyboard(virtualEvent);
+  EIO_RemoteKeyboard *device = new EIO_RemoteKeyboard(virtualEvent);
   foreach (const QString &string, settings.allKeys()) {
     if (string.toLower() == "module")
       continue;
@@ -43,18 +43,18 @@ void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &s
     }
 
     action.pushed = false;
-    kbd->addKeyboardAction(action);
+    device->addKeyboardAction(action);
   }
 
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), kbd, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), device, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
 
   settings.endGroup();
-  virtualKeyboards << kbd;
+  EIO_RemoteKeyboards << device;
 }
 
 
 void UInputProfileManager::freeKeyboardEvents() {
-  foreach (EventVirtualKeyboard *kbd, virtualKeyboards)
-    delete kbd;
-  virtualKeyboards.clear();
+  foreach (EIO_RemoteKeyboard *device, EIO_RemoteKeyboards)
+    delete device;
+  EIO_RemoteKeyboards.clear();
 }

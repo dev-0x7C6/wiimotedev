@@ -1,3 +1,4 @@
+
 /**********************************************************************************
  * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
  * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
@@ -35,8 +36,8 @@
 #include "eiobase/eiotouchscreen.h"
 #include "headers/consts.h"
 #include "interfaces/deviceevents.h"
-#include "virtual/event/keyboard.h"
-#include "virtual/mouse/infrared.h"
+#include "eiokeyboard/eioremotekeyboard.h"
+#include "eioinfrared/eioinfraredmouse.h"
 
 #include "eiojoystick/eioclassicjoystick.h"
 #include "eiojoystick/eionunchukjoystick.h"
@@ -122,10 +123,7 @@ private:
   bool enableWiiremoteInfraredMouse;
   bool rumbleStatus;
 
-  QList < EventVirtualKeyboard*> virtualKeyboards;
-  QList < InfraredVirtualMouse*> virtualMouses;
-
-//Keyboard section
+  //Keyboard section
   const static char *keyboardSection;
 
   struct CommandAction {
@@ -150,6 +148,8 @@ private:
   QList < EIO_ClassicJoystick*> EIO_ClassicJoysticks;
   QList < EIO_NunchukJoystick*> EIO_NunchukJoysticks;
   QList < EIO_WiimoteJoystick*> EIO_WiimoteJoysticks;
+  QList < EIO_RemoteKeyboard*> EIO_RemoteKeyboards;
+  QList < EIO_InfraredMouse*> EIO_InfraredMouses;
 
 
   EIO_EventDevice *virtualEvent;

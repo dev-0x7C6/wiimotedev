@@ -17,11 +17,11 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "virtual/mouse/infrared.h"
+#include "eioinfraredmouse.h"
 #include <math.h>
 #include <QDebug>
 
-InfraredVirtualMouse::InfraredVirtualMouse(EIO_EventDevice *device, quint32 id) :
+EIO_InfraredMouse::EIO_InfraredMouse(EIO_EventDevice *device, quint32 id) :
   device(device),
   id(id),
   lastX(0),
@@ -51,78 +51,78 @@ InfraredVirtualMouse::InfraredVirtualMouse(EIO_EventDevice *device, quint32 id) 
   memset(&wiimote_acc, 0, sizeof(wiimote_acc));
 }
 
-InfraredVirtualMouse::~InfraredVirtualMouse()
+EIO_InfraredMouse::~EIO_InfraredMouse()
 {
   accelerationClockTimeout.stop();
   disconnect(&accelerationClockTimeout, 0, 0, 0);
 }
 
 
-void InfraredVirtualMouse::setDeviceId(int _id) {
+void EIO_InfraredMouse::setDeviceId(int _id) {
   id = _id;
 }
 
-void InfraredVirtualMouse::setInterfaceEnabled(bool enabled) {
+void EIO_InfraredMouse::setInterfaceEnabled(bool enabled) {
   interfaceEnabled = enabled;
 }
 
-void InfraredVirtualMouse::setAccelerationTimeoutValue(int value) {
+void EIO_InfraredMouse::setAccelerationTimeoutValue(int value) {
   accelerationTimeout = value;
 }
 
-void InfraredVirtualMouse::setAimHelperXRange(int value) {
+void EIO_InfraredMouse::setAimHelperXRange(int value) {
   aimHelperXRange = value;
 }
 
-void InfraredVirtualMouse::setAimHelperYRange(int value) {
+void EIO_InfraredMouse::setAimHelperYRange(int value) {
   aimHelperYRange = value;
 }
 
-void InfraredVirtualMouse::setDeadzoneXRange(int value) {
+void EIO_InfraredMouse::setDeadzoneXRange(int value) {
   deadzoneXRange = value;
 }
 
-void InfraredVirtualMouse::setDeadzoneYRange(int value) {
+void EIO_InfraredMouse::setDeadzoneYRange(int value) {
   deadzoneYRange = value;
 }
 
-void InfraredVirtualMouse::setAimHelperSensitivityXMultiplier(double sensitivity) {
+void EIO_InfraredMouse::setAimHelperSensitivityXMultiplier(double sensitivity) {
   aimHelperSensitivityXMultiplier = sensitivity;
 }
 
-void InfraredVirtualMouse::setAimHelperSensitivityYMultiplier(double sensitivity) {
+void EIO_InfraredMouse::setAimHelperSensitivityYMultiplier(double sensitivity) {
   aimHelperSensitivityYMultiplier = sensitivity;
 }
 
-void InfraredVirtualMouse::setAccelerationSensitivityXPower(double sensitivity) {
+void EIO_InfraredMouse::setAccelerationSensitivityXPower(double sensitivity) {
   sensitivityXPower = sensitivity;
 }
 
-void InfraredVirtualMouse::setAccelerationSensitivityYPower(double sensitivity) {
+void EIO_InfraredMouse::setAccelerationSensitivityYPower(double sensitivity) {
   sensitivityYPower = sensitivity;
 }
 
-void InfraredVirtualMouse::setAccelerationSensitivityXMultiplier(double sensitivity) {
+void EIO_InfraredMouse::setAccelerationSensitivityXMultiplier(double sensitivity) {
   sensitivityXMultiplier = sensitivity;
 }
 
-void InfraredVirtualMouse::setAccelerationSensitivityYMultiplier(double sensitivity) {
+void EIO_InfraredMouse::setAccelerationSensitivityYMultiplier(double sensitivity) {
   sensitivityYMultiplier = sensitivity;
 }
 
-void InfraredVirtualMouse::setAccelerationFeatureEnabled(bool enabled) {
+void EIO_InfraredMouse::setAccelerationFeatureEnabled(bool enabled) {
   useAcceleration = enabled;
 }
 
-void InfraredVirtualMouse::setAimHelperFeatureEnabled(bool enabled) {
+void EIO_InfraredMouse::setAimHelperFeatureEnabled(bool enabled) {
   useAimHelper = enabled;
 }
 
-void InfraredVirtualMouse::setAccelerationTimeoutFeatureEnabled(bool enabled) {
+void EIO_InfraredMouse::setAccelerationTimeoutFeatureEnabled(bool enabled) {
   accelerationTimeout = enabled;
 }
 
-void InfraredVirtualMouse::dbusWiimoteAcc(quint32 _id, const accdata &table)
+void EIO_InfraredMouse::dbusWiimoteAcc(quint32 _id, const accdata &table)
 {
   if (id != _id)
     return;
@@ -130,7 +130,7 @@ void InfraredVirtualMouse::dbusWiimoteAcc(quint32 _id, const accdata &table)
   memcpy(&wiimote_acc, &table, sizeof(table));
 }
 
-void InfraredVirtualMouse::dbusVirtualCursorLost(quint32 _id) {
+void EIO_InfraredMouse::dbusVirtualCursorLost(quint32 _id) {
   if ((id != _id) || (!interfaceEnabled))
     return;
 
@@ -139,7 +139,7 @@ void InfraredVirtualMouse::dbusVirtualCursorLost(quint32 _id) {
     accelerationClockTimeout.start();
 }
 
-void InfraredVirtualMouse::dbusVirtualCursorPosition(quint32 _id, double x, double y, double size, double angle) {
+void EIO_InfraredMouse::dbusVirtualCursorPosition(quint32 _id, double x, double y, double size, double angle) {
   if ((id != _id) || (!interfaceEnabled))
     return;
 
@@ -185,7 +185,7 @@ void InfraredVirtualMouse::dbusVirtualCursorPosition(quint32 _id, double x, doub
   axisAccelerationY();
 }
 
-void InfraredVirtualMouse::axisAccelerationX()
+void EIO_InfraredMouse::axisAccelerationX()
 {
   if (useAcceleration)
     accVectorXAccumulation += accVectorX;
@@ -196,7 +196,7 @@ void InfraredVirtualMouse::axisAccelerationX()
   moveX = 0;
 }
 
-void InfraredVirtualMouse::axisAccelerationY()
+void EIO_InfraredMouse::axisAccelerationY()
 {
   if (useAcceleration)
     accVectorYAccumulation += accVectorY;
@@ -207,7 +207,7 @@ void InfraredVirtualMouse::axisAccelerationY()
   moveY = 0;
 }
 
-void InfraredVirtualMouse::axisAccelerationTimeout()
+void EIO_InfraredMouse::axisAccelerationTimeout()
 {
    accelerationTimeoutValue += accelerationClockTimeout.interval();
    if (accelerationTimeoutValue <= accelerationTimeout) {

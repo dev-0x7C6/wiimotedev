@@ -27,7 +27,7 @@
 #include <QTimer>
 #include <QTime>
 
-class InfraredVirtualMouse: public QObject
+class EIO_InfraredMouse: public QObject
 {
   Q_OBJECT
 //general
@@ -74,8 +74,8 @@ class InfraredVirtualMouse: public QObject
   bool useAccelerationTimeout;
 
 public:
-  InfraredVirtualMouse(EIO_EventDevice *device, quint32 id);
- ~InfraredVirtualMouse();
+  EIO_InfraredMouse(EIO_EventDevice *device, quint32 id);
+ ~EIO_InfraredMouse();
 
   void setDeviceId(int);
   void setInterfaceEnabled(bool);

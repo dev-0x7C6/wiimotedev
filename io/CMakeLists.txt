@@ -39,8 +39,9 @@ ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
   eiomanager/manager.cpp
   eiomanager/actions.cpp
   eiomanager/eiojoystickassign.cpp
-  virtual/mouse/infrared.cpp
-  virtual/event/keyboard.cpp
+
+  eiokeyboard/eioremotekeyboard.cpp
+  eioinfrared/eioinfraredmouse.cpp
   uinput.cpp
 
 )
@@ -66,8 +67,8 @@ set(headers_wrap
   ${CMAKE_SOURCE_DIR}/interfaces/interfaces.h
   ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.h
   eiomanager/manager.h
-  virtual/mouse/infrared.h
-  virtual/event/keyboard.h
+  eiokeyboard/eioremotekeyboard.h
+  eioinfrared/eioinfraredmouse.h
 )
 
 
