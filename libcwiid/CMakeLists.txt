@@ -23,3 +23,9 @@ set(libcwiid_sources
 ADD_LIBRARY(libcwiid STATIC
   ${libcwiid_sources}
 )
+
+target_link_libraries(libcwiid
+  "-lbluetooth"
+  "-lpthread"
+  "-lrt"
+)
