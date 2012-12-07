@@ -62,7 +62,11 @@ if(BUILD_IO)
 endif(BUILD_IO)
 
 add_subdirectory(examples)
-add_subdirectory(subprojects)
+
+if(BUILD_TOOLKIT)
+  add_subdirectory(toolkit)
+endif(BUILD_TOOLKIT)
+
 
 message("")
 message("===========================================")

@@ -135,7 +135,9 @@ bool UInputProfileManager::loadProfile(QString file) {
     if (module == QString::fromUtf8("joystick"))
       assignJoystickEvents(key, settings); else
     if (module == QString::fromUtf8("keyboard"))
-      assignKeyboardEvents(key, settings);
+      assignKeyboardEvents(key, settings); else
+    if (module == QString::fromUtf8("infrared"))
+      assignInfraredEvents(key, settings);
   }
 
 

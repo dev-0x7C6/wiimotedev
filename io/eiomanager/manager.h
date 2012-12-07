@@ -143,8 +143,6 @@ private:
   QList < CommandAction*> commandActions;
   QHash< quint32, quint64> lastWiiremoteButtons;
 
-
-
   QList < EIO_ClassicJoystick*> EIO_ClassicJoysticks;
   QList < EIO_NunchukJoystick*> EIO_NunchukJoysticks;
   QList < EIO_WiimoteJoystick*> EIO_WiimoteJoysticks;
@@ -177,12 +175,14 @@ private:
   void setupClassicJoystick(quint32 assign, const QString &name, QSettings &settings);
   void setupWiimoteJoystick(quint32 assign, const QString &name, QSettings &settings);
   void setupNunchukJoystick(quint32 assign, const QString &name, QSettings &settings);
+  void setupInfraredMouse(quint32 assing, const QString &name, QSettings &settings);
 
+  void assignInfraredEvents(const QString &key, QSettings &settings);
   void assignKeyboardEvents(const QString &key, QSettings &settings);
   void assignJoystickEvents(const QString &key, QSettings &settings);
 
   void freeJoystickEvents();
-  //void assignInfraredEvents(const QString &key, QSettings &settings);
+
   //void assignCommandEvents(const QString &key, QSettings &settings);
 
   void loadCommandEvents(QSettings&);
