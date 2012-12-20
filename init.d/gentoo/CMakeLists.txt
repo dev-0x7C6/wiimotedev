@@ -18,7 +18,7 @@ if (valid)
     )
   endif (BUILD_DAEMON)
 
-  if (BUILD_UINPUT)
+  if (BUILD_IO)
     message( "-- Init.d script for ${DISTRO} is available [wiimotedev-io]" )
     install(FILES wiimotedev-io DESTINATION "${INSTALL}"
 	      PERMISSIONS
@@ -26,6 +26,6 @@ if (valid)
 		GROUP_READ
 		WORLD_READ
     )
-  endif (BUILD_UINPUT)
+  endif (BUILD_IO)
   
 endif (valid)
