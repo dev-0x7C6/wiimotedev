@@ -35,8 +35,12 @@ private:
   double m_angle[2];
   int m_index;
 
-  qint16 m_ctable[3][2];
-  qint16 m_ltable[3][2];
+  qint16 m_ctable[2][2];
+  qint16 m_ltable[2][2];
+
+  int calibrationPoint[2];
+
+
 
 private:
   double angleDiff(double a, double b);

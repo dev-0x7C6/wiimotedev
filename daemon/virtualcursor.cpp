@@ -30,6 +30,9 @@ VirtualCursor::VirtualCursor() {
   m_index = 0x00;
   m_angle[0] = 0x00;
   m_angle[1] = 0x00;
+
+  calibrationPoint[0] = 0;
+  calibrationPoint[1] = 0;
 }
 
 double VirtualCursor::angleDiff(double a, double b) {
@@ -38,6 +41,8 @@ double VirtualCursor::angleDiff(double a, double b) {
   while (diff <= -180) { diff += 360; }
   return diff;
 }
+
+#include <QDebug>
 
 bool VirtualCursor::calculate(QList < struct irpoint > &points, double roll) {
   switch (points.count()) {
@@ -48,28 +53,24 @@ bool VirtualCursor::calculate(QList < struct irpoint > &points, double roll) {
     m_ltable[1][0] = m_ctable[1][0] = points.at(1).x;
     m_ltable[0][1] = m_ctable[0][1] = points.at(0).y;
     m_ltable[1][1] = m_ctable[1][1] = points.at(1).y;
-    m_ltable[2][0] = -1;
-    m_ltable[1][1] = -1;
+    calibrationPoint[0] = 0;
+    calibrationPoint[1] = 0;
     m_visible = true;
     break;
-  case 1:
-    m_ctable[2][0] = points.at(0).x;
-    m_ctable[2][1] = points.at(0).y;
+  case 1:      
+    if (calibrationPoint[0] == 0)
+     calibrationPoint[0] = points.at(0).x;
+    if (calibrationPoint[1] == 0)
+     calibrationPoint[1] = points.at(0).y;
 
-    if (m_ctable[2][0] == -1)
-      m_ltable[2][0] = m_ctable[2][0];
-    if (m_ctable[2][1] == -1)
-      m_ltable[2][1] = m_ctable[2][1];
 
-    m_ctable[0][0] = m_ltable[0][0] + (m_ctable[2][0] - m_ltable[2][0]);
-    m_ctable[1][0] = m_ltable[1][0] + (m_ctable[2][0] - m_ltable[2][0]);
-    m_ctable[0][1] = m_ltable[0][1] + (m_ctable[2][1] - m_ltable[2][1]);
-    m_ctable[1][1] = m_ltable[1][1] + (m_ctable[2][1] - m_ltable[2][1]);
+    qDebug() << (calibrationPoint[0]- points.at(0).x) << "x" << (calibrationPoint[1]- points.at(0).y);
     m_visible = true;
     break;
   case 0:
     return false;
   }
+
 
 
   m_angle[0] = atan2(m_ctable[1][1] - m_ctable[0][1], m_ctable[1][0] - m_ctable[0][0]) - M_PI;
@@ -80,6 +81,11 @@ bool VirtualCursor::calculate(QList < struct irpoint > &points, double roll) {
   register double sinp = sin(-m_angle[m_index]);
   register double sx = (m_ctable[0][0] + m_ctable[1][0]) / 2.0;
   register double sy = (m_ctable[0][1] + m_ctable[1][1]) / 2.0;
+
+  if (points.count() == 1) {
+    sx -= (calibrationPoint[0] - points.at(0).x);
+    sy -= (calibrationPoint[1] - points.at(0).y);
+  }
 
   m_cursor.setX(512.0 - ((1024.0 - (sx*cosp - sy*sinp + 512.0*(1-cosp) + 384.0*sinp))));
   m_cursor.setY(384.0 - ((sx*sinp + sy*cosp - 512.0*sinp + 384.0*(1-cosp))));
