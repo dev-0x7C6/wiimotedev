@@ -61,7 +61,7 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
 
   initializeCommandEvents();
 
-  QDBusConnection::systemBus().registerService("org.wiimotedev.uinput");
+  QDBusConnection::systemBus().registerService("org.wiimotedev.io");
   dbusWiimoteGeneralButtons(1, 0);
 }
 
