@@ -71,7 +71,7 @@ void WiimoteMessageThread::cwiid_process_nunchuk_status(cwiid_ext_type type) {
   case CWIID_EXT_NONE:
     if (deviceAvailable(ix_nunchuk_device)) {
       cwiid_process_nunchuk_clear();
-      emit dbusNunchukPlugged(m_id);
+      emit dbusNunchukUnplugged(m_id);
     }
     break;
 
