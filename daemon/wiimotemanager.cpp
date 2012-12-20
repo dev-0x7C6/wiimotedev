@@ -110,7 +110,7 @@ void WiimoteManager::run() {
       connect(thread, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::QueuedConnection);
       connect(thread, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::QueuedConnection);
       connect(thread, SIGNAL(finished()), this , SLOT(wiimoteMessageThreadFinished()), Qt::QueuedConnection);
-      threads.insert(1, thread);
+      threads.insert(id, thread);
       thread->start(QThread::HighPriority);
       dev = new WiimoteDevice();
     }
