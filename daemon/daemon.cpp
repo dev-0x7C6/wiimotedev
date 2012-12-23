@@ -35,7 +35,6 @@
 
 bool additional_debug = false;
 bool force_dbus = false;
-bool force_tcp = false;
 
 QCoreApplication *pointer;
 
@@ -64,7 +63,6 @@ int main(int argc, char *argv[])
     qDebug("Wiimotedev-daemon argument list\n");
     qDebug("  --debug\t\tfor additional debug output");
     qDebug("  --force-dbus\t\tenable dbus protocol");
-    qDebug("  --force-tcp\t\tenable tcp protocol");
     qDebug("  --help\t\tprint help page");
     qDebug("  --no-daemon\t\tdo not run in background");
     qDebug("  --no-quiet\t\tdo not block stdout messages");
@@ -88,7 +86,6 @@ int main(int argc, char *argv[])
 
   additional_debug = (application.arguments().indexOf("--debug") != -1);
   force_dbus = (application.arguments().indexOf("--force-dbus") != -1);
-  force_tcp = (application.arguments().indexOf("--force-tcp") != -1);
 
   if (application.arguments().indexOf("--no-daemon") == -1) {
     QFileInfo info(PID_FILE);

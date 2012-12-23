@@ -21,7 +21,7 @@
 #define WIIMOTEDEV_H
 
 #define WIIMOTEDEV_CONFIG_FILE "/etc/wiimotedev/wiimotedev.conf"
-#define WIIMOTEDEV_TCP_PORT 50091
+#define WIIMOTEDEV_CONNECTIONS_CONFIG_FILE "/etc/wiimotedev/connections.conf"
 
 #define WIIMOTEDEV_DBUS_SERVICE_NAME "org.wiimotedev.daemon"
 
