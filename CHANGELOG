@@ -1,7 +1,25 @@
 Wiimotedev Project Changelog
 ============================
 
-1.4
+1.4.1
+General: 
+- some cleanups since 1.4.0, but nothing new
+- should work in userspace without adding to group "wiimotedev"
+
+Features:
+- Store connection settings in /etc/wiimotedev/connections.conf
+
+Bug-Fixed:
+- Fixed dbusVirtualCursorFound, dbusVirtualCursorLost signal
+- Fixed dbusNunchukUnplugged signal
+- Fixed bug that assign same id to every wiiremote device
+- Fixed virtual cursor correction when only one infrared point is visible
+- Fixed registration of wiimotedev-io dbus interface
+- Fixed installation of wiimotedev-io service
+- Fixed location for pid file for wiimotedev-io
+- Fixed some old references in init.d scripts for wiimotedev-io
+
+1.4.0
 - auto calibration (it' using wiiremote accelerometer and sensorbar data to define angle)
 - X/Y axis translation on the fly (it's using wiiremote angle to translate x/y axis)
 - extended X axis area (when two points is lost, algorithm make use of 1 point date in other to extend X axis )
@@ -9,7 +27,7 @@ Wiimotedev Project Changelog
 - timeout alghoritm (cut down scrolling when timer hit timeout value, this only will happen when wiiremote lose track of points)
 - special AIM algorithm (very useful for fps games)
 
-1.3 
+1.3.0 
 - added auto-registration feaure
 - added powersave mode feature
 - added init.d script for archlinux
@@ -18,50 +36,9 @@ Wiimotedev Project Changelog
 - integration with other wiimotedev sub-projects
 - fixed various bugs
 
-1.2
+1.2.0
 - First public release
 - Support for streaming wiiremote events by network
 - Support for local dbus interface (org.wiimotedev.daemon)
 - Added init.d script for debian, gentoo, slackware, ubuntu
 - Added to org.wiimotedev.deviceEvents
-
-Methods:
-  bool dbusIsClassicConnected(quint32 id)
-  bool dbusIsNunchukConnected(quint32 id)
-  bool dbusIsWiimoteConnected(quint32 id)
-  quint32 dbusWiimoteGetAverageLatency(quint32 id)
-  quint32 dbusWiimoteGetBatteryLife(quint32 id)
-  quint32 dbusWiimoteGetCurrentLatency(quint32 id)
-  quint8 dbusWiimoteGetLedStatus(quint32 id)
-  quint8 dbusWiimoteGetStatus(quint32 id)
-  QList < uint> dbusGetWiimoteList()
-  QStringList dbusGetUnregistredWiimoteList()
-  bool dbusWiimoteGetRumbleStatus(quint32 id)
-  bool dbusWiimoteSetLedStatus(quint32 id, quint32 status)
-  bool dbusWiimoteSetRumbleStatus(quint32 id, bool status)
-
-Signals:
-  void dbusReportUnregistredWiimote(QString)
-  void dbusWiimoteGeneralButtons(quint32, quint64)
-  void dbusWiimoteConnected(quint32)
-  void dbusWiimoteDisconnected(quint32)
-  void dbusWiimoteBatteryLife(quint32, quint8)
-  void dbusWiimoteButtons(quint32, quint64)
-  void dbusWiimoteStatus(quint32, quint8)
-  void dbusWiimoteInfrared(quint32, QList< struct irpoint>)
-  void dbusWiimoteAcc(quint32, struct accdata)
-  void dbusNunchukPlugged(quint32)
-  void dbusNunchukUnplugged(quint32)
-  void dbusNunchukButtons(quint32, quint64)
-  void dbusNunchukStick(quint32, struct stickdata)
-  void dbusNunchukAcc(quint32, struct accdata)
-  void dbusClassicControllerPlugged(quint32)
-  void dbusClassicControllerUnplugged(quint32)
-  void dbusClassicControllerButtons(quint32, quint64)
-  void dbusClassicControllerLStick(quint32, struct stickdata)
-  void dbusClassicControllerRStick(quint32, struct stickdata)
-
-- Added to org.wiimotedev.service
-
-Methods:
-  bool dbusReloadSequenceList();
