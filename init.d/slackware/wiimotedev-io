@@ -3,10 +3,10 @@
 # Copyright (C) 2010 Korneliusz Jarzębski
 # Contact: public@santyago.pl
 
-PIDFILE=/var/run/wiimotedev-uinput.pid
-SERVICE=/usr/sbin/wiimotedev-uinput
-GROUP=uinput
-CONFIG=/etc/wiimotedev/uinput.conf
+PIDFILE=/var/run/wiimotedev-io.pid
+SERVICE=/usr/sbin/wiimotedev-io
+GROUP=io
+CONFIG=/etc/wiimotedev/io.conf
 
 start() {
 
@@ -45,18 +45,18 @@ stop() {
 
 case "$1" in
   start)
-    echo "Starting Wiimotedev-uinput"
+    echo "Starting Wiimotedev-io"
     start
     ;;
   stop)
-    echo "Stopping Wiimotedev-uinput"
+    echo "Stopping Wiimotedev-io"
     stop
     ;;
   restart)
-    echo "Stopping Wiimotedev-uinput"
+    echo "Stopping Wiimotedev-io"
     stop
     sleep 1
-    echo "Starting Wiimotedev-uinput"
+    echo "Starting Wiimotedev-io"
     start
     ;;
   *)

@@ -3,10 +3,10 @@
 # Copyright (C) 2010 Bartlomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
-PIDFILE=/var/run/wiimotedev-uinput.pid
-SERVICE=/usr/sbin/wiimotedev-uinput
-GROUP=uinput
-CONFIG=/etc/wiimotedev/uinput.conf
+PIDFILE=/var/run/wiimotedev-io.pid
+SERVICE=/usr/sbin/wiimotedev-io
+GROUP=io
+CONFIG=/etc/wiimotedev/io.conf
 
 . /etc/rc.conf
 . /etc/rc.d/functions
@@ -55,18 +55,18 @@ stop() {
 
 case "$1" in
   start)
-    stat_busy "Starting Wiimotedev-uinput"
+    stat_busy "Starting Wiimotedev-io"
     start
     ;;
   stop)
-    stat_busy "Stopping Wiimotedev-uinput"
+    stat_busy "Stopping Wiimotedev-io"
     stop
     ;;
   restart)
-    stat_busy "Stopping Wiimotedev-uinput"
+    stat_busy "Stopping Wiimotedev-io"
     stop
     sleep 1
-    stat_busy "Starting Wiimotedev-uinput"
+    stat_busy "Starting Wiimotedev-io"
     start
     ;;
   *)

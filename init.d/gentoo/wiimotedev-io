@@ -3,10 +3,10 @@
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com   
 
-PIDFILE=/var/run/wiimotedev-uinput.pid
-SERVICE=/usr/sbin/wiimotedev-uinput
-GROUP=uinput
-CONFIG=/etc/wiimotedev/client.conf
+PIDFILE=/var/run/wiimotedev-io.pid
+SERVICE=/usr/sbin/wiimotedev-io
+GROUP=io
+CONFIG=/etc/wiimotedev/io.conf
 
 depend() {
 	need dbus 
@@ -14,7 +14,7 @@ depend() {
 }
 
 start() {
-  ebegin "Starting Wiimotedev-uinput"
+  ebegin "Starting Wiimotedev-io"
 
   if [ -z $(cat /etc/group | grep $GROUP) ]; then
     groupadd $GROUP &> /dev/null
@@ -41,7 +41,7 @@ start() {
 }
 
 stop() {
-  ebegin "Stopping Wiimotedev-uinput"
+  ebegin "Stopping Wiimotedev-io"
 
   if [ -f "$PIDFILE" ]; then
     start-stop-daemon --stop --quiet --pidfile "$PIDFILE"
