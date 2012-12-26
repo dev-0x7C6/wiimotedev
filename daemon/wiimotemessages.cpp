@@ -83,21 +83,18 @@ void WiimoteMessageThread::cwiid_process_wiimote_ir(cwiid_ir_src ir[]) {
 
 
   if (m_virtualCursor->calculate(current_ir_table, acc[ix_wiimote_device].roll)) {
+    if (!m_virtualCursorVisible) {
+      emit dbusVirtualCursorFound(m_id);
+      m_virtualCursorVisible = true;
+    }
     emit dbusVirtualCursorPosition(m_id, m_virtualCursor->cursor().x(), m_virtualCursor->cursor().y(),
                                    200, -m_virtualCursor->angle());
   } else {
-
-
+    if (m_virtualCursorVisible) {
+      emit dbusVirtualCursorLost(m_id);
+      m_virtualCursorVisible = false;
+    }
   }
-
-
-
-//      emit dbusVirtualCursorFound(m_id);
-
-
-//      emit dbusVirtualCursorLost(m_id);
-//    virtualCursorLost = true;
-//  }
 
   last_ir_table = current_ir_table;
 }

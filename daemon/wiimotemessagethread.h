@@ -105,6 +105,8 @@ private:
   double m_bufferLatency;
   qint32 m_bufferCounter;
 
+  bool m_virtualCursorVisible;
+
 private:
   void cwiid_process_wiimote_init();
   void cwiid_process_wiimote_done();

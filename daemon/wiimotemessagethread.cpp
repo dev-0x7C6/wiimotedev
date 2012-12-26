@@ -39,7 +39,8 @@ WiimoteMessageThread::WiimoteMessageThread(WiimoteDevice *device, int id, QObjec
   m_currentLatency(0),
   m_averageLatency(0),
   m_bufferLatency(0),
-  m_bufferCounter(0)
+  m_bufferCounter(0),
+  m_virtualCursorVisible(false)
 {
   setTerminationEnabled(true);
   m_device->moveToThread(this);
