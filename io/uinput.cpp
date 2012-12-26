@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#define DAEMON_NAME "wiimotedev[uinput]"
-#define PID_FILE "/var/run/wiimotedev-uinput.pid"
+#define DAEMON_NAME "wiimotedev[io]"
+#define PID_FILE "/var/run/wiimotedev-io.pid"
 #define PID_MODE 0644
 
 #include "../config.h"
