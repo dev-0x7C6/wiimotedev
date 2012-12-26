@@ -8,7 +8,7 @@ SERVICE=/usr/sbin/wiimotedev-daemon
 GROUP=wiimotedev
 CONFIG=/etc/wiimotedev/wiimotedev.conf
 
-opts="reload"
+extra_commands="reload"
 
 depend() {
 	need dbus 
