@@ -42,8 +42,6 @@ double VirtualCursor::angleDiff(double a, double b) {
   return diff;
 }
 
-#include <QDebug>
-
 bool VirtualCursor::calculate(QList < struct irpoint > &points, double roll) {
   switch (points.count()) {
   case 4:
@@ -62,16 +60,11 @@ bool VirtualCursor::calculate(QList < struct irpoint > &points, double roll) {
      calibrationPoint[0] = points.at(0).x;
     if (calibrationPoint[1] == 0)
      calibrationPoint[1] = points.at(0).y;
-
-
-    qDebug() << (calibrationPoint[0]- points.at(0).x) << "x" << (calibrationPoint[1]- points.at(0).y);
     m_visible = true;
     break;
   case 0:
     return false;
   }
-
-
 
   m_angle[0] = atan2(m_ctable[1][1] - m_ctable[0][1], m_ctable[1][0] - m_ctable[0][0]) - M_PI;
   m_angle[1] = atan2(m_ctable[0][1] - m_ctable[1][1], m_ctable[0][0] - m_ctable[1][0]) - M_PI;
