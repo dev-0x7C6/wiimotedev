@@ -41,9 +41,8 @@ WiimoteManager::WiimoteManager(QObject *parent):
   }
 
   systemlog::notice(QString("loading rules from %1").arg(WIIMOTEDEV_CONFIG_FILE));
-  settings = new WiimotedevSettings(WIIMOTEDEV_CONFIG_FILE, this);
-
-  sequence = settings->getWiiremoteSequence();
+  settings = new WiimotedevSettings(this);
+  sequence = settings->connectionTable();
 
   QDBusConnection connection = QDBusConnection::systemBus();
 
@@ -73,22 +72,24 @@ void WiimoteManager::run() {
   WiimoteDevice *dev = new WiimoteDevice();
   QElapsedTimer m_bluetoothInertia;
   QMutex m_bluetoothBlocking;
+  quint32 id  = 0;
 
   m_bluetoothBlocking.lock();
   while (!threadQuitStatus()) {
     m_bluetoothInertia.start();
     if (dev->connectToDevice(1)) {
-      quint32 id = sequence.value(dev->getWiimoteSAddr(), 0);
+      id = sequence.value(dev->getWiimoteSAddr(), 0);
 
-      if (!id) {
-        id = settings->registerWiiremote(dev->getWiimoteSAddr());
+      if (id)
+      if (id = settings->registerWiiremote(dev->getWiimoteSAddr())) {
         systemlog::information(QString("note: wiiremote %1 registred, id %2").arg(dev->getWiimoteSAddr(), QString::number(id)));
+        sequence = settings->connectionTable();
       }
 
       systemlog::information(QString("wiiremote %1 connected, id %2").arg(dev->getWiimoteSAddr(), QString::number(id)));
 
       WiimoteMessageThread *thread = new WiimoteMessageThread(dev, id);
-      thread->setPowerSafeTimeout(settings->powerSaveValue() * 60000);
+      thread->setPowerSafeTimeout(settings->powerSaveTiemout() * 60000);
       connect(thread, SIGNAL(dbusVirtualCursorPosition(quint32, double, double, double, double)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorPosition(quint32,double, double, double, double)), Qt::QueuedConnection);
       connect(thread, SIGNAL(dbusVirtualCursorFound(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorFound(quint32)), Qt::QueuedConnection);
       connect(thread, SIGNAL(dbusVirtualCursorLost(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorLost(quint32)), Qt::QueuedConnection);
@@ -159,7 +160,7 @@ bool WiimoteManager::dbusReloadSequenceList() {
   systemlog::notice(QString("loading sequences from %1").arg(WIIMOTEDEV_CONFIG_FILE));
 
   settings->reload();
-  sequence = settings->getWiiremoteSequence();
+  sequence = settings->connectionTable();
 
   return true;
 }

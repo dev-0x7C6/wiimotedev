@@ -23,12 +23,13 @@
 #include <bluetooth/hci_lib.h>
 #include "cwiid_internal.h"
 
+
 /* When filtering wiimotes, in order to avoid having to store the
  * remote names before the blue_dev array is malloced (because we don't
  * yet know how many wiimotes there are, we'll assume there are no more
  * than dev_count, and realloc to the actual number afterwards, since
  * reallocing to a smaller chunk should be fast. */
-#define BT_MAX_INQUIRY 256
+#define BT_MAX_INQUIRY 64
 
 /* timeout in 2 second units */
 int cwiid_get_bdinfo_array(int dev_id, unsigned int timeout, int max_bdinfo,
@@ -91,11 +92,12 @@ int cwiid_get_bdinfo_array(int dev_id, unsigned int timeout, int max_bdinfo,
 	}
 
   /* Copy dev_list to bdinfo */
-	for (bdinfo_count=i=0; (i < dev_count) && (bdinfo_count < max_bdinfo);
+  for (bdinfo_count=i=0; (i < dev_count) && (bdinfo_count < max_bdinfo);
 	     i++) {
 		/* Filter by class */
 		if (!(flags & BT_NO_WIIMOTE_FILTER) &&
-		  ((dev_list[i].dev_class[0] != WIIMOTE_CLASS_0) ||
+
+      ((dev_list[i].dev_class[0] != WIIMOTE_CLASS_0) ||
 		   (dev_list[i].dev_class[1] != WIIMOTE_CLASS_1) ||
 		   (dev_list[i].dev_class[2] != WIIMOTE_CLASS_2))) {
 			continue;

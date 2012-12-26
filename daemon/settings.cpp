@@ -19,46 +19,55 @@
 
 #include "settings.h"
 
-WiimotedevSettings::WiimotedevSettings(const QString &file, QObject *parent):
+WiimotedevSettings::WiimotedevSettings(QObject *parent):
   QObject(parent)
 {
-  m_settings = new QSettings(file, QSettings::IniFormat, this);
+  m_settings = new QSettings(WIIMOTEDEV_CONFIG_FILE, QSettings::IniFormat, this);
+  m_connections = new QSettings(WIIMOTEDEV_CONNECTIONS_CONFIG_FILE, QSettings::IniFormat, this);
   reload();
 }
 
-void WiimotedevSettings::reload()
-{
-  m_settings->sync();
-  m_powersave = m_settings->value("features/powersave", 10).toUInt();
+quint32 WiimotedevSettings::registerWiiremote(const QString &mac) {
+  quint32 id = m_sequence.value(mac, 0);
 
-  m_sequence.clear();
+  if (id)
+    return id;
 
-  m_settings->beginGroup("sequence");
-  for (register int i = 0; i < m_settings->allKeys().count(); ++i)
-    m_sequence[m_settings->allKeys().at(i)] = m_settings->value(m_settings->allKeys().at(i), 0).toUInt();
+  id = 1;
 
-  m_settings->endGroup();
+  QHashIterator < QString, quint32> iterator(m_sequence);
+  while (iterator.hasNext()) {
+    iterator.next();
+    if (iterator.value() == id) {
+      id++;
+      iterator.toFront();
+    }
+  }
+
+  m_sequence[mac] = id;
+  m_connections->setValue("WIIREMOTE-" + mac + "/id", id);
+  m_connections->setValue("WIIREMOTE-" + mac + "/mac", mac);
+  m_connections->sync();
+
+  return id;
+
 }
 
-QHash < QString, quint32> WiimotedevSettings::getWiiremoteSequence() {
+
+void WiimotedevSettings::reload()
+{
+  m_powersave = m_settings->value("features/powersave", 10).toUInt();
+  m_sequence.clear();
+
+  foreach (const QString &key, m_connections->childGroups())
+    m_sequence[m_connections->value(key + "/mac", QString()).toString().toUpper()]
+        = m_connections->value(key + "/id", 0).toULongLong();
+}
+
+QHash < QString, quint32> WiimotedevSettings::connectionTable() {
   return m_sequence;
 }
 
-quint32 WiimotedevSettings::powerSaveValue() {
+quint32 WiimotedevSettings::powerSaveTiemout() {
   return m_powersave;
-}
-
-quint32  WiimotedevSettings::registerWiiremote(const QString &mac) {
-  quint32 id = 1;
-
-  if (!m_sequence.values().isEmpty())
-    while(m_sequence.values().indexOf(id) != -1) id++;
-
-  m_sequence[mac] = id;
-
-  m_settings->beginGroup("sequence");
-  m_settings->setValue(mac, id);
-  m_settings->endGroup();
-
-  return id;
 }

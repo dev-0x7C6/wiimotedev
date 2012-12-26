@@ -53,6 +53,7 @@ int main(int argc, char *argv[])
   QCoreApplication application(argc, argv);
   pointer = &application;
 
+
   application.setApplicationName(DAEMON_NAME);
   application.setApplicationVersion(
     QString::number(WIIMOTEDEV_VERSION_MAJOR) + '.' +
@@ -132,6 +133,7 @@ int main(int argc, char *argv[])
   qRegisterMetaType< irpoint>("irpoint");
   qRegisterMetaType< accdata>("accdata");
   qRegisterMetaType< stickdata>("stickdata");
+
 
   WiimoteManager *manager_thread = new WiimoteManager();
   manager_thread->start(QThread::NormalPriority);

@@ -35,15 +35,20 @@ private:
   QSettings *m_settings;
   quint32 m_powersave;
 
+  QSettings *m_connections;
+
 public:
-  WiimotedevSettings(const QString &file = WIIMOTEDEV_CONFIG_FILE, QObject *parent = 0);
+  WiimotedevSettings(QObject *parent = 0);
 
 public:
   void reload();
 
-  QHash < QString, quint32> getWiiremoteSequence();
-  quint32 powerSaveValue();
-  quint32 registerWiiremote(const QString&);
+  quint32 powerSaveTiemout();
+
+  quint32 registerWiiremote(const QString &mac);
+
+  QHash < QString, quint32> connectionTable();
+
 };
 
 #endif // WIIMOTEDEV_SETTINGS_H
