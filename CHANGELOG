@@ -1,6 +1,16 @@
 Wiimotedev Project Changelog
 ============================
 
+1.4.2 (development)
+
+Features:
+- Added support for absolute axes in infrated module.
+
+Bug-Fixed:
+- Fixed bug that don't report nunchuk/classic signals when wiiremote is 
+connected with equiped nunchuk/classic extension.
+- Fixed stick buttons for nunchuk device.
+
 1.4.1
 General: 
 - some cleanups since 1.4.0, but nothing new
