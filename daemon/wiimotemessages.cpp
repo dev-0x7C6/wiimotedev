@@ -80,8 +80,6 @@ void WiimoteMessageThread::cwiid_process_wiimote_ir(cwiid_ir_src ir[]) {
   if (current_ir_table.count())
     emit dbusWiimoteInfrared(m_id, current_ir_table);
 
-
-
   if (m_virtualCursor->calculate(current_ir_table, acc[ix_wiimote_device].roll)) {
     if (!m_virtualCursorVisible) {
       emit dbusVirtualCursorFound(m_id);

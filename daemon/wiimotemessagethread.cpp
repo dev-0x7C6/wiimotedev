@@ -71,6 +71,10 @@ void WiimoteMessageThread::run() {
   cwiid_process_classic_init();
   cwiid_process_nunchuk_init();
 
+  m_mutex->lock();
+  m_device->requestStatus();
+  m_mutex->unlock();
+
   do {
     setDeviceCurrentLatency(m_elapsed->elapsed());
     m_elapsed->restart();
