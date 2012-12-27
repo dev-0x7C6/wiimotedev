@@ -28,12 +28,9 @@ void WiimoteMessageThread::cwiid_process_classic_done() {
 }
 
 void WiimoteMessageThread::cwiid_process_classic_clear() {
-  cstate[ix_classic_device] = 0x00;
-  lstate[ix_classic_device] = 0x00;
-  stick[ix_classic_lstick].x = 0x00;
-  stick[ix_classic_lstick].y = 0x00;
-  stick[ix_classic_rstick].x = 0x00;
-  stick[ix_classic_rstick].y = 0x00;
+  cstate[ix_classic_device] = lstate[ix_classic_device] =
+  stick[ix_classic_lstick].x = stick[ix_classic_lstick].y =
+  stick[ix_classic_rstick].x = stick[ix_classic_rstick].y = 0x00;
   setDeviceAvailable(ix_classic_device, false);
 }
 
@@ -53,7 +50,6 @@ void WiimoteMessageThread::cwiid_process_classic_status(cwiid_ext_type type) {
     }
     break;
   default:
-    break;
   }
 }
 
