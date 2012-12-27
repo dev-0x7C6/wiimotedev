@@ -49,6 +49,7 @@ void WiimoteMessageThread::cwiid_process_nunchuk_stick(quint8 cwiid_stick[2]) {
     emit dbusNunchukStick(m_id, stick[ix_nunchuk_stick]);
   }
 
+  cstate[ix_nunchuk_device] &= NUNCHUK_STICK_NOTMASK;
   if (stick[ix_nunchuk_stick].x > nunchukStickMaxX) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_STICK_RIGHT; else
   if (stick[ix_nunchuk_stick].x < nunchukStickMinX) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_STICK_LEFT;
   if (stick[ix_nunchuk_stick].y > nunchukStickMaxY) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_STICK_UP; else
