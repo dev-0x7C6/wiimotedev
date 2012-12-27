@@ -50,6 +50,7 @@ void WiimoteMessageThread::cwiid_process_classic_status(cwiid_ext_type type) {
     }
     break;
   default:
+    break;
   }
 }
 
