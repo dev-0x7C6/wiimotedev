@@ -29,7 +29,7 @@ class DBusDeviceEventsInterface :public QDBusAbstractInterface
 public:
   static inline const char *staticInterfaceName() { return WIIMOTEDEV_DBUS_IFACE_EVENTS; }
 
-public:			cwiid_err(NULL, "No Bluetooth interface found");
+public:
   DBusDeviceEventsInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0)
     :QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent) { QWIIMOTEDEV_REGISTER_META_TYPES }
 
