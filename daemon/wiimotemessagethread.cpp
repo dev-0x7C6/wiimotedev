@@ -75,6 +75,8 @@ void WiimoteMessageThread::run() {
   m_device->requestStatus();
   m_mutex->unlock();
 
+  emit dbusWiimoteConnected(m_id);
+
   do {
     setDeviceCurrentLatency(m_elapsed->elapsed());
     m_elapsed->restart();
@@ -159,7 +161,7 @@ void WiimoteMessageThread::run() {
 
   } while (!threadQuitState());
 
-  cwiid_process_classic_done();
+  cwiid_process_wiimote_done();
   cwiid_process_classic_done();
   cwiid_process_nunchuk_done();
 
@@ -168,6 +170,8 @@ void WiimoteMessageThread::run() {
       disconnect_animation();
     m_device->disconnectFromDevice();
   }
+
+  emit dbusWiimoteDisconnected(m_id);
 
   delete m_device;
   delete m_elapsed;
