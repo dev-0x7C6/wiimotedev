@@ -20,7 +20,7 @@
 #include "helper/hashcompare.h"
 #include "eiomanager/manager.h"
 
-extern QMap < QString, quint32> scancodes;
+extern QMap < QString, uint> scancodes;
 
 void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &settings) {
   freeKeyboardEvents();
@@ -46,7 +46,7 @@ void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &s
     device->addKeyboardAction(action);
   }
 
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), device, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint,uint64)), device, SLOT(dbusWiimoteGeneralButtons(uint,uint64)));
 
   settings.endGroup();
   EIO_RemoteKeyboards << device;

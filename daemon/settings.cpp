@@ -27,15 +27,15 @@ WiimotedevSettings::WiimotedevSettings(QObject *parent):
   reload();
 }
 
-quint32 WiimotedevSettings::registerWiiremote(const QString &mac) {
-  quint32 id = m_sequence.value(mac, 0);
+uint WiimotedevSettings::registerWiiremote(const QString &mac) {
+  uint id = m_sequence.value(mac, 0);
 
   if (id)
     return id;
 
   id = 1;
 
-  QHashIterator < QString, quint32> iterator(m_sequence);
+  QHashIterator < QString, uint> iterator(m_sequence);
   while (iterator.hasNext()) {
     iterator.next();
     if (iterator.value() == id) {
@@ -64,10 +64,10 @@ void WiimotedevSettings::reload()
         = m_connections->value(key + "/id", 0).toULongLong();
 }
 
-QHash < QString, quint32> WiimotedevSettings::connectionTable() {
+QHash < QString, uint> WiimotedevSettings::connectionTable() {
   return m_sequence;
 }
 
-quint32 WiimotedevSettings::powerSaveTiemout() {
+uint WiimotedevSettings::powerSaveTiemout() {
   return m_powersave;
 }

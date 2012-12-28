@@ -23,8 +23,8 @@
 #include "helper/hashcompare.h"
 #include "eiomanager/manager.h"
 
-extern QMap < QString, quint64> devicebuttons;
-extern QMap < QString, quint16> scancodes;
+extern QMap < QString, uint64> devicebuttons;
+extern QMap < QString, uint16> scancodes;
 
 const QRegExp deviceEventRegExp(".*(\\[.*(\\d+)\\])");
 
@@ -47,15 +47,15 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   rumbleStatus(false),
   virtualEvent(new EIO_EventDevice())
 {
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), this, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteButtons(quint32,quint64)), this, SLOT(dbusWiimoteButtons(quint32,quint64)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), this, SLOT(dbusWiimoteAcc(quint32,accdata)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukButtons(quint32,quint64)), this, SLOT(dbusNunchukButtons(quint32,quint64)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukStick(quint32,stickdata)), this, SLOT(dbusNunchukStick(quint32,stickdata)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukAcc(quint32,accdata)), this, SLOT(dbusNunchukAcc(quint32,accdata)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), this, SLOT(dbusClassicControllerButtons(quint32,quint64)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerLStick(quint32,stickdata)), this, SLOT(dbusClassicControllerLStick(quint32,stickdata)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerRStick(quint32,stickdata)), this, SLOT(dbusClassicControllerRStick(quint32,stickdata)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint,uint64)), this, SLOT(dbusWiimoteGeneralButtons(uint,uint64)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteButtons(uint,uint64)), this, SLOT(dbusWiimoteButtons(uint,uint64)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(uint,accdata)), this, SLOT(dbusWiimoteAcc(uint,accdata)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukButtons(uint,uint64)), this, SLOT(dbusNunchukButtons(uint,uint64)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukStick(uint,stickdata)), this, SLOT(dbusNunchukStick(uint,stickdata)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukAcc(uint,accdata)), this, SLOT(dbusNunchukAcc(uint,accdata)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerButtons(uint,uint64)), this, SLOT(dbusClassicControllerButtons(uint,uint64)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerLStick(uint,stickdata)), this, SLOT(dbusClassicControllerLStick(uint,stickdata)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerRStick(uint,stickdata)), this, SLOT(dbusClassicControllerRStick(uint,stickdata)));
 
   virtualEvent->uinput_open();
 
@@ -65,14 +65,14 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   dbusWiimoteGeneralButtons(1, 0);
 }
 
-QHash < quint32, quint64> UInputProfileManager::extractDeviceEvent(QString input)
+QHash < uint, uint64> UInputProfileManager::extractDeviceEvent(QString input)
 {
   QStringList list = input.remove(QRegExp("[ ]")).toLower().split('+');
-  QHash < quint32, quint64> values;
+  QHash < uint, uint64> values;
   bool result = false;
 
-  quint32 index;
-  quint64 value;
+  uint index;
+  uint64 value;
 
   foreach (const QString &item, list) {
     deviceEventRegExp.exactMatch(item);
@@ -83,13 +83,13 @@ QHash < quint32, quint64> UInputProfileManager::extractDeviceEvent(QString input
   }
 
   if (!result)
-    return (QHash < quint32, quint64>()); else
+    return (QHash < uint, uint64>()); else
     return values;
 }
 
-QList < quint32> UInputProfileManager::extractScancodes(QStringList list)
+QList < uint> UInputProfileManager::extractScancodes(QStringList list)
 {
-  QList < quint32> values;
+  QList < uint> values;
   for (register int i = 0; i < list.count(); ++i)
     if (scancodes.value(list.at(i), QString(list.at(i)).toUInt()))
       values << scancodes.value(list.at(i), QString(list.at(i)).toUInt());
@@ -97,7 +97,7 @@ QList < quint32> UInputProfileManager::extractScancodes(QStringList list)
 }
 
 
-void UInputProfileManager::dbusWiimoteGeneralButtons(quint32 id, quint64 buttons) {
+void UInputProfileManager::dbusWiimoteGeneralButtons(uint id, uint64 buttons) {
   if (disableNunchukExtShift) buttons &= ~NUNCHUK_SHIFT_MASK;
   if (disableNunchukExtShake) buttons &= ~NUNCHUK_BTN_SHIFT_SHAKE;
   if (disableNunchukExtTilt) buttons &= ~NUNCHUK_TILT_MASK;

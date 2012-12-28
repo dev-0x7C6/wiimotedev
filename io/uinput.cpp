@@ -41,8 +41,8 @@
 
 const QString scancodeFile("/etc/wiimotedev/scancode.conf");
 
-QMap < QString, quint64> devicebuttons;
-QMap < QString, quint32> scancodes;
+QMap < QString, uint64> devicebuttons;
+QMap < QString, uint> scancodes;
 
 bool additional_debug = false;
 
@@ -61,6 +61,14 @@ void signal_handler(int sig) {
 int main(int argc, char *argv[])
 {
   QCoreApplication application(argc, argv);
+  qRegisterMetaType< uint8> ("uint8");
+  qRegisterMetaType< uint16> ("uint16");
+  qRegisterMetaType< uint32> ("uint32");
+  qRegisterMetaType< uint64> ("uint64");
+  qRegisterMetaType< int8> ("int8");
+  qRegisterMetaType< int16> ("int16");
+  qRegisterMetaType< int32> ("int32");
+  qRegisterMetaType< int64> ("int64");
   pointer = &application;
 
   application.setApplicationName(DAEMON_NAME);
@@ -138,7 +146,7 @@ int main(int argc, char *argv[])
   settings.beginGroup("scancode");
 
   QStringList list = settings.allKeys();
-  for (register qint32 i = 0; i < settings.allKeys().count(); ++i)
+  for (register int32 i = 0; i < settings.allKeys().count(); ++i)
       scancodes[QString(settings.allKeys().at(i)).toLower().remove(QChar(' '))] = settings.value(settings.allKeys().at(i), 0).toInt();
 
   settings.endGroup();

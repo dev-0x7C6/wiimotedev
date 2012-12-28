@@ -27,13 +27,13 @@ class EIO_EventDevice: public EIO_UInputObject
 public:
   bool uinput_open(bool replay = true);
 
-  void pressKeyboardButton(quint16);
-  void pressKeyboardButtonOnce(quint16);
-  void releaseKeyboardButton(quint16);
+  void pressKeyboardButton(uint16);
+  void pressKeyboardButtonOnce(uint16);
+  void releaseKeyboardButton(uint16);
 
-  void moveMouseVWheel(qint32);
-  void moveMouseHWheel(qint32);
-  void moveMousePointerRel(qint32, qint32);
+  void moveMouseVWheel(int32);
+  void moveMouseHWheel(int32);
+  void moveMousePointerRel(int32, int32);
 };
 
 #endif // UINPUT_EVENTDEVICE_H

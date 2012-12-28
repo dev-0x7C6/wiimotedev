@@ -25,13 +25,13 @@ const QRegExp deviceEventRegExp(".*(\\(.*(\\d+)\\))");
 void UInputProfileManager::loadCommandEvents(QSettings &settings) {
   unloadCommandEvents();
 
-  QMap < QString, quint8> actionConfigList;
-  actionConfigList["actions-bit"] = HashCompare<QString, quint8>::BitCompare;
-  actionConfigList["actions"] = HashCompare<QString, quint8>::BitCompare;
-  actionConfigList["actions-equal"] = HashCompare<QString, quint8>::EqualCompare;
-  actionConfigList["actions-notequal"] = HashCompare<QString, quint8>::NotEqualCompare;
+  QMap < QString, uint8> actionConfigList;
+  actionConfigList["actions-bit"] = HashCompare<QString, uint8>::BitCompare;
+  actionConfigList["actions"] = HashCompare<QString, uint8>::BitCompare;
+  actionConfigList["actions-equal"] = HashCompare<QString, uint8>::EqualCompare;
+  actionConfigList["actions-notequal"] = HashCompare<QString, uint8>::NotEqualCompare;
 
-  QMapIterator < QString, quint8> map(actionConfigList);
+  QMapIterator < QString, uint8> map(actionConfigList);
 
   while (map.hasNext()) {
     map.next();
@@ -39,7 +39,7 @@ void UInputProfileManager::loadCommandEvents(QSettings &settings) {
     foreach (const QString &string, settings.allKeys()) {
       QStringList params = settings.value(string, QString()).toString().split(QChar(' '));
 
-      qint32 index;
+      int32 index;
 
       while ((index = params.indexOf("")) != -1)
         params.removeAt(index);
@@ -77,7 +77,7 @@ void UInputProfileManager::processCommandEvents() {
   if (commandActions.isEmpty())
     return;
 
-  HashCompare<quint32, quint64> compare;
+  HashCompare<uint, uint64> compare;
 
   foreach (CommandAction *action, commandActions) {
     if (action->event.isEmpty())

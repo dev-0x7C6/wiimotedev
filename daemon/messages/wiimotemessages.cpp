@@ -35,7 +35,7 @@ void WiimoteMessageThread::cwiid_process_wiimote_clear() {
   cstate[ix_general_device] = lstate[ix_general_device] = 0x00;
 }
 
-void WiimoteMessageThread::cwiid_process_wiimote_buttons(quint16 buttons) {
+void WiimoteMessageThread::cwiid_process_wiimote_buttons(uint16 buttons) {
   cstate[ix_wiimote_device] &= WIIMOTE_BUTTON_NOTMASK;
   if (buttons & CWIID_BTN_1) cstate[ix_wiimote_device] |= WIIMOTE_BTN_1;
   if (buttons & CWIID_BTN_2) cstate[ix_wiimote_device] |= WIIMOTE_BTN_2;
@@ -50,7 +50,7 @@ void WiimoteMessageThread::cwiid_process_wiimote_buttons(quint16 buttons) {
   if (buttons & CWIID_BTN_UP) cstate[ix_wiimote_device] |= WIIMOTE_BTN_UP;
 }
 
-void WiimoteMessageThread::cwiid_process_wiimote_acc(quint8 cwiid_acc[3]) {
+void WiimoteMessageThread::cwiid_process_wiimote_acc(uint8 cwiid_acc[3]) {
   cstate[ix_wiimote_device] &= WIIMOTE_TILT_NOTMASK;
   calcAccelerometerValues(cwiid_acc, calibration[ix_wiimote_device], acc[ix_wiimote_device]);
 
@@ -97,6 +97,6 @@ void WiimoteMessageThread::cwiid_process_wiimote_error() {
   setThreadQuitState(true);
 }
 
-void WiimoteMessageThread::cwiid_process_wiimote_status(quint8 battery) {
+void WiimoteMessageThread::cwiid_process_wiimote_status(uint8 battery) {
   setDeviceBatteryState(100.0 * double(battery)/double(CWIID_BATTERY_MAX));
 }

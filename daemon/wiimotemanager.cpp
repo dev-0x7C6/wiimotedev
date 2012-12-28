@@ -72,7 +72,7 @@ void WiimoteManager::run() {
   WiimoteDevice *dev = new WiimoteDevice();
   QElapsedTimer m_bluetoothInertia;
   QMutex m_bluetoothBlocking;
-  quint32 id  = 0;
+  uint id  = 0;
 
   m_bluetoothBlocking.lock();
   while (!threadQuitStatus()) {
@@ -90,26 +90,26 @@ void WiimoteManager::run() {
 
       WiimoteMessageThread *thread = new WiimoteMessageThread(dev, id);
       thread->setPowerSafeTimeout(settings->powerSaveTiemout() * 60000);
-      connect(thread, SIGNAL(dbusVirtualCursorPosition(quint32, double, double, double, double)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorPosition(quint32,double, double, double, double)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusVirtualCursorFound(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorFound(quint32)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusVirtualCursorLost(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorLost(quint32)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusWiimoteConnected(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteConnected(quint32)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusWiimoteDisconnected(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteDisconnected(quint32)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusWiimoteButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteButtons(quint32,quint64)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusWiimoteInfrared(quint32,QList<struct irpoint>)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteInfrared(quint32,QList< struct irpoint>)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusWiimoteAcc(quint32,struct accdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteAcc(quint32, struct accdata)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusNunchukPlugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukPlugged(quint32)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusNunchukUnplugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukUnplugged(quint32)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukStick(quint32,struct stickdata)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusNunchukButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukButtons(quint32,quint64)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukAcc(quint32,struct accdata)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusClassicControllerPlugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerPlugged(quint32)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusClassicControllerUnplugged(quint32)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerUnplugged(quint32)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerButtons(quint32,quint64)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerLStick(quint32,struct stickdata)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerRStick(quint32,struct stickdata)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusVirtualCursorPosition(uint, double, double, double, double)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorPosition(uint,double, double, double, double)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusVirtualCursorFound(uint)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorFound(uint)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusVirtualCursorLost(uint)), dbusDeviceEventsAdaptor, SIGNAL(dbusVirtualCursorLost(uint)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusWiimoteGeneralButtons(uint,uint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteGeneralButtons(uint,uint64)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusWiimoteConnected(uint)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteConnected(uint)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusWiimoteDisconnected(uint)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteDisconnected(uint)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusWiimoteBatteryLife(uint,uint8)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteBatteryLife(uint,uint8)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusWiimoteButtons(uint,uint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteButtons(uint,uint64)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusWiimoteInfrared(uint,QList<struct irpoint>)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteInfrared(uint,QList< struct irpoint>)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusWiimoteAcc(uint,struct accdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusWiimoteAcc(uint, struct accdata)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusNunchukPlugged(uint)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukPlugged(uint)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusNunchukUnplugged(uint)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukUnplugged(uint)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusNunchukStick(uint,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukStick(uint,struct stickdata)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusNunchukButtons(uint,uint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukButtons(uint,uint64)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusNunchukAcc(uint,struct accdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusNunchukAcc(uint,struct accdata)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusClassicControllerPlugged(uint)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerPlugged(uint)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusClassicControllerUnplugged(uint)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerUnplugged(uint)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusClassicControllerButtons(uint,uint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerButtons(uint,uint64)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusClassicControllerLStick(uint,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerLStick(uint,struct stickdata)), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusClassicControllerRStick(uint,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerRStick(uint,struct stickdata)), Qt::QueuedConnection);
       connect(thread, SIGNAL(finished()), this , SLOT(wiimoteMessageThreadFinished()), Qt::QueuedConnection);
       threads.insert(id, thread);
       thread->start();
@@ -174,7 +174,7 @@ QList < uint> WiimoteManager::dbusGetWiimoteList()
   return list;
 }
 
-QList< uint> WiimoteManager::dbusNunchukGetAccelerometrCalibration(quint32 id)
+QList< uint> WiimoteManager::dbusNunchukGetAccelerometrCalibration(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -182,7 +182,7 @@ QList< uint> WiimoteManager::dbusNunchukGetAccelerometrCalibration(quint32 id)
   return QList < uint>();
 }
 
-QList< uint> WiimoteManager::dbusWiimoteGetAccelerometrCalibration(quint32 id)
+QList< uint> WiimoteManager::dbusWiimoteGetAccelerometrCalibration(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -190,7 +190,7 @@ QList< uint> WiimoteManager::dbusWiimoteGetAccelerometrCalibration(quint32 id)
   return QList < uint>();
 }
 
-quint8 WiimoteManager::dbusWiimoteGetStatus(quint32 id)
+uint8 WiimoteManager::dbusWiimoteGetStatus(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -199,7 +199,7 @@ quint8 WiimoteManager::dbusWiimoteGetStatus(quint32 id)
 }
 
 
-quint8 WiimoteManager::dbusWiimoteGetLedStatus(quint32 id)
+uint8 WiimoteManager::dbusWiimoteGetLedStatus(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -207,7 +207,7 @@ quint8 WiimoteManager::dbusWiimoteGetLedStatus(quint32 id)
   return 0;
 }
 
-bool WiimoteManager::dbusWiimoteGetRumbleStatus(quint32 id)
+bool WiimoteManager::dbusWiimoteGetRumbleStatus(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -215,7 +215,7 @@ bool WiimoteManager::dbusWiimoteGetRumbleStatus(quint32 id)
   return false;
 }
 
-bool WiimoteManager::dbusWiimoteSetLedStatus(quint32 id, quint32 status)
+bool WiimoteManager::dbusWiimoteSetLedStatus(uint id, uint status)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -223,7 +223,7 @@ bool WiimoteManager::dbusWiimoteSetLedStatus(quint32 id, quint32 status)
   return false;
 }
 
-bool WiimoteManager::dbusWiimoteSetRumbleStatus(quint32 id, bool status)
+bool WiimoteManager::dbusWiimoteSetRumbleStatus(uint id, bool status)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -231,7 +231,7 @@ bool WiimoteManager::dbusWiimoteSetRumbleStatus(quint32 id, bool status)
   return false;
 }
 
-quint32 WiimoteManager::dbusWiimoteGetCurrentLatency(quint32 id)
+uint WiimoteManager::dbusWiimoteGetCurrentLatency(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -239,7 +239,7 @@ quint32 WiimoteManager::dbusWiimoteGetCurrentLatency(quint32 id)
   return 0;
 }
 
-quint32 WiimoteManager::dbusWiimoteGetAverageLatency(quint32 id)
+uint WiimoteManager::dbusWiimoteGetAverageLatency(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -247,7 +247,7 @@ quint32 WiimoteManager::dbusWiimoteGetAverageLatency(quint32 id)
   return 0;
 }
 
-QString WiimoteManager::dbusWiimoteGetMacAddress(quint32 id)
+QString WiimoteManager::dbusWiimoteGetMacAddress(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -255,7 +255,7 @@ QString WiimoteManager::dbusWiimoteGetMacAddress(quint32 id)
   return QString();
 }
 
-bool WiimoteManager::dbusIsClassicConnected(quint32 id)
+bool WiimoteManager::dbusIsClassicConnected(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -263,7 +263,7 @@ bool WiimoteManager::dbusIsClassicConnected(quint32 id)
   return false;
 }
 
-bool WiimoteManager::dbusIsNunchukConnected(quint32 id)
+bool WiimoteManager::dbusIsNunchukConnected(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -271,7 +271,7 @@ bool WiimoteManager::dbusIsNunchukConnected(quint32 id)
   return false;
 }
 
-bool WiimoteManager::dbusIsWiimoteConnected(quint32 id)
+bool WiimoteManager::dbusIsWiimoteConnected(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)
@@ -279,7 +279,7 @@ bool WiimoteManager::dbusIsWiimoteConnected(quint32 id)
   return false;
 }
 
-quint32 WiimoteManager::dbusWiimoteGetBatteryLife(quint32 id)
+uint WiimoteManager::dbusWiimoteGetBatteryLife(uint id)
 {
   WiimoteMessageThread *thread = threads.value(id);
   if (thread)

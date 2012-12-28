@@ -61,7 +61,7 @@ public:
 
   QString path(){ return uinputFile; }
 
-  void sendEvent(quint16 type, quint16 code, qint32 value);
+  void sendEvent(uint16 type, uint16 code, int32 value);
   void sendEventSync();
 
 };

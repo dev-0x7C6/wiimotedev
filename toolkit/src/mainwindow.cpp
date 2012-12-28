@@ -29,7 +29,7 @@
 #include <QtOpenGL/QGLWidget>
 #define PI M_PI
 
-MainWindow::MainWindow(DBusDeviceEventsInterface *iface, quint32 id, QWidget *parent) :
+MainWindow::MainWindow(DBusDeviceEventsInterface *iface, uint id, QWidget *parent) :
   QGraphicsView(parent),
   cursor(new QGraphicsPixmapItem(QPixmap(":/cursor.png"))),
   iface(iface),
@@ -280,7 +280,7 @@ void MainWindow::updateStatusInfo() {
   statusInfo->setHtml(html);
 }
 
-void MainWindow::dbusWiimoteConnected(quint32 id) {
+void MainWindow::dbusWiimoteConnected(uint id) {
   if (wiimoteId != id)
     return;
 
@@ -314,7 +314,7 @@ void MainWindow::dbusWiimoteConnected(quint32 id) {
   updateStatusInfo();
 }
 
-void MainWindow::dbusWiimoteDisconnected(quint32 id){
+void MainWindow::dbusWiimoteDisconnected(uint id){
   if (wiimoteId != id)
     return;
 
@@ -334,8 +334,8 @@ void MainWindow::dbusWiimoteDisconnected(quint32 id){
 void MainWindow::resizeEvent(QResizeEvent *event) {
   QRect rect = geometry();
 
-  quint32 x = rect.width() - 16;
-  quint32 y = rect.height() - 32;
+  uint x = rect.width() - 16;
+  uint y = rect.height() - 32;
 
   wiimoteStdButtonText->setY(geometry().height()-50);
   wiimoteExtButtonText->setY(geometry().height()-35);
@@ -353,13 +353,13 @@ void MainWindow::resizeEvent(QResizeEvent *event) {
   batteryItem->setPos(x, rect.height() - batteryItem->boundingRect().height() - 9);
 }
 
-void MainWindow::updateButtonInfo(quint64 value) {
-  quint64 std = 0;
+void MainWindow::updateButtonInfo(uint64 value) {
+  uint64 std = 0;
   std |= value & WIIMOTE_BUTTON_MASK;
   std |= value & NUNCHUK_BUTTON_MASK;
   std |= value & CLASSIC_BUTTON_MASK;
 
-  quint64 ext = 0;
+  uint64 ext = 0;
   ext |= value & WIIMOTE_TILT_MASK;
   ext |= value & WIIMOTE_SHIFT_MASK;
   ext |= value & NUNCHUK_TILT_MASK;
@@ -417,8 +417,8 @@ void MainWindow::updateAccelerometrInfo(int x1, int y1, int z1, double p1, doubl
     "<font color=#555555> Pitch: </font><font color=#ffffff>" + QString::number(int(p2)) + "°</font><br><br>");
 }
 
-QString MainWindow::getReadableWiiremoteSequence(quint64 value) {
-  QMapIterator<quint64, QString> text(text_buttons_);
+QString MainWindow::getReadableWiiremoteSequence(uint64 value) {
+  QMapIterator<uint64, QString> text(text_buttons_);
 
   QStringList list;
   while (text.hasNext()) {
@@ -462,7 +462,7 @@ void MainWindow::changeDevicePushed()
   delete selectWiimote;
 }
 
-void MainWindow::dbusWiimoteBatteryLife(quint32 id, quint8 life) {
+void MainWindow::dbusWiimoteBatteryLife(uint id, uint8 life) {
   if (id != wiimoteId)
     return;
 
@@ -497,7 +497,7 @@ void MainWindow::toggleLed4(bool toggled)
   iface->dbusWiimoteSetLedStatus(wiimoteId, leds);
 }
 
-void MainWindow::dbusWiimoteLedStatusChanged(quint32 id, quint8 value) {
+void MainWindow::dbusWiimoteLedStatusChanged(uint id, uint8 value) {
   if (id != wiimoteId)
     return;
 
@@ -510,7 +510,7 @@ void MainWindow::dbusWiimoteLedStatusChanged(quint32 id, quint8 value) {
   }
 }
 
-void MainWindow::dbusWiimoteRumbleStatusChanged(quint32 id, quint8 value) {
+void MainWindow::dbusWiimoteRumbleStatusChanged(uint id, uint8 value) {
   if (id != wiimoteId)
     return;
 
@@ -519,7 +519,7 @@ void MainWindow::dbusWiimoteRumbleStatusChanged(quint32 id, quint8 value) {
     rumbleItem->switchOff();
 }
 
-void MainWindow::dbusNunchukStick(quint32 id, const stickdata &stick)
+void MainWindow::dbusNunchukStick(uint id, const stickdata &stick)
 {
   if (id != wiimoteId)
     return;
@@ -550,7 +550,7 @@ void MainWindow::updateAnalogInfo() {
   analogInfo->setHtml(html);
 }
 
-void MainWindow::dbusClassicControllerLStick(quint32 id, const stickdata &stick)
+void MainWindow::dbusClassicControllerLStick(uint id, const stickdata &stick)
 {
   if (id != wiimoteId)
     return;
@@ -561,7 +561,7 @@ void MainWindow::dbusClassicControllerLStick(quint32 id, const stickdata &stick)
   updateAnalogInfo();
 }
 
-void MainWindow::dbusClassicControllerRStick(quint32 id, const stickdata &stick)
+void MainWindow::dbusClassicControllerRStick(uint id, const stickdata &stick)
 {
   if (id != wiimoteId)
     return;
@@ -581,7 +581,7 @@ void MainWindow::infraredCleanup()
   }
 }
 
-void MainWindow::dbusNunchukPlugged(quint32 id) {
+void MainWindow::dbusNunchukPlugged(uint id) {
   Q_UNUSED(id);
   analogInfo->setVisible(true);
   analogMode = modeNunchuk;
@@ -589,14 +589,14 @@ void MainWindow::dbusNunchukPlugged(quint32 id) {
   updateStatusInfo();
 }
 
-void MainWindow::dbusNunchukUnplugged(quint32 id) {
+void MainWindow::dbusNunchukUnplugged(uint id) {
   Q_UNUSED(id);
   analogInfo->setVisible(false);
   analogMode = modeNone;
   updateStatusInfo();
 }
 
-void MainWindow::dbusClassicPlugged(quint32 id) {
+void MainWindow::dbusClassicPlugged(uint id) {
   Q_UNUSED(id);
   analogInfo->setVisible(true);
   analogMode = modeClassic;
@@ -604,7 +604,7 @@ void MainWindow::dbusClassicPlugged(quint32 id) {
   updateStatusInfo();
 }
 
-void MainWindow::dbusClassicUnplugged(quint32 id) {
+void MainWindow::dbusClassicUnplugged(uint id) {
   Q_UNUSED(id);
   analogInfo->setVisible(false);
   analogMode = modeNone;
@@ -612,7 +612,7 @@ void MainWindow::dbusClassicUnplugged(quint32 id) {
   updateStatusInfo();
 }
 
-void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
+void MainWindow::dbusWiimoteInfrared(uint id, const QList<irpoint> &points)
 {
   if (id != wiimoteId)
     return;
@@ -685,14 +685,14 @@ void MainWindow::dbusWiimoteInfrared(quint32 id, const QList<irpoint> &points)
 
 }
 
-void MainWindow::dbusVirtualCursorFound(quint32 id) {
+void MainWindow::dbusVirtualCursorFound(uint id) {
   if (id != wiimoteId)
     return;
 
   cursor->setVisible(true);
 }
 
-void MainWindow::dbusVirtualCursorLost(quint32 id) {
+void MainWindow::dbusVirtualCursorLost(uint id) {
   if (id != wiimoteId)
     return;
 
@@ -700,7 +700,7 @@ void MainWindow::dbusVirtualCursorLost(quint32 id) {
 }
 
 
-void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, double size, double angle)
+void MainWindow::dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle)
 {
   if (id != wiimoteId)
     return;
@@ -721,14 +721,14 @@ void MainWindow::dbusVirtualCursorPosition(quint32 id, double x, double y, doubl
  lineLength = size;
 }
 
-void MainWindow::dbusWiimoteGeneralButtons(quint32 id, quint64 value) {
+void MainWindow::dbusWiimoteGeneralButtons(uint id, uint64 value) {
   if (id != wiimoteId)
     return;
 
   updateButtonInfo(value);
 }
 
-void MainWindow::dbusWiimoteAcc(quint32 id, const accdata &table)
+void MainWindow::dbusWiimoteAcc(uint id, const accdata &table)
 {
   if (id != wiimoteId)
     return;
@@ -746,7 +746,7 @@ void MainWindow::dbusWiimoteAcc(quint32 id, const accdata &table)
   line->setRotation(-roll);
 }
 
-void MainWindow::dbusNunchukAcc(quint32 id, const accdata &table)
+void MainWindow::dbusNunchukAcc(uint id, const accdata &table)
 {
   if (id != wiimoteId)
     return;

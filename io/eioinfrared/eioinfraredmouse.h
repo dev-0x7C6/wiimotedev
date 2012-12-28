@@ -32,8 +32,8 @@ class EIO_InfraredMouse: public QObject
   Q_OBJECT
 //general
   EIO_EventDevice *device;
-  quint32 id;
-  quint8 mode;
+  uint id;
+  uint8 mode;
 
 // timers
   QTimer accelerationClockTimeout;
@@ -74,7 +74,7 @@ class EIO_InfraredMouse: public QObject
   bool useAccelerationTimeout;
 
 public:
-  EIO_InfraredMouse(EIO_EventDevice *device, quint32 id);
+  EIO_InfraredMouse(EIO_EventDevice *device, uint id);
  ~EIO_InfraredMouse();
 
   enum AxisMode {
@@ -102,9 +102,9 @@ public:
   void setAccelerationTimeoutFeatureEnabled(bool);
 
 public Q_SLOTS:
-  void dbusVirtualCursorPosition(quint32, double, double, double, double);
-  void dbusVirtualCursorLost(quint32);
-  void dbusWiimoteAcc(quint32, const accdata&);
+  void dbusVirtualCursorPosition(uint, double, double, double, double);
+  void dbusVirtualCursorLost(uint);
+  void dbusWiimoteAcc(uint, const accdata&);
 
 private:
   void axisAccelerationX();

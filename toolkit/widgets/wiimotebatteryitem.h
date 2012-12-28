@@ -27,19 +27,19 @@ class WiimoteBatteryItem : public QObject, public QGraphicsItem
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
 private:
-  quint32 level;
+  uint level;
 
 public:
   WiimoteBatteryItem(QObject *parent = 0);
   QRectF boundingRect() const;
 
-  static const quint8 barHeight = 2;
+  static const uint barHeight = 2;
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
 public Q_SLOTS:
-  void setBatteryLevel(quint32 param) { level = param; }
+  void setBatteryLevel(uint param) { level = param; }
 
 };
 

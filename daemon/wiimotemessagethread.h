@@ -30,21 +30,21 @@ class QMutex;
 class QElapsedTimer;
 class WiimoteDevice;
 
-const quint8 classicLToleranceValue = (0x3F >> 2);
-const quint8 classicRToleranceValue = (0x1F >> 2);
-const quint8 classicLStickMaxX = (0x3F >> 1) + classicLToleranceValue;
-const quint8 classicLStickMinX = (0x3F >> 1) - classicLToleranceValue;
-const quint8 classicLStickMaxY = (0x3F >> 1) + classicLToleranceValue;
-const quint8 classicLStickMinY = (0x3F >> 1) - classicLToleranceValue;
-const quint8 classicRStickMaxX = (0x1F >> 1) + classicRToleranceValue;
-const quint8 classicRStickMinX = (0x1F >> 1) - classicRToleranceValue;
-const quint8 classicRStickMaxY = (0x1F >> 1) + classicRToleranceValue;
-const quint8 classicRStickMinY = (0x1F >> 1) - classicRToleranceValue;
-const quint8 nunchukToleranceValue = (0xFF >> 2);
-const quint8 nunchukStickMaxX = (0xFF >> 1) + nunchukToleranceValue;
-const quint8 nunchukStickMinX = (0xFF >> 1) - nunchukToleranceValue;
-const quint8 nunchukStickMaxY = (0xFF >> 1) + nunchukToleranceValue;
-const quint8 nunchukStickMinY = (0xFF >> 1) - nunchukToleranceValue;
+const uint8 classicLToleranceValue = (0x3F >> 2);
+const uint8 classicRToleranceValue = (0x1F >> 2);
+const uint8 classicLStickMaxX = (0x3F >> 1) + classicLToleranceValue;
+const uint8 classicLStickMinX = (0x3F >> 1) - classicLToleranceValue;
+const uint8 classicLStickMaxY = (0x3F >> 1) + classicLToleranceValue;
+const uint8 classicLStickMinY = (0x3F >> 1) - classicLToleranceValue;
+const uint8 classicRStickMaxX = (0x1F >> 1) + classicRToleranceValue;
+const uint8 classicRStickMinX = (0x1F >> 1) - classicRToleranceValue;
+const uint8 classicRStickMaxY = (0x1F >> 1) + classicRToleranceValue;
+const uint8 classicRStickMinY = (0x1F >> 1) - classicRToleranceValue;
+const uint8 nunchukToleranceValue = (0xFF >> 2);
+const uint8 nunchukStickMaxX = (0xFF >> 1) + nunchukToleranceValue;
+const uint8 nunchukStickMinX = (0xFF >> 1) - nunchukToleranceValue;
+const uint8 nunchukStickMaxY = (0xFF >> 1) + nunchukToleranceValue;
+const uint8 nunchukStickMinY = (0xFF >> 1) - nunchukToleranceValue;
 
 class WiimoteMessageThread : public QThread
 {
@@ -54,7 +54,7 @@ private:
   QMutex *m_mutex;
   bool m_threadQuit;
   double m_batteryLife;
-  qint64 m_powerSaveTimeout;
+  int64 m_powerSaveTimeout;
 
   enum DeviceType {
     ix_wiimote_device = 0,
@@ -84,8 +84,8 @@ private:
   VirtualCursor *m_virtualCursor;
 
   struct stickdata stick[ix_all_sticks];
-  quint64 cstate[ix_all_devices];
-  quint64 lstate[ix_all_devices];
+  uint64 cstate[ix_all_devices];
+  uint64 lstate[ix_all_devices];
   bool m_available[ix_general_device];
   bool m_nunchukConnected;
   bool m_classicConnected;
@@ -103,7 +103,7 @@ private:
   double m_currentLatency;
   double m_averageLatency;
   double m_bufferLatency;
-  qint32 m_bufferCounter;
+  int32 m_bufferCounter;
 
   bool m_virtualCursorVisible;
 
@@ -112,32 +112,32 @@ private:
   void cwiid_process_wiimote_done();
   void cwiid_process_wiimote_clear();
 
-  void cwiid_process_wiimote_buttons(quint16 buttons);
-  void cwiid_process_wiimote_acc(quint8 cwiid_acc[3]);
+  void cwiid_process_wiimote_buttons(uint16 buttons);
+  void cwiid_process_wiimote_acc(uint8 cwiid_acc[3]);
   void cwiid_process_wiimote_ir(cwiid_ir_src ir[4]);
-  void cwiid_process_wiimote_status(quint8 battery);
+  void cwiid_process_wiimote_status(uint8 battery);
   void cwiid_process_wiimote_error();
 
   void cwiid_process_classic_init();
   void cwiid_process_classic_done();
   void cwiid_process_classic_clear();
 
-  void cwiid_process_classic_lstick(quint8 cwiid_stick[2]);
-  void cwiid_process_classic_rstick(quint8 cwiid_stick[2]);
-  void cwiid_process_classic_buttons(quint16 cwiid_buttons);
+  void cwiid_process_classic_lstick(uint8 cwiid_stick[2]);
+  void cwiid_process_classic_rstick(uint8 cwiid_stick[2]);
+  void cwiid_process_classic_buttons(uint16 cwiid_buttons);
   void cwiid_process_classic_status(cwiid_ext_type type);
 
   void cwiid_process_nunchuk_init();
   void cwiid_process_nunchuk_done();
   void cwiid_process_nunchuk_clear();
 
-  void cwiid_process_nunchuk_buttons(quint8 cwiid_buttons);
-  void cwiid_process_nunchuk_stick(quint8 cwiid_stick[2]);
-  void cwiid_process_nunchuk_acc(quint8 cwiid_acc[3]);
+  void cwiid_process_nunchuk_buttons(uint8 cwiid_buttons);
+  void cwiid_process_nunchuk_stick(uint8 cwiid_stick[2]);
+  void cwiid_process_nunchuk_acc(uint8 cwiid_acc[3]);
   void cwiid_process_nunchuk_status(cwiid_ext_type type);
 
   double calcVirtualCursorDiff(double c1[], double c2[]);
-  void calcAccelerometerValues(quint8 acc[3], acc_cal &cal, accdata &out);
+  void calcAccelerometerValues(uint8 acc[3], acc_cal &cal, accdata &out);
 
   void connect_animation();
   void disconnect_animation();
@@ -145,7 +145,7 @@ private:
 public:
   explicit WiimoteMessageThread(WiimoteDevice *device, int id, QObject *parent = 0);
 
-  quint32 id() { return m_id; }
+  uint id() { return m_id; }
 
   void setThreadQuitState(bool quit = true);
   bool threadQuitState();
@@ -156,14 +156,14 @@ public:
   void setDeviceBatteryState(double state);
   double deviceBatteryState();
 
-  void setDeviceCurrentLatency(quint32 latency);
-  quint32 deviceCurrentLatency();
+  void setDeviceCurrentLatency(uint latency);
+  uint deviceCurrentLatency();
 
-  void setDeviceAverageLatency(quint32 latency);
-  quint32 deviceAverageLatency();
+  void setDeviceAverageLatency(uint latency);
+  uint deviceAverageLatency();
 
-  void setPowerSafeTimeout(qint64 timeout);
-  qint64 powerSafeTimeout();
+  void setPowerSafeTimeout(int64 timeout);
+  int64 powerSafeTimeout();
 
 public:
   bool dbusIsClassicConnected();
@@ -173,42 +173,42 @@ public:
   QList< uint> dbusNunchukGetAccelerometrCalibration();
   QList< uint> dbusWiimoteGetAccelerometrCalibration();
 
-  quint32 dbusWiimoteGetAverageLatency();
-  quint32 dbusWiimoteGetBatteryLife();
-  quint32 dbusWiimoteGetCurrentLatency();
+  uint dbusWiimoteGetAverageLatency();
+  uint dbusWiimoteGetBatteryLife();
+  uint dbusWiimoteGetCurrentLatency();
   QString dbusWiimoteGetMacAddress();
 
-  quint8 dbusWiimoteGetLedStatus();
+  uint8 dbusWiimoteGetLedStatus();
 
   bool dbusWiimoteGetRumbleStatus();
-  bool dbusWiimoteSetLedStatus(quint32 status);
+  bool dbusWiimoteSetLedStatus(uint status);
   bool dbusWiimoteSetRumbleStatus(bool status);
-  quint8 dbusWiimoteGetStatus();
+  uint8 dbusWiimoteGetStatus();
 
 protected:
   void run();
 
 signals:
-  void dbusVirtualCursorPosition(quint32, double, double, double, double);
-  void dbusVirtualCursorFound(quint32);
-  void dbusVirtualCursorLost(quint32);
-  void dbusWiimoteGeneralButtons(quint32, quint64);
-  void dbusWiimoteConnected(quint32);
-  void dbusWiimoteDisconnected(quint32);
-  void dbusWiimoteBatteryLife(quint32, quint8);
-  void dbusWiimoteButtons(quint32, quint64);
-  void dbusWiimoteInfrared(quint32, QList< struct irpoint>);
-  void dbusWiimoteAcc(quint32, struct accdata);
-  void dbusNunchukPlugged(quint32);
-  void dbusNunchukUnplugged(quint32);
-  void dbusNunchukButtons(quint32, quint64);
-  void dbusNunchukStick(quint32, struct stickdata);
-  void dbusNunchukAcc(quint32, struct accdata);
-  void dbusClassicControllerPlugged(quint32);
-  void dbusClassicControllerUnplugged(quint32);
-  void dbusClassicControllerButtons(quint32, quint64);
-  void dbusClassicControllerLStick(quint32, struct stickdata);
-  void dbusClassicControllerRStick(quint32, struct stickdata);
+  void dbusVirtualCursorPosition(uint, double, double, double, double);
+  void dbusVirtualCursorFound(uint);
+  void dbusVirtualCursorLost(uint);
+  void dbusWiimoteGeneralButtons(uint, uint64);
+  void dbusWiimoteConnected(uint);
+  void dbusWiimoteDisconnected(uint);
+  void dbusWiimoteBatteryLife(uint, uint8);
+  void dbusWiimoteButtons(uint, uint64);
+  void dbusWiimoteInfrared(uint, QList< struct irpoint>);
+  void dbusWiimoteAcc(uint, struct accdata);
+  void dbusNunchukPlugged(uint);
+  void dbusNunchukUnplugged(uint);
+  void dbusNunchukButtons(uint, uint64);
+  void dbusNunchukStick(uint, struct stickdata);
+  void dbusNunchukAcc(uint, struct accdata);
+  void dbusClassicControllerPlugged(uint);
+  void dbusClassicControllerUnplugged(uint);
+  void dbusClassicControllerButtons(uint, uint64);
+  void dbusClassicControllerLStick(uint, struct stickdata);
+  void dbusClassicControllerRStick(uint, struct stickdata);
 };
 
 #endif // WIIMOTEMESSAGETHREAD_H

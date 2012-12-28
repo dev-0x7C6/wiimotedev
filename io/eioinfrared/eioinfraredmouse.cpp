@@ -25,7 +25,7 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-EIO_InfraredMouse::EIO_InfraredMouse(EIO_EventDevice *device, quint32 id) :
+EIO_InfraredMouse::EIO_InfraredMouse(EIO_EventDevice *device, uint id) :
   device(device),
   id(id),
   mode(EIO_InfraredMouse::RelativeDevice),
@@ -129,7 +129,7 @@ void EIO_InfraredMouse::setAccelerationTimeoutFeatureEnabled(bool enabled) {
   accelerationTimeout = enabled;
 }
 
-void EIO_InfraredMouse::dbusWiimoteAcc(quint32 _id, const accdata &table)
+void EIO_InfraredMouse::dbusWiimoteAcc(uint _id, const accdata &table)
 {
   if (id != _id)
     return;
@@ -137,7 +137,7 @@ void EIO_InfraredMouse::dbusWiimoteAcc(quint32 _id, const accdata &table)
   memcpy(&wiimote_acc, &table, sizeof(table));
 }
 
-void EIO_InfraredMouse::dbusVirtualCursorLost(quint32 _id) {
+void EIO_InfraredMouse::dbusVirtualCursorLost(uint _id) {
   if ((id != _id) || (!interfaceEnabled))
     return;
 
@@ -146,7 +146,7 @@ void EIO_InfraredMouse::dbusVirtualCursorLost(quint32 _id) {
     accelerationClockTimeout.start();
 }
 
-void EIO_InfraredMouse::dbusVirtualCursorPosition(quint32 _id, double x, double y, double size, double angle) {
+void EIO_InfraredMouse::dbusVirtualCursorPosition(uint _id, double x, double y, double size, double angle) {
   if ((id != _id) || (!interfaceEnabled))
     return;
 

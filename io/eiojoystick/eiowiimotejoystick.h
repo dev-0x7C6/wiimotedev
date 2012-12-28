@@ -22,14 +22,14 @@
 
 #include "eiobase/eiouinputobject.h"
 
-const qint16 WIIMOTE_PITCH_MAX = 90;
-const qint16 WIIMOTE_PITCH_MIN =-90;
-const qint16 WIIMOTE_ROLL_MAX = 180;
-const qint16 WIIMOTE_ROLL_MIN =-180;
-const qint8 WIIMOTE_BUTTON_PUSHED = 1;
-const qint8 WIIMOTE_BUTTON_RELEASED = 0;
-const qint8 WIIMOTE_DPAD_MAX = 1;
-const qint8 WIIMOTE_DPAD_MIN =-1;
+const int16 WIIMOTE_PITCH_MAX = 90;
+const int16 WIIMOTE_PITCH_MIN =-90;
+const int16 WIIMOTE_ROLL_MAX = 180;
+const int16 WIIMOTE_ROLL_MIN =-180;
+const int8 WIIMOTE_BUTTON_PUSHED = 1;
+const int8 WIIMOTE_BUTTON_RELEASED = 0;
+const int8 WIIMOTE_DPAD_MAX = 1;
+const int8 WIIMOTE_DPAD_MIN =-1;
 
 
 const int WIIMOTE_DPAD_LINUX_AXIS_X = ABS_X;
@@ -99,7 +99,7 @@ public:
   void setReportPitch(bool report);
   void setReportRoll(bool report);
 
-  void setWiimoteButtons(quint64);
+  void setWiimoteButtons(uint64);
   void setWiimoteAcc(double, double);
 
 private:
@@ -107,7 +107,7 @@ private:
   void syncAxes();
 
 signals:
-  void setLedState(quint32, quint32);
+  void setLedState(uint, uint);
 };
 
 #endif // UINPUT_WIIMOTEGAMEPAD_H

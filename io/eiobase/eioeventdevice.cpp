@@ -40,11 +40,11 @@ bool EIO_EventDevice::uinput_open(bool replay){
   linux_register_evbit(EV_REL);
 
 /* Keyboard events ---------------------------------------------- */
-  for (register quint16 i = 0; i < 0xFF; ++i)
+  for (register uint16 i = 0; i < 0xFF; ++i)
       linux_register_keybit(i);
 
 /* Mouse events ------------------------------------------------- */
-  for (register quint16 i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
+  for (register uint16 i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
       linux_register_keybit(i);
 
   linux_register_relbit(REL_X);
@@ -62,24 +62,24 @@ bool EIO_EventDevice::uinput_open(bool replay){
 }
 
 
-void EIO_EventDevice::pressKeyboardButton(quint16 button) {
+void EIO_EventDevice::pressKeyboardButton(uint16 button) {
   sendEvent(EV_KEY, button, 1);
   sendEventSync();
 }
 
-void EIO_EventDevice::releaseKeyboardButton(quint16 button) {
+void EIO_EventDevice::releaseKeyboardButton(uint16 button) {
   sendEvent(EV_KEY, button, 0);
   sendEventSync();
 }
 
-void EIO_EventDevice::pressKeyboardButtonOnce(quint16 button) {
+void EIO_EventDevice::pressKeyboardButtonOnce(uint16 button) {
   sendEvent(EV_KEY, button, true);
   sendEventSync();
   sendEvent(EV_KEY, button, false);
   sendEventSync();
 }
 
-void EIO_EventDevice::moveMouseVWheel(qint32 direction) {
+void EIO_EventDevice::moveMouseVWheel(int32 direction) {
   if (direction)
       return;
 
@@ -87,7 +87,7 @@ void EIO_EventDevice::moveMouseVWheel(qint32 direction) {
   sendEventSync();
 }
 
-void EIO_EventDevice::moveMouseHWheel(qint32 direction) {
+void EIO_EventDevice::moveMouseHWheel(int32 direction) {
   if (direction)
       return;
 
@@ -95,7 +95,7 @@ void EIO_EventDevice::moveMouseHWheel(qint32 direction) {
   sendEventSync();
 }
 
-void EIO_EventDevice::moveMousePointerRel(qint32 x, qint32 y)
+void EIO_EventDevice::moveMousePointerRel(int32 x, int32 y)
 {
   if (x) sendEvent(EV_REL, REL_X, x);
   if (y) sendEvent(EV_REL, REL_Y, y);

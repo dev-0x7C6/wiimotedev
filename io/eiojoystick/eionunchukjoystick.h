@@ -23,14 +23,14 @@
 
 #include "eiobase/eiouinputobject.h"
 
-const qint16 NUNCHUK_STICK_MAX = 0xFF - 0x15;
-const qint16 NUNCHUK_STICK_MIN = 0x00 + 0x15;
-const qint16 NUNCHUK_PITCH_MAX = 90;
-const qint16 NUNCHUK_PITCH_MIN =-90;
-const qint16 NUNCHUK_ROLL_MAX = 180;
-const qint16 NUNCHUK_ROLL_MIN =-180;
-const qint8 NUNCHUK_BUTTON_PUSHED = 1;
-const qint8 NUNCHUK_BUTTON_RELEASED = 0;
+const int16 NUNCHUK_STICK_MAX = 0xFF - 0x15;
+const int16 NUNCHUK_STICK_MIN = 0x00 + 0x15;
+const int16 NUNCHUK_PITCH_MAX = 90;
+const int16 NUNCHUK_PITCH_MIN =-90;
+const int16 NUNCHUK_ROLL_MAX = 180;
+const int16 NUNCHUK_ROLL_MIN =-180;
+const int8 NUNCHUK_BUTTON_PUSHED = 1;
+const int8 NUNCHUK_BUTTON_RELEASED = 0;
 
 const int NUNCHUK_STICK_LINUX_AXIS_X = ABS_RX;
 const int NUNCHUK_STICK_LINUX_AXIS_Y = ABS_RY;
@@ -93,8 +93,8 @@ public:
   void setReportPitch(bool report);
   void setReportRoll(bool report);
 
-  void setNunchukButtons(quint64);
-  void setNunchukStick(qint32, qint32);
+  void setNunchukButtons(uint64);
+  void setNunchukStick(int32, int32);
   void setNunchukAcc(double, double);
 
 private:
@@ -102,7 +102,7 @@ private:
   void syncAxes();
 
 signals:
-  void setLedState(quint32, quint32);
+  void setLedState(uint, uint);
 };
 
 #endif // NUNCHUKJOYSTICK_H

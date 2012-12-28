@@ -31,12 +31,21 @@
 #include "interfaces/deviceevents.h"
 #include "car.h"
 
-const quint32 count = 4;
+const uint count = 4;
 
 
 int main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
+  qRegisterMetaType< uint8> ("uint8");
+  qRegisterMetaType< uint16> ("uint16");
+  qRegisterMetaType< uint32> ("uint32");
+  qRegisterMetaType< uint64> ("uint64");
+  qRegisterMetaType< int8> ("int8");
+  qRegisterMetaType< int16> ("int16");
+  qRegisterMetaType< int32> ("int32");
+  qRegisterMetaType< int64> ("int64");
+
   DBusDeviceEventsInterface *interface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
       WIIMOTEDEV_DBUS_OBJECT_EVENTS, QDBusConnection::systemBus(), 0);
 
@@ -58,8 +67,8 @@ int main(int argc, char *argv[])
     item->setX(100 * (i - 1));
     item->setY(100 * (i - 1));
     scene->addItem(item);
-    QObject::connect(interface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), item, SLOT(dbusWiimoteAcc(quint32,accdata)), Qt::QueuedConnection);
-    QObject::connect(interface, SIGNAL(dbusWiimoteButtons(quint32,quint64)), item, SLOT(dbusWiimoteButtons(quint32,quint64)), Qt::QueuedConnection);
+    QObject::connect(interface, SIGNAL(dbusWiimoteAcc(uint,accdata)), item, SLOT(dbusWiimoteAcc(uint,accdata)), Qt::QueuedConnection);
+    QObject::connect(interface, SIGNAL(dbusWiimoteButtons(uint,uint64)), item, SLOT(dbusWiimoteButtons(uint,uint64)), Qt::QueuedConnection);
   }
 
 

@@ -119,7 +119,7 @@ bool EIO_NunchukJoystick::create() {
   return (alreadyOpened = true);
 }
 
-void EIO_NunchukJoystick::setNunchukButtons(quint64 buttons) {
+void EIO_NunchukJoystick::setNunchukButtons(uint64 buttons) {
   if (!m_report_buttons)
     return;
 
@@ -164,7 +164,7 @@ void EIO_NunchukJoystick::syncAxes() {
   sendEventSync();
 }
 
-void EIO_NunchukJoystick::setNunchukStick(qint32 x, qint32 y) {
+void EIO_NunchukJoystick::setNunchukStick(int32 x, int32 y) {
   m_last_stick_x = x;
   m_last_stick_y = y;  
   syncAxes();

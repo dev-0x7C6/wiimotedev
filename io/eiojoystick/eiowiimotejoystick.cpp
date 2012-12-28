@@ -148,7 +148,7 @@ bool EIO_WiimoteJoystick::create() {
   return (alreadyOpened = true);
 }
 
-void EIO_WiimoteJoystick::setWiimoteButtons(quint64 buttons) {
+void EIO_WiimoteJoystick::setWiimoteButtons(uint64 buttons) {
   if (m_report_buttons) {
     sendEvent(EV_KEY, BTN_A, (buttons & WIIMOTE_BTN_A) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
     sendEvent(EV_KEY, BTN_B, (buttons & WIIMOTE_BTN_B) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
@@ -217,6 +217,8 @@ void EIO_WiimoteJoystick::centerStick(Stick id) {
   case EIO_WiimoteJoystick::WiimoteAccelerometer:
     m_last_wiimote_acc_pitch = 0x00;
     m_last_wiimote_acc_roll = 0x00;
+    break;
+  default:
     break;
   }
 }

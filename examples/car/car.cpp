@@ -41,7 +41,7 @@ Car::~Car()
 {
 }
 
-void Car::dbusWiimoteButtons(quint32 id, quint64 value)
+void Car::dbusWiimoteButtons(uint id, uint64 value)
 {
   if (wid != id)
     return;
@@ -60,7 +60,7 @@ void Car::dbusWiimoteButtons(quint32 id, quint64 value)
 
 }
 
-void Car::dbusWiimoteAcc(quint32 id, struct accdata acc)
+void Car::dbusWiimoteAcc(uint id, struct accdata acc)
 {
     if (wid != id) return;
 

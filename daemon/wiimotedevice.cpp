@@ -39,7 +39,7 @@ WiimoteDevice::~WiimoteDevice()
     disconnectFromDevice(true);
 }
 
-bool WiimoteDevice::connectToDevice(const quint32 timeout)
+bool WiimoteDevice::connectToDevice(const uint timeout)
 {
   memset(&bdaddr, 0, sizeof(bdaddr_t));
 
@@ -84,7 +84,7 @@ bool WiimoteDevice::getMesgStruct(int *count, union cwiid_mesg *mesg[], struct t
   return true;
 }
 
-bool WiimoteDevice::setLedStatus(quint8 led) {
+bool WiimoteDevice::setLedStatus(uint8 led) {
   if (isDisconnected()) return false;
 
   cwiid_set_led(device, switchOnLeds = led);
@@ -100,7 +100,7 @@ bool WiimoteDevice::setRumbleStatus(bool rumble) {
   return true;
 }
 
-bool WiimoteDevice::setReportMode(quint8 mode) {
+bool WiimoteDevice::setReportMode(uint8 mode) {
   if (isDisconnected()) return false;
 
   if (cwiid_set_rpt_mode(device, reportMode = mode)) {
@@ -111,7 +111,7 @@ bool WiimoteDevice::setReportMode(quint8 mode) {
   return true;
 }
 
-quint8 WiimoteDevice::getLedStatus() {
+uint8 WiimoteDevice::getLedStatus() {
   if (isDisconnected()) return 0;
 
   return switchOnLeds;
@@ -124,7 +124,7 @@ bool WiimoteDevice::getRumbleStatus() {
   return isRumble;
 }
 
-quint8 WiimoteDevice::getReportMode() {
+uint8 WiimoteDevice::getReportMode() {
   if (isDisconnected())
     return 0;
 

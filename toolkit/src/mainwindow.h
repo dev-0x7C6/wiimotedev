@@ -46,7 +46,7 @@ private:
   QString macAddress;
 
 public:
-  MainWindow(DBusDeviceEventsInterface *iface, quint32 id = 1, QWidget *parent = 0);
+  MainWindow(DBusDeviceEventsInterface *iface, uint id = 1, QWidget *parent = 0);
   ~MainWindow();
 
   enum Points {
@@ -100,12 +100,12 @@ private:
   struct accdata nunchuk_acc;
   struct accdata wiimote_acc;
 
-  QMap <quint64, QString> text_buttons_;
+  QMap <uint64, QString> text_buttons_;
 
   DBusDeviceEventsInterface *iface;
-  quint32 wiimoteId;
-  quint8 leds;
-  quint32 order;
+  uint wiimoteId;
+  uint8 leds;
+  uint order;
 
   SelectWiimote *selectWiimote;
 
@@ -120,7 +120,7 @@ private:
 
   stickdata sticks[2];
 
-  QString getReadableWiiremoteSequence(quint64);
+  QString getReadableWiiremoteSequence(uint64);
 
   int analogMode;
 
@@ -128,7 +128,7 @@ private slots:
   void updateAccelerometrInfo(int, int, int, double, double,
                               int, int, int, double, double);
   void updateAnalogInfo();
-  void updateButtonInfo(quint64);
+  void updateButtonInfo(uint64);
   void updateInfraredInfo(QList < struct irpoint>);
   void updateStatusInfo();
 
@@ -143,29 +143,29 @@ private slots:
   void toggleLed3(bool);
   void toggleLed4(bool);
 
-  void dbusVirtualCursorPosition(quint32 id, double x, double y, double size, double angle);
-  void dbusVirtualCursorLost(quint32 id);
-  void dbusVirtualCursorFound(quint32 id);
+  void dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle);
+  void dbusVirtualCursorLost(uint id);
+  void dbusVirtualCursorFound(uint id);
 
-  void dbusWiimoteAcc(quint32 id, const accdata &acc);
-  void dbusWiimoteBatteryLife(quint32 id, quint8 life);
-  void dbusWiimoteConnected(quint32 id);
-  void dbusWiimoteDisconnected(quint32 id);
-  void dbusWiimoteGeneralButtons(quint32 id, quint64 value);
-  void dbusWiimoteInfrared(quint32 id, const QList< struct irpoint> &points);
-  void dbusWiimoteLedStatusChanged(quint32, quint8);
-  void dbusWiimoteRumbleStatusChanged(quint32, quint8);
+  void dbusWiimoteAcc(uint id, const accdata &acc);
+  void dbusWiimoteBatteryLife(uint id, uint8 life);
+  void dbusWiimoteConnected(uint id);
+  void dbusWiimoteDisconnected(uint id);
+  void dbusWiimoteGeneralButtons(uint id, uint64 value);
+  void dbusWiimoteInfrared(uint id, const QList< struct irpoint> &points);
+  void dbusWiimoteLedStatusChanged(uint, uint8);
+  void dbusWiimoteRumbleStatusChanged(uint, uint8);
 
-  void dbusNunchukPlugged(quint32 id);
-  void dbusNunchukUnplugged(quint32 id);
-  void dbusClassicPlugged(quint32 id);
-  void dbusClassicUnplugged(quint32 id);
+  void dbusNunchukPlugged(uint id);
+  void dbusNunchukUnplugged(uint id);
+  void dbusClassicPlugged(uint id);
+  void dbusClassicUnplugged(uint id);
 
-  void dbusNunchukAcc(quint32 id, const accdata &acc);
-  void dbusNunchukStick(quint32 id, const stickdata &stick);
+  void dbusNunchukAcc(uint id, const accdata &acc);
+  void dbusNunchukStick(uint id, const stickdata &stick);
 
-  void dbusClassicControllerLStick(quint32 id, const stickdata &stick);
-  void dbusClassicControllerRStick(quint32 id, const stickdata &stick);
+  void dbusClassicControllerLStick(uint id, const stickdata &stick);
+  void dbusClassicControllerRStick(uint id, const stickdata &stick);
 };
 
 #endif // MAINWINDOW_H

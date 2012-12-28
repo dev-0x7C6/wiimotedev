@@ -20,14 +20,14 @@
 #include "eiomanager/manager.h"
 
 
-void UInputProfileManager::setupInfraredMouse(quint32 assing, const QString &name, QSettings &settings) {
+void UInputProfileManager::setupInfraredMouse(uint assing, const QString &name, QSettings &settings) {
 
 }
 
 void UInputProfileManager::assignInfraredEvents(const QString &key, QSettings &settings) {
   settings.beginGroup(key);
 
-  quint32 assign = settings.value("assign").toULongLong();
+  uint assign = settings.value("assign").toULongLong();
   QString name = settings.value("name").toString();
 
   setupClassicJoystick(assign, name, settings);
@@ -42,7 +42,7 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
     if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "infrared" ||
         settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "mouse") {
       settings.beginGroup(key);
-      EIO_InfraredMouse *device = new EIO_InfraredMouse(virtualEvent, settings.value("assignWiimote", quint32(1)).toLongLong());
+      EIO_InfraredMouse *device = new EIO_InfraredMouse(virtualEvent, settings.value("assignWiimote", uint(1)).toLongLong());
       device->setAccelerationFeatureEnabled(settings.value("accelerationFeature", bool(false)).toBool());
       device->setAccelerationSensitivityXMultiplier(settings.value("accelerationSensitivityXMultiplier", double(8.0)).toDouble());
       device->setAccelerationSensitivityYMultiplier(settings.value("accelerationSensitivityYMultiplier", double(8.0)).toDouble());
@@ -58,9 +58,9 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
       device->setDeadzoneXRange(settings.value("deadzoneXRange", int(30)).toULongLong());
       device->setDeadzoneYRange(settings.value("deadzoneYRange", int(20)).toULongLong());
       device->setInterfaceEnabled(true);
-      connect(dbusDeviceEventsIface, SIGNAL(dbusVirtualCursorPosition(quint32,double,double,double,double)), device, SLOT(dbusVirtualCursorPosition(quint32,double,double,double,double)));
-      connect(dbusDeviceEventsIface, SIGNAL(dbusVirtualCursorLost(quint32)), device, SLOT(dbusVirtualCursorLost(quint32)));
-      connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(quint32,accdata)), device, SLOT(dbusWiimoteAcc(quint32,accdata)));
+      connect(dbusDeviceEventsIface, SIGNAL(dbusVirtualCursorPosition(uint,double,double,double,double)), device, SLOT(dbusVirtualCursorPosition(uint,double,double,double,double)));
+      connect(dbusDeviceEventsIface, SIGNAL(dbusVirtualCursorLost(uint)), device, SLOT(dbusVirtualCursorLost(uint)));
+      connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(uint,accdata)), device, SLOT(dbusWiimoteAcc(uint,accdata)));
       settings.endGroup();
       EIO_InfraredMouses << device;
     }

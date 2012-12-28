@@ -29,6 +29,15 @@
 int main(int argc, char *argv[])
 {  
   QApplication application(argc, argv);
+  qRegisterMetaType< uint8> ("uint8");
+  qRegisterMetaType< uint16> ("uint16");
+  qRegisterMetaType< uint32> ("uint32");
+  qRegisterMetaType< uint64> ("uint64");
+  qRegisterMetaType< int8> ("int8");
+  qRegisterMetaType< int16> ("int16");
+  qRegisterMetaType< int32> ("int32");
+  qRegisterMetaType< int64> ("int64");
+
   QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Utf-8"));
 
   DBusDeviceEventsInterface interface(WIIMOTEDEV_DBUS_SERVICE_NAME, WIIMOTEDEV_DBUS_OBJECT_EVENTS,
@@ -61,28 +70,28 @@ int main(int argc, char *argv[])
     id = application.arguments().at(1).toInt();
 
   MainWindow window(&interface, id);
-  QObject::connect(&interface, SIGNAL(dbusClassicControllerPlugged(quint32)), &window, SLOT(dbusClassicPlugged(quint32)));
-  QObject::connect(&interface, SIGNAL(dbusClassicControllerUnplugged(quint32)), &window, SLOT(dbusClassicUnplugged(quint32)));
-  QObject::connect(&interface, SIGNAL(dbusClassicControllerRStick(quint32,const stickdata&)), &window, SLOT(dbusClassicControllerRStick(quint32,const stickdata&)));
-  QObject::connect(&interface, SIGNAL(dbusClassicControllerLStick(quint32,const stickdata&)), &window, SLOT(dbusClassicControllerLStick(quint32,const stickdata&)));
+  QObject::connect(&interface, SIGNAL(dbusClassicControllerPlugged(uint)), &window, SLOT(dbusClassicPlugged(uint)));
+  QObject::connect(&interface, SIGNAL(dbusClassicControllerUnplugged(uint)), &window, SLOT(dbusClassicUnplugged(uint)));
+  QObject::connect(&interface, SIGNAL(dbusClassicControllerRStick(uint,const stickdata&)), &window, SLOT(dbusClassicControllerRStick(uint,const stickdata&)));
+  QObject::connect(&interface, SIGNAL(dbusClassicControllerLStick(uint,const stickdata&)), &window, SLOT(dbusClassicControllerLStick(uint,const stickdata&)));
 
-  QObject::connect(&interface, SIGNAL(dbusNunchukAcc(quint32,const accdata&)), &window, SLOT(dbusNunchukAcc(quint32,const accdata&)));
-  QObject::connect(&interface, SIGNAL(dbusNunchukPlugged(quint32)), &window, SLOT(dbusNunchukPlugged(quint32)));
-  QObject::connect(&interface, SIGNAL(dbusNunchukUnplugged(quint32)), &window, SLOT(dbusNunchukUnplugged(quint32)));
-  QObject::connect(&interface, SIGNAL(dbusNunchukStick(quint32, const stickdata&)), &window, SLOT(dbusNunchukStick(quint32,const stickdata&)));
+  QObject::connect(&interface, SIGNAL(dbusNunchukAcc(uint,const accdata&)), &window, SLOT(dbusNunchukAcc(uint,const accdata&)));
+  QObject::connect(&interface, SIGNAL(dbusNunchukPlugged(uint)), &window, SLOT(dbusNunchukPlugged(uint)));
+  QObject::connect(&interface, SIGNAL(dbusNunchukUnplugged(uint)), &window, SLOT(dbusNunchukUnplugged(uint)));
+  QObject::connect(&interface, SIGNAL(dbusNunchukStick(uint, const stickdata&)), &window, SLOT(dbusNunchukStick(uint,const stickdata&)));
 
-  QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(quint32,double,double,double,double)), &window, SLOT(dbusVirtualCursorPosition(quint32,double,double,double,double)));
-  QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(quint32)), &window, SLOT(dbusVirtualCursorFound(quint32)));
-  QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(quint32)), &window, SLOT(dbusVirtualCursorLost(quint32)));
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(uint,double,double,double,double)), &window, SLOT(dbusVirtualCursorPosition(uint,double,double,double,double)));
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(uint)), &window, SLOT(dbusVirtualCursorFound(uint)));
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(uint)), &window, SLOT(dbusVirtualCursorLost(uint)));
 
-  QObject::connect(&interface, SIGNAL(dbusWiimoteConnected(quint32)), &window, SLOT(dbusWiimoteConnected(quint32)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(quint32)), &window, SLOT(dbusWiimoteDisconnected(quint32)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(quint32,const accdata&)), &window, SLOT(dbusWiimoteAcc(quint32,const accdata&)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteBatteryLife(quint32,quint8)), &window, SLOT(dbusWiimoteBatteryLife(quint32,quint8)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteGeneralButtons(quint32,quint64)), &window, SLOT(dbusWiimoteGeneralButtons(quint32,quint64)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(quint32, const QList< irpoint>&)), &window, SLOT(dbusWiimoteInfrared(quint32, const QList<struct irpoint>&)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteLedStatusChanged(quint32,quint8)), &window, SLOT(dbusWiimoteLedStatusChanged(quint32,quint8)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteRumbleStatusChanged(quint32,quint8)), &window, SLOT(dbusWiimoteRumbleStatusChanged(quint32,quint8)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteConnected(uint)), &window, SLOT(dbusWiimoteConnected(uint)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(uint)), &window, SLOT(dbusWiimoteDisconnected(uint)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(uint,const accdata&)), &window, SLOT(dbusWiimoteAcc(uint,const accdata&)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteBatteryLife(uint,uint8)), &window, SLOT(dbusWiimoteBatteryLife(uint,uint8)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteGeneralButtons(uint,uint64)), &window, SLOT(dbusWiimoteGeneralButtons(uint,uint64)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(uint, const QList< irpoint>&)), &window, SLOT(dbusWiimoteInfrared(uint, const QList<struct irpoint>&)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteLedStatusChanged(uint,uint8)), &window, SLOT(dbusWiimoteLedStatusChanged(uint,uint8)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteRumbleStatusChanged(uint,uint8)), &window, SLOT(dbusWiimoteRumbleStatusChanged(uint,uint8)));
 
   window.show();
 

@@ -54,7 +54,7 @@ void WiimoteMessageThread::cwiid_process_classic_status(cwiid_ext_type type) {
   }
 }
 
-void WiimoteMessageThread::cwiid_process_classic_lstick(quint8 cwiid_stick[2]) {
+void WiimoteMessageThread::cwiid_process_classic_lstick(uint8 cwiid_stick[2]) {
   cstate[ix_classic_device] &= CLASSIC_LSTICK_NOTMASK;
   if (stick[ix_classic_lstick].x != cwiid_stick[ix_x_axis] ||
       stick[ix_classic_lstick].y != cwiid_stick[ix_y_axis]) {
@@ -69,7 +69,7 @@ void WiimoteMessageThread::cwiid_process_classic_lstick(quint8 cwiid_stick[2]) {
   if (stick[ix_classic_lstick].y < classicLStickMinY) cstate[ix_classic_device] |= CLASSIC_BTN_LSTICK_DOWN;
 }
 
-void WiimoteMessageThread::cwiid_process_classic_rstick(quint8 cwiid_stick[2]) {
+void WiimoteMessageThread::cwiid_process_classic_rstick(uint8 cwiid_stick[2]) {
   cstate[ix_classic_device] &= CLASSIC_RSTICK_NOTMASK;
   if (stick[ix_classic_rstick].x != cwiid_stick[ix_x_axis] ||
       stick[ix_classic_rstick].y != cwiid_stick[ix_y_axis]) {
@@ -84,7 +84,7 @@ void WiimoteMessageThread::cwiid_process_classic_rstick(quint8 cwiid_stick[2]) {
   if (stick[ix_classic_rstick].y < classicRStickMinY) cstate[ix_classic_device] |= CLASSIC_BTN_RSTICK_DOWN;
 }
 
-void WiimoteMessageThread::cwiid_process_classic_buttons(quint16 cwiid_buttons) {
+void WiimoteMessageThread::cwiid_process_classic_buttons(uint16 cwiid_buttons) {
   cstate[ix_classic_device] &= CLASSIC_BUTTON_NOTMASK;
   if (cwiid_buttons & CWIID_CLASSIC_BTN_A) cstate[ix_classic_device] |= CLASSIC_BTN_A;
   if (cwiid_buttons & CWIID_CLASSIC_BTN_B) cstate[ix_classic_device] |= CLASSIC_BTN_B;

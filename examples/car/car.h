@@ -31,7 +31,7 @@ class Car : public QObject, public QGraphicsItem
   Q_OBJECT
   Q_INTERFACES(QGraphicsItem)
 private:
-  quint32 wid;
+  uint wid;
 
 public:
   Car();
@@ -39,12 +39,12 @@ public:
   QRectF boundingRect() const;
   QBrush color;
 
-  void setWiiremote(quint32 id) { wid = id; }
+  void setWiiremote(uint id) { wid = id; }
 
 public slots:
 // slots for signals from DeviceEventsClass
-  void dbusWiimoteButtons(quint32 id, quint64 value);
-  void dbusWiimoteAcc(quint32 id, struct accdata acc);
+  void dbusWiimoteButtons(uint id, uint64 value);
+  void dbusWiimoteAcc(uint id, struct accdata acc);
 
 protected:
   void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);

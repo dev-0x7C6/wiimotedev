@@ -95,7 +95,7 @@ EIO_ClassicJoystick::~EIO_ClassicJoystick() {
 }
 
 
-void EIO_ClassicJoystick::setButtons(quint64 buttons) {
+void EIO_ClassicJoystick::setButtons(uint64 buttons) {
 
   if (m_report_buttons) {
     sendEvent(EV_KEY, BTN_A, (buttons & CLASSIC_BTN_A) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
@@ -224,7 +224,7 @@ void EIO_ClassicJoystick::centerStick(Sticks stick) {
   }
 }
 
-void EIO_ClassicJoystick::setStick(Sticks stick, qint32 x, qint32 y) {
+void EIO_ClassicJoystick::setStick(Sticks stick, int32 x, int32 y) {
   switch (stick) {
   case EIO_ClassicJoystick::LeftStick:
     if (m_left_stick_invert_x) x = 0x41 - x;

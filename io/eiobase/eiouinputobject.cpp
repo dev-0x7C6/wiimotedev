@@ -52,7 +52,7 @@ void EIO_UInputObject::uinput_close(bool force)
   alreadyOpened = false;
 }
 
-void EIO_UInputObject::sendEvent(quint16 type, quint16 code, qint32 value) {
+void EIO_UInputObject::sendEvent(uint16 type, uint16 code, int32 value) {
   if (!uinput_fd)
       return;
 

@@ -40,7 +40,7 @@ bool UInputMouse::uinput_open(QRect absRect, bool abs){
            linux_register_evbit(EV_REL);
 
 /* Mouse events ------------------------------------------------- */
-  for (register quint16 i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
+  for (register uint16 i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
       linux_register_keybit(i);
 
   if (abs) {
@@ -65,14 +65,14 @@ bool UInputMouse::uinput_open(QRect absRect, bool abs){
   return (alreadyOpened = true);
 }
 
-void UInputMouse::moveMousePointerRel(qint32 x, qint32 y) {
+void UInputMouse::moveMousePointerRel(int32 x, int32 y) {
 
   if (x) sendEvent(EV_REL, REL_X, x);
   if (y) sendEvent(EV_REL, REL_Y, y);
   sendEventSync();
 }
 
-void UInputMouse::pressMouseButton(quint16 button){
+void UInputMouse::pressMouseButton(uint16 button){
   if (button < BTN_MOUSE || button >= BTN_JOYSTICK)
       return;
 
@@ -80,7 +80,7 @@ void UInputMouse::pressMouseButton(quint16 button){
   sendEventSync();
 }
 
-void UInputMouse::releaseMouseButton(quint16 button){
+void UInputMouse::releaseMouseButton(uint16 button){
   if (button < BTN_MOUSE || button >= BTN_JOYSTICK)
       return;
 
@@ -88,7 +88,7 @@ void UInputMouse::releaseMouseButton(quint16 button){
   sendEventSync();
 }
 
-void UInputMouse::moveMouseVWheel(qint32 direction) {
+void UInputMouse::moveMouseVWheel(int32 direction) {
   if (direction)
       return;
 
@@ -96,7 +96,7 @@ void UInputMouse::moveMouseVWheel(qint32 direction) {
   sendEventSync();
 }
 
-void UInputMouse::moveMouseHWheel(qint32 direction) {
+void UInputMouse::moveMouseHWheel(int32 direction) {
   if (direction)
       return;
 
@@ -104,7 +104,7 @@ void UInputMouse::moveMouseHWheel(qint32 direction) {
   sendEventSync();
 }
 
-void UInputMouse::moveMousePointerAbs(qint32 x, qint32 y) {
+void UInputMouse::moveMousePointerAbs(int32 x, int32 y) {
   if (x) sendEvent(EV_ABS, ABS_X, x);
   if (y) sendEvent(EV_ABS, ABS_Y, y);
   sendEventSync();

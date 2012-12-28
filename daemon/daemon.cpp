@@ -127,6 +127,14 @@ int main(int argc, char *argv[])
   if (additional_debug)
     systemlog::debug("additional debug mode switch-on");
 
+  qRegisterMetaType< uint8> ("uint8");
+  qRegisterMetaType< uint16> ("uint16");
+  qRegisterMetaType< uint32> ("uint32");
+  qRegisterMetaType< uint64> ("uint64");
+  qRegisterMetaType< int8> ("int8");
+  qRegisterMetaType< int16> ("int16");
+  qRegisterMetaType< int32> ("int32");
+  qRegisterMetaType< int64> ("int64");
   qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
   qRegisterMetaType< QList< accdata> >("QList< accdata>");
   qRegisterMetaType< QList< stickdata> >("QList< stickdata>");

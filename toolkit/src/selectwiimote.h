@@ -34,14 +34,14 @@ public:
   ~SelectWiimote();
 
   void setWiimoteList(QList < uint> &list);
-  inline quint32 getSelectedWiimote() { return wiimoteid; }
+  inline uint getSelectedWiimote() { return wiimoteid; }
 
 private slots:
   void selectButtonPushed();
 
 private:
   Ui::SelectWiimote *ui;
-  quint32 wiimoteid;
+  uint wiimoteid;
 };
 
 #endif // SELECTWIIMOTE_H

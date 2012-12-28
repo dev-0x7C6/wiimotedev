@@ -33,7 +33,7 @@ double VirtualCursor::angleDiff(double a, double b) {
   return diff;
 }
 
-double VirtualCursor::_distance(qint16 p[], qint16 q[]) {
+double VirtualCursor::_distance(int16 p[], int16 q[]) {
   register double dx = p[0] - q[0];
   register double dy = p[1] - q[1];
   dx = qSqrt(dx*dx + dy*dy);

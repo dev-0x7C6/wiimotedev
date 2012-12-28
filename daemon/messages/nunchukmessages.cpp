@@ -33,13 +33,13 @@ void WiimoteMessageThread::cwiid_process_nunchuk_clear() {
   setDeviceAvailable(ix_nunchuk_device, false);
 }
 
-void WiimoteMessageThread::cwiid_process_nunchuk_buttons(quint8 cwiid_buttons) {
+void WiimoteMessageThread::cwiid_process_nunchuk_buttons(uint8 cwiid_buttons) {
   cstate[ix_nunchuk_device] &= NUNCHUK_BUTTON_NOTMASK;
   if (cwiid_buttons & CWIID_NUNCHUK_BTN_C) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_C;
   if (cwiid_buttons & CWIID_NUNCHUK_BTN_Z) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_Z;
 }
 
-void WiimoteMessageThread::cwiid_process_nunchuk_stick(quint8 cwiid_stick[2]) {
+void WiimoteMessageThread::cwiid_process_nunchuk_stick(uint8 cwiid_stick[2]) {
   cstate[ix_nunchuk_device] &= NUNCHUK_STICK_NOTMASK;
   if (stick[ix_nunchuk_stick].x != cwiid_stick[ix_x_axis] ||
       stick[ix_nunchuk_stick].y != cwiid_stick[ix_y_axis]) {
@@ -54,7 +54,7 @@ void WiimoteMessageThread::cwiid_process_nunchuk_stick(quint8 cwiid_stick[2]) {
   if (stick[ix_nunchuk_stick].y < nunchukStickMinY) cstate[ix_nunchuk_device]|= NUNCHUK_BTN_STICK_DOWN;
 }
 
-void WiimoteMessageThread::cwiid_process_nunchuk_acc(quint8 cwiid_acc[3]) {
+void WiimoteMessageThread::cwiid_process_nunchuk_acc(uint8 cwiid_acc[3]) {
   cstate[ix_nunchuk_device] &= NUNCHUK_TILT_NOTMASK;
   calcAccelerometerValues(cwiid_acc, calibration[ix_nunchuk_device], acc[ix_nunchuk_device]);
 

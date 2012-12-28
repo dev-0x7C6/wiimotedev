@@ -19,20 +19,20 @@
 
 #include "deviceevents.h"
 
-QDBusReply < bool> DBusDeviceEventsInterface::dbusWiimoteGetRumbleStatus(quint32 id) {
+QDBusReply < bool> DBusDeviceEventsInterface::dbusWiimoteGetRumbleStatus(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
   return callWithArgumentList(QDBus::Block, "dbusWiimoteGetRumbleStatus", argumentList);
 }
 
-QDBusReply < bool> DBusDeviceEventsInterface::dbusWiimoteSetLedStatus(quint32 id, quint32 status) {
+QDBusReply < bool> DBusDeviceEventsInterface::dbusWiimoteSetLedStatus(uint id, uint status) {
   QList<QVariant> argumentList;
   argumentList << id;
   argumentList << status;
   return callWithArgumentList(QDBus::Block, "dbusWiimoteSetLedStatus", argumentList);
 }
 
-QDBusReply < bool> DBusDeviceEventsInterface::dbusWiimoteSetRumbleStatus(quint32 id, bool status) {
+QDBusReply < bool> DBusDeviceEventsInterface::dbusWiimoteSetRumbleStatus(uint id, bool status) {
   QList<QVariant> argumentList;
   argumentList << id << status;
   return callWithArgumentList(QDBus::Block, "dbusWiimoteSetRumbleStatus", argumentList);
@@ -46,55 +46,55 @@ QDBusReply < QStringList> DBusDeviceEventsInterface::dbusGetUnregistredWiimoteLi
   return call(QDBus::Block, "dbusGetUnregistredWiimoteList");
 }
 
-QDBusReply < bool> DBusDeviceEventsInterface::dbusIsClassicConnected(quint32 id) {
+QDBusReply < bool> DBusDeviceEventsInterface::dbusIsClassicConnected(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
   return callWithArgumentList(QDBus::Block, "dbusIsClassicConnected", argumentList);
 }
 
-QDBusReply < bool> DBusDeviceEventsInterface::dbusIsNunchukConnected(quint32 id) {
+QDBusReply < bool> DBusDeviceEventsInterface::dbusIsNunchukConnected(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
   return callWithArgumentList(QDBus::Block, "dbusIsNunchukConnected", argumentList);
 }
 
-QDBusReply < bool> DBusDeviceEventsInterface::dbusIsWiimoteConnected(quint32 id) {
+QDBusReply < bool> DBusDeviceEventsInterface::dbusIsWiimoteConnected(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
   return callWithArgumentList(QDBus::Block, "dbusIsWiimoteConnected", argumentList);
 }
 
-QDBusReply < quint8> DBusDeviceEventsInterface::dbusWiimoteAverageLatency(quint32 id) {
+QDBusReply < uint8> DBusDeviceEventsInterface::dbusWiimoteAverageLatency(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
   return callWithArgumentList(QDBus::Block, "dbusWiimoteAverageLatency", argumentList);
 }
 
-QDBusReply < quint8> DBusDeviceEventsInterface::dbusWiimoteCurrentLatency(quint32 id) {
+QDBusReply < uint8> DBusDeviceEventsInterface::dbusWiimoteCurrentLatency(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
   return callWithArgumentList(QDBus::Block, "dbusWiimoteCurrentLatency", argumentList);
 }
 
-QDBusReply < quint8> DBusDeviceEventsInterface::dbusWiimoteGetStatus(quint32 id) {
+QDBusReply < uint8> DBusDeviceEventsInterface::dbusWiimoteGetStatus(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
   return callWithArgumentList(QDBus::Block, "dbusWiimoteGetStatus", argumentList);
 }
 
-QDBusReply < QString> DBusDeviceEventsInterface::dbusWiimoteGetMacAddress(quint32 id) {
+QDBusReply < QString> DBusDeviceEventsInterface::dbusWiimoteGetMacAddress(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
   return callWithArgumentList(QDBus::Block, "dbusWiimoteGetMacAddress", argumentList);
 }
 
-QDBusReply < quint8> DBusDeviceEventsInterface::dbusWiimoteGetLedStatus(quint32 id) {
+QDBusReply < uint8> DBusDeviceEventsInterface::dbusWiimoteGetLedStatus(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
   return callWithArgumentList(QDBus::Block, "dbusWiimoteGetLedStatus", argumentList);
 }
 
-QDBusReply < quint32> DBusDeviceEventsInterface::dbusWiimoteGetBatteryLife(quint32 id) {
+QDBusReply < uint> DBusDeviceEventsInterface::dbusWiimoteGetBatteryLife(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
   return callWithArgumentList(QDBus::Block, "dbusWiimoteGetBatteryLife", argumentList);

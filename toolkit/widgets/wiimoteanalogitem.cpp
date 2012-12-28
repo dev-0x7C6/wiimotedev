@@ -34,11 +34,11 @@ QRectF WiimoteAnalogItem::boundingRect() const {
   return QRectF(0, 0, width, height);
 }
 
-void  WiimoteAnalogItem::setPointSize(quint32 s) {
+void  WiimoteAnalogItem::setPointSize(uint s) {
   size = s;
 }
 
-void WiimoteAnalogItem::setPointPos(quint32 ax, quint32 ay) {
+void WiimoteAnalogItem::setPointPos(uint ax, uint ay) {
   x = ax;
   y = ay;
 }

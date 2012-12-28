@@ -40,7 +40,7 @@ private:
 
 // Settings ------------------------------------------------- /
   WiimotedevSettings *settings;
-  QHash < QString, quint32> sequence;
+  QHash < QString, uint> sequence;
   QMutex *m_mutex;
 
   bool m_threadQuitStatus;
@@ -52,12 +52,12 @@ public:
   void setThreadQuitStatus(bool quit = true);
   bool threadQuitStatus();
 
-  quint32 result;
+  uint result;
 
   static const int BluetoothFlood = 100;
   static const int WaitForBluetooth = 3000;
 
-  QHash <quint32, WiimoteMessageThread*> threads;
+  QHash <uint, WiimoteMessageThread*> threads;
 
 protected:
   void run();
@@ -66,20 +66,20 @@ private Q_SLOTS:
   void wiimoteMessageThreadFinished();
 
 public Q_SLOTS:
-  bool dbusIsClassicConnected(quint32 id);
-  bool dbusIsNunchukConnected(quint32 id);
-  bool dbusIsWiimoteConnected(quint32 id);
-  QList< uint> dbusNunchukGetAccelerometrCalibration(quint32 id);
-  QList< uint> dbusWiimoteGetAccelerometrCalibration(quint32 id);
-  quint32 dbusWiimoteGetAverageLatency(quint32 id);
-  quint32 dbusWiimoteGetBatteryLife(quint32 id);
-  quint32 dbusWiimoteGetCurrentLatency(quint32 id);
-  QString dbusWiimoteGetMacAddress(quint32 id);
-  bool dbusWiimoteGetRumbleStatus(quint32 id);
-  bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
-  bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
-  quint8 dbusWiimoteGetLedStatus(quint32 id);
-  quint8 dbusWiimoteGetStatus(quint32 id);
+  bool dbusIsClassicConnected(uint id);
+  bool dbusIsNunchukConnected(uint id);
+  bool dbusIsWiimoteConnected(uint id);
+  QList< uint> dbusNunchukGetAccelerometrCalibration(uint id);
+  QList< uint> dbusWiimoteGetAccelerometrCalibration(uint id);
+  uint dbusWiimoteGetAverageLatency(uint id);
+  uint dbusWiimoteGetBatteryLife(uint id);
+  uint dbusWiimoteGetCurrentLatency(uint id);
+  QString dbusWiimoteGetMacAddress(uint id);
+  bool dbusWiimoteGetRumbleStatus(uint id);
+  bool dbusWiimoteSetLedStatus(uint id, uint status);
+  bool dbusWiimoteSetRumbleStatus(uint id, bool status);
+  uint8 dbusWiimoteGetLedStatus(uint id);
+  uint8 dbusWiimoteGetStatus(uint id);
   QList < uint> dbusGetWiimoteList();
   bool dbusReloadSequenceList();
 

@@ -49,6 +49,8 @@
 #include <QtCore/QCoreApplication>
 #include <QtCore/QTime>
 
+typedef unsigned short int uint16;
+
 #if defined(Q_OS_WIN)
 #include <QtCore/QLibrary>
 #include <QtCore/qt_windows.h>
@@ -83,7 +85,7 @@ QtLocalPeer::QtLocalPeer(QObject* parent, const QString &appId)
     prefix.truncate(6);
 
     QByteArray idc = id.toUtf8();
-    quint16 idNum = qChecksum(idc.constData(), idc.size());
+    uint16 idNum = qChecksum(idc.constData(), idc.size());
     socketName = QLatin1String("qtsingleapp-") + prefix
                  + QLatin1Char('-') + QString::number(idNum, 16);
 
@@ -183,11 +185,11 @@ void QtLocalPeer::receiveConnection()
     if (!socket)
         return;
 
-    while (socket->bytesAvailable() < (int)sizeof(quint32))
+    while (socket->bytesAvailable() < (int)sizeof(uint))
         socket->waitForReadyRead();
     QDataStream ds(socket);
     QByteArray uMsg;
-    quint32 remaining;
+    uint remaining;
     ds >> remaining;
     uMsg.resize(remaining);
     int got = 0;
