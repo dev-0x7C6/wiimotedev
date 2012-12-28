@@ -61,14 +61,12 @@ int main(int argc, char *argv[])
     QString::number(WIIMOTEDEV_VERSION_PATCH));
 
   if (application.arguments().indexOf("--help") != -1) {
-    qDebug("Wiimotedev-daemon argument list\n");
-    qDebug("  --debug\t\tfor additional debug output");
-    qDebug("  --force-dbus\t\tenable dbus protocol");
-    qDebug("  --help\t\tprint help page");
-    qDebug("  --no-daemon\t\tdo not run in background");
-    qDebug("  --no-quiet\t\tdo not block stdout messages");
-    qDebug("  --version\t\tprint version");
-    qDebug(" ");
+    printf("Wiimotedev-daemon argument list\n\n" \
+      "  --debug\t\tfor additional debug output\n" \
+      "  --help\t\tprint help page\n" \
+      "  --no-daemon\t\tdo not run in background\n" \
+      "  --no-quiet\t\tdo not block stdout messages\n" \
+      "  --version\t\tprint version\n\n");
     exit(EXIT_SUCCESS);
   }
 
@@ -81,12 +79,11 @@ int main(int argc, char *argv[])
   }
 
   if (getuid()) {
-    qDebug("root privilages needed.");
+    printf("root privilages needed.\n");
     exit(EXIT_FAILURE);
   }
 
   additional_debug = (application.arguments().indexOf("--debug") != -1);
-  force_dbus = (application.arguments().indexOf("--force-dbus") != -1);
 
   if (application.arguments().indexOf("--no-daemon") == -1) {
     QFileInfo info(PID_FILE);
