@@ -11,6 +11,8 @@ Bug-Fixed:
 connected with equiped nunchuk/classic extension
 - Fixed stick buttons for nunchuk device
 - Fixed distance parameter in dbusVirtualCursorPosition
+- Fixed dbusWiimoteConnected signal (now it works)
+- Fixed dbusWiimoteDisconnected signal (now it works)
 
 1.4.1
 General: 
