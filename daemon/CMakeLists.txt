@@ -32,11 +32,11 @@ set(sources
   settings.cpp
   wiimotedevice.cpp
   wiimotemessagethread.cpp
-  classicmessages.cpp
-  nunchukmessages.cpp
-  wiimotemessages.cpp
-  virtualcursor.cpp
-  virtualcursor.h
+  messages/classicmessages.cpp
+  messages/nunchukmessages.cpp
+  messages/wiimotemessages.cpp
+  virtualcursor/virtualcursor.cpp
+  virtualcursor/virtualcursor.h
   features.cpp
   daemon.cpp
 
