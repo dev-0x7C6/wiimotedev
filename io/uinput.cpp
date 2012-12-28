@@ -31,7 +31,7 @@
 #include "syslog/syslog.h"
 #include "eiomanager/manager.h"
 
-#include <QCoreApplication>
+#include <QApplication>
 #include <QFile>
 #include <QFileInfo>
 #include <QMap>

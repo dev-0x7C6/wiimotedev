@@ -48,7 +48,6 @@ public:
   quint32 registerWiiremote(const QString &mac);
 
   QHash < QString, quint32> connectionTable();
-
 };
 
 #endif // WIIMOTEDEV_SETTINGS_H

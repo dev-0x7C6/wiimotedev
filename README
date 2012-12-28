@@ -12,12 +12,3 @@ In oder to compile, run:
 # make install
 
 Requirement: Qt4 Libraries, Bluez
-
-There is a list of supported linux distributions:
-* Arch Linux
-* Debian Linux
-* Gentoo Linux
-* Slackware Linux
-* Ubuntu Linux 
-
-

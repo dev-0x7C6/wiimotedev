@@ -20,10 +20,15 @@
 #include "eioinfraredmouse.h"
 #include <math.h>
 #include <QDebug>
+#include <QCursor>
+#include <QRect>
+#include <QApplication>
+#include <QDesktopWidget>
 
 EIO_InfraredMouse::EIO_InfraredMouse(EIO_EventDevice *device, quint32 id) :
   device(device),
   id(id),
+  mode(EIO_InfraredMouse::RelativeDevice),
   lastX(0),
   lastY(0),
   accVectorX(0),
@@ -46,8 +51,10 @@ EIO_InfraredMouse::EIO_InfraredMouse(EIO_EventDevice *device, quint32 id) :
   useAimHelper(true),
   useAccelerationTimeout(true)
 {
-  connect(&accelerationClockTimeout, SIGNAL(timeout()), this, SLOT(axisAccelerationTimeout()));
-  accelerationClockTimeout.setInterval(10);
+  if (mode == EIO_InfraredMouse::AbsoluteDevice)  {
+    connect(&accelerationClockTimeout, SIGNAL(timeout()), this, SLOT(axisAccelerationTimeout()));
+    accelerationClockTimeout.setInterval(1);
+  }
   memset(&wiimote_acc, 0, sizeof(wiimote_acc));
 }
 
@@ -143,46 +150,59 @@ void EIO_InfraredMouse::dbusVirtualCursorPosition(quint32 _id, double x, double 
   if ((id != _id) || (!interfaceEnabled))
     return;
 
-  if (lastX == -1.0) lastX = x;
-  if (lastY == -1.0) lastY = y;
-  moveX = lastX - x;
-  moveY = lastY - y;
-  lastX = x;
-  lastY = y;
+  if (mode == EIO_InfraredMouse::RelativeDevice) {
+    if (lastX == -1.0) lastX = x;
+    if (lastY == -1.0) lastY = y;
+    moveX = lastX - x;
+    moveY = lastY - y;
+    lastX = x;
+    lastY = y;
 
-  if (useAimHelper) {
-    if (x >= -aimHelperXRange && x <= aimHelperXRange)
-      moveX *= aimHelperSensitivityXMultiplier;
-    if (y >= -aimHelperYRange && y <= aimHelperYRange)
-      moveY *= aimHelperSensitivityYMultiplier;
+    if (useAimHelper) {
+      if (x >= -aimHelperXRange && x <= aimHelperXRange)
+        moveX *= aimHelperSensitivityXMultiplier;
+      if (y >= -aimHelperYRange && y <= aimHelperYRange)
+        moveY *= aimHelperSensitivityYMultiplier;
+    }
+    if (useAcceleration) {
+      useAccelerationTimeout = false;
+      if (x < -deadzoneXRange || x > deadzoneXRange) {
+        if (x < -deadzoneXRange) x += deadzoneXRange;
+        if (x > deadzoneXRange) x -= deadzoneXRange;
+        bool invert = (x > 0.0);
+        if (!invert) x *= -1;
+        accVectorX = pow((x / (512.0 -  deadzoneXRange))* sensitivityXMultiplier, sensitivityXPower);
+        if (accVectorX >= 0.0 && invert) accVectorX = accVectorX * -1;
+      } else
+        accVectorX = 0;
+
+      if (y < -deadzoneYRange || y > deadzoneYRange) {
+        if (y < -deadzoneYRange) y += deadzoneYRange;
+        if (y > deadzoneYRange) y -= deadzoneYRange;
+        bool invert = (y > 0.0);
+        if (!invert) y *= -1;
+        accVectorY = pow((y / (384.0 -  deadzoneYRange)) * sensitivityYMultiplier, sensitivityYPower);
+        if (accVectorY >= 0.0 && invert) accVectorY = accVectorY * -1;
+      } else
+        accVectorY = 0;
+
+      accelerationClockTimeout.stop();
+    }
+
+    axisAccelerationX();
+    axisAccelerationY();
   }
-  if (useAcceleration) {
-    useAccelerationTimeout = false;
-    if (x < -deadzoneXRange || x > deadzoneXRange) {
-      if (x < -deadzoneXRange) x += deadzoneXRange;
-      if (x > deadzoneXRange) x -= deadzoneXRange;
-      bool invert = (x > 0.0);
-      if (!invert) x *= -1;
-      accVectorX = pow((x / ((512.0 * 1.2) -  deadzoneXRange))* sensitivityXMultiplier, sensitivityXPower);
-      if (accVectorX >= 0.0 && invert) accVectorX = accVectorX * -1;
-    } else
-      accVectorX = 0;
 
-    if (y < -deadzoneYRange || y > deadzoneYRange) {
-      if (y < -deadzoneYRange) y += deadzoneYRange;
-      if (y > deadzoneYRange) y -= deadzoneYRange;
-      bool invert = (y > 0.0);
-      if (!invert) y *= -1;
-      accVectorY = pow((y / (384.0 -  deadzoneYRange)) * sensitivityYMultiplier, sensitivityYPower);
-      if (accVectorY >= 0.0 && invert) accVectorY = accVectorY * -1;
-    } else
-      accVectorY = 0;
+  if (mode == EIO_InfraredMouse::AbsoluteDevice) {
+    QRect rect = QApplication::desktop()->screenGeometry(1);
 
-    accelerationClockTimeout.stop();
+    x = x * (rect.width()/1024.0);
+    y = y * (rect.height()/768.0);
+    x += (512 *(rect.width()/1024.0));
+    y += (384 *(rect.height()/768.0));
+
+    QCursor::setPos(x, y);
   }
-
-  axisAccelerationX();
-  axisAccelerationY();
 }
 
 void EIO_InfraredMouse::axisAccelerationX()

@@ -24,7 +24,7 @@
 #include "adaptors/deviceevents.h"
 #include "libcwiid/cwiid.h"
 
-#include "virtualcursor.h"
+#include "virtualcursor/virtualcursor.h"
 
 class QMutex;
 class QElapsedTimer;

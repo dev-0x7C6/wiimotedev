@@ -33,6 +33,7 @@ class EIO_InfraredMouse: public QObject
 //general
   EIO_EventDevice *device;
   quint32 id;
+  quint8 mode;
 
 // timers
   QTimer accelerationClockTimeout;
@@ -67,7 +68,6 @@ class EIO_InfraredMouse: public QObject
   double sensitivityXMultiplier;
   double sensitivityYMultiplier;
 
-
   bool interfaceEnabled;
   bool useAcceleration;
   bool useAimHelper;
@@ -76,6 +76,11 @@ class EIO_InfraredMouse: public QObject
 public:
   EIO_InfraredMouse(EIO_EventDevice *device, quint32 id);
  ~EIO_InfraredMouse();
+
+  enum AxisMode {
+    AbsoluteDevice = 0,
+    RelativeDevice = 1
+  };
 
   void setDeviceId(int);
   void setInterfaceEnabled(bool);

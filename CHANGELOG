@@ -8,8 +8,9 @@ Features:
 
 Bug-Fixed:
 - Fixed bug that don't report nunchuk/classic signals when wiiremote is 
-connected with equiped nunchuk/classic extension.
-- Fixed stick buttons for nunchuk device.
+connected with equiped nunchuk/classic extension
+- Fixed stick buttons for nunchuk device
+- Fixed distance parameter in dbusVirtualCursorPosition
 
 1.4.1
 General: 
