@@ -13,6 +13,9 @@ connected with equiped nunchuk/classic extension
 - Fixed distance parameter in dbusVirtualCursorPosition
 - Fixed dbusWiimoteConnected signal (now it works)
 - Fixed dbusWiimoteDisconnected signal (now it works)
+- Corrected wrong values for pitch/roll in dbusNunchukAcc
+- dbusNunchukGetAccelerometrCalibration now store correct calibration data for nunchuk
+
 
 1.4.1
 General: 
