@@ -20,19 +20,10 @@
 #include "virtualcursor.h"
 
 VirtualCursor::VirtualCursor() {
-  for (register int i = 0; i < 3; ++i) {
-    m_ctable[i][0] = 0x00;
-    m_ctable[i][1] = 0x00;
-    m_ltable[i][0] = 0x00;
-    m_ltable[i][1] = 0x00;
-  }
-
-  m_index = 0x00;
-  m_angle[0] = 0x00;
-  m_angle[1] = 0x00;
-
-  calibrationPoint[0] = 0;
-  calibrationPoint[1] = 0;
+  for (register int i = 0; i < 3; ++i)
+    m_ctable[i][0] = m_ctable[i][1] = m_ltable[i][0] = m_ltable[i][1] = 0x00;
+  m_index = m_angle[0] = m_angle[1] = m_distance =
+  m_calibrationPoint[0] = m_calibrationPoint[1] = 0x00;
 }
 
 double VirtualCursor::angleDiff(double a, double b) {
@@ -40,6 +31,15 @@ double VirtualCursor::angleDiff(double a, double b) {
   while (diff > 180) { diff -= 360; }
   while (diff <= -180) { diff += 360; }
   return diff;
+}
+
+double VirtualCursor::_distance(qint16 p[], qint16 q[]) {
+  register double dx = p[0] - q[0];
+  register double dy = p[1] - q[1];
+  dx = qSqrt(dx*dx + dy*dy);
+  if (dx < 0)
+    dx *= -1;
+  return dx;
 }
 
 bool VirtualCursor::calculate(QList < struct irpoint > &points, double roll) {
@@ -51,15 +51,12 @@ bool VirtualCursor::calculate(QList < struct irpoint > &points, double roll) {
     m_ltable[1][0] = m_ctable[1][0] = points.at(1).x;
     m_ltable[0][1] = m_ctable[0][1] = points.at(0).y;
     m_ltable[1][1] = m_ctable[1][1] = points.at(1).y;
-    calibrationPoint[0] = 0;
-    calibrationPoint[1] = 0;
+    m_calibrationPoint[0] = m_calibrationPoint[1] = 0x00;
     m_visible = true;
     break;
   case 1:      
-    if (calibrationPoint[0] == 0)
-     calibrationPoint[0] = points.at(0).x;
-    if (calibrationPoint[1] == 0)
-     calibrationPoint[1] = points.at(0).y;
+    if (m_calibrationPoint[0] == 0x00) m_calibrationPoint[0] = points.at(0).x;
+    if (m_calibrationPoint[1] == 0x00) m_calibrationPoint[1] = points.at(0).y;
     m_visible = true;
     break;
   case 0:
@@ -68,7 +65,7 @@ bool VirtualCursor::calculate(QList < struct irpoint > &points, double roll) {
 
   m_angle[0] = atan2(m_ctable[1][1] - m_ctable[0][1], m_ctable[1][0] - m_ctable[0][0]) - M_PI;
   m_angle[1] = atan2(m_ctable[0][1] - m_ctable[1][1], m_ctable[0][0] - m_ctable[1][0]) - M_PI;
-  m_index = (abs(angleDiff(m_angle[0]*180/M_PI, roll)) < 45) ? 0 : 1;
+  m_index = (abs(angleDiff(m_angle[0]*180/M_PI, roll)) < 90) ? 0 : 1;
 
   register double cosp = cos(-m_angle[m_index]);
   register double sinp = sin(-m_angle[m_index]);
@@ -76,14 +73,20 @@ bool VirtualCursor::calculate(QList < struct irpoint > &points, double roll) {
   register double sy = (m_ctable[0][1] + m_ctable[1][1]) / 2.0;
 
   if (points.count() == 1) {
-    sx -= (calibrationPoint[0] - points.at(0).x);
-    sy -= (calibrationPoint[1] - points.at(0).y);
+    sx -= (m_calibrationPoint[0] - points.at(0).x);
+    sy -= (m_calibrationPoint[1] - points.at(0).y);
   }
+
+  m_distance = _distance(m_ctable[0], m_ctable[1]);
 
   m_cursor.setX(512.0 - ((1024.0 - (sx*cosp - sy*sinp + 512.0*(1-cosp) + 384.0*sinp))));
   m_cursor.setY(384.0 - ((sx*sinp + sy*cosp - 512.0*sinp + 384.0*(1-cosp))));
 
   return true;
+}
+
+double VirtualCursor::distance() {
+  return m_distance;
 }
 
 bool VirtualCursor::visible() {

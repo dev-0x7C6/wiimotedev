@@ -31,19 +31,16 @@ class VirtualCursor
 private:
   QPointF m_cursor;
   bool m_visible;
-
-  double m_angle[2];
   int m_index;
-
+  double m_distance;
+  double m_angle[2];
   qint16 m_ctable[2][2];
   qint16 m_ltable[2][2];
-
-  int calibrationPoint[2];
-
-
+  int m_calibrationPoint[2];
 
 private:
   double angleDiff(double a, double b);
+  double _distance(qint16 p[2], qint16 q[2]);
 
 public:
   VirtualCursor();
@@ -51,8 +48,8 @@ public:
   bool calculate(QList < struct irpoint > &points, double roll);
   bool visible();
   QPointF& cursor();
+  double distance();
   double angle();
-
 };
 
 #endif // VIRTUALCURSOR_H
