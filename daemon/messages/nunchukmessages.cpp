@@ -18,6 +18,8 @@
  **********************************************************************************/
 
 #include "wiimotemessagethread.h"
+#include "wiimotedevice.h"
+#include <QMutex>
 
 void WiimoteMessageThread::cwiid_process_nunchuk_init() {
   cwiid_process_nunchuk_clear();
@@ -77,6 +79,9 @@ void WiimoteMessageThread::cwiid_process_nunchuk_status(cwiid_ext_type type) {
   case CWIID_EXT_NUNCHUK:
     if (!deviceAvailable(ix_nunchuk_device)) {
       setDeviceAvailable(ix_nunchuk_device, true);
+      m_mutex->lock();
+      m_device->getDeviceCallibration(CWIID_EXT_NUNCHUK, &calibration[ix_nunchuk_device]);
+      m_mutex->unlock();
       emit dbusNunchukPlugged(m_id);
     }
     break;
