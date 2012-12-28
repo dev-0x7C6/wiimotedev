@@ -50,7 +50,6 @@ int cwiid_get_bdinfo_array(int dev_id, unsigned int timeout, int max_bdinfo,
 	/* If not given (=-1), get the first available Bluetooth interface */
 	if (dev_id == -1) {
     if ((dev_id = hci_get_route(NULL)) == -1) {
-			cwiid_err(NULL, "No Bluetooth interface found");
 			return -1;
 		}
 	}
@@ -170,7 +169,6 @@ int cwiid_find_wiimote(bdaddr_t *bdaddr, int timeout)
 			return -1;
 		}
 		else if (bdinfo_count == 0) {
-			cwiid_err(NULL, "No wiimotes found");
 			return -1;
 		}
 	}
