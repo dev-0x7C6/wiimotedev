@@ -1,7 +1,7 @@
 /**********************************************************************************
  * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
- * Copyright (C) 2010  Bartłomiej Burdukiewicz                                    *
- * Contact: dev.strikeu@gmail.com                                                 *
+ * Copyright (C) 2008  Bartłomiej Burdukiewicz                                    *
+ * Contact: bartlomiej.burdukiewicz@gmail.com                                     *
  *                                                                                *
  * This program is free software; you can redistribute it and/or                  *
  * modify it under the terms of the GNU Lesser General Public                     *
