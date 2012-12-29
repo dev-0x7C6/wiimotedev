@@ -2,20 +2,23 @@ Wiimotedev Project Changelog
 ============================
 
 1.4.2 (development)
+General:
+- Many bug fixes, wiimotedev-toolkit get major upgrade.
 
 Features:
 - Added support for absolute axes in infrated module.
+- Massive update of wiimotedev-toolkit
 
 Bug-Fixed:
 - Fixed bug that don't report nunchuk/classic signals when wiiremote is 
 connected with equiped nunchuk/classic extension
-- Fixed stick buttons for nunchuk device
+- Fixed stick buttons for nunchuk extension
+- Fixed tilt buttons for nunchuk extension 
 - Fixed distance parameter in dbusVirtualCursorPosition
 - Fixed dbusWiimoteConnected signal (now it works)
 - Fixed dbusWiimoteDisconnected signal (now it works)
 - Corrected wrong values for pitch/roll in dbusNunchukAcc
 - dbusNunchukGetAccelerometrCalibration now store correct calibration data for nunchuk
-
 
 1.4.1
 General: 
