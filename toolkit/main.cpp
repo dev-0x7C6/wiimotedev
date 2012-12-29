@@ -25,7 +25,7 @@
 #include "interfaces/deviceevents.h"
 
 #include "src/mainwindow.h"
-
+#include "src/toolkitmainwindow.h"
 int main(int argc, char *argv[])
 {  
   QApplication application(argc, argv);
@@ -93,7 +93,9 @@ int main(int argc, char *argv[])
   QObject::connect(&interface, SIGNAL(dbusWiimoteLedStatusChanged(uint,uint8)), &window, SLOT(dbusWiimoteLedStatusChanged(uint,uint8)));
   QObject::connect(&interface, SIGNAL(dbusWiimoteRumbleStatusChanged(uint,uint8)), &window, SLOT(dbusWiimoteRumbleStatusChanged(uint,uint8)));
 
-  window.show();
+
+  ToolkitMainWindow toolkit(&interface, &window);
+  toolkit.show();
 
   return application.exec();
 }

@@ -24,6 +24,7 @@ set(toolkit_sources
   widgets/wiimotebatteryitem.cpp
   widgets/wiimoteleditem.cpp
   widgets/wiimoterumbleitem.cpp
+  src/toolkitmainwindow.cpp
   main.cpp
 )
 
@@ -39,10 +40,12 @@ set(toolkit_headers_qt
   widgets/wiimotebatteryitem.h
   widgets/wiimoteleditem.h
   widgets/wiimoterumbleitem.h
+  src/toolkitmainwindow.h
 )
 
 set(toolkit_uis
   ui/selectwiimote.ui
+src/toolkitmainwindow.ui
 )
 
 set(resources

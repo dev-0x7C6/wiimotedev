@@ -6,5 +6,8 @@
         <file>icon16.png</file>
         <file>rumble_off.png</file>
         <file>rumble_on.png</file>
+        <file>enabled_blue.png</file>
+        <file>enabled.png</file>
+        <file>disabled.png</file>
     </qresource>
 </RCC>

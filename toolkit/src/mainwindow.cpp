@@ -35,63 +35,7 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, uint id, QWidget *paren
   iface(iface),
   wiimoteId(id),
   order(RightToLeft)
-{
-  QPalette windowColor;
-  QBrush brush(QColor(255, 255, 255, 255));
-  brush.setStyle(Qt::SolidPattern);
-  windowColor.setBrush(QPalette::Active, QPalette::WindowText, brush);
-  QBrush brush1(QColor(0, 0, 0, 255));
-  brush1.setStyle(Qt::SolidPattern);
-  windowColor.setBrush(QPalette::Active, QPalette::Button, brush1);
-  windowColor.setBrush(QPalette::Active, QPalette::Light, brush1);
-  windowColor.setBrush(QPalette::Active, QPalette::Midlight, brush1);
-  windowColor.setBrush(QPalette::Active, QPalette::Dark, brush1);
-  windowColor.setBrush(QPalette::Active, QPalette::Mid, brush1);
-  windowColor.setBrush(QPalette::Active, QPalette::Text, brush);
-  windowColor.setBrush(QPalette::Active, QPalette::BrightText, brush);
-  windowColor.setBrush(QPalette::Active, QPalette::ButtonText, brush);
-  windowColor.setBrush(QPalette::Active, QPalette::Base, brush1);
-  windowColor.setBrush(QPalette::Active, QPalette::Window, brush1);
-  windowColor.setBrush(QPalette::Active, QPalette::Shadow, brush1);
-  windowColor.setBrush(QPalette::Active, QPalette::AlternateBase, brush1);
-  QBrush brush2(QColor(255, 255, 220, 255));
-  brush2.setStyle(Qt::SolidPattern);
-  windowColor.setBrush(QPalette::Active, QPalette::ToolTipBase, brush2);
-  windowColor.setBrush(QPalette::Active, QPalette::ToolTipText, brush1);
-  windowColor.setBrush(QPalette::Inactive, QPalette::WindowText, brush);
-  windowColor.setBrush(QPalette::Inactive, QPalette::Button, brush1);
-  windowColor.setBrush(QPalette::Inactive, QPalette::Light, brush1);
-  windowColor.setBrush(QPalette::Inactive, QPalette::Midlight, brush1);
-  windowColor.setBrush(QPalette::Inactive, QPalette::Dark, brush1);
-  windowColor.setBrush(QPalette::Inactive, QPalette::Mid, brush1);
-  windowColor.setBrush(QPalette::Inactive, QPalette::Text, brush);
-  windowColor.setBrush(QPalette::Inactive, QPalette::BrightText, brush);
-  windowColor.setBrush(QPalette::Inactive, QPalette::ButtonText, brush);
-  windowColor.setBrush(QPalette::Inactive, QPalette::Base, brush1);
-  windowColor.setBrush(QPalette::Inactive, QPalette::Window, brush1);
-  windowColor.setBrush(QPalette::Inactive, QPalette::Shadow, brush1);
-  windowColor.setBrush(QPalette::Inactive, QPalette::AlternateBase, brush1);
-  windowColor.setBrush(QPalette::Inactive, QPalette::ToolTipBase, brush2);
-  windowColor.setBrush(QPalette::Inactive, QPalette::ToolTipText, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::WindowText, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::Button, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::Light, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::Midlight, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::Dark, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::Mid, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::Text, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::BrightText, brush);
-  windowColor.setBrush(QPalette::Disabled, QPalette::ButtonText, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::Base, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::Window, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::Shadow, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::AlternateBase, brush1);
-  windowColor.setBrush(QPalette::Disabled, QPalette::ToolTipBase, brush2);
-  windowColor.setBrush(QPalette::Disabled, QPalette::ToolTipText, brush1);
-  setPalette(windowColor);
-//
-
-  setWindowIcon(QIcon(":/icon16.png"));
+{ setWindowIcon(QIcon(":/icon16.png"));
 
   setFrameStyle(QFrame::NoFrame);
   setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -166,8 +110,6 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, uint id, QWidget *paren
 
   memset(&sticks, 0, sizeof(stickdata)*2);
 
-  //setViewport(new QGLWidget(QGLFormat(QGL::SampleBuffers)));
-
   connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredCleanup()));
   infraredTimeout.setInterval(30);
 
@@ -184,15 +126,20 @@ MainWindow::MainWindow(DBusDeviceEventsInterface *iface, uint id, QWidget *paren
   cursor->setVisible(false);
   scene.addItem(cursor);
 
+  QFont font;
+  font.setStyleHint(QFont::TypeWriter);
 
   accelerometrInfo = new QGraphicsTextItem();
   accelerometrInfo->setPos(0, 0);
+  accelerometrInfo->setFont(font);
 
   analogInfo = new QGraphicsTextItem();
   analogInfo->setPos(290, 50);
+  analogInfo->setFont(font);
 
   infraredInfo = new QGraphicsTextItem();
   infraredInfo->setPos(170, 0);
+  infraredInfo->setFont(font);
 
 
   statusInfo = new QGraphicsTextItem();
@@ -374,6 +321,7 @@ void MainWindow::updateButtonInfo(uint64 value) {
 
 void MainWindow::updateInfraredInfo(QList < irpoint> list)
 {
+
   QString html = "<font color=#ffffff>Infrared</font><br>";
   int i = 0;
   for (; i < list.count(); ++i)
@@ -451,15 +399,15 @@ void MainWindow::toggleRumble(bool rumble) {
 
 void MainWindow::changeDevicePushed()
 {
-  QList <uint> list = iface->dbusGetWiimoteList();
+//  QList <uint> list = iface->dbusGetWiimoteList();
 
-  selectWiimote = new SelectWiimote(this);
-  selectWiimote->setWiimoteList(list);
-  selectWiimote->show();
-  selectWiimote->exec();
-  if (selectWiimote->getSelectedWiimote())
-    wiimoteId = selectWiimote->getSelectedWiimote();
-  delete selectWiimote;
+//  selectWiimote = new SelectWiimote(this);
+//  selectWiimote->setWiimoteList(list);
+//  selectWiimote->show();
+//  selectWiimote->exec();
+//  if (selectWiimote->getSelectedWiimote())
+//    wiimoteId = selectWiimote->getSelectedWiimote();
+//  delete selectWiimote;
 }
 
 void MainWindow::dbusWiimoteBatteryLife(uint id, uint8 life) {
@@ -710,15 +658,11 @@ void MainWindow::dbusVirtualCursorPosition(uint id, double x, double y, double s
 
   cursor->setX((512.0 - x) * (geometry().width()/1024.0));
   cursor->setY((384.0 - y) * (geometry().height()/768.0));
-
-  qDebug() << "cursor" << cursor->pos();
-
-
   cursor->setScale((1024-size)/500);
   cursor->setRotation(-angle*180/M_PI);
 
   p = angle;
- lineLength = size;
+  lineLength = size;
 }
 
 void MainWindow::dbusWiimoteGeneralButtons(uint id, uint64 value) {
