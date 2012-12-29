@@ -1,13 +1,18 @@
 Wiimotedev Project Changelog
 ============================
 
+Known issues:
+- Shifts buttons for wiimote/nunchuk are broken since 1.4.0
+(I want to rewrite all shift code and get better precission and prediction,
+ so I'm reserching new alghoritm for shifts)
+
 1.4.2 (development)
 General:
 - Many bug fixes, wiimotedev-toolkit get major upgrade.
 
 Features:
-- Added support for absolute axes in infrated module.
-- Massive update of wiimotedev-toolkit
+- Added support for absolute axes in infrared module.
+- Many improvements in wiimotedev-toolkit
 
 Bug-Fixed:
 - Fixed bug that don't report nunchuk/classic signals when wiiremote is 
