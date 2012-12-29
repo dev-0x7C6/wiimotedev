@@ -13,6 +13,7 @@ General:
 Features:
 - Added support for absolute axes in infrared module.
 - Many improvements in wiimotedev-toolkit
+- Auto update state like battery state every minute.
 
 Bug-Fixed:
 - Fixed bug that don't report nunchuk/classic signals when wiiremote is 
@@ -24,6 +25,11 @@ connected with equiped nunchuk/classic extension
 - Fixed dbusWiimoteDisconnected signal (now it works)
 - Corrected wrong values for pitch/roll in dbusNunchukAcc
 - dbusNunchukGetAccelerometrCalibration now store correct calibration data for nunchuk
+- Fixed dbusWiimoteGetAverageLatency and dbusWiimoteGetCurrentLatency in
+client side!
+- Fixed wrong return type for dbusWiimoteAverageLatency and 
+dbusWiimoteCurrentLatency.
+- Fixed dbusWiimoteBatteryLife signal, now it should be emitted.
 
 1.4.1
 General: 
