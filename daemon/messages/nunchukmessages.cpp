@@ -60,10 +60,10 @@ void WiimoteMessageThread::cwiid_process_nunchuk_acc(uint8 cwiid_acc[3]) {
   cstate[ix_nunchuk_device] &= NUNCHUK_TILT_NOTMASK;
   calcAccelerometerValues(cwiid_acc, calibration[ix_nunchuk_device], acc[ix_nunchuk_device]);
 
-  if (acc[ix_wiimote_device].pitch < -45.0) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_TILT_FRONT; else
-  if (acc[ix_wiimote_device].pitch >  45.0) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_TILT_BACK;
-  if (acc[ix_wiimote_device].roll >  45.0) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_TILT_RIGHT; else
-  if (acc[ix_wiimote_device].roll < -45.0) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_TILT_LEFT;
+  if (acc[ix_nunchuk_device].pitch < -45.0) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_TILT_FRONT; else
+  if (acc[ix_nunchuk_device].pitch >  45.0) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_TILT_BACK;
+  if (acc[ix_nunchuk_device].roll >  45.0) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_TILT_RIGHT; else
+  if (acc[ix_nunchuk_device].roll < -45.0) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_TILT_LEFT;
   emit dbusNunchukAcc(m_id, acc[ix_nunchuk_device]);
 }
 
