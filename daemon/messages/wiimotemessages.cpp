@@ -99,4 +99,5 @@ void WiimoteMessageThread::cwiid_process_wiimote_error() {
 
 void WiimoteMessageThread::cwiid_process_wiimote_status(uint8 battery) {
   setDeviceBatteryState(100.0 * double(battery)/double(CWIID_BATTERY_MAX));
+  emit dbusWiimoteBatteryLife(m_id, deviceBatteryState());
 }
