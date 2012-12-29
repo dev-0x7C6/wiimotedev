@@ -100,11 +100,11 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
   ui->topTool->addWidget(label = new QLabel("Wiiremote: "));
   label->setMargin(3);
  // ui->bottomTool->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-  ui->topTool->addAction(QIcon(":/rumble_off.png"), "rumbe off");
-  ui->topTool->addAction(QIcon(":/enabled_blue.png"), "");
-  ui->topTool->addAction(QIcon(":/disabled.png"), "");
-  ui->topTool->addAction(QIcon(":/disabled.png"), "");
-  ui->topTool->addAction(QIcon(":/disabled.png"), "");
+  m_wiimoteRumble = ui->topTool->addAction(QIcon(":/rumble_off.png"), "rumbe off");
+  m_wiimoteLeds[0] = ui->topTool->addAction(QIcon(":/enabled_blue.png"), "");
+  m_wiimoteLeds[1] = ui->topTool->addAction(QIcon(":/disabled.png"), "");
+  m_wiimoteLeds[2] = ui->topTool->addAction(QIcon(":/disabled.png"), "");
+  m_wiimoteLeds[3] = ui->topTool->addAction(QIcon(":/disabled.png"), "");
   ui->topTool->addWidget(label = new QLabel("Battery: "));
   label->setMargin(3);
   ui->topTool->addWidget(m_wiimoteBatteryProgressBar = new QProgressBar());
@@ -120,29 +120,7 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
   opts.last()->addChild(m_accelerometerItems[0][2] = new QTreeWidgetItem(QStringList("Z-Axis")));
   opts.last()->addChild(m_accelerometerItems[0][3] = new QTreeWidgetItem(QStringList("Pitch")));
   opts.last()->addChild(m_accelerometerItems[0][4] = new QTreeWidgetItem(QStringList("Roll")));
-/*
-    GENERAL_WIIMOTE_BTN_1 = 0,
-    GENERAL_WIIMOTE_BTN_2,
-    GENERAL_WIIMOTE_BTN_A,
-    GENERAL_WIIMOTE_BTN_B,
-    GENERAL_WIIMOTE_BTN_MINUS,
-    GENERAL_WIIMOTE_BTN_PLUS,
-    GENERAL_WIIMOTE_BTN_HOME,
-    GENERAL_WIIMOTE_BTN_RIGHT,
-    GENERAL_WIIMOTE_BTN_LEFT,
-    GENERAL_WIIMOTE_BTN_DOWN,
-    GENERAL_WIIMOTE_BTN_UP,
-    GENERAL_WIIMOTE_BTN_SHIFT_BACKWARD,
-    GENERAL_WIIMOTE_BTN_SHIFT_FORWARD,
-    GENERAL_WIIMOTE_BTN_SHIFT_RIGHT,
-    GENERAL_WIIMOTE_BTN_SHIFT_LEFT,
-    GENERAL_WIIMOTE_BTN_SHIFT_DOWN,
-    GENERAL_WIIMOTE_BTN_SHIFT_UP,
-    GENERAL_WIIMOTE_BTN_TILT_FRONT,
-    GENERAL_WIIMOTE_BTN_TILT_BACK,
-    GENERAL_WIIMOTE_BTN_TILT_RIGHT,
-    GENERAL_WIIMOTE_BTN_TILT_LEFT,
-*/
+
   opts << new QTreeWidgetItem();
   opts.last()->setText(0, "Buttons");
   QTreeWidgetItem *wiimoteDPad = new QTreeWidgetItem(QStringList("Digital Pad"));
@@ -211,16 +189,85 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
   nunchukAcc->addChild(m_accelerometerItems[1][3] = new QTreeWidgetItem(QStringList("Pitch")));
   nunchukAcc->addChild(m_accelerometerItems[1][4] = new QTreeWidgetItem(QStringList("Roll")));
 
+  QTreeWidgetItem *nunchukButtons = new QTreeWidgetItem();
+  nunchukButtons->setText(0, "Buttons");
+  QTreeWidgetItem *nunchukStick = new QTreeWidgetItem(QStringList("Stick"));
+  QTreeWidgetItem *nunchukShift = new QTreeWidgetItem(QStringList("Shift"));
+  QTreeWidgetItem *nunchukTilt = new QTreeWidgetItem(QStringList("Tilt"));
+
+  nunchukButtons->addChild(m_wiimoteButtonItems[21] = new QTreeWidgetItem(QStringList("C")));
+  nunchukButtons->addChild(m_wiimoteButtonItems[22] = new QTreeWidgetItem(QStringList("Z")));
+  nunchukStick->addChild(m_wiimoteButtonItems[23] = new QTreeWidgetItem(QStringList("Right")));
+  nunchukStick->addChild(m_wiimoteButtonItems[24] = new QTreeWidgetItem(QStringList("Left")));
+  nunchukStick->addChild(m_wiimoteButtonItems[25] = new QTreeWidgetItem(QStringList("Down")));
+  nunchukStick->addChild(m_wiimoteButtonItems[26] = new QTreeWidgetItem(QStringList("Up")));
+  nunchukShift->addChild(m_wiimoteButtonItems[27] = new QTreeWidgetItem(QStringList("Backward")));
+  nunchukShift->addChild(m_wiimoteButtonItems[28] = new QTreeWidgetItem(QStringList("Forward")));
+  nunchukShift->addChild(m_wiimoteButtonItems[29] = new QTreeWidgetItem(QStringList("Right")));
+  nunchukShift->addChild(m_wiimoteButtonItems[30] = new QTreeWidgetItem(QStringList("Left")));
+  nunchukShift->addChild(m_wiimoteButtonItems[31] = new QTreeWidgetItem(QStringList("Down")));
+  nunchukShift->addChild(m_wiimoteButtonItems[32] = new QTreeWidgetItem(QStringList("Up")));
+  nunchukTilt->addChild(m_wiimoteButtonItems[33] = new QTreeWidgetItem(QStringList("Front")));
+  nunchukTilt->addChild(m_wiimoteButtonItems[34] = new QTreeWidgetItem(QStringList("Back")));
+  nunchukTilt->addChild(m_wiimoteButtonItems[35] = new QTreeWidgetItem(QStringList("Right")));
+  nunchukTilt->addChild(m_wiimoteButtonItems[36] = new QTreeWidgetItem(QStringList("Left")));
+  nunchukButtons->addChild(nunchukStick);
+  nunchukButtons->addChild(nunchukShift);
+  nunchukButtons->addChild(nunchukTilt);
+
+  nunchuk->addChild(nunchukButtons);
+
   QTreeWidgetItem *classic = new QTreeWidgetItem();
   classic->setText(0, "Classic Controller (Pro)");
+
+  QTreeWidgetItem *classicButtons = new QTreeWidgetItem();
+  classicButtons->setText(0, "Buttons");
+  QTreeWidgetItem *classicDPad = new QTreeWidgetItem(QStringList("DPad"));
+  QTreeWidgetItem *classicLStick = new QTreeWidgetItem(QStringList("Stick [Left]"));
+  QTreeWidgetItem *classicRStick = new QTreeWidgetItem(QStringList("Stick [Right]"));
+
+  classicButtons->addChild(m_wiimoteButtonItems[37] = new QTreeWidgetItem(QStringList("X")));
+  classicButtons->addChild(m_wiimoteButtonItems[38] = new QTreeWidgetItem(QStringList("Y")));
+  classicButtons->addChild(m_wiimoteButtonItems[39] = new QTreeWidgetItem(QStringList("A")));
+  classicButtons->addChild(m_wiimoteButtonItems[40] = new QTreeWidgetItem(QStringList("B")));
+  classicButtons->addChild(m_wiimoteButtonItems[41] = new QTreeWidgetItem(QStringList("L")));
+  classicButtons->addChild(m_wiimoteButtonItems[42] = new QTreeWidgetItem(QStringList("R")));
+  classicButtons->addChild(m_wiimoteButtonItems[43] = new QTreeWidgetItem(QStringList("ZL")));
+  classicButtons->addChild(m_wiimoteButtonItems[44] = new QTreeWidgetItem(QStringList("ZR")));
+  classicButtons->addChild(m_wiimoteButtonItems[45] = new QTreeWidgetItem(QStringList("Minus")));
+  classicButtons->addChild(m_wiimoteButtonItems[46] = new QTreeWidgetItem(QStringList("Plus")));
+  classicButtons->addChild(m_wiimoteButtonItems[47] = new QTreeWidgetItem(QStringList("Home")));
+  classicDPad->addChild(m_wiimoteButtonItems[48] = new QTreeWidgetItem(QStringList("Right")));
+  classicDPad->addChild(m_wiimoteButtonItems[49] = new QTreeWidgetItem(QStringList("Left")));
+  classicDPad->addChild(m_wiimoteButtonItems[50] = new QTreeWidgetItem(QStringList("Down")));
+  classicDPad->addChild(m_wiimoteButtonItems[51] = new QTreeWidgetItem(QStringList("Up")));
+  classicLStick->addChild(m_wiimoteButtonItems[52] = new QTreeWidgetItem(QStringList("Right")));
+  classicLStick->addChild(m_wiimoteButtonItems[53] = new QTreeWidgetItem(QStringList("Left")));
+  classicLStick->addChild(m_wiimoteButtonItems[54] = new QTreeWidgetItem(QStringList("Down")));
+  classicLStick->addChild(m_wiimoteButtonItems[55] = new QTreeWidgetItem(QStringList("Up")));
+  classicRStick->addChild(m_wiimoteButtonItems[56] = new QTreeWidgetItem(QStringList("Right")));
+  classicRStick->addChild(m_wiimoteButtonItems[57] = new QTreeWidgetItem(QStringList("Left")));
+  classicRStick->addChild(m_wiimoteButtonItems[58] = new QTreeWidgetItem(QStringList("Down")));
+  classicRStick->addChild(m_wiimoteButtonItems[59] = new QTreeWidgetItem(QStringList("Up")));
+  classicButtons->addChild(classicDPad);
+  classicButtons->addChild(classicLStick);
+  classicButtons->addChild(classicRStick);
+  classic->addChild(classicButtons);
+
+
   opts.last()->addChild(classic);
+
+
+
 
   opts << new QTreeWidgetItem();
   opts.last()->setText(0, "Status");
   opts.last()->addChild(m_wiimoteStatusItems[0] = new QTreeWidgetItem(QStringList("Current Latency")));
   opts.last()->addChild(m_wiimoteStatusItems[1] = new QTreeWidgetItem(QStringList("Average Latency")));
   opts.last()->addChild(m_wiimoteStatusItems[2] = new QTreeWidgetItem(QStringList("Battery")));
-  opts.last()->addChild(m_wiimoteStatusItems[2] = new QTreeWidgetItem(QStringList("Extension")));
+  opts.last()->addChild(m_wiimoteStatusItems[3] = new QTreeWidgetItem(QStringList("Led")));
+  opts.last()->addChild(m_wiimoteStatusItems[4] = new QTreeWidgetItem(QStringList("Rumble")));
+  opts.last()->addChild(m_wiimoteStatusItems[5] = new QTreeWidgetItem(QStringList("Extension")));
 
 
   ui->centralwidget->layout()->addWidget(graphics);
@@ -312,8 +359,8 @@ void ToolkitMainWindow::dbusWiimoteBatteryLife(uint id, uint8 life) {
 }
 
 void ToolkitMainWindow::dbusWiimoteGeneralButtons(uint id, uint64 value) {
-  for (register int i = 0; i < 21; ++i) {
-    if (value & (1 << i))
+  for (register int i = 0; i < 60; ++i) {
+    if (value & (uint64(1) << i))
       m_wiimoteButtonItems[i]->setText(1, "[*]"); else
       m_wiimoteButtonItems[i]->setText(1, "[ ]");
   }
@@ -330,12 +377,17 @@ void ToolkitMainWindow::dbusWiimoteInfrared(uint id, const QList< struct irpoint
 
 }
 
-void ToolkitMainWindow::dbusWiimoteLedStatusChanged(uint, uint8) {
-
+void ToolkitMainWindow::dbusWiimoteLedStatusChanged(uint id, uint8 status) {
+  for (register int i = 0; i < 4; ++i)
+    if (status & (1 << i))
+      m_wiimoteLeds[i]->setIcon(QIcon(":/enabled_blue.png")); else
+      m_wiimoteLeds[i]->setIcon(QIcon(":/disabled.png"));
 }
 
-void ToolkitMainWindow::dbusWiimoteRumbleStatusChanged(uint, uint8) {
-
+void ToolkitMainWindow::dbusWiimoteRumbleStatusChanged(uint, uint8 status) {
+  if (status)
+    m_wiimoteRumble->setIcon(QIcon(":/rumble_on.png")); else
+    m_wiimoteRumble->setIcon(QIcon(":/rumble_off.png"));
 }
 
 

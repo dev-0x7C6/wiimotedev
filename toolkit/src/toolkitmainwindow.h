@@ -34,7 +34,10 @@ private:
   QTreeWidgetItem* m_accelerometerItems[2][5];
   QTreeWidgetItem* m_infraredItems[10];
   QTreeWidgetItem* m_wiimoteStatusItems[10];
-  QTreeWidgetItem* m_wiimoteButtonItems[50];
+  QTreeWidgetItem* m_wiimoteButtonItems[64];
+
+  QAction *m_wiimoteLeds[4];
+  QAction *m_wiimoteRumble;
 
   void updateWiimoteComboBox();
 
