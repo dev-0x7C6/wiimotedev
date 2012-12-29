@@ -64,16 +64,16 @@ QDBusReply < bool> DBusDeviceEventsInterface::dbusIsWiimoteConnected(uint id) {
   return callWithArgumentList(QDBus::Block, "dbusIsWiimoteConnected", argumentList);
 }
 
-QDBusReply < uint> DBusDeviceEventsInterface::dbusWiimoteAverageLatency(uint id) {
+QDBusReply < uint> DBusDeviceEventsInterface::dbusWiimoteGetAverageLatency(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
-  return callWithArgumentList(QDBus::Block, "dbusWiimoteAverageLatency", argumentList);
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteGetAverageLatency", argumentList);
 }
 
-QDBusReply < uint> DBusDeviceEventsInterface::dbusWiimoteCurrentLatency(uint id) {
+QDBusReply < uint> DBusDeviceEventsInterface::dbusWiimoteGetCurrentLatency(uint id) {
   QList<QVariant> argumentList;
   argumentList << id;
-  return callWithArgumentList(QDBus::Block, "dbusWiimoteCurrentLatency", argumentList);
+  return callWithArgumentList(QDBus::Block, "dbusWiimoteGetCurrentLatency", argumentList);
 }
 
 QDBusReply < uint8> DBusDeviceEventsInterface::dbusWiimoteGetStatus(uint id) {
