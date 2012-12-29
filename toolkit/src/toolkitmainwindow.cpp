@@ -9,7 +9,8 @@
 ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphicsView *graphics, QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::ToolkitMainWindow),
-  m_interface(iface)
+  m_interface(iface),
+  m_id(1)
 {
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
@@ -222,7 +223,7 @@ opts.last()->setText(1, "                    ");
 
 
   QTreeWidgetItem *classic = new QTreeWidgetItem();
-  classic->setText(0, "Classic Controller (Pro)");
+  classic->setText(0, "Classic Controller");
 
   QTreeWidgetItem *classicButtons = new QTreeWidgetItem();
   classicButtons->setText(0, "Buttons");
@@ -267,18 +268,19 @@ opts.last()->setText(1, "                    ");
 
   opts.last()->addChild(classic);
 
-
-
-
   opts << new QTreeWidgetItem();
   opts.last()->setText(0, "Status");
   opts.last()->addChild(m_wiimoteStatusItems[0] = new QTreeWidgetItem(QStringList("Current Latency")));
   opts.last()->addChild(m_wiimoteStatusItems[1] = new QTreeWidgetItem(QStringList("Average Latency")));
   opts.last()->addChild(m_wiimoteStatusItems[2] = new QTreeWidgetItem(QStringList("Battery")));
-  opts.last()->addChild(m_wiimoteStatusItems[3] = new QTreeWidgetItem(QStringList("Led")));
+  opts.last()->addChild(m_wiimoteStatusItems[3] = new QTreeWidgetItem(QStringList("Leds")));
   opts.last()->addChild(m_wiimoteStatusItems[4] = new QTreeWidgetItem(QStringList("Rumble")));
   opts.last()->addChild(m_wiimoteStatusItems[5] = new QTreeWidgetItem(QStringList("Extension")));
 
+  m_wiimoteStatusItems[3]->addChild(m_wiimoteLedItems[0] = new QTreeWidgetItem(QStringList("Led [1]")));
+  m_wiimoteStatusItems[3]->addChild(m_wiimoteLedItems[1] = new QTreeWidgetItem(QStringList("Led [2]")));
+  m_wiimoteStatusItems[3]->addChild(m_wiimoteLedItems[2] = new QTreeWidgetItem(QStringList("Led [3]")));
+  m_wiimoteStatusItems[3]->addChild(m_wiimoteLedItems[3] = new QTreeWidgetItem(QStringList("Led [4]")));
 
   ui->centralwidget->layout()->addWidget(graphics);
 
@@ -292,14 +294,33 @@ opts.last()->setText(1, "                    ");
 
   ui->dockWidget->setWindowTitle("Wiiremote[" + QString::number(1) + "]: " + m_interface->dbusWiimoteGetMacAddress(1).value());
 
-updateWiimoteComboBox();
+
   label->setMargin(2);
 
   m_wiimoteBatteryProgressBar->setMaximum(100);
   m_wiimoteBatteryProgressBar->setMinimum(0);
-  m_wiimoteBatteryProgressBar->setValue(iface->dbusWiimoteGetBatteryLife(1).value());
+  m_wiimoteBatteryProgressBar->setValue(iface->dbusWiimoteGetBatteryLife(m_id).value());
+
+  clearButtons();
+  updateWiimoteComboBox();
+  dbusWiimoteLedStatusChanged(m_id, m_interface->dbusWiimoteGetLedStatus(m_id).value());
+  dbusWiimoteRumbleStatusChanged(m_id, m_interface->dbusWiimoteGetRumbleStatus(m_id).value());
+  if (m_interface->dbusIsClassicConnected(m_id).value()) dbusClassicPlugged(m_id);
+  if (m_interface->dbusIsNunchukConnected(m_id).value()) dbusNunchukPlugged(m_id);
+
+
+  startTimer(1000);
 }
 
+void ToolkitMainWindow::timerEvent(QTimerEvent *event) {
+  if (!m_interface->dbusIsWiimoteConnected(m_id).value())
+    return;
+
+  m_wiimoteStatusItems[0]->setText(1, QString::number(m_interface->dbusWiimoteGetCurrentLatency(m_id).value()) + "ms");
+  m_wiimoteStatusItems[1]->setText(1, QString::number(m_interface->dbusWiimoteGetAverageLatency(m_id).value()) + "ms");
+  m_wiimoteStatusItems[2]->setText(1, QString::number(m_interface->dbusWiimoteGetBatteryLife(m_id).value()) + "%");
+
+}
 
 void ToolkitMainWindow::updateWiimoteComboBox() {
   m_wiimoteComboBox->clear();
@@ -309,112 +330,212 @@ void ToolkitMainWindow::updateWiimoteComboBox() {
 
 void ToolkitMainWindow::dbusWiimoteConnected(uint id) {
   updateWiimoteComboBox();
-  m_nunchukConnected[id] = m_interface->dbusIsNunchukConnected(id);
-  m_classicConnected[id] = m_interface->dbusIsClassicConnected(id);
+
+  if (m_id != id)
+    return;
+
+  if (m_interface->dbusIsNunchukConnected(id))
+    m_wiimoteStatusItems[5]->setText(1, "nunchuk"); else
+  if (m_interface->dbusIsClassicConnected(id))
+    m_wiimoteStatusItems[5]->setText(1, "classic controller"); else
+    m_wiimoteStatusItems[5]->setText(1, "none");
 }
 
 void ToolkitMainWindow::dbusWiimoteDisconnected(uint id) {
   updateWiimoteComboBox();
-  m_nunchukConnected[id] = false;
-  m_classicConnected[id] = false;
+
+  if (m_id != id)
+    return;
+
+  m_wiimoteStatusItems[5]->setText(1, "none");
 }
 
 void ToolkitMainWindow::dbusNunchukPlugged(uint id) {
-  m_nunchukConnected[id] = true;
+  if (m_id != id)
+    return;
+
+  m_wiimoteStatusItems[5]->setText(1, "nunchuk");
 }
 
 void ToolkitMainWindow::dbusNunchukUnplugged(uint id) {
-  m_nunchukConnected[id] = false;
+  if (m_id != id)
+    return;
+
+  m_wiimoteStatusItems[5]->setText(1, "none");
 }
 
 void ToolkitMainWindow::dbusClassicPlugged(uint id) {
-  m_classicConnected[id] = true;
+  if (m_id != id)
+    return;
+
+  m_wiimoteStatusItems[5]->setText(1, "classic controller");
 }
 
 void ToolkitMainWindow::dbusClassicUnplugged(uint id) {
-  m_classicConnected[id] = false;
+  if (m_id != id)
+    return;
+
+  m_wiimoteStatusItems[5]->setText(1, "none");
 }
 
-
-
-
 void ToolkitMainWindow::dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle) {
+  if (m_id != id)
+    return;
+
+  ui->treeWidget->setUpdatesEnabled(false);
   m_infraredItems[5]->setText(1, QString::number(int(x)) + "x" + QString::number(int(y)));
   m_infraredItems[6]->setText(1, QString::number(angle));
   m_infraredItems[7]->setText(1, QString::number(size));
+  ui->treeWidget->setUpdatesEnabled(true);
 }
 
 void ToolkitMainWindow::dbusVirtualCursorLost(uint id) {
+  if (m_id != id)
+    return;
+
   m_infraredItems[4]->setText(1, "false");
 }
 
 void ToolkitMainWindow::dbusVirtualCursorFound(uint id) {
+  if (m_id != id)
+    return;
+
   m_infraredItems[4]->setText(1, "true");
 }
 
 void ToolkitMainWindow::dbusWiimoteAcc(uint id, const accdata &acc) {
+  if (m_id != id)
+    return;
+
+  ui->treeWidget->setUpdatesEnabled(false);
   m_accelerometerItems[0][0]->setText(1, QString::number(acc.x));
   m_accelerometerItems[0][1]->setText(1, QString::number(acc.y));
   m_accelerometerItems[0][2]->setText(1, QString::number(acc.z));
-  m_accelerometerItems[0][3]->setText(1, QString::number(acc.pitch));
-  m_accelerometerItems[0][4]->setText(1, QString::number(acc.roll));
+  m_accelerometerItems[0][3]->setText(1, QString::number(int(acc.pitch)) + QString::fromUtf8("°"));
+  m_accelerometerItems[0][4]->setText(1, QString::number(int(acc.roll)) + QString::fromUtf8("°"));
+  ui->treeWidget->setUpdatesEnabled(true);
 }
 
 void ToolkitMainWindow::dbusNunchukAcc(uint id, const accdata &acc) {
+  if (m_id != id)
+    return;
+
+  ui->treeWidget->setUpdatesEnabled(false);
   m_accelerometerItems[1][0]->setText(1, QString::number(acc.x));
   m_accelerometerItems[1][1]->setText(1, QString::number(acc.y));
   m_accelerometerItems[1][2]->setText(1, QString::number(acc.z));
-  m_accelerometerItems[1][3]->setText(1, QString::number(acc.pitch));
-  m_accelerometerItems[1][4]->setText(1, QString::number(acc.roll));
+  m_accelerometerItems[1][3]->setText(1, QString::number(acc.pitch) + QString::fromUtf8("⁰"));
+  m_accelerometerItems[1][4]->setText(1, QString::number(acc.roll) + QString::fromUtf8("⁰"));
+  ui->treeWidget->setUpdatesEnabled(true);
 }
 
 
 void ToolkitMainWindow::dbusWiimoteBatteryLife(uint id, uint8 life) {
+  if (m_id != id)
+    return;
 
+  m_wiimoteStatusItems[2]->setText(1, QString::number(life) + "%");
 }
 
-void ToolkitMainWindow::dbusWiimoteGeneralButtons(uint id, uint64 value) {
+void ToolkitMainWindow::clearButtons() {
   for (register int i = 0; i < 60; ++i) {
-    if (value & (uint64(1) << i))
-      m_wiimoteButtonItems[i]->setText(1, "[*]"); else
-      m_wiimoteButtonItems[i]->setText(1, "[ ]");
+    m_wiimoteButtonItems[i]->setText(1, "[ ]");
+    m_wiimoteButtonItems[i]->setData(0, Qt::UserRole, false);
   }
 }
 
+void ToolkitMainWindow::dbusWiimoteGeneralButtons(uint id, uint64 value) {
+  if (m_id != id)
+    return;
+
+  ui->treeWidget->setUpdatesEnabled(false);
+
+  for (register int i = 0; i < 60; ++i) {
+    if (value & (uint64(1) << i)) {
+      if (!m_wiimoteButtonItems[i]->data(0, Qt::UserRole).toBool()) {
+        m_wiimoteButtonItems[i]->setText(1, "[*]");
+        m_wiimoteButtonItems[i]->setData(0, Qt::UserRole, true);
+      }
+    } else {
+      if (m_wiimoteButtonItems[i]->data(0, Qt::UserRole).toBool()) {
+        m_wiimoteButtonItems[i]->setText(1, "[ ]");
+        m_wiimoteButtonItems[i]->setData(0, Qt::UserRole, false);
+      }
+    }
+  }
+
+  ui->treeWidget->setUpdatesEnabled(true);
+}
+
 void ToolkitMainWindow::dbusWiimoteInfrared(uint id, const QList< struct irpoint> &points) {
+ if (m_id != id)
+   return;
+
+ ui->treeWidget->setUpdatesEnabled(false);
+
  register int i = 0;
+ QString str;
 
- for (; i < points.count(); ++i)
-   m_infraredItems[i]->setText(1, QString::number(points[i].x) + "x" +
-                               QString::number(points[i].y) + ", size: " + QString::number(points[i].size));
+ for (; i < points.count(); ++i) {
+   str = QString::number(points[i].x) + "x" + QString::number(points[i].y) + ", size: " + QString::number(points[i].size);
+   if (m_infraredItems[i]->text(1) != str)
+     m_infraredItems[i]->setText(1, str);
+ }
+
+ str = "0x0, size: -1";
  for (; i < 4; ++i)
-   m_infraredItems[i]->setText(1, "0x0, size: -1");
+   if (m_infraredItems[i]->text(1) != str)
+     m_infraredItems[i]->setText(1, str);
 
+ ui->treeWidget->setUpdatesEnabled(true);
 }
 
 void ToolkitMainWindow::dbusWiimoteLedStatusChanged(uint id, uint8 status) {
+  if (m_id != id)
+    return;
+
   for (register int i = 0; i < 4; ++i)
-    if (status & (1 << i))
-      m_wiimoteLeds[i]->setIcon(QIcon(":/enabled_blue.png")); else
+    if (status & (1 << i)) {
+      m_wiimoteLeds[i]->setIcon(QIcon(":/enabled_blue.png"));
+      m_wiimoteLedItems[i]->setText(1, "on");
+    } else {
       m_wiimoteLeds[i]->setIcon(QIcon(":/disabled.png"));
+      m_wiimoteLedItems[i]->setText(1, "off");
+    }
 }
 
-void ToolkitMainWindow::dbusWiimoteRumbleStatusChanged(uint, uint8 status) {
-  if (status)
-    m_wiimoteRumble->setIcon(QIcon(":/rumble_on.png")); else
+void ToolkitMainWindow::dbusWiimoteRumbleStatusChanged(uint id, uint8 status) {
+  if (m_id != id)
+    return;
+
+  if (status) {
+    m_wiimoteRumble->setIcon(QIcon(":/rumble_on.png"));
+    m_wiimoteStatusItems[4]->setText(1, "on");
+  } else {
     m_wiimoteRumble->setIcon(QIcon(":/rumble_off.png"));
+    m_wiimoteStatusItems[4]->setText(1, "off");
+  }
 }
 
 
 void ToolkitMainWindow::dbusNunchukStick(uint id, const stickdata &stick) {
+  if (m_id != id)
+    return;
+
   m_stickItems[0]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 
 void ToolkitMainWindow::dbusClassicControllerLStick(uint id, const stickdata &stick) {
+  if (m_id != id)
+    return;
+
   m_stickItems[1]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 
 void ToolkitMainWindow::dbusClassicControllerRStick(uint id, const stickdata &stick) {
+  if (m_id != id)
+    return;
+
   m_stickItems[2]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 

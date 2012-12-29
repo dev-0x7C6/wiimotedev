@@ -20,16 +20,16 @@ class ToolkitMainWindow : public QMainWindow
 public:
   explicit ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphicsView *graphics, QWidget *parent = 0);
   ~ToolkitMainWindow();
-  
+
+protected:
+  void timerEvent(QTimerEvent *);
+
 private:
   Ui::ToolkitMainWindow *ui;
   DBusDeviceEventsInterface *m_interface;
 
   QComboBox *m_wiimoteComboBox;
   QProgressBar *m_wiimoteBatteryProgressBar;
-
-  QHash < uint32, bool> m_classicConnected;
-  QHash < uint32, bool> m_nunchukConnected;
 
   QTreeWidgetItem* m_accelerometerItems[2][5];
   QTreeWidgetItem* m_infraredItems[10];
@@ -38,9 +38,16 @@ private:
   QTreeWidgetItem* m_stickItems[3];
 
   QAction *m_wiimoteLeds[4];
+  QTreeWidgetItem *m_wiimoteLedItems[4];
   QAction *m_wiimoteRumble;
 
   void updateWiimoteComboBox();
+  void clearButtons();
+  void clearAccelerometers();
+
+  uint m_id;
+
+
 
 
 private slots:
