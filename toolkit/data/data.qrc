@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/">
-        <file>led_off.png</file>
-        <file>led_on.png</file>
         <file>cursor.png</file>
         <file>icon16.png</file>
         <file>rumble_off.png</file>

@@ -47,14 +47,16 @@ private:
 
   uint m_id;
 
-
-
-
 private slots:
+  void toggleRumble();
+  void toggleLed1();
+  void toggleLed2();
+  void toggleLed3();
+  void toggleLed4();
+
   void dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle);
   void dbusVirtualCursorLost(uint id);
   void dbusVirtualCursorFound(uint id);
-
   void dbusWiimoteAcc(uint id, const accdata &acc);
   void dbusWiimoteBatteryLife(uint id, uint8 life);
   void dbusWiimoteConnected(uint id);

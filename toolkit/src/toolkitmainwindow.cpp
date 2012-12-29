@@ -170,9 +170,6 @@ opts.last()->setText(1, "                    ");
   wiimoteVC->addChild(m_infraredItems[7] = new QTreeWidgetItem(QStringList("Distance")));
 
   opts.last()->addChild(wiimoteVC);
-
-
-
   opts << new QTreeWidgetItem();
   opts.last()->setText(0, "Extensions");
 
@@ -301,6 +298,12 @@ opts.last()->setText(1, "                    ");
   m_wiimoteBatteryProgressBar->setMinimum(0);
   m_wiimoteBatteryProgressBar->setValue(iface->dbusWiimoteGetBatteryLife(m_id).value());
 
+
+  connect(m_wiimoteLeds[0], SIGNAL(triggered()), this, SLOT(toggleLed1()));
+  connect(m_wiimoteLeds[1], SIGNAL(triggered()), this, SLOT(toggleLed2()));
+  connect(m_wiimoteLeds[2], SIGNAL(triggered()), this, SLOT(toggleLed3()));
+  connect(m_wiimoteLeds[3], SIGNAL(triggered()), this, SLOT(toggleLed4()));
+  connect(m_wiimoteRumble, SIGNAL(triggered()), this, SLOT(toggleRumble()));
   clearButtons();
   updateWiimoteComboBox();
   dbusWiimoteLedStatusChanged(m_id, m_interface->dbusWiimoteGetLedStatus(m_id).value());
@@ -321,6 +324,46 @@ void ToolkitMainWindow::timerEvent(QTimerEvent *event) {
   m_wiimoteStatusItems[2]->setText(1, QString::number(m_interface->dbusWiimoteGetBatteryLife(m_id).value()) + "%");
 
 }
+#include <QDebug>
+
+void ToolkitMainWindow::toggleRumble() {
+  qDebug() << "fail: " << m_interface->dbusWiimoteGetRumbleStatus(m_id).isValid();
+  bool status = m_interface->dbusWiimoteGetRumbleStatus(m_id).value();
+  qDebug() << status;
+  if (status)
+    m_interface->dbusWiimoteSetRumbleStatus(m_id, false); else
+    m_interface->dbusWiimoteSetRumbleStatus(m_id, true);
+}
+
+void ToolkitMainWindow::toggleLed1() {
+  quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
+  if (status & 0b0001)
+    m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b1110); else
+    m_interface->dbusWiimoteSetLedStatus(m_id, status | 0b0001);
+
+}
+
+void ToolkitMainWindow::toggleLed2() {
+  quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
+  if (status & 0b0010)
+    m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b1101); else
+    m_interface->dbusWiimoteSetLedStatus(m_id, status | 0b0010);
+}
+
+void ToolkitMainWindow::toggleLed3() {
+  quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
+  if (status & 0b0100)
+    m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b1011); else
+    m_interface->dbusWiimoteSetLedStatus(m_id, status | 0b0100);
+}
+
+void ToolkitMainWindow::toggleLed4() {
+  quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
+  if (status & 0b1000)
+    m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b0111); else
+    m_interface->dbusWiimoteSetLedStatus(m_id, status | 0b1000);
+}
+
 
 void ToolkitMainWindow::updateWiimoteComboBox() {
   m_wiimoteComboBox->clear();

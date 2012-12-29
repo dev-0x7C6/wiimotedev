@@ -29,10 +29,6 @@
 #include <QMenu>
 
 #include "interfaces/deviceevents.h"
-#include "widgets/wiimoteanalogitem.h"
-#include "widgets/wiimotebatteryitem.h"
-#include "widgets/wiimoteleditem.h"
-#include "widgets/wiimoterumbleitem.h"
 #include "src/selectwiimote.h"
 
 #include "headers/consts.h"
@@ -72,100 +68,36 @@ protected:
   virtual void resizeEvent(QResizeEvent*);
 
 private:
-  QGraphicsTextItem *accelerometrInfo;
-  QGraphicsTextItem *analogInfo;
-  QGraphicsTextItem *infraredInfo;
-  QGraphicsTextItem *statusInfo;
   QGraphicsLineItem *line;
   QGraphicsPixmapItem *cursor;
 
-  QGraphicsTextItem *wiimoteStdButtonText;
-  QGraphicsTextItem *wiimoteExtButtonText;
-
   QGraphicsEllipseItem *infraredPoints[4];
   QGraphicsLineItem *infraredLine[4];
-  WiimoteLedItem *ledPixmaps[4];
-  WiimoteBatteryItem *batteryItem;
-  WiimoteRumbleItem *rumbleItem;
   QTime timer;
-
-  QMenu menu;
-
-  double p;
-  double stableAccRoll;
-
-  double lineLength;
-  double angleDiff;
-
-  struct accdata nunchuk_acc;
-  struct accdata wiimote_acc;
-
-  QMap <uint64, QString> text_buttons_;
 
   DBusDeviceEventsInterface *iface;
   uint wiimoteId;
-  uint8 leds;
-  uint order;
-
-  SelectWiimote *selectWiimote;
-
 
   QGraphicsScene scene;
-
   QTimer infraredTimeout;
 
   double widthMultiplier;
   double heightMultiplier;
   double dotSizeMultiplier;
 
-  stickdata sticks[2];
-
   QString getReadableWiiremoteSequence(uint64);
 
-  int analogMode;
-
 private slots:
-  void updateAccelerometrInfo(int, int, int, double, double,
-                              int, int, int, double, double);
-  void updateAnalogInfo();
-  void updateButtonInfo(uint64);
-  void updateInfraredInfo(QList < struct irpoint>);
-  void updateStatusInfo();
-
-
-private slots:
-  void changeDevicePushed();
   void infraredCleanup();
-
-  void toggleRumble(bool);
-  void toggleLed1(bool);
-  void toggleLed2(bool);
-  void toggleLed3(bool);
-  void toggleLed4(bool);
 
   void dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle);
   void dbusVirtualCursorLost(uint id);
   void dbusVirtualCursorFound(uint id);
 
   void dbusWiimoteAcc(uint id, const accdata &acc);
-  void dbusWiimoteBatteryLife(uint id, uint8 life);
   void dbusWiimoteConnected(uint id);
   void dbusWiimoteDisconnected(uint id);
-  void dbusWiimoteGeneralButtons(uint id, uint64 value);
   void dbusWiimoteInfrared(uint id, const QList< struct irpoint> &points);
-  void dbusWiimoteLedStatusChanged(uint, uint8);
-  void dbusWiimoteRumbleStatusChanged(uint, uint8);
-
-  void dbusNunchukPlugged(uint id);
-  void dbusNunchukUnplugged(uint id);
-  void dbusClassicPlugged(uint id);
-  void dbusClassicUnplugged(uint id);
-
-  void dbusNunchukAcc(uint id, const accdata &acc);
-  void dbusNunchukStick(uint id, const stickdata &stick);
-
-  void dbusClassicControllerLStick(uint id, const stickdata &stick);
-  void dbusClassicControllerRStick(uint id, const stickdata &stick);
 };
 
 #endif // MAINWINDOW_H

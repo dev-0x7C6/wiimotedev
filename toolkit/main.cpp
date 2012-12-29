@@ -69,32 +69,14 @@ int main(int argc, char *argv[])
   if (application.arguments().count() > 1)
     id = application.arguments().at(1).toInt();
 
-  MainWindow window(&interface, id);
-  QObject::connect(&interface, SIGNAL(dbusClassicControllerPlugged(uint)), &window, SLOT(dbusClassicPlugged(uint)));
-  QObject::connect(&interface, SIGNAL(dbusClassicControllerUnplugged(uint)), &window, SLOT(dbusClassicUnplugged(uint)));
-  QObject::connect(&interface, SIGNAL(dbusClassicControllerRStick(uint,const stickdata&)), &window, SLOT(dbusClassicControllerRStick(uint,const stickdata&)));
-  QObject::connect(&interface, SIGNAL(dbusClassicControllerLStick(uint,const stickdata&)), &window, SLOT(dbusClassicControllerLStick(uint,const stickdata&)));
+  MainWindow *window = new MainWindow(&interface, id);
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(uint,double,double,double,double)), window, SLOT(dbusVirtualCursorPosition(uint,double,double,double,double)));
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(uint)), window, SLOT(dbusVirtualCursorFound(uint)));
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(uint)), window, SLOT(dbusVirtualCursorLost(uint)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(uint,const accdata&)), window, SLOT(dbusWiimoteAcc(uint,const accdata&)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(uint, const QList< irpoint>&)), window, SLOT(dbusWiimoteInfrared(uint, const QList<struct irpoint>&)));
 
-  QObject::connect(&interface, SIGNAL(dbusNunchukAcc(uint,const accdata&)), &window, SLOT(dbusNunchukAcc(uint,const accdata&)));
-  QObject::connect(&interface, SIGNAL(dbusNunchukPlugged(uint)), &window, SLOT(dbusNunchukPlugged(uint)));
-  QObject::connect(&interface, SIGNAL(dbusNunchukUnplugged(uint)), &window, SLOT(dbusNunchukUnplugged(uint)));
-  QObject::connect(&interface, SIGNAL(dbusNunchukStick(uint, const stickdata&)), &window, SLOT(dbusNunchukStick(uint,const stickdata&)));
-
-  QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(uint,double,double,double,double)), &window, SLOT(dbusVirtualCursorPosition(uint,double,double,double,double)));
-  QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(uint)), &window, SLOT(dbusVirtualCursorFound(uint)));
-  QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(uint)), &window, SLOT(dbusVirtualCursorLost(uint)));
-
-  QObject::connect(&interface, SIGNAL(dbusWiimoteConnected(uint)), &window, SLOT(dbusWiimoteConnected(uint)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(uint)), &window, SLOT(dbusWiimoteDisconnected(uint)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(uint,const accdata&)), &window, SLOT(dbusWiimoteAcc(uint,const accdata&)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteBatteryLife(uint,uint8)), &window, SLOT(dbusWiimoteBatteryLife(uint,uint8)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteGeneralButtons(uint,uint64)), &window, SLOT(dbusWiimoteGeneralButtons(uint,uint64)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(uint, const QList< irpoint>&)), &window, SLOT(dbusWiimoteInfrared(uint, const QList<struct irpoint>&)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteLedStatusChanged(uint,uint8)), &window, SLOT(dbusWiimoteLedStatusChanged(uint,uint8)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteRumbleStatusChanged(uint,uint8)), &window, SLOT(dbusWiimoteRumbleStatusChanged(uint,uint8)));
-
-
-  ToolkitMainWindow toolkit(&interface, &window);
+  ToolkitMainWindow toolkit(&interface, window);
   toolkit.show();
 
   return application.exec();

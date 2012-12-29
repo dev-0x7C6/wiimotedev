@@ -20,10 +20,6 @@ set(toolkit_sources
   ${CMAKE_SOURCE_DIR}/interfaces/interfaces.h
   src/mainwindow.cpp
   src/selectwiimote.cpp
-  widgets/wiimoteanalogitem.cpp
-  widgets/wiimotebatteryitem.cpp
-  widgets/wiimoteleditem.cpp
-  widgets/wiimoterumbleitem.cpp
   src/toolkitmainwindow.cpp
   main.cpp
 )
@@ -36,16 +32,12 @@ set(toolkit_headers_qt
   ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.h
   src/mainwindow.h
   src/selectwiimote.h
-  widgets/wiimoteanalogitem.h
-  widgets/wiimotebatteryitem.h
-  widgets/wiimoteleditem.h
-  widgets/wiimoterumbleitem.h
   src/toolkitmainwindow.h
 )
 
 set(toolkit_uis
   ui/selectwiimote.ui
-src/toolkitmainwindow.ui
+  ui/toolkitmainwindow.ui
 )
 
 set(resources
@@ -62,7 +54,6 @@ target_link_libraries(wiimotedev-toolkit
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${QT_QTGUI_LIBRARY}
-  ${QT_QTOPENGL_LIBRARY}
 )
 
 install(TARGETS wiimotedev-toolkit DESTINATION  ${WIIMOTEDEV_BIN_DIR})
