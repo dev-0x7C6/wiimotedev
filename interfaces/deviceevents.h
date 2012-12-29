@@ -40,8 +40,8 @@ public Q_SLOTS:
   QDBusReply < bool> dbusIsNunchukConnected(uint id);
   QDBusReply < bool> dbusIsWiimoteConnected(uint id);
 
-  QDBusReply < uint8> dbusWiimoteAverageLatency(uint id);
-  QDBusReply < uint8> dbusWiimoteCurrentLatency(uint id);
+  QDBusReply < uint> dbusWiimoteAverageLatency(uint id);
+  QDBusReply < uint> dbusWiimoteCurrentLatency(uint id);
   QDBusReply < uint8> dbusWiimoteGetStatus(uint id);
   QDBusReply < uint> dbusWiimoteGetBatteryLife(uint id);
   QDBusReply < QString> dbusWiimoteGetMacAddress(uint id);
