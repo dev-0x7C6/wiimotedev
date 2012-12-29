@@ -63,9 +63,11 @@ void WiimoteMessageThread::run() {
 
   QElapsedTimer *m_elapsed = new QElapsedTimer();
   QElapsedTimer *m_powersave = new QElapsedTimer();
+  QElapsedTimer *m_updateState = new QElapsedTimer();
   m_virtualCursor = new VirtualCursor;
   m_elapsed->start();
   m_powersave->start();
+  m_updateState->start();
 
   cwiid_process_wiimote_init();
   cwiid_process_classic_init();
@@ -91,6 +93,12 @@ void WiimoteMessageThread::run() {
 
     m_mutex->lock();
     m_device->getMesgStruct(&count, &mesg, &time);
+
+    if (m_updateState->hasExpired(60000)) {
+      m_device->requestStatus();
+      m_updateState->restart();
+    }
+
     m_mutex->unlock();
 
     for (register int i = 0; i < count; ++i) {
@@ -175,6 +183,7 @@ void WiimoteMessageThread::run() {
 
   delete m_device;
   delete m_elapsed;
+  delete m_updateState;
   delete m_virtualCursor;
   m_device = 0;
 }
