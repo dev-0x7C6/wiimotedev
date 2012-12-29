@@ -30,6 +30,7 @@ client side!
 - Fixed wrong return type for dbusWiimoteAverageLatency and 
 dbusWiimoteCurrentLatency.
 - Fixed dbusWiimoteBatteryLife signal, now it should be emitted.
+- Fixed wrong status in dbusWiimoteGetRumbleStatus.
 
 1.4.1
 General: 
