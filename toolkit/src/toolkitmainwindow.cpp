@@ -114,7 +114,7 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
 
   opts << new QTreeWidgetItem();
   opts.last()->setText(0, "Accelerometer");
-
+opts.last()->setText(1, "                    ");
   opts.last()->addChild(m_accelerometerItems[0][0] = new QTreeWidgetItem(QStringList("X-Axis")));
   opts.last()->addChild(m_accelerometerItems[0][1] = new QTreeWidgetItem(QStringList("Y-Axis")));
   opts.last()->addChild(m_accelerometerItems[0][2] = new QTreeWidgetItem(QStringList("Z-Axis")));
@@ -216,6 +216,10 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
   nunchukButtons->addChild(nunchukTilt);
 
   nunchuk->addChild(nunchukButtons);
+  m_stickItems[0] = new QTreeWidgetItem();
+  m_stickItems[0]->setText(0, "Stick");
+  nunchuk->addChild(m_stickItems[0]);
+
 
   QTreeWidgetItem *classic = new QTreeWidgetItem();
   classic->setText(0, "Classic Controller (Pro)");
@@ -223,8 +227,8 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
   QTreeWidgetItem *classicButtons = new QTreeWidgetItem();
   classicButtons->setText(0, "Buttons");
   QTreeWidgetItem *classicDPad = new QTreeWidgetItem(QStringList("DPad"));
-  QTreeWidgetItem *classicLStick = new QTreeWidgetItem(QStringList("Stick [Left]"));
-  QTreeWidgetItem *classicRStick = new QTreeWidgetItem(QStringList("Stick [Right]"));
+  QTreeWidgetItem *classicLStick = new QTreeWidgetItem(QStringList("Stick [L]"));
+  QTreeWidgetItem *classicRStick = new QTreeWidgetItem(QStringList("Stick [R]"));
 
   classicButtons->addChild(m_wiimoteButtonItems[37] = new QTreeWidgetItem(QStringList("X")));
   classicButtons->addChild(m_wiimoteButtonItems[38] = new QTreeWidgetItem(QStringList("Y")));
@@ -254,6 +258,12 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
   classicButtons->addChild(classicRStick);
   classic->addChild(classicButtons);
 
+  m_stickItems[1] = new QTreeWidgetItem();
+  m_stickItems[1]->setText(0, "Stick [L]");
+  classic->addChild(m_stickItems[1]);
+  m_stickItems[2] = new QTreeWidgetItem();
+  m_stickItems[2]->setText(0, "Stick [R]");
+  classic->addChild(m_stickItems[2]);
 
   opts.last()->addChild(classic);
 
@@ -272,10 +282,15 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
 
   ui->centralwidget->layout()->addWidget(graphics);
 
-
+  ui->treeWidget->header()->setStretchLastSection(false);
+  ui->treeWidget->header()->setResizeMode(0, QHeaderView::Stretch);
+  ui->treeWidget->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+  ui->treeWidget->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+  ui->treeWidget->header()->setResizeMode(3, QHeaderView::ResizeToContents);
 
   ui->treeWidget->insertTopLevelItems(0, opts);
 
+  ui->dockWidget->setWindowTitle("Wiiremote[" + QString::number(1) + "]: " + m_interface->dbusWiimoteGetMacAddress(1).value());
 
 updateWiimoteComboBox();
   label->setMargin(2);
@@ -392,15 +407,15 @@ void ToolkitMainWindow::dbusWiimoteRumbleStatusChanged(uint, uint8 status) {
 
 
 void ToolkitMainWindow::dbusNunchukStick(uint id, const stickdata &stick) {
-
+  m_stickItems[0]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 
 void ToolkitMainWindow::dbusClassicControllerLStick(uint id, const stickdata &stick) {
-
+  m_stickItems[1]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 
 void ToolkitMainWindow::dbusClassicControllerRStick(uint id, const stickdata &stick) {
-
+  m_stickItems[2]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 
 ToolkitMainWindow::~ToolkitMainWindow()

@@ -35,6 +35,7 @@ private:
   QTreeWidgetItem* m_infraredItems[10];
   QTreeWidgetItem* m_wiimoteStatusItems[10];
   QTreeWidgetItem* m_wiimoteButtonItems[64];
+  QTreeWidgetItem* m_stickItems[3];
 
   QAction *m_wiimoteLeds[4];
   QAction *m_wiimoteRumble;
