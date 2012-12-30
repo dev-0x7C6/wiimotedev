@@ -19,7 +19,6 @@ set(toolkit_sources
   ${CMAKE_SOURCE_DIR}/interfaces/interfaces.cpp
   ${CMAKE_SOURCE_DIR}/interfaces/interfaces.h
   src/mainwindow.cpp
-  src/selectwiimote.cpp
   src/toolkitmainwindow.cpp
   main.cpp
 )
@@ -31,12 +30,10 @@ set(toolkit_headers
 set(toolkit_headers_qt
   ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.h
   src/mainwindow.h
-  src/selectwiimote.h
   src/toolkitmainwindow.h
 )
 
 set(toolkit_uis
-  ui/selectwiimote.ui
   ui/toolkitmainwindow.ui
 )
 

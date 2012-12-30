@@ -48,28 +48,7 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  QList < uint> list = interface.dbusGetWiimoteList();
-
-  int id = 1;
-
-  if (!list.count()) {
-    QMessageBox::warning(0, "Warning", "No wiiremotes connected", QMessageBox::Ok);
-  }
-
-  if (list.count() == 1)
-    id = list.first();
-
-  if (list.count() > 1) {
-    SelectWiimote select;
-    select.setWiimoteList(list);
-    select.exec();
-    id = select.getSelectedWiimote();
-  }
-
-  if (application.arguments().count() > 1)
-    id = application.arguments().at(1).toInt();
-
-  MainWindow *window = new MainWindow(&interface, id);
+  MainWindow *window = new MainWindow(&interface, 0);
   QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(uint,double,double,double,double)), window, SLOT(dbusVirtualCursorPosition(uint,double,double,double,double)));
   QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(uint)), window, SLOT(dbusVirtualCursorFound(uint)));
   QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(uint)), window, SLOT(dbusVirtualCursorLost(uint)));

@@ -29,7 +29,6 @@
 #include <QMenu>
 
 #include "interfaces/deviceevents.h"
-#include "src/selectwiimote.h"
 
 #include "headers/consts.h"
 
