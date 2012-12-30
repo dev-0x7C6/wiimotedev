@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
   QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(uint)), window, SLOT(dbusVirtualCursorLost(uint)));
   QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(uint,const accdata&)), window, SLOT(dbusWiimoteAcc(uint,const accdata&)));
   QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(uint, const QList< irpoint>&)), window, SLOT(dbusWiimoteInfrared(uint, const QList<struct irpoint>&)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(uint)), window, SLOT(dbusWiimoteDisconnected(uint)));
 
   ToolkitMainWindow toolkit(&interface, window);
   toolkit.show();

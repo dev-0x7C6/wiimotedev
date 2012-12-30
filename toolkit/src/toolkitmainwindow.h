@@ -45,11 +45,12 @@ private:
   QAction *m_classicConnected;
   QAction *m_nunchukConnected;
   QAction *m_cursorVisible;
-  MainWindow *m_mainWindow;
+  QList < QTreeWidgetItem*> opts;
 
   void updateWiimoteComboBox();
 
   uint m_id;
+  MainWindow *m_mainWindow;
 
 private slots:
   void wiimoteComboBoxChanged(int);
@@ -58,6 +59,13 @@ private slots:
   void toggleLed2();
   void toggleLed3();
   void toggleLed4();
+  void pressedPoint1();
+  void pressedPoint2();
+  void pressedPoint3();
+  void pressedPoint4();
+  void pressedClassic();
+  void pressedNunchuk();
+  void pressedCursor();
   void changeWiimote(uint id);
 
   void dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle);

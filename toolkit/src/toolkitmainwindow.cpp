@@ -5,7 +5,8 @@
 #include <QLabel>
 #include <QProgressBar>
 
-#include <QDebug>
+#include "../config.h"
+
 ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, MainWindow *graphics, QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::ToolkitMainWindow),
@@ -140,8 +141,6 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, MainWindo
   m_wiimoteLeds[2]->setData(false);
   m_wiimoteLeds[3]->setData(false);
 
-
-  QList < QTreeWidgetItem*> opts;
   opts << new QTreeWidgetItem();
   opts.last()->setText(0, "Accelerometer");
   opts.last()->setText(1, "                  ");
@@ -318,10 +317,15 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, MainWindo
 
   ui->treeWidget->insertTopLevelItems(0, opts);
 
-  ui->dockWidget->setWindowTitle("Wiiremote[" + QString::number(1) + "]: " + m_interface->dbusWiimoteGetMacAddress(1).value());
 
   label->setMargin(2);
-
+  connect(m_wiimotePoints[0], SIGNAL(triggered()), this, SLOT(pressedPoint1()));
+  connect(m_wiimotePoints[1], SIGNAL(triggered()), this, SLOT(pressedPoint2()));
+  connect(m_wiimotePoints[2], SIGNAL(triggered()), this, SLOT(pressedPoint3()));
+  connect(m_wiimotePoints[3], SIGNAL(triggered()), this, SLOT(pressedPoint4()));
+  connect(m_classicConnected, SIGNAL(triggered()), this, SLOT(pressedClassic()));
+  connect(m_nunchukConnected, SIGNAL(triggered()), this, SLOT(pressedNunchuk()));
+  connect(m_cursorVisible, SIGNAL(triggered()), this, SLOT(pressedCursor()));
   connect(m_wiimoteLeds[0], SIGNAL(triggered()), this, SLOT(toggleLed1()));
   connect(m_wiimoteLeds[1], SIGNAL(triggered()), this, SLOT(toggleLed2()));
   connect(m_wiimoteLeds[2], SIGNAL(triggered()), this, SLOT(toggleLed3()));
@@ -336,10 +340,49 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, MainWindo
   startTimer(1000);
 
   connect(m_wiimoteComboBox, SIGNAL(activated(int)), this, SLOT(wiimoteComboBoxChanged(int)));
+
+  setWindowTitle("Wiimotedev-Toolkit " + QString::number(WIIMOTEDEV_VERSION_MAJOR) + '.' +
+                 QString::number(WIIMOTEDEV_VERSION_MINOR) + '.' +
+                 QString::number(WIIMOTEDEV_VERSION_PATCH));
 }
 
 void ToolkitMainWindow::wiimoteComboBoxChanged(int index) {
   changeWiimote(m_wiimoteComboBox->itemData(index).toUInt());
+}
+
+void ToolkitMainWindow::pressedPoint1() {
+  ui->treeWidget->expandItem(opts.at(2));
+  m_infraredItems[0]->setSelected(!m_infraredItems[0]->isSelected());
+}
+
+void ToolkitMainWindow::pressedPoint2() {
+  ui->treeWidget->expandItem(opts.at(2));
+  m_infraredItems[1]->setSelected(!m_infraredItems[1]->isSelected());
+}
+
+void ToolkitMainWindow::pressedPoint3() {
+  ui->treeWidget->expandItem(opts.at(2));
+  m_infraredItems[2]->setSelected(!m_infraredItems[2]->isSelected());
+}
+
+void ToolkitMainWindow::pressedPoint4() {
+  ui->treeWidget->expandItem(opts.at(2));
+  m_infraredItems[3]->setSelected(!m_infraredItems[3]->isSelected());
+}
+
+void ToolkitMainWindow::pressedClassic() {
+  ui->treeWidget->expandItem(opts.at(3));
+  opts[3]->child(1)->setExpanded(!opts[3]->child(1)->isExpanded());
+}
+
+void ToolkitMainWindow::pressedNunchuk() {
+  ui->treeWidget->expandItem(opts.at(3));
+  opts[3]->child(0)->setExpanded(!opts[3]->child(0)->isExpanded());
+}
+
+void ToolkitMainWindow::pressedCursor() {
+  ui->treeWidget->expandItem(opts.at(2));
+  opts[2]->child(4)->setExpanded(!opts[2]->child(4)->isExpanded());
 }
 
 void ToolkitMainWindow::updateWiimoteComboBox() {
@@ -401,6 +444,10 @@ void ToolkitMainWindow::timerEvent(QTimerEvent *event) {
   m_wiimoteStatusItems[0]->setText(1, QString::number(m_interface->dbusWiimoteGetCurrentLatency(m_id).value()) + "ms");
   m_wiimoteStatusItems[1]->setText(1, QString::number(m_interface->dbusWiimoteGetAverageLatency(m_id).value()) + "ms");
   m_wiimoteStatusItems[2]->setText(1, QString::number(m_interface->dbusWiimoteGetBatteryLife(m_id).value()) + "%");
+
+  m_wiimoteBatteryProgressBar->setMaximum(100);
+  m_wiimoteBatteryProgressBar->setMinimum(0);
+  m_wiimoteBatteryProgressBar->setValue(m_interface->dbusWiimoteGetBatteryLife(m_id).value());
 
 }
 
@@ -585,6 +632,9 @@ void ToolkitMainWindow::dbusWiimoteBatteryLife(uint id, uint8 life) {
   if (m_id != id)
     return;
 
+  m_wiimoteBatteryProgressBar->setMaximum(100);
+  m_wiimoteBatteryProgressBar->setMinimum(0);
+  m_wiimoteBatteryProgressBar->setValue(life);
   m_wiimoteStatusItems[2]->setText(1, QString::number(life) + "%");
 }
 

@@ -89,6 +89,9 @@ void MainWindow::dbusWiimoteConnected(uint id) {
 void MainWindow::dbusWiimoteDisconnected(uint id){
   if (wiimoteId != id)
     return;
+
+  dbusVirtualCursorLost(id);
+  dbusWiimoteInfrared(id, QList < irpoint>());
 }
 
 void MainWindow::setWiimoteId(uint id) {
