@@ -64,6 +64,8 @@ public:
     modeNunchuk
   };
 
+  void setWiimoteId(uint id);
+
 protected:
   virtual void resizeEvent(QResizeEvent*);
 

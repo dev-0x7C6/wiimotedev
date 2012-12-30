@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QGraphicsView>
 #include "interfaces/deviceevents.h"
+#include <src/mainwindow.h>
 
 class QComboBox;
 class QProgressBar;
@@ -18,7 +19,7 @@ class ToolkitMainWindow : public QMainWindow
   Q_OBJECT
   
 public:
-  explicit ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphicsView *graphics, QWidget *parent = 0);
+  explicit ToolkitMainWindow(DBusDeviceEventsInterface *iface, MainWindow *graphics, QWidget *parent = 0);
   ~ToolkitMainWindow();
 
 protected:
@@ -44,19 +45,20 @@ private:
   QAction *m_classicConnected;
   QAction *m_nunchukConnected;
   QAction *m_cursorVisible;
+  MainWindow *m_mainWindow;
 
   void updateWiimoteComboBox();
-  void clearButtons();
-  void clearAccelerometers();
 
   uint m_id;
 
 private slots:
+  void wiimoteComboBoxChanged(int);
   void toggleRumble();
   void toggleLed1();
   void toggleLed2();
   void toggleLed3();
   void toggleLed4();
+  void changeWiimote(uint id);
 
   void dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle);
   void dbusVirtualCursorLost(uint id);

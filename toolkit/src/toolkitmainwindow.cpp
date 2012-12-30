@@ -6,11 +6,12 @@
 #include <QProgressBar>
 
 #include <QDebug>
-ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphicsView *graphics, QWidget *parent) :
+ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, MainWindow *graphics, QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::ToolkitMainWindow),
   m_interface(iface),
-  m_id(1)
+  m_id(1),
+  m_mainWindow(graphics)
 {
   QPalette windowColor;
   QBrush brush(QColor(255, 255, 255, 255));
@@ -110,16 +111,16 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
   m_wiimoteBatteryProgressBar->setFormat("Battery: %p%");
 
   ui->topTool->setToolButtonStyle(Qt::ToolButtonTextUnderIcon);
-  m_classicConnected = ui->topTool->addAction(QIcon(":/controller_active.png"), "[*]");
-  m_nunchukConnected = ui->topTool->addAction(QIcon(":/nunchuk_active.png"), "[*]");
+  m_classicConnected = ui->topTool->addAction(QIcon(":/controller_active.png"), "Classic[*]");
+  m_nunchukConnected = ui->topTool->addAction(QIcon(":/nunchuk_active.png"), "Nunchuk[*]");
   ui->topTool->addSeparator();
-  m_wiimoteRumble = ui->topTool->addAction(QIcon(":/rumble_off.png"), "[ ]");
+  m_wiimoteRumble = ui->topTool->addAction(QIcon(":/rumble_off.png"), "Rumble[ ]");
   ui->topTool->addSeparator();
-  m_cursorVisible = ui->topTool->addAction(QIcon(":/cursor_disabled.png"), "Cursor [ ]");
-  m_wiimotePoints[0] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Point [1]");
-  m_wiimotePoints[1] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Point [2]");
-  m_wiimotePoints[2] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Point [3]");
-  m_wiimotePoints[3] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Point [4]");
+  m_cursorVisible = ui->topTool->addAction(QIcon(":/cursor_disabled.png"), "Cursor[ ]");
+  m_wiimotePoints[0] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Point[1]");
+  m_wiimotePoints[1] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Point[2]");
+  m_wiimotePoints[2] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Point[3]");
+  m_wiimotePoints[3] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Point[4]");
   m_wiimotePoints[0]->setData(false);
   m_wiimotePoints[1]->setData(false);
   m_wiimotePoints[2]->setData(false);
@@ -130,10 +131,10 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
 //  ui->topTool->addWidget(widget);
 
 
-  m_wiimoteLeds[0] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Led [1]");
-  m_wiimoteLeds[1] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Led [2]");
-  m_wiimoteLeds[2] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Led [3]");
-  m_wiimoteLeds[3] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Led [4]");
+  m_wiimoteLeds[0] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Led[1]");
+  m_wiimoteLeds[1] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Led[2]");
+  m_wiimoteLeds[2] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Led[3]");
+  m_wiimoteLeds[3] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Led[4]");
   m_wiimoteLeds[0]->setData(false);
   m_wiimoteLeds[1]->setData(false);
   m_wiimoteLeds[2]->setData(false);
@@ -319,23 +320,66 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
 
   ui->dockWidget->setWindowTitle("Wiiremote[" + QString::number(1) + "]: " + m_interface->dbusWiimoteGetMacAddress(1).value());
 
-
   label->setMargin(2);
-
-  m_wiimoteBatteryProgressBar->setMaximum(100);
-  m_wiimoteBatteryProgressBar->setMinimum(0);
-  m_wiimoteBatteryProgressBar->setValue(iface->dbusWiimoteGetBatteryLife(m_id).value());
-
 
   connect(m_wiimoteLeds[0], SIGNAL(triggered()), this, SLOT(toggleLed1()));
   connect(m_wiimoteLeds[1], SIGNAL(triggered()), this, SLOT(toggleLed2()));
   connect(m_wiimoteLeds[2], SIGNAL(triggered()), this, SLOT(toggleLed3()));
   connect(m_wiimoteLeds[3], SIGNAL(triggered()), this, SLOT(toggleLed4()));
   connect(m_wiimoteRumble, SIGNAL(triggered()), this, SLOT(toggleRumble()));
-  clearButtons();
+
+  QList < uint> ids = m_interface->dbusGetWiimoteList().value();
+  if (ids.isEmpty())
+    changeWiimote(0); else
+    changeWiimote(ids.first());
+
+  startTimer(1000);
+
+  connect(m_wiimoteComboBox, SIGNAL(activated(int)), this, SLOT(wiimoteComboBoxChanged(int)));
+}
+
+void ToolkitMainWindow::wiimoteComboBoxChanged(int index) {
+  changeWiimote(m_wiimoteComboBox->itemData(index).toUInt());
+}
+
+void ToolkitMainWindow::updateWiimoteComboBox() {
+  m_wiimoteComboBox->clear();
+  foreach (const uint &id, m_interface->dbusGetWiimoteList().value()) {
+    m_wiimoteComboBox->addItem("[" + QString::number(id) + "]-" + m_interface->dbusWiimoteGetMacAddress(id).value(), id);
+    m_wiimoteComboBox->setItemData(m_wiimoteComboBox->count() - 1, id);
+  }
+
+  for (register int i = 0; i < m_wiimoteComboBox->count(); ++i) {
+    if (m_wiimoteComboBox->itemData(i).toUInt() == m_id) {
+      m_wiimoteComboBox->setCurrentIndex(i);
+      break;
+    }
+  }
+}
+
+void ToolkitMainWindow::changeWiimote(uint id) {
+  m_id = id;
+  m_mainWindow->setWiimoteId(id);
+
+  for (register int i = 0; i < 60; ++i) {
+    m_wiimoteButtonItems[i]->setText(1, "[ ]");
+    m_wiimoteButtonItems[i]->setData(0, Qt::UserRole, false);
+  }
+
+  m_wiimoteStatusItems[0]->setText(1, "0ms");
+  m_wiimoteStatusItems[1]->setText(1, "0ms");
+  m_wiimoteStatusItems[2]->setText(1, "0%");
+
   updateWiimoteComboBox();
+  accdata acc;
+  memset(&acc, 0, sizeof(acc));
+
+  dbusWiimoteInfrared(m_id, QList< irpoint>());
+  dbusWiimoteAcc(m_id, acc);
   dbusWiimoteLedStatusChanged(m_id, m_interface->dbusWiimoteGetLedStatus(m_id).value());
   dbusWiimoteRumbleStatusChanged(m_id, m_interface->dbusWiimoteGetRumbleStatus(m_id).value());
+  dbusVirtualCursorPosition(m_id, 0, 0, 0, 0);
+  dbusVirtualCursorLost(m_id);
   if (m_interface->dbusIsClassicConnected(m_id).value())
     dbusClassicPlugged(m_id); else
     dbusClassicUnplugged(m_id);
@@ -343,8 +387,11 @@ ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, QGraphics
     dbusNunchukPlugged(m_id); else
     dbusNunchukUnplugged(m_id);
 
+  dbusWiimoteGeneralButtons(m_id, 0);
 
-  startTimer(1000);
+  m_wiimoteBatteryProgressBar->setMaximum(100);
+  m_wiimoteBatteryProgressBar->setMinimum(0);
+  m_wiimoteBatteryProgressBar->setValue(m_interface->dbusWiimoteGetBatteryLife(m_id).value());
 }
 
 void ToolkitMainWindow::timerEvent(QTimerEvent *event) {
@@ -393,18 +440,17 @@ void ToolkitMainWindow::toggleLed4() {
     m_interface->dbusWiimoteSetLedStatus(m_id, status | 0b1000);
 }
 
-
-void ToolkitMainWindow::updateWiimoteComboBox() {
-  m_wiimoteComboBox->clear();
-  foreach (const uint &id, m_interface->dbusGetWiimoteList().value())
-    m_wiimoteComboBox->addItem("[" + QString::number(id) + "]-" + m_interface->dbusWiimoteGetMacAddress(id).value(), id);
-}
-
 void ToolkitMainWindow::dbusWiimoteConnected(uint id) {
   updateWiimoteComboBox();
 
-  if (m_id != id)
-    return;
+  if (m_id == 0)
+    m_id = id; else
+  {
+    if (m_id != id)
+      return;
+  }
+
+  changeWiimote(m_id);
 
   if (m_interface->dbusIsNunchukConnected(id))
     m_wiimoteStatusItems[5]->setText(1, "nunchuk"); else
@@ -420,6 +466,12 @@ void ToolkitMainWindow::dbusWiimoteDisconnected(uint id) {
     return;
 
   m_wiimoteStatusItems[5]->setText(1, "none");
+
+  QList < uint> ids = m_interface->dbusGetWiimoteList().value();
+  if (ids.isEmpty())
+    changeWiimote(0); else
+    changeWiimote(ids.first());
+
 }
 
 void ToolkitMainWindow::dbusNunchukPlugged(uint id) {
@@ -427,7 +479,7 @@ void ToolkitMainWindow::dbusNunchukPlugged(uint id) {
     return;
 
   m_wiimoteStatusItems[5]->setText(1, "nunchuk");
-  m_nunchukConnected->setText("[*]");
+  m_nunchukConnected->setText("Nunchuk[*]");
   m_nunchukConnected->setIcon(QIcon(":/nunchuk_active.png"));
 }
 
@@ -436,8 +488,15 @@ void ToolkitMainWindow::dbusNunchukUnplugged(uint id) {
     return;
 
   m_wiimoteStatusItems[5]->setText(1, "none");
-  m_nunchukConnected->setText("[ ]");
+  m_nunchukConnected->setText("Nunchuk[ ]");
   m_nunchukConnected->setIcon(QIcon(":/nunchuk.png"));
+
+  accdata acc;
+  memset(&acc, 0, sizeof(acc));
+  stickdata stick;
+  memset(&stick, 0, sizeof(stick));
+  dbusNunchukStick(m_id, stick);
+  dbusNunchukAcc(m_id, acc);
 }
 
 void ToolkitMainWindow::dbusClassicPlugged(uint id) {
@@ -445,7 +504,7 @@ void ToolkitMainWindow::dbusClassicPlugged(uint id) {
     return;
 
   m_wiimoteStatusItems[5]->setText(1, "classic controller");
-  m_classicConnected->setText("[*]");
+  m_classicConnected->setText("Classic[*]");
   m_classicConnected->setIcon(QIcon(":/controller_active.png"));
 }
 
@@ -454,8 +513,13 @@ void ToolkitMainWindow::dbusClassicUnplugged(uint id) {
     return;
 
   m_wiimoteStatusItems[5]->setText(1, "none");
-  m_classicConnected->setText("[ ]");
+  m_classicConnected->setText("Classic[ ]");
   m_classicConnected->setIcon(QIcon(":/controller.png"));
+
+  stickdata stick;
+  memset(&stick, 0, sizeof(stick));
+  dbusClassicControllerLStick(m_id, stick);
+  dbusClassicControllerRStick(m_id, stick);
 }
 
 void ToolkitMainWindow::dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle) {
@@ -476,7 +540,7 @@ void ToolkitMainWindow::dbusVirtualCursorLost(uint id) {
 
   m_infraredItems[4]->setText(1, "false");
   m_cursorVisible->setIcon(QIcon(":/cursor_disabled.png"));
-  m_cursorVisible->setText("Cursor [ ]");
+  m_cursorVisible->setText("Cursor[ ]");
 
   dbusWiimoteInfrared(m_id, QList< irpoint>());
 }
@@ -487,7 +551,7 @@ void ToolkitMainWindow::dbusVirtualCursorFound(uint id) {
 
   m_infraredItems[4]->setText(1, "true");
   m_cursorVisible->setIcon(QIcon(":/cursor.png"));
-  m_cursorVisible->setText("Cursor [*]");
+  m_cursorVisible->setText("Cursor[*]");
 }
 
 void ToolkitMainWindow::dbusWiimoteAcc(uint id, const accdata &acc) {
@@ -522,13 +586,6 @@ void ToolkitMainWindow::dbusWiimoteBatteryLife(uint id, uint8 life) {
     return;
 
   m_wiimoteStatusItems[2]->setText(1, QString::number(life) + "%");
-}
-
-void ToolkitMainWindow::clearButtons() {
-  for (register int i = 0; i < 60; ++i) {
-    m_wiimoteButtonItems[i]->setText(1, "[ ]");
-    m_wiimoteButtonItems[i]->setData(0, Qt::UserRole, false);
-  }
 }
 
 void ToolkitMainWindow::dbusWiimoteGeneralButtons(uint id, uint64 value) {
@@ -605,11 +662,11 @@ void ToolkitMainWindow::dbusWiimoteRumbleStatusChanged(uint id, uint8 status) {
     return;
 
   if (status) {
-    m_wiimoteRumble->setText("[*]");
+    m_wiimoteRumble->setText("Rumble[*]");
     m_wiimoteRumble->setIcon(QIcon(":/rumble_on.png"));
     m_wiimoteStatusItems[4]->setText(1, "on");
   } else {
-    m_wiimoteRumble->setText("[ ]");
+    m_wiimoteRumble->setText("Rumble[ ]");
     m_wiimoteRumble->setIcon(QIcon(":/rumble_off.png"));
     m_wiimoteStatusItems[4]->setText(1, "off");
   }

@@ -91,6 +91,10 @@ void MainWindow::dbusWiimoteDisconnected(uint id){
     return;
 }
 
+void MainWindow::setWiimoteId(uint id) {
+  wiimoteId = id;
+}
+
 void MainWindow::resizeEvent(QResizeEvent *event) {
   QRect rect = geometry();
 
