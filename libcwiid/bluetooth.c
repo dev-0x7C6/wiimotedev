@@ -29,7 +29,7 @@
  * yet know how many wiimotes there are, we'll assume there are no more
  * than dev_count, and realloc to the actual number afterwards, since
  * reallocing to a smaller chunk should be fast. */
-#define BT_MAX_INQUIRY 64
+#define BT_MAX_INQUIRY 256
 
 /* timeout in 2 second units */
 int cwiid_get_bdinfo_array(int dev_id, unsigned int timeout, int max_bdinfo,

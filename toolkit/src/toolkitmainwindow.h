@@ -38,8 +38,12 @@ private:
   QTreeWidgetItem* m_stickItems[3];
 
   QAction *m_wiimoteLeds[4];
+  QAction *m_wiimotePoints[4];
   QTreeWidgetItem *m_wiimoteLedItems[4];
   QAction *m_wiimoteRumble;
+  QAction *m_classicConnected;
+  QAction *m_nunchukConnected;
+  QAction *m_cursorVisible;
 
   void updateWiimoteComboBox();
   void clearButtons();
