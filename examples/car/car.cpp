@@ -19,7 +19,6 @@
 
 #include <QtGui/QtGui>
 #include <math.h>
-#include "../../config.h"
 #include "car.h"
 
 #define checkWiimoteBtn(x1, x2) x1 & x2

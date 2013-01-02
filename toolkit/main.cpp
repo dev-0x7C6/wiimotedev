@@ -21,8 +21,6 @@
 #include <QMessageBox>
 #include <QTextCodec>
 
-#include "../config.h"
-
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "linux/usr/include/wiimotedev/deviceevents.h"
 
