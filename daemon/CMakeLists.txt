@@ -42,15 +42,13 @@ set(sources
 )
 
 set(headers
-  ${CMAKE_SOURCE_DIR}/adaptors/deviceevents.h
-  ${CMAKE_SOURCE_DIR}/adaptors/daemonservice.h
+  dbus/deviceevents.h
+  dbus/daemonservice.h
 
   wiimotemessagethread.h
   wiimotemanager.h
   settings.h
   wiimotedevice.h
-
-
 )
 
 qt4_wrap_cpp(sources ${headers})

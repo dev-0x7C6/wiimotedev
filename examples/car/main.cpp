@@ -37,17 +37,8 @@ const uint count = 4;
 int main(int argc, char *argv[])
 {
   QApplication app(argc, argv);
-  qRegisterMetaType< uint8> ("uint8");
-  qRegisterMetaType< uint16> ("uint16");
-  qRegisterMetaType< uint32> ("uint32");
-  qRegisterMetaType< uint64> ("uint64");
-  qRegisterMetaType< int8> ("int8");
-  qRegisterMetaType< int16> ("int16");
-  qRegisterMetaType< int32> ("int32");
-  qRegisterMetaType< int64> ("int64");
 
-  DBusDeviceEventsInterface *interface = new DBusDeviceEventsInterface(WIIMOTEDEV_DBUS_SERVICE_NAME,
-      WIIMOTEDEV_DBUS_OBJECT_EVENTS, QDBusConnection::systemBus(), 0);
+  DBusDeviceEventsInterface *interface = new DBusDeviceEventsInterface();
 
   if(!interface->isValid()) {
     QMessageBox::critical(0, "Critical", "Unable to connect with wiimotedev-daemon service", QMessageBox::Ok);
@@ -71,9 +62,6 @@ int main(int argc, char *argv[])
     QObject::connect(interface, SIGNAL(dbusWiimoteButtons(uint,uint64)), item, SLOT(dbusWiimoteButtons(uint,uint64)), Qt::QueuedConnection);
   }
 
-
-
-
   QGraphicsView view(scene);
   view.setRenderHints(QPainter::Antialiasing);
   view.setBackgroundBrush(Qt::darkGray);
@@ -83,6 +71,4 @@ int main(int argc, char *argv[])
   view.show();
 
   return app.exec();
-
-
 }

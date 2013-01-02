@@ -20,7 +20,12 @@
 #ifndef ADAPTORS_DAEMONSERVICE_H
 #define ADAPTORS_DAEMONSERVICE_H
 
-#include "adaptors.h"
+#include <wiimotedev/consts.h>
+
+#include <QDBusAbstractAdaptor>
+#include <QDBusConnection>
+#include <QDBusReply>
+#include <QDBusMetaType>
 
 class DBusServiceAdaptor : public QDBusAbstractAdaptor
 {
@@ -52,7 +57,6 @@ public:
 
 inline DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent)
 {
-  WIIMOTEDEV_REGISTER_META_TYPES;
   setAutoRelaySignals(true);
 }
 

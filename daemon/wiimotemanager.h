@@ -24,8 +24,8 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-#include "adaptors/deviceevents.h"
-#include "adaptors/daemonservice.h"
+#include "dbus/deviceevents.h"
+#include "dbus/daemonservice.h"
 #include "settings.h"
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "wiimotemessagethread.h"

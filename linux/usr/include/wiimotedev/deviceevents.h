@@ -23,7 +23,7 @@
 #include <wiimotedev/consts.h>
 
 #include <QDBusAbstractInterface>
-  #include <QDBusReply>
+#include <QDBusReply>
 #include <QDBusMetaType>
 
 #ifndef WIIMOTEDEV_MARSHALL
