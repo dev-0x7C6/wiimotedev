@@ -29,15 +29,6 @@
 int main(int argc, char *argv[])
 {  
   QApplication application(argc, argv);
-  qRegisterMetaType< uint8> ("uint8");
-  qRegisterMetaType< uint16> ("uint16");
-  qRegisterMetaType< uint32> ("uint32");
-  qRegisterMetaType< uint64> ("uint64");
-  qRegisterMetaType< int8> ("int8");
-  qRegisterMetaType< int16> ("int16");
-  qRegisterMetaType< int32> ("int32");
-  qRegisterMetaType< int64> ("int64");
-
   QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Utf-8"));
 
   DBusDeviceEventsInterface interface;
