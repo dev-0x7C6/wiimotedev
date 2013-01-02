@@ -24,7 +24,7 @@
 #include <QObject>
 #include <QBrush>
 
-#include "linux/usr/include/wiimotedev/consts.h"
+#include <wiimotedev/consts.h>
 
 class Car : public QObject, public QGraphicsItem
 {

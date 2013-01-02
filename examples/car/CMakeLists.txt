@@ -14,6 +14,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
         ${QT_QTCORE_INCLUDE_DIR}
         ${QT_QTDBUS_INCLUDE_DIR}
         ${QT_QTGUI_INCLUDE_DIR}
+${CMAKE_SOURCE_DIR}/linux/usr/include/
 )
 
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")

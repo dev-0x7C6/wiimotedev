@@ -20,11 +20,7 @@
 #ifndef DEVICEEVENTS_INTERFACE_H
 #define DEVICEEVENTS_INTERFACE_H
 
-#ifndef WIIMOTEDEV_PROJECT_SOURCE
-  #include <wiimotedev/consts.h>
-#else
-  #include "linux/usr/include/wiimotedev/consts.h"
-#endif
+#include <wiimotedev/consts.h>
 
 #include <QDBusAbstractInterface>
   #include <QDBusReply>
@@ -33,8 +29,6 @@
 #ifndef WIIMOTEDEV_MARSHALL
   #include <QDBusArgument>
 #endif
-
-#include "linux/usr/include/wiimotedev/consts.h"
 
 #ifndef WIIMOTEDEV_META_TYPES
 #define WIIMOTEDEV_META_TYPES
