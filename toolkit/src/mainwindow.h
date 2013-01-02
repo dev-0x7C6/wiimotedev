@@ -28,9 +28,9 @@
 #include <QPainter>
 #include <QMenu>
 
-#include "interfaces/deviceevents.h"
+#include "linux/usr/include/wiimotedev/deviceevents.h"
 
-#include "headers/consts.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 
 const double defaultPointMultiplier = 2.5;
 

@@ -24,13 +24,13 @@
 #include <QDBusConnection>
 #include <QDBusMetaType>
 
-#ifndef QWIIMOTEDEV_MARSHALL
+#ifndef WIIMOTEDEV_MARSHALL
 #include <QDBusArgument>
 #endif
 
-#include "headers/consts.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 
-#define QWIIMOTEDEV_REGISTER_META_TYPES                                    \
+#define WIIMOTEDEV_REGISTER_META_TYPES                                    \
   qRegisterMetaType< QList< struct irpoint> >("QList< irpoint>");          \
   qRegisterMetaType< QList< struct accdata> >("QList< accdata>");          \
   qRegisterMetaType< QList< struct stickdata> >("QList< stickdata>");      \
@@ -44,8 +44,8 @@
   qDBusRegisterMetaType< struct accdata>();                                \
   qDBusRegisterMetaType< struct stickdata>();
 
-#ifndef QWIIMOTEDEV_META_TYPES
-#define QWIIMOTEDEV_META_TYPES
+#ifndef WIIMOTEDEV_META_TYPES
+#define WIIMOTEDEV_META_TYPES
 
   Q_DECLARE_METATYPE(QList < irpoint>)
   Q_DECLARE_METATYPE(QList < accdata>)
@@ -58,8 +58,8 @@
 
 #endif
 
-#ifndef QWIIMOTEDEV_MARSHALL
-#define QWIIMOTEDEV_MARSHALL
+#ifndef WIIMOTEDEV_MARSHALL
+#define WIIMOTEDEV_MARSHALL
 
   QDBusArgument& operator<<(QDBusArgument& argument, const irpoint& point);
   const QDBusArgument& operator>>(const QDBusArgument& argument, irpoint& point);

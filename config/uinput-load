@@ -1,9 +1,0 @@
-#!/bin/bash
-# Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
-# Copyright (C) 2010 Bartłomiej Burdukiewicz
-# Contact: dev.strikeu@gmail.com
-
-dbus-send --system --dest=org.wiimotedev.io \
-       --type=method_call --print-reply --reply-timeout=3000 \
-       /profileManager org.wiimotedev.profileManager.loadProfile "string:$1"
-

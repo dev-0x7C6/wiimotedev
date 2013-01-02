@@ -31,7 +31,7 @@ class DBusServiceAdaptor : public QDBusAbstractAdaptor
 "    <method name=\"dbusReloadSequenceList\">\n"
 "      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
 "    </method>\n"
-"  </interface>");
+"  </interface>")
 
 public:
   DBusServiceAdaptor(QObject *parent);
@@ -49,5 +49,32 @@ public:
   inline bool isRegistred() { return registred; }
   Q_SLOT bool dbusReloadSequenceList();
 };
+
+inline DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent)
+{
+  WIIMOTEDEV_REGISTER_META_TYPES;
+  setAutoRelaySignals(true);
+}
+
+inline bool DBusServiceAdaptor::dbusReloadSequenceList()
+{
+  bool value;
+  QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+  return value;
+}
+
+inline DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
+{
+  new DBusServiceAdaptor(this);
+  registred = connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_SERVICE, this);
+}
+
+inline bool DBusServiceAdaptorWrapper::dbusReloadSequenceList()
+{
+  bool value;
+  QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+  return value;
+}
+
 
 #endif // ADAPTORS_DAEMONSERVICE_H

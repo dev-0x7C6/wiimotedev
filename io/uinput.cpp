@@ -27,7 +27,7 @@
 #include <stdlib.h>
 
 #include "adaptors/adaptors.h"
-#include "headers/consts.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 #include "syslog/syslog.h"
 #include "eiomanager/manager.h"
 

@@ -23,7 +23,7 @@
 #include <QSettings>
 #include <QStringList>
 
-#include "headers/consts.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 
 class QStringList;
 

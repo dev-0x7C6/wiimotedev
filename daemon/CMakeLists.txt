@@ -21,12 +21,9 @@ set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FL
 
 set(sources
   ${CMAKE_SOURCE_DIR}/adaptors/adaptors.h
-  ${CMAKE_SOURCE_DIR}/headers/consts.h
+  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
   ${CMAKE_SOURCE_DIR}/syslog/syslog.h
   ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
-
-  ${CMAKE_SOURCE_DIR}/adaptors/deviceevents.cpp
-  ${CMAKE_SOURCE_DIR}/adaptors/daemonservice.cpp
 
   wiimotemanager.cpp
   settings.cpp
@@ -46,6 +43,7 @@ set(sources
 set(headers
   ${CMAKE_SOURCE_DIR}/adaptors/deviceevents.h
   ${CMAKE_SOURCE_DIR}/adaptors/daemonservice.h
+
   wiimotemessagethread.h
   wiimotemanager.h
   settings.h
@@ -56,11 +54,12 @@ set(headers
 
 qt4_wrap_cpp(sources ${headers})
 
-add_executable(wiimotedev-daemon ${sources})
+add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
 target_link_libraries(wiimotedev-daemon
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
-  ${CWIID_LIBRARY}
+  libcwiid
+  ${BLUETOOTH_LIBRARIES}
 )
 
 install(TARGETS wiimotedev-daemon DESTINATION ${WIIMOTEDEV_SBIN_DIR})

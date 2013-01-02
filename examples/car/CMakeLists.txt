@@ -1,5 +1,5 @@
 # Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
-# Copyright (C) 2010 Bartłomiej Burdukiewicz
+# Copyright (C) 2008 Bartłomiej Burdukiewicz
 # Contact: dev.strikeu@gmail.com
 
 cmake_minimum_required(VERSION 2.6)
@@ -20,19 +20,16 @@ set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(car_example_sources
-  ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.cpp
-  ${CMAKE_SOURCE_DIR}/interfaces/interfaces.cpp
-  ${CMAKE_SOURCE_DIR}/interfaces/interfaces.h
   car.cpp
   main.cpp
 )
 
 set(car_example_headers
-  ${CMAKE_SOURCE_DIR}/headers/consts.h
+  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
 )
 
 set(car_example_headers_qt
-  ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
   car.h
 )
 
@@ -54,18 +51,15 @@ set(SOURCE_COPY
 )
 
 set(IFACES_COPY
-  ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.cpp
-  ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.h
-  ${CMAKE_SOURCE_DIR}/interfaces/interfaces.cpp
-  ${CMAKE_SOURCE_DIR}/interfaces/interfaces.h
+  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
 )
 
 set(HEADER_COPY
-  ${CMAKE_SOURCE_DIR}/headers/consts.h
+  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
 )
 
 install(FILES ${SOURCE_COPY} DESTINATION ${DIRECTORY} )
-install(FILES ${IFACES_COPY} DESTINATION ${DIRECTORY}/interfaces )
-install(FILES ${HEADER_COPY} DESTINATION ${DIRECTORY}/headers/ )
+install(FILES ${IFACES_COPY} DESTINATION ${DIRECTORY}/linux/usr/include/wiimotedev/)
+install(FILES ${HEADER_COPY} DESTINATION ${DIRECTORY}/linux/usr/include/wiimotedev/)
 
 install(TARGETS wiimotedev-car-example DESTINATION ${DIRECTORY})

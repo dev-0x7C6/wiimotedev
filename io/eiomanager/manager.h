@@ -34,8 +34,8 @@
 #include "eiobase/eioeventdevice.h"
 #include "eiobase/eiomousedevice.h"
 #include "eiobase/eiotouchscreen.h"
-#include "headers/consts.h"
-#include "interfaces/deviceevents.h"
+#include "linux/usr/include/wiimotedev/consts.h"
+#include "linux/usr/include/wiimotedev/deviceevents.h"
 #include "eiokeyboard/eioremotekeyboard.h"
 #include "eioinfrared/eioinfraredmouse.h"
 

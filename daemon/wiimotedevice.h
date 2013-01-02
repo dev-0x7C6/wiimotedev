@@ -27,13 +27,9 @@
 
 #include <QObject>
 
-#ifdef USE_STATIC_CWIID
-#include "libcwiid/cwiid.h"
-#else
-#include <cwiid.h>
-#endif
+#include "static/libcwiid/cwiid.h"
 
-#include "headers/consts.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 
 #define defaultReportFlags \
   CWIID_RPT_STATUS | \

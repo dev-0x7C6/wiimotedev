@@ -21,7 +21,7 @@
 #define EVENT_VIRTUAL_KEYBOARD_H
 
 #include "eiobase/eioeventdevice.h"
-#include "headers/consts.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 #include "helper/hashcompare.h"
 
 #include <QTimer>

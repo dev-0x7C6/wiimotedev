@@ -21,8 +21,8 @@
 #include <QMessageBox>
 #include <QTextCodec>
 
-#include "headers/consts.h"
-#include "interfaces/deviceevents.h"
+#include "linux/usr/include/wiimotedev/consts.h"
+#include "linux/usr/include/wiimotedev/deviceevents.h"
 
 #include "src/mainwindow.h"
 #include "src/toolkitmainwindow.h"
@@ -40,8 +40,7 @@ int main(int argc, char *argv[])
 
   QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Utf-8"));
 
-  DBusDeviceEventsInterface interface(WIIMOTEDEV_DBUS_SERVICE_NAME, WIIMOTEDEV_DBUS_OBJECT_EVENTS,
-                                      QDBusConnection::systemBus(), 0);
+  DBusDeviceEventsInterface interface;
 
   if (!interface.isValid()) {
     QMessageBox::critical(0, "Critical", "Unable to connect with wiimotedev-daemon service", QMessageBox::Ok);

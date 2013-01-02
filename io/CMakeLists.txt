@@ -15,7 +15,7 @@ set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(sources
-${CMAKE_SOURCE_DIR}/headers/consts.h
+${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
 ${CMAKE_SOURCE_DIR}/adaptors/adaptors.h
 ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
 
@@ -28,13 +28,6 @@ ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
  eiojoystick/eionunchukjoystick.cpp
  eiojoystick/eiowiimotejoystick.cpp
  
-
-  ${CMAKE_SOURCE_DIR}/adaptors/customjobs.cpp
-  ${CMAKE_SOURCE_DIR}/adaptors/profilemanager.cpp
-  ${CMAKE_SOURCE_DIR}/adaptors/uinputservice.cpp
-  ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.cpp
-  ${CMAKE_SOURCE_DIR}/interfaces/interfaces.cpp
-
   eiomanager/infrared.cpp
   eiomanager/keyboard.cpp
   eiomanager/manager.cpp
@@ -65,8 +58,7 @@ set(headers_wrap
   ${CMAKE_SOURCE_DIR}/adaptors/customjobs.h
   ${CMAKE_SOURCE_DIR}/adaptors/profilemanager.h
   ${CMAKE_SOURCE_DIR}/adaptors/uinputservice.h
-  ${CMAKE_SOURCE_DIR}/interfaces/interfaces.h
-  ${CMAKE_SOURCE_DIR}/interfaces/deviceevents.h
+  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
   eiomanager/manager.h
   eiokeyboard/eioremotekeyboard.h
   eioinfrared/eioinfraredmouse.h
@@ -75,7 +67,7 @@ set(headers_wrap
 
 qt4_wrap_cpp(headers ${headers_wrap})
 
-add_executable(wiimotedev-io ${headers} ${sources})
+add_executable(wiimotedev-io ${headers_wrap} ${headers} ${sources})
 target_link_libraries(wiimotedev-io
   ${QT_QTCORE_LIBRARY}
   ${QT_QTGUI_LIBRARY}

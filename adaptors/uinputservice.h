@@ -53,4 +53,28 @@ public:
 
 };
 
+inline DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent): QDBusAbstractAdaptor(parent)
+{
+  setAutoRelaySignals(true);
+}
+
+inline bool DBusServiceAdaptor::isWiimotedevServiceAvailable() {
+  bool value;
+  QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+  return value;
+}
+
+inline DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection connection) : QObject(parent)
+{
+  new DBusServiceAdaptor(this);
+  registred = connection.registerObject("/service", this);
+}
+
+inline bool DBusServiceAdaptorWrapper::isWiimotedevServiceAvailable() {
+  bool value;
+  QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+  return value;
+}
+
+
 #endif // ADAPTORS_UINPUTSERVICE_H

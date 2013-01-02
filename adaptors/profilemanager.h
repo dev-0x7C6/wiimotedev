@@ -62,7 +62,48 @@ public Q_SLOTS:
   QString currentProfile();
   bool loadProfile(QString);
   void unloadProfile();
-
 };
+
+inline DBusProfileManagerAdaptor::DBusProfileManagerAdaptor(QObject *parent): QDBusAbstractAdaptor(parent) {
+  setAutoRelaySignals(true);
+}
+
+inline QString DBusProfileManagerAdaptor::currentProfile() {
+  QString value;
+  QMetaObject::invokeMethod(parent(), "currentProfile", Qt::DirectConnection, Q_RETURN_ARG(QString, value));
+  return value;
+}
+
+inline bool DBusProfileManagerAdaptor::loadProfile(QString file) {
+  bool value;
+  QMetaObject::invokeMethod(parent(), "loadProfile", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(QString, file));
+  return value;
+}
+
+inline void DBusProfileManagerAdaptor::unloadProfile() {
+  QMetaObject::invokeMethod(parent(), "unloadProfile", Qt::DirectConnection);
+}
+
+inline DBusProfileManagerAdaptorWrapper::DBusProfileManagerAdaptorWrapper (QObject *parent, QDBusConnection connection): QObject(parent) {
+  new DBusProfileManagerAdaptor(this);
+  registred = connection.registerObject("/profileManager", this);
+}
+
+inline QString DBusProfileManagerAdaptorWrapper::currentProfile() {
+  QString value;
+  QMetaObject::invokeMethod(parent(), "currentProfile", Qt::DirectConnection, Q_RETURN_ARG(QString, value));
+  return value;
+}
+
+inline bool DBusProfileManagerAdaptorWrapper::loadProfile(QString file) {
+  bool value;
+  QMetaObject::invokeMethod(parent(), "loadProfile", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(QString, file));
+  return value;
+}
+
+inline void DBusProfileManagerAdaptorWrapper::unloadProfile() {
+  QMetaObject::invokeMethod(parent(), "unloadProfile", Qt::DirectConnection);
+}
+
 
 #endif // ADAPTORS_PROFILEMANAGER_H

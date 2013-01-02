@@ -28,7 +28,7 @@
 #include <QDebug>
 #include <QKeyEvent>
 
-#include "interfaces/deviceevents.h"
+#include "linux/usr/include/wiimotedev/deviceevents.h"
 #include "car.h"
 
 const uint count = 4;

@@ -27,7 +27,7 @@
 #include "adaptors/deviceevents.h"
 #include "adaptors/daemonservice.h"
 #include "settings.h"
-#include "headers/consts.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 #include "wiimotemessagethread.h"
 
 class WiimoteManager : public QThread

@@ -21,7 +21,7 @@
 #include <QDBusReply>
 
 #include "mainwindow.h"
-#include "interfaces/deviceevents.h"
+#include "linux/usr/include/wiimotedev/deviceevents.h"
 
 #include <QtCore/qmath.h>
 

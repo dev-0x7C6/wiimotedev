@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QGraphicsView>
-#include "interfaces/deviceevents.h"
+#include "linux/usr/include/wiimotedev/deviceevents.h"
 #include <src/mainwindow.h>
 
 class QComboBox;

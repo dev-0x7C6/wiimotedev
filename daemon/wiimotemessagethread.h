@@ -22,7 +22,7 @@
 
 #include <QThread>
 #include "adaptors/deviceevents.h"
-#include "libcwiid/cwiid.h"
+#include "static/libcwiid/cwiid.h"
 
 #include "virtualcursor/virtualcursor.h"
 

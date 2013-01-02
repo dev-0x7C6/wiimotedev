@@ -59,4 +59,17 @@ Q_SIGNALS:
   void executeRequest(QStringList);
 };
 
+
+inline DBusCustomJobsAdaptorWrapper::DBusCustomJobsAdaptorWrapper(QObject *parent, QDBusConnection connection):
+    QObject(parent)
+{
+  new DBusCustomJobsAdaptor(this);
+  registred = connection.registerObject("/customJobs", this);
+}
+
+inline DBusCustomJobsAdaptor::DBusCustomJobsAdaptor(QObject *parent): QDBusAbstractAdaptor(parent)
+{
+  setAutoRelaySignals(true);
+}
+
 #endif // ADAPTORS_CUSTOMJOBS_H

@@ -6,7 +6,11 @@ Known issues:
 (I want to rewrite all shift code and get better precission and prediction,
  so I'm reserching new alghoritm for shifts)
 
-1.4.2 (development)
+1.4.3 (development)
+General:
+- Many source managment cleanups
+
+1.4.2
 General:
 - Many bug fixes, wiimotedev-toolkit get major upgrade.
 

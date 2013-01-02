@@ -22,7 +22,7 @@
 #define INFRARED_VIRTUAL_MOUSE_H
 
 #include "eiobase/eioeventdevice.h"
-#include "headers/consts.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 
 #include <QTimer>
 #include <QTime>

@@ -27,7 +27,7 @@
 #include <linux/input.h>
 #include <linux/uinput.h>
 
-#include "headers/consts.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 
 #define linux_register_evbit(x) ioctl(uinput_fd, UI_SET_EVBIT, x);
 #define linux_register_keybit(x) ioctl(uinput_fd, UI_SET_KEYBIT, x);
