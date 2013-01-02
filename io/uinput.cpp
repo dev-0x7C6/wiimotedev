@@ -61,14 +61,6 @@ void signal_handler(int sig) {
 int main(int argc, char *argv[])
 {
   QCoreApplication application(argc, argv);
-  qRegisterMetaType< uint8> ("uint8");
-  qRegisterMetaType< uint16> ("uint16");
-  qRegisterMetaType< uint32> ("uint32");
-  qRegisterMetaType< uint64> ("uint64");
-  qRegisterMetaType< int8> ("int8");
-  qRegisterMetaType< int16> ("int16");
-  qRegisterMetaType< int32> ("int32");
-  qRegisterMetaType< int64> ("int64");
   pointer = &application;
 
   application.setApplicationName(DAEMON_NAME);
@@ -212,14 +204,6 @@ int main(int argc, char *argv[])
   devicebuttons.insert("classic.rstick.right", CLASSIC_BTN_RSTICK_RIGHT);
   devicebuttons.insert("wiimote.shift.shake", WIIMOTE_BTN_SHIFT_SHAKE);
   devicebuttons.insert("nunchuk.shift.shake", NUNCHUK_BTN_SHIFT_SHAKE);
-
-  qRegisterMetaType< QList< irpoint> >("QList< irpoint>");
-  qRegisterMetaType< QList< accdata> >("QList< accdata>");
-  qRegisterMetaType< QList< stickdata> >("QList< stickdata>");
-
-  qRegisterMetaType< irpoint>("irpoint");
-  qRegisterMetaType< accdata>("accdata");
-  qRegisterMetaType< stickdata>("stickdata");
 
   UInputProfileManager profileManager;
 
