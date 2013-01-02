@@ -4,6 +4,7 @@
 
 set (HEADERS
   consts.h
+  deviceevents.h
 )
 
 install(FILES ${HEADERS} DESTINATION ${WIIMOTEDEV_INC_DIR}/wiimotedev)
