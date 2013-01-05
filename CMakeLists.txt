@@ -23,6 +23,10 @@ set (wiimotedev_project_files
 )
 
 find_package(Qt4 REQUIRED QtCore QtDbus QtNetwork QtGui QtOpenGL)
+option(BUILD_DAEMON "Build wiimotedev-daemon, main wiiremote manager" ON)
+option(BUILD_IO "Build wiimotedev-io, I/O device emulator" ON)
+option(BUILD_TOOLKIT "Build wiimotedev-toolkit tool" ON)
+option(BUILD_EXAMPLES "Build additional examples" ON)
 
 include("FindBluetooth.cmake")
 include("Version.cmake")
