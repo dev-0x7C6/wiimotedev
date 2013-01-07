@@ -63,7 +63,7 @@ protected:
   void run();
 
 private Q_SLOTS:
-  void wiimoteMessageThreadFinished();
+  void dbusWiimoteDisconnected(uint);
 
 public Q_SLOTS:
   bool dbusIsClassicConnected(uint id);

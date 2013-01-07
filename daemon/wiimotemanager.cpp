@@ -110,7 +110,7 @@ void WiimoteManager::run() {
       connect(thread, SIGNAL(dbusClassicControllerButtons(uint,uint64)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerButtons(uint,uint64)), Qt::QueuedConnection);
       connect(thread, SIGNAL(dbusClassicControllerLStick(uint,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerLStick(uint,struct stickdata)), Qt::QueuedConnection);
       connect(thread, SIGNAL(dbusClassicControllerRStick(uint,struct stickdata)), dbusDeviceEventsAdaptor, SIGNAL(dbusClassicControllerRStick(uint,struct stickdata)), Qt::QueuedConnection);
-      connect(thread, SIGNAL(finished()), this , SLOT(wiimoteMessageThreadFinished()), Qt::QueuedConnection);
+      connect(thread, SIGNAL(dbusWiimoteDisconnected(uint)), this, SLOT(dbusWiimoteDisconnected(uint)), Qt::QueuedConnection);
       threads.insert(id, thread);
       thread->start();
       dev = new WiimoteDevice();
@@ -137,6 +137,15 @@ void WiimoteManager::run() {
 
   threads.clear();
   QCoreApplication::quit();
+
+}
+
+void WiimoteManager::dbusWiimoteDisconnected(uint id) {
+  threads[id]->setThreadQuitState(true);
+  threads[id]->wait();
+  delete threads[id];
+  threads.remove(id);
+  systemlog::information(QString("wiiremote %1 disconnected").arg(QString::number(id)));
 }
 
 void WiimoteManager::setThreadQuitStatus(bool quit) {
@@ -147,13 +156,6 @@ void WiimoteManager::setThreadQuitStatus(bool quit) {
 bool WiimoteManager::threadQuitStatus() {
   QMutexLocker locker(m_mutex);
   return m_threadQuitStatus;
-}
-
-void WiimoteManager::wiimoteMessageThreadFinished() {
-  WiimoteMessageThread *thread = reinterpret_cast< WiimoteMessageThread*>(sender());
-  threads.remove(thread->id());
-  systemlog::information(QString("wiiremote %1 disconnected").arg(QString::number(thread->id())));
-  delete thread;
 }
 
 bool WiimoteManager::dbusReloadSequenceList() {

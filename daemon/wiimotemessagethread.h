@@ -87,8 +87,6 @@ private:
   uint64 cstate[ix_all_devices];
   uint64 lstate[ix_all_devices];
   bool m_available[ix_general_device];
-  bool m_nunchukConnected;
-  bool m_classicConnected;
 
   struct acc_cal calibration[ix_all_devices - 1];
   struct accdata acc[ix_all_devices - 1];
@@ -144,6 +142,7 @@ private:
 
 public:
   explicit WiimoteMessageThread(WiimoteDevice *device, int id, QObject *parent = 0);
+ ~WiimoteMessageThread();
 
   uint id() { return m_id; }
 

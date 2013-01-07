@@ -25,16 +25,11 @@
 
 #include <qmath.h>
 
-
-#include <QDebug>
-
 WiimoteMessageThread::WiimoteMessageThread(WiimoteDevice *device, int id, QObject *parent) :
   QThread(parent),
   m_device(device),
   m_mutex(new QMutex()),
   m_threadQuit(false),
-  m_nunchukConnected(false),
-  m_classicConnected(false),
   m_id(id),
   m_currentLatency(0),
   m_averageLatency(0),
@@ -44,6 +39,9 @@ WiimoteMessageThread::WiimoteMessageThread(WiimoteDevice *device, int id, QObjec
 {
   setTerminationEnabled(true);
   m_device->moveToThread(this);
+}
+
+WiimoteMessageThread::~WiimoteMessageThread() {
 }
 
 void WiimoteMessageThread::run() {
@@ -179,13 +177,13 @@ void WiimoteMessageThread::run() {
     m_device->disconnectFromDevice();
   }
 
-  emit dbusWiimoteDisconnected(m_id);
-
   delete m_device;
   delete m_elapsed;
   delete m_updateState;
   delete m_virtualCursor;
   m_device = 0;
+
+  emit dbusWiimoteDisconnected(m_id);
 }
 
 double WiimoteMessageThread::calcVirtualCursorDiff(double c1[], double c2[]) {
