@@ -159,7 +159,7 @@ bool EIO_ClassicJoystick::create() {
     linux_register_keybit(BTN_2); // arrows
     linux_register_keybit(BTN_3); // arrows
 
-    linux_register_keybit(BTN_A);
+    linux_register_keybit(BTN_GAMEPAD);
     linux_register_keybit(BTN_B);
     linux_register_keybit(BTN_X);
     linux_register_keybit(BTN_Y);

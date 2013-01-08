@@ -106,7 +106,7 @@ bool EIO_WiimoteJoystick::create() {
     linux_register_keybit(BTN_1);
     linux_register_keybit(BTN_2);
     linux_register_keybit(BTN_3);
-    linux_register_keybit(BTN_A);
+    linux_register_keybit(BTN_GAMEPAD);
     linux_register_keybit(BTN_B);
     linux_register_keybit(BTN_X);
     linux_register_keybit(BTN_Y);
@@ -201,9 +201,6 @@ void EIO_WiimoteJoystick::setWiimoteButtons(uint64 buttons) {
   syncAxes();
 }
 
-
-
-
 void EIO_WiimoteJoystick::centerStick(Stick id) {
   switch (id) {
   case EIO_WiimoteJoystick::DpadStick:
@@ -236,7 +233,6 @@ void EIO_WiimoteJoystick::syncAxes() {
       break;
     }
   }
-
 
   if (m_report_pitch)
     sendEvent(EV_ABS, WIIMOTE_PITCH_LINUX_AXIS, m_last_wiimote_acc_pitch);

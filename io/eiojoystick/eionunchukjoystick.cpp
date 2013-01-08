@@ -86,7 +86,7 @@ bool EIO_NunchukJoystick::create() {
   linux_register_evbit(EV_ABS);
 
   if (m_report_buttons) {
-    linux_register_keybit(BTN_A);
+    linux_register_keybit(BTN_GAMEPAD);
     linux_register_keybit(BTN_B);
   }
 

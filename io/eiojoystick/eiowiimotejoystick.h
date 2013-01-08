@@ -31,11 +31,10 @@ const int8 WIIMOTE_BUTTON_RELEASED = 0;
 const int8 WIIMOTE_DPAD_MAX = 1;
 const int8 WIIMOTE_DPAD_MIN =-1;
 
-
-const int WIIMOTE_DPAD_LINUX_AXIS_X = ABS_X;
-const int WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_Y;
-const int WIIMOTE_PITCH_LINUX_AXIS = ABS_HAT0X;
-const int WIIMOTE_ROLL_LINUX_AXIS = ABS_HAT1X;
+const int WIIMOTE_DPAD_LINUX_AXIS_X = ABS_HAT0X;
+const int WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
+const int WIIMOTE_PITCH_LINUX_AXIS = ABS_X;
+const int WIIMOTE_ROLL_LINUX_AXIS = ABS_RX;
 
 class EIO_WiimoteJoystick: public QObject, public EIO_UInputObject
 {
