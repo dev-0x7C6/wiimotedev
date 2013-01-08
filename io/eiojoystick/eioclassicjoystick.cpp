@@ -116,7 +116,6 @@ void EIO_ClassicJoystick::setButtons(uint64 buttons) {
     sendEventSync();
   }
 
-
   if (m_report_dpad) {
     centerStick(EIO_ClassicJoystick::DpadStick);
     if (buttons & CLASSIC_BTN_RIGHT) m_last_dpad_x = CLASSIC_DPAD_MAX; else

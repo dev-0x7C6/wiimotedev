@@ -1,9 +1,5 @@
 Wiimotedev-project is a collection of wiimotedev sub-projects, for more information go
-to wiimotedev-project webside (http://code.google.com/p/wiimotedev/) or visit the official 
-channel #wiimotedev on irc.freenode.net 
-
-This version by default use static version of libcwiid, if you want to disable this
-feature please use -DUSE_STATIC_CWIID=OFF flag
+to wiimotedev-project webside (http://code.google.com/p/wiimotedev/)
 
 In oder to compile, run:
 

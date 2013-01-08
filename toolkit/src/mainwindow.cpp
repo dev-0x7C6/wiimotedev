@@ -27,7 +27,7 @@
 
 #define PI M_PI
 
-MainWindow::MainWindow(DBusDeviceEventsInterface *iface, uint id, QWidget *parent) :
+MainWindow::MainWindow(WiimotedevDeviceEvents *iface, uint id, QWidget *parent) :
   QGraphicsView(parent),
   cursor(new QGraphicsPixmapItem(QPixmap(":/cursor.png"))),
   iface(iface),

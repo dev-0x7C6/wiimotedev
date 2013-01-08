@@ -19,7 +19,6 @@
 
 #include "eiomanager/manager.h"
 
-
 void UInputProfileManager::setupInfraredMouse(uint assing, const QString &name, QSettings &settings) {
 
 }

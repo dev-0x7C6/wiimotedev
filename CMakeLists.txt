@@ -1,6 +1,6 @@
 # Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
 # Copyright (C) 2008 Bartłomiej Burdukiewicz
-# Contact: dev.strikeu@gmail.com
+# Contact: bartlomiej.burdukiewicz@gmail.com
 
 cmake_minimum_required(VERSION 2.6)
 project( WiimotedevProject )
@@ -51,8 +51,6 @@ endif()
 if(BUILD_IO)
   add_subdirectory(io)
 endif(BUILD_IO)
-
-add_subdirectory(examples)
 
 if(BUILD_TOOLKIT)
   add_subdirectory(toolkit)

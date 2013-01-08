@@ -1,6 +1,6 @@
 # Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
 # Copyright (C) 2008 Bartłomiej Burdukiewicz
-# Contact: dev.strikeu@gmail.com
+# Contact: bartlomiej.burdukiewicz@gmail.com
 
 if(BUILD_DAEMON)
   install(FILES org.wiimotedev-daemon.conf DESTINATION ${WIIMOTEDEV_DBUS_DIR})

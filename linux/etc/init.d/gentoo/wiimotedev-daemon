@@ -1,7 +1,7 @@
 #!/sbin/runscript
 # Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
 # Copyright (C) 2010 Bartłomiej Burdukiewicz
-# Contact: dev.strikeu@gmail.com   
+# Contact: bartlomiej.burdukiewicz@gmail.com   
 
 PIDFILE=/var/run/wiimotedev-daemon.pid
 SERVICE=/usr/sbin/wiimotedev-daemon

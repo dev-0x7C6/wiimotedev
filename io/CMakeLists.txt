@@ -1,6 +1,6 @@
 # Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
-# Copyright (C) 2010 Bartłomiej Burdukiewicz
-# Contact: dev.strikeu@gmail.com
+# Copyright (C) 2008 Bartłomiej Burdukiewicz
+# Contact: bartlomiej.burdukiewicz@gmail.com
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}

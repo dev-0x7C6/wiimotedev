@@ -29,7 +29,7 @@ extern QMap < QString, uint16> scancodes;
 const QRegExp deviceEventRegExp(".*(\\[.*(\\d+)\\])");
 
 UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
-  dbusDeviceEventsIface(new DBusDeviceEventsInterface(
+  dbusDeviceEventsIface(new WiimotedevDeviceEvents(
       WIIMOTEDEV_DBUS_SERVICE_NAME,
       WIIMOTEDEV_DBUS_OBJECT_EVENTS,
       QDBusConnection::systemBus(), this)),

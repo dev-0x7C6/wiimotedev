@@ -7,7 +7,7 @@
 
 #include "../config.h"
 
-ToolkitMainWindow::ToolkitMainWindow(DBusDeviceEventsInterface *iface, MainWindow *graphics, QWidget *parent) :
+ToolkitMainWindow::ToolkitMainWindow(WiimotedevDeviceEvents *iface, MainWindow *graphics, QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::ToolkitMainWindow),
   m_interface(iface),

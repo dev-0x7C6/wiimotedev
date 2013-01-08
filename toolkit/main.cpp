@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
   QApplication application(argc, argv);
   QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Utf-8"));
 
-  DBusDeviceEventsInterface interface;
+  WiimotedevDeviceEvents interface;
 
   if (!interface.isValid()) {
     QMessageBox::critical(0, "Critical", "Unable to connect with wiimotedev-daemon service", QMessageBox::Ok);

@@ -41,7 +41,7 @@ private:
   QString macAddress;
 
 public:
-  MainWindow(DBusDeviceEventsInterface *iface, uint id = 1, QWidget *parent = 0);
+  MainWindow(WiimotedevDeviceEvents *iface, uint id = 1, QWidget *parent = 0);
   ~MainWindow();
 
   enum Points {
@@ -76,7 +76,7 @@ private:
   QGraphicsLineItem *infraredLine[4];
   QTime timer;
 
-  DBusDeviceEventsInterface *iface;
+  WiimotedevDeviceEvents *iface;
   uint wiimoteId;
 
   QGraphicsScene scene;

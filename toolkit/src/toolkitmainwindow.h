@@ -19,7 +19,7 @@ class ToolkitMainWindow : public QMainWindow
   Q_OBJECT
   
 public:
-  explicit ToolkitMainWindow(DBusDeviceEventsInterface *iface, MainWindow *graphics, QWidget *parent = 0);
+  explicit ToolkitMainWindow(WiimotedevDeviceEvents *iface, MainWindow *graphics, QWidget *parent = 0);
   ~ToolkitMainWindow();
 
 protected:
@@ -27,7 +27,7 @@ protected:
 
 private:
   Ui::ToolkitMainWindow *ui;
-  DBusDeviceEventsInterface *m_interface;
+  WiimotedevDeviceEvents *m_interface;
 
   QComboBox *m_wiimoteComboBox;
   QProgressBar *m_wiimoteBatteryProgressBar;

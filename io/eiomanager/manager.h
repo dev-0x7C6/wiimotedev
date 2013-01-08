@@ -97,7 +97,7 @@ class UInputProfileManager :public QObject
   Q_OBJECT
 private:
 //Interfaces
-  DBusDeviceEventsInterface *dbusDeviceEventsIface;
+  WiimotedevDeviceEvents *dbusDeviceEventsIface;
 
 //Adaptors
   DBusProfileManagerAdaptorWrapper *dbusProfileManager;
