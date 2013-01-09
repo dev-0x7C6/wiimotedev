@@ -19,7 +19,8 @@
 
 #include "eioclassicjoystick.h"
 
-EIO_ClassicJoystick::EIO_ClassicJoystick(QString deviceName, int id) :
+EIO_ClassicJoystick::EIO_ClassicJoystick(QString deviceName, int id, QObject *parent) :
+  QObject(parent),
   EIO_UInputObject(),
   m_deviceName(deviceName),
   m_id(id),

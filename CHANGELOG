@@ -10,6 +10,9 @@ Known issues:
 General:
 - Many source managment cleanups
 
+Fixed:
+- Licence date
+
 1.4.2
 General:
 - Many bug fixes, wiimotedev-toolkit get major upgrade.

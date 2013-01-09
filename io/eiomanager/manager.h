@@ -27,10 +27,9 @@
 #include <QScopedPointer>
 #include <QSettings>
 
-#include "adaptors/customjobs.h"
-#include "adaptors/profilemanager.h"
-#include "adaptors/uinputservice.h"
-#include "adaptors/adaptors.h"
+#include "dbus/customjobs.h"
+#include "dbus/profilemanager.h"
+#include "dbus/uinputservice.h"
 #include "eiobase/eioeventdevice.h"
 #include "eiobase/eiomousedevice.h"
 #include "eiobase/eiotouchscreen.h"

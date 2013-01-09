@@ -16,18 +16,17 @@ set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(sources
-${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
-${CMAKE_SOURCE_DIR}/adaptors/adaptors.h
-${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
+  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
+  ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
 
- eiobase/eiouinputobject.cpp
- eiobase/eiomousedevice.cpp
- eiobase/eioeventdevice.cpp
- eiobase/eiotouchscreen.cpp
+  eiobase/eiouinputobject.cpp
+  eiobase/eiomousedevice.cpp
+  eiobase/eioeventdevice.cpp
+  eiobase/eiotouchscreen.cpp
 
- eiojoystick/eioclassicjoystick.cpp
- eiojoystick/eionunchukjoystick.cpp
- eiojoystick/eiowiimotejoystick.cpp
+  eiojoystick/eioclassicjoystick.cpp
+  eiojoystick/eionunchukjoystick.cpp
+  eiojoystick/eiowiimotejoystick.cpp
  
   eiomanager/infrared.cpp
   eiomanager/keyboard.cpp
@@ -48,18 +47,20 @@ set(headers
   eiobase/eiomousedevice.h
   eiobase/eioeventdevice.h
   eiobase/eiotouchscreen.h
+  helper/hashcompare.h
 )
 
 set(headers_wrap
+  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
+  
+  dbus/customjobs.h
+  dbus/profilemanager.h
+  dbus/uinputservice.h
+
   eiojoystick/eioclassicjoystick.h
   eiojoystick/eionunchukjoystick.h
   eiojoystick/eiowiimotejoystick.h
-  helper/hashcompare.h
 
-  ${CMAKE_SOURCE_DIR}/adaptors/customjobs.h
-  ${CMAKE_SOURCE_DIR}/adaptors/profilemanager.h
-  ${CMAKE_SOURCE_DIR}/adaptors/uinputservice.h
-  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
   eiomanager/manager.h
   eiokeyboard/eioremotekeyboard.h
   eioinfrared/eioinfraredmouse.h

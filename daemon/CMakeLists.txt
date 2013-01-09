@@ -21,7 +21,6 @@ set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(sources
-  ${CMAKE_SOURCE_DIR}/adaptors/adaptors.h
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
   ${CMAKE_SOURCE_DIR}/syslog/syslog.h
   ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp

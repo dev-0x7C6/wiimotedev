@@ -17,32 +17,19 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef ADAPTORS_ADAPTORS_H
-#define ADAPTORS_ADAPTORS_H
+#ifndef ADAPTORS_CUSTOMJOBS_H
+#define ADAPTORS_CUSTOMJOBS_H
+
+#include <wiimotedev/consts.h>
 
 #include <QDBusAbstractAdaptor>
 #include <QDBusConnection>
+#include <QDBusReply>
 #include <QDBusMetaType>
 
 #ifndef WIIMOTEDEV_MARSHALL
-#include <QDBusArgument>
+  #include <QDBusArgument>
 #endif
-
-#include "linux/usr/include/wiimotedev/consts.h"
-
-#define WIIMOTEDEV_REGISTER_META_TYPES                                    \
-  qRegisterMetaType< QList< struct irpoint> >("QList< irpoint>");          \
-  qRegisterMetaType< QList< struct accdata> >("QList< accdata>");          \
-  qRegisterMetaType< QList< struct stickdata> >("QList< stickdata>");      \
-  qRegisterMetaType< struct irpoint>("irpoint");                           \
-  qRegisterMetaType< struct accdata>("accdata");                           \
-  qRegisterMetaType< struct stickdata>("stickdata");                       \
-  qDBusRegisterMetaType< QList < struct irpoint> >();                      \
-  qDBusRegisterMetaType< QList < struct accdata> >();                      \
-  qDBusRegisterMetaType< QList < struct stickdata> >();                    \
-  qDBusRegisterMetaType< struct irpoint>();                                \
-  qDBusRegisterMetaType< struct accdata>();                                \
-  qDBusRegisterMetaType< struct stickdata>();
 
 #ifndef WIIMOTEDEV_META_TYPES
 #define WIIMOTEDEV_META_TYPES
@@ -119,4 +106,54 @@
 
 #endif
 
-#endif // ADAPTORS_ADAPTORS_H
+class DBusCustomJobsAdaptor :public QDBusAbstractAdaptor
+{
+  Q_OBJECT
+  Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.customJobs")
+  Q_CLASSINFO("D-Bus Introspection", ""
+    "  <interface name=\"org.wiimotedev.customJobs\">\n"
+    "    <signal name=\"executeRequest\">\n"
+    "      <arg type=\"as\" direction=\"out\"/>\n"
+    "    </signal>"
+    "  </interface>\n"
+    "")
+public:
+  DBusCustomJobsAdaptor (QObject *parent);
+
+Q_SIGNALS:
+  void executeRequest(QStringList);
+
+};
+
+
+class DBusCustomJobsAdaptorWrapper :public QObject
+{
+  Q_OBJECT
+private:
+  bool registred;
+
+public:
+  DBusCustomJobsAdaptorWrapper(QObject *parent, QDBusConnection connection);
+
+  inline bool isRegistred() { return registred; }
+
+  inline void slotExecuteRequest(QStringList params) { emit executeRequest(params); }
+
+Q_SIGNALS:
+  void executeRequest(QStringList);
+};
+
+
+inline DBusCustomJobsAdaptorWrapper::DBusCustomJobsAdaptorWrapper(QObject *parent, QDBusConnection connection):
+    QObject(parent)
+{
+  new DBusCustomJobsAdaptor(this);
+  registred = connection.registerObject("/customJobs", this);
+}
+
+inline DBusCustomJobsAdaptor::DBusCustomJobsAdaptor(QObject *parent): QDBusAbstractAdaptor(parent)
+{
+  setAutoRelaySignals(true);
+}
+
+#endif // ADAPTORS_CUSTOMJOBS_H

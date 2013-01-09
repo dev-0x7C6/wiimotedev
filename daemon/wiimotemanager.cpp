@@ -81,7 +81,7 @@ void WiimoteManager::run() {
       id = sequence.value(dev->getWiimoteSAddr(), 0);
 
       if (id)
-      if (id = settings->registerWiiremote(dev->getWiimoteSAddr())) {
+      if ((id = settings->registerWiiremote(dev->getWiimoteSAddr()))) {
         systemlog::information(QString("note: wiiremote %1 registred, id %2").arg(dev->getWiimoteSAddr(), QString::number(id)));
         sequence = settings->connectionTable();
       }
