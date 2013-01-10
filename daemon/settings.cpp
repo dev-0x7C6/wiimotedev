@@ -50,9 +50,7 @@ uint WiimotedevSettings::registerWiiremote(const QString &mac) {
   m_connections->sync();
 
   return id;
-
 }
-
 
 void WiimotedevSettings::reload()
 {

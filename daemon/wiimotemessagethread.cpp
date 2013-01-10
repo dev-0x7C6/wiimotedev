@@ -46,7 +46,11 @@ WiimoteMessageThread::~WiimoteMessageThread() {
 }
 
 void WiimoteMessageThread::run() {
-  msleep(1000);
+  int timeout = 0;
+  do {
+    msleep(10);
+    timeout += 10;
+  } while (!threadQuitState() && timeout < 1000);
 
   connect_animation();
 

@@ -2,23 +2,20 @@
 # Copyright (C) 2008 Bartłomiej Burdukiewicz
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR}
-		    ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/linux/usr/include/
-		    ${QT_INCLUDE_DIR}
-		    ${QT_QTCORE_INCLUDE_DIR}
-		    ${QT_QTDBUS_INCLUDE_DIR}
-		    ${QT_QTGUI_INCLUDE_DIR}
-		    ${QT_QTNETWORK_INCLUDE_DIR}
+include_directories(
+  ${CMAKE_CURRENT_BINARY_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}
+  ${CMAKE_SOURCE_DIR}
+  ${CMAKE_SOURCE_DIR}/linux/usr/include/
+  ${QT_INCLUDE_DIR}
+  ${QT_QTCORE_INCLUDE_DIR}
+  ${QT_QTDBUS_INCLUDE_DIR}
+  ${QT_QTGUI_INCLUDE_DIR}
+  ${QT_QTNETWORK_INCLUDE_DIR}
 )
 
-if(USE_STATIC_CWIID)
-  include_directories(${CWIID_INCLUDE_DIR})
-endif(USE_STATIC_CWIID)
-
 set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
+set(CMAKE_CXX_FLAGS "-Wall ${CMAKE_CXX_FLAGS}")
 
 set(sources
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h

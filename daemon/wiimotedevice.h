@@ -20,15 +20,13 @@
 #ifndef WIIMOTE_DEVICE_H
 #define WIIMOTE_DEVICE_H
 
-// This is wrapper class, for changes in cwiid API or when wiimotedev-daemon will use
-// other library like *libwiimotedev (when is done)
+// NOTE: This is wrapper class, for changes in cwiid API or when wiimotedev-daemon
+// NOTE: will use other library like *libwiimotedev (when is done)
 
 #include "../config.h"
 
 #include <QObject>
-
 #include "static/libcwiid/cwiid.h"
-
 #include "linux/usr/include/wiimotedev/consts.h"
 
 #define defaultReportFlags \
@@ -85,7 +83,6 @@ public:
 
   QString getWiimoteSAddr();
   bdaddr_t getWiimoteAddr();
-
 };
 
 #endif // WIIMOTE_DEVICE_H
