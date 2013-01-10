@@ -15,25 +15,25 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
 set(CMAKE_C_FLAGS "-Wall -pg ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
-set(toolkit_sources
+set(managersources
   src/infraredcameraview.cpp
   src/wiimoterawstream.cpp
   src/mainwindow.cpp
   main.cpp
 )
 
-set(toolkit_headers
+set(managerheaders
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
 )
 
-set(toolkit_headers_qt
+set(managerheaders_qt
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
   src/infraredcameraview.h
   src/wiimoterawstream.h
   src/mainwindow.h
 )
 
-set(toolkit_uis
+set(manageruis
   ui/wiimoterawstream.ui
   ui/mainwindow.ui
 )
@@ -42,16 +42,16 @@ set(resources
   data/data.qrc
 )
 
-qt4_add_resources(toolkit_sources ${resources})
+qt4_add_resources(managersources ${resources})
 
-qt4_wrap_ui(toolkit_sources ${toolkit_uis})
-qt4_wrap_cpp(toolkit_sources ${toolkit_headers_qt} )
+qt4_wrap_ui(managersources ${manageruis})
+qt4_wrap_cpp(managersources ${managerheaders_qt} )
 
-add_executable(wiimotedev-toolkit ${toolkit_sources} ${toolkit_headers})
-target_link_libraries(wiimotedev-toolkit
+add_executable(wiimotedev-manager ${managersources} ${managerheaders})
+target_link_libraries(wiimotedev-manager
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
   ${QT_QTGUI_LIBRARY}
 )
 
-install(TARGETS wiimotedev-toolkit DESTINATION  ${WIIMOTEDEV_BIN_DIR})
+install(TARGETS wiimotedev-manager DESTINATION  ${WIIMOTEDEV_BIN_DIR})
