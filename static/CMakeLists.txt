@@ -3,4 +3,3 @@
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
 add_subdirectory(libcwiid)
-add_subdirectory(qtsingleapplication)

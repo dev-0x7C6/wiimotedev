@@ -40,7 +40,7 @@ WiimoteManager::WiimoteManager(QObject *parent):
     return;
   }
 
-  systemlog::notice(QString("loading rules from %1").arg(WIIMOTEDEV_CONFIG_FILE));
+  systemlog::notice(QString("config: %1").arg(WIIMOTEDEV_CONFIG_FILE));
   settings = new WiimotedevSettings(this);
   sequence = settings->connectionTable();
 
@@ -50,10 +50,9 @@ WiimoteManager::WiimoteManager(QObject *parent):
   dbusServiceAdaptor = new DBusServiceAdaptorWrapper(this, connection);
   bool registred = connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
 
-
   if (!(dbusDeviceEventsAdaptor->isRegistred() &&
         dbusServiceAdaptor->isRegistred() && registred)) {
-    systemlog::critical("dbus registration failed");
+    systemlog::critical("cannot register dbus service, quit...");
     result = EXIT_FAILURE;
     return;
   }
@@ -130,6 +129,7 @@ void WiimoteManager::run() {
   delete dev;
 
   foreach (WiimoteMessageThread *thread, threads.values()) {
+    systemlog::information(QString("wiiremote %1 disconnecting..., id %2").arg(thread->dbusWiimoteGetMacAddress(), QString::number(id)));
     thread->setThreadQuitState(true);
     thread->wait();
     delete thread;
@@ -141,11 +141,15 @@ void WiimoteManager::run() {
 }
 
 void WiimoteManager::dbusWiimoteDisconnected(uint id) {
-  threads[id]->setThreadQuitState(true);
-  threads[id]->wait();
-  delete threads[id];
+  WiimoteMessageThread *thread = threads.value(id, 0);
+  if (!thread)
+    return;
+  QString addr = thread->dbusWiimoteGetMacAddress();
+  thread->setThreadQuitState(true);
+  thread->wait();
+  delete thread;
   threads.remove(id);
-  systemlog::information(QString("wiiremote %1 disconnected").arg(QString::number(id)));
+  systemlog::information(QString("wiiremote %1 disconnected., id %2").arg(addr, QString::number(id)));
 }
 
 void WiimoteManager::setThreadQuitStatus(bool quit) {

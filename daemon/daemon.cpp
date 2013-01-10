@@ -17,7 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#define DAEMON_NAME "wiimotedev"
+#define DAEMON_NAME "wiimotedev-daemon"
 #define PID_FILE "/var/run/wiimotedev-daemon.pid"
 #define PID_MODE 0644
 
@@ -32,9 +32,6 @@
 
 #include <QCoreApplication>
 #include <QFileInfo>
-
-bool additional_debug = false;
-bool force_dbus = false;
 
 QCoreApplication *pointer;
 
@@ -51,14 +48,12 @@ void signal_handler(int sig) {
 int main(int argc, char *argv[])
 {
   QCoreApplication application(argc, argv);
-  pointer = &application;
-
-
   application.setApplicationName(DAEMON_NAME);
   application.setApplicationVersion(
     QString::number(WIIMOTEDEV_VERSION_MAJOR) + '.' +
     QString::number(WIIMOTEDEV_VERSION_MINOR) + '.' +
     QString::number(WIIMOTEDEV_VERSION_PATCH));
+  pointer = &application;
 
   if (application.arguments().indexOf("--help") != -1) {
     printf("Wiimotedev-daemon argument list\n\n" \
@@ -83,14 +78,10 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  additional_debug = (application.arguments().indexOf("--debug") != -1);
+  pid_t pid;
 
   if (application.arguments().indexOf("--no-daemon") == -1) {
-    QFileInfo info(PID_FILE);
-    if (info.isFile())
-      exit(EXIT_FAILURE);
-
-    pid_t pid = fork();
+    pid = fork();
     if (pid < 0) exit(EXIT_FAILURE);
     if (pid > 0) exit(EXIT_SUCCESS);
 
@@ -104,6 +95,8 @@ int main(int argc, char *argv[])
 
     write(fd, QString::number(sid).toAscii().constData(), QString::number(sid).length());
     close(fd);
+
+    pid = sid;
   }
 
   if (application.arguments().indexOf("--no-quiet") == -1) {
@@ -119,10 +112,7 @@ int main(int argc, char *argv[])
   signal(SIGPIPE, signal_handler);
 
   systemlog::open(DAEMON_NAME);
-  systemlog::information("system service started");
-
-  if (additional_debug)
-    systemlog::debug("additional debug mode switch-on");
+  systemlog::information("service started");
 
   WiimoteManager *manager_thread = new WiimoteManager();
   manager_thread->start(QThread::NormalPriority);
@@ -133,8 +123,11 @@ int main(int argc, char *argv[])
 
   delete manager_thread;
 
-  systemlog::information("system service closed");
+  systemlog::information("service quited");
   systemlog::close();
+
+  if (getpid() == pid)
+    unlink(PID_FILE);
 
   exit(result);
 }

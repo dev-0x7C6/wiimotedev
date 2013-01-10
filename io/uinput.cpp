@@ -30,7 +30,7 @@
 #include "syslog/syslog.h"
 #include "eiomanager/manager.h"
 
-#include <QApplication>
+#include <QCoreApplication>
 #include <QFile>
 #include <QFileInfo>
 #include <QMap>
@@ -93,12 +93,15 @@ int main(int argc, char *argv[])
 
   additional_debug = (application.arguments().indexOf("--debug") != -1);
 
+  pid_t pid;
+
   if (application.arguments().indexOf("--no-daemon") == -1) {
     QFileInfo info(PID_FILE);
-    if (info.isFile())
-      exit(EXIT_FAILURE);
+    if (info.isFile()) {
 
-    pid_t pid = fork();
+    }
+
+    pid = fork();
     if (pid < 0) exit(EXIT_FAILURE);
     if (pid > 0) exit(EXIT_SUCCESS);
 
@@ -113,6 +116,7 @@ int main(int argc, char *argv[])
     write(fd, QString::number(sid).toAscii().constData(), QString::number(sid).length());
     close(fd);
   }
+
 
   if (application.arguments().indexOf("--no-quiet") == -1) {
     close(STDIN_FILENO);

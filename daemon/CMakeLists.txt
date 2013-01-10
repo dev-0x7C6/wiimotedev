@@ -54,10 +54,11 @@ qt4_wrap_cpp(sources ${headers})
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
 target_link_libraries(wiimotedev-daemon
+  ${BLUETOOTH_LIBRARIES}
   ${QT_QTCORE_LIBRARY}
   ${QT_QTDBUS_LIBRARY}
+  ${QT_QTNETWORK_LIBRARY}
   libcwiid
-  ${BLUETOOTH_LIBRARIES}
 )
 
 install(TARGETS wiimotedev-daemon DESTINATION ${WIIMOTEDEV_SBIN_DIR})

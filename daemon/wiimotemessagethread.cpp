@@ -42,6 +42,7 @@ WiimoteMessageThread::WiimoteMessageThread(WiimoteDevice *device, int id, QObjec
 }
 
 WiimoteMessageThread::~WiimoteMessageThread() {
+  delete m_device;
 }
 
 void WiimoteMessageThread::run() {
@@ -177,11 +178,9 @@ void WiimoteMessageThread::run() {
     m_device->disconnectFromDevice();
   }
 
-  delete m_device;
   delete m_elapsed;
   delete m_updateState;
   delete m_virtualCursor;
-  m_device = 0;
 
   emit dbusWiimoteDisconnected(m_id);
 }
