@@ -16,8 +16,9 @@ set(CMAKE_C_FLAGS "-Wall -pg ${CMAKE_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(toolkit_sources
-  src/mainwindow.cpp
+  src/infraredcameraview.cpp
   src/toolkitmainwindow.cpp
+  src/mainwindow.cpp
   main.cpp
 )
 
@@ -27,12 +28,14 @@ set(toolkit_headers
 
 set(toolkit_headers_qt
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
-  src/mainwindow.h
+  src/infraredcameraview.h
   src/toolkitmainwindow.h
+  src/mainwindow.h
 )
 
 set(toolkit_uis
   ui/toolkitmainwindow.ui
+  ui/mainwindow.ui
 )
 
 set(resources

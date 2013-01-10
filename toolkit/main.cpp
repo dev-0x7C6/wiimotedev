@@ -24,8 +24,10 @@
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "linux/usr/include/wiimotedev/deviceevents.h"
 
+#include "src/infraredcameraview.h"
+#include "src/wiimoterawstream.h"
 #include "src/mainwindow.h"
-#include "src/toolkitmainwindow.h"
+
 int main(int argc, char *argv[])
 {  
   QApplication application(argc, argv);
@@ -38,16 +40,19 @@ int main(int argc, char *argv[])
     return EXIT_FAILURE;
   }
 
-  MainWindow *window = new MainWindow(&interface, 0);
-  QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(uint,double,double,double,double)), window, SLOT(dbusVirtualCursorPosition(uint,double,double,double,double)));
-  QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(uint)), window, SLOT(dbusVirtualCursorFound(uint)));
-  QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(uint)), window, SLOT(dbusVirtualCursorLost(uint)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(uint,const accdata&)), window, SLOT(dbusWiimoteAcc(uint,const accdata&)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(uint, const QList< irpoint>&)), window, SLOT(dbusWiimoteInfrared(uint, const QList<struct irpoint>&)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(uint)), window, SLOT(dbusWiimoteDisconnected(uint)));
+  InfraredCameraView *infrared = new InfraredCameraView(&interface, 0);
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(uint,double,double,double,double)), infrared, SLOT(dbusVirtualCursorPosition(uint,double,double,double,double)));
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(uint)), infrared, SLOT(dbusVirtualCursorFound(uint)));
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(uint)), infrared, SLOT(dbusVirtualCursorLost(uint)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(uint,const accdata&)), infrared, SLOT(dbusWiimoteAcc(uint,const accdata&)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(uint, const QList< irpoint>&)), infrared, SLOT(dbusWiimoteInfrared(uint, const QList<struct irpoint>&)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(uint)), infrared, SLOT(dbusWiimoteDisconnected(uint)));
 
-  ToolkitMainWindow toolkit(&interface, window);
-  toolkit.show();
+  WiimoteRawStream *toolkit = new WiimoteRawStream(&interface, infrared);
+
+
+  MainWindow window(toolkit);
+  window.show();
 
   return application.exec();
 }

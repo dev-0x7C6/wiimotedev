@@ -1,32 +1,32 @@
-#ifndef TOOLKITMAINWINDOW_H
-#define TOOLKITMAINWINDOW_H
+#ifndef WIIMOTERAWSTREAM_H
+#define WIIMOTERAWSTREAM_H
 
 #include <QMainWindow>
 #include <QGraphicsView>
 #include "linux/usr/include/wiimotedev/deviceevents.h"
-#include <src/mainwindow.h>
+#include "infraredcameraview.h"
 
 class QComboBox;
 class QProgressBar;
 class QTreeWidgetItem;
 
 namespace Ui {
-class ToolkitMainWindow;
+class WiimoteRawStream;
 }
 
-class ToolkitMainWindow : public QMainWindow
+class WiimoteRawStream : public QMainWindow
 {
   Q_OBJECT
   
 public:
-  explicit ToolkitMainWindow(WiimotedevDeviceEvents *iface, MainWindow *graphics, QWidget *parent = 0);
-  ~ToolkitMainWindow();
+  explicit WiimoteRawStream(WiimotedevDeviceEvents *iface, InfraredCameraView *graphics, QWidget *parent = 0);
+  ~WiimoteRawStream();
 
 protected:
   void timerEvent(QTimerEvent *);
 
 private:
-  Ui::ToolkitMainWindow *ui;
+  Ui::WiimoteRawStream *ui;
   WiimotedevDeviceEvents *m_interface;
 
   QComboBox *m_wiimoteComboBox;
@@ -50,7 +50,7 @@ private:
   void updateWiimoteComboBox();
 
   uint m_id;
-  MainWindow *m_mainWindow;
+  InfraredCameraView *m_mainWindow;
 
 private slots:
   void wiimoteComboBoxChanged(int);
@@ -89,4 +89,4 @@ private slots:
   void dbusClassicControllerRStick(uint id, const stickdata &stick);
 };
 
-#endif // TOOLKITMAINWINDOW_H
+#endif // WIIMOTERAWSTREAM_H

@@ -1,5 +1,5 @@
-#include "toolkitmainwindow.h"
-#include "ui_toolkitmainwindow.h"
+#include "wiimoterawstream.h"
+#include "ui_wiimoterawstream.h"
 
 #include <QComboBox>
 #include <QLabel>
@@ -7,9 +7,9 @@
 
 #include "../config.h"
 
-ToolkitMainWindow::ToolkitMainWindow(WiimotedevDeviceEvents *iface, MainWindow *graphics, QWidget *parent) :
+WiimoteRawStream::WiimoteRawStream(WiimotedevDeviceEvents *iface, InfraredCameraView *graphics, QWidget *parent) :
   QMainWindow(parent),
-  ui(new Ui::ToolkitMainWindow),
+  ui(new Ui::WiimoteRawStream),
   m_interface(iface),
   m_id(1),
   m_mainWindow(graphics)
@@ -127,10 +127,6 @@ ToolkitMainWindow::ToolkitMainWindow(WiimotedevDeviceEvents *iface, MainWindow *
   m_wiimotePoints[2]->setData(false);
   m_wiimotePoints[3]->setData(false);
   ui->topTool->addSeparator();
-//  widget = new QWidget();
-//  widget->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-//  ui->topTool->addWidget(widget);
-
 
   m_wiimoteLeds[0] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Led[1]");
   m_wiimoteLeds[1] = ui->topTool->addAction(QIcon(":/disabled24.png"), "Led[2]");
@@ -309,6 +305,7 @@ ToolkitMainWindow::ToolkitMainWindow(WiimotedevDeviceEvents *iface, MainWindow *
 
   ui->centralwidget->layout()->addWidget(graphics);
 
+
   ui->treeWidget->header()->setStretchLastSection(false);
   ui->treeWidget->header()->setResizeMode(0, QHeaderView::Stretch);
   ui->treeWidget->header()->setResizeMode(1, QHeaderView::ResizeToContents);
@@ -346,46 +343,46 @@ ToolkitMainWindow::ToolkitMainWindow(WiimotedevDeviceEvents *iface, MainWindow *
                  QString::number(WIIMOTEDEV_VERSION_PATCH));
 }
 
-void ToolkitMainWindow::wiimoteComboBoxChanged(int index) {
+void WiimoteRawStream::wiimoteComboBoxChanged(int index) {
   changeWiimote(m_wiimoteComboBox->itemData(index).toUInt());
 }
 
-void ToolkitMainWindow::pressedPoint1() {
+void WiimoteRawStream::pressedPoint1() {
   ui->treeWidget->expandItem(opts.at(2));
   m_infraredItems[0]->setSelected(!m_infraredItems[0]->isSelected());
 }
 
-void ToolkitMainWindow::pressedPoint2() {
+void WiimoteRawStream::pressedPoint2() {
   ui->treeWidget->expandItem(opts.at(2));
   m_infraredItems[1]->setSelected(!m_infraredItems[1]->isSelected());
 }
 
-void ToolkitMainWindow::pressedPoint3() {
+void WiimoteRawStream::pressedPoint3() {
   ui->treeWidget->expandItem(opts.at(2));
   m_infraredItems[2]->setSelected(!m_infraredItems[2]->isSelected());
 }
 
-void ToolkitMainWindow::pressedPoint4() {
+void WiimoteRawStream::pressedPoint4() {
   ui->treeWidget->expandItem(opts.at(2));
   m_infraredItems[3]->setSelected(!m_infraredItems[3]->isSelected());
 }
 
-void ToolkitMainWindow::pressedClassic() {
+void WiimoteRawStream::pressedClassic() {
   ui->treeWidget->expandItem(opts.at(3));
   opts[3]->child(1)->setExpanded(!opts[3]->child(1)->isExpanded());
 }
 
-void ToolkitMainWindow::pressedNunchuk() {
+void WiimoteRawStream::pressedNunchuk() {
   ui->treeWidget->expandItem(opts.at(3));
   opts[3]->child(0)->setExpanded(!opts[3]->child(0)->isExpanded());
 }
 
-void ToolkitMainWindow::pressedCursor() {
+void WiimoteRawStream::pressedCursor() {
   ui->treeWidget->expandItem(opts.at(2));
   opts[2]->child(4)->setExpanded(!opts[2]->child(4)->isExpanded());
 }
 
-void ToolkitMainWindow::updateWiimoteComboBox() {
+void WiimoteRawStream::updateWiimoteComboBox() {
   m_wiimoteComboBox->clear();
   foreach (const uint &id, m_interface->dbusGetWiimoteList().value()) {
     m_wiimoteComboBox->addItem("[" + QString::number(id) + "]-" + m_interface->dbusWiimoteGetMacAddress(id).value(), id);
@@ -400,7 +397,7 @@ void ToolkitMainWindow::updateWiimoteComboBox() {
   }
 }
 
-void ToolkitMainWindow::changeWiimote(uint id) {
+void WiimoteRawStream::changeWiimote(uint id) {
   m_id = id;
   m_mainWindow->setWiimoteId(id);
 
@@ -437,7 +434,7 @@ void ToolkitMainWindow::changeWiimote(uint id) {
   m_wiimoteBatteryProgressBar->setValue(m_interface->dbusWiimoteGetBatteryLife(m_id).value());
 }
 
-void ToolkitMainWindow::timerEvent(QTimerEvent *event) {
+void WiimoteRawStream::timerEvent(QTimerEvent *event) {
   if (!m_interface->dbusIsWiimoteConnected(m_id).value())
     return;
 
@@ -451,14 +448,14 @@ void ToolkitMainWindow::timerEvent(QTimerEvent *event) {
 
 }
 
-void ToolkitMainWindow::toggleRumble() {
+void WiimoteRawStream::toggleRumble() {
   bool status = m_interface->dbusWiimoteGetRumbleStatus(m_id).value();
   if (status)
     m_interface->dbusWiimoteSetRumbleStatus(m_id, false); else
     m_interface->dbusWiimoteSetRumbleStatus(m_id, true);
 }
 
-void ToolkitMainWindow::toggleLed1() {
+void WiimoteRawStream::toggleLed1() {
   quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
   if (status & 0b0001)
     m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b1110); else
@@ -466,28 +463,28 @@ void ToolkitMainWindow::toggleLed1() {
 
 }
 
-void ToolkitMainWindow::toggleLed2() {
+void WiimoteRawStream::toggleLed2() {
   quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
   if (status & 0b0010)
     m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b1101); else
     m_interface->dbusWiimoteSetLedStatus(m_id, status | 0b0010);
 }
 
-void ToolkitMainWindow::toggleLed3() {
+void WiimoteRawStream::toggleLed3() {
   quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
   if (status & 0b0100)
     m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b1011); else
     m_interface->dbusWiimoteSetLedStatus(m_id, status | 0b0100);
 }
 
-void ToolkitMainWindow::toggleLed4() {
+void WiimoteRawStream::toggleLed4() {
   quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
   if (status & 0b1000)
     m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b0111); else
     m_interface->dbusWiimoteSetLedStatus(m_id, status | 0b1000);
 }
 
-void ToolkitMainWindow::dbusWiimoteConnected(uint id) {
+void WiimoteRawStream::dbusWiimoteConnected(uint id) {
   updateWiimoteComboBox();
 
   if (m_id == 0)
@@ -506,7 +503,7 @@ void ToolkitMainWindow::dbusWiimoteConnected(uint id) {
     m_wiimoteStatusItems[5]->setText(1, "none");
 }
 
-void ToolkitMainWindow::dbusWiimoteDisconnected(uint id) {
+void WiimoteRawStream::dbusWiimoteDisconnected(uint id) {
   updateWiimoteComboBox();
 
   if (m_id != id)
@@ -521,7 +518,7 @@ void ToolkitMainWindow::dbusWiimoteDisconnected(uint id) {
 
 }
 
-void ToolkitMainWindow::dbusNunchukPlugged(uint id) {
+void WiimoteRawStream::dbusNunchukPlugged(uint id) {
   if (m_id != id)
     return;
 
@@ -530,7 +527,7 @@ void ToolkitMainWindow::dbusNunchukPlugged(uint id) {
   m_nunchukConnected->setIcon(QIcon(":/nunchuk_active.png"));
 }
 
-void ToolkitMainWindow::dbusNunchukUnplugged(uint id) {
+void WiimoteRawStream::dbusNunchukUnplugged(uint id) {
   if (m_id != id)
     return;
 
@@ -546,7 +543,7 @@ void ToolkitMainWindow::dbusNunchukUnplugged(uint id) {
   dbusNunchukAcc(m_id, acc);
 }
 
-void ToolkitMainWindow::dbusClassicPlugged(uint id) {
+void WiimoteRawStream::dbusClassicPlugged(uint id) {
   if (m_id != id)
     return;
 
@@ -555,7 +552,7 @@ void ToolkitMainWindow::dbusClassicPlugged(uint id) {
   m_classicConnected->setIcon(QIcon(":/controller_active.png"));
 }
 
-void ToolkitMainWindow::dbusClassicUnplugged(uint id) {
+void WiimoteRawStream::dbusClassicUnplugged(uint id) {
   if (m_id != id)
     return;
 
@@ -569,7 +566,7 @@ void ToolkitMainWindow::dbusClassicUnplugged(uint id) {
   dbusClassicControllerRStick(m_id, stick);
 }
 
-void ToolkitMainWindow::dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle) {
+void WiimoteRawStream::dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle) {
   if (m_id != id)
     return;
 
@@ -581,7 +578,7 @@ void ToolkitMainWindow::dbusVirtualCursorPosition(uint id, double x, double y, d
 
 }
 
-void ToolkitMainWindow::dbusVirtualCursorLost(uint id) {
+void WiimoteRawStream::dbusVirtualCursorLost(uint id) {
   if (m_id != id)
     return;
 
@@ -592,7 +589,7 @@ void ToolkitMainWindow::dbusVirtualCursorLost(uint id) {
   dbusWiimoteInfrared(m_id, QList< irpoint>());
 }
 
-void ToolkitMainWindow::dbusVirtualCursorFound(uint id) {
+void WiimoteRawStream::dbusVirtualCursorFound(uint id) {
   if (m_id != id)
     return;
 
@@ -601,7 +598,7 @@ void ToolkitMainWindow::dbusVirtualCursorFound(uint id) {
   m_cursorVisible->setText("Cursor[*]");
 }
 
-void ToolkitMainWindow::dbusWiimoteAcc(uint id, const accdata &acc) {
+void WiimoteRawStream::dbusWiimoteAcc(uint id, const accdata &acc) {
   if (m_id != id)
     return;
 
@@ -614,7 +611,7 @@ void ToolkitMainWindow::dbusWiimoteAcc(uint id, const accdata &acc) {
   ui->treeWidget->setUpdatesEnabled(true);
 }
 
-void ToolkitMainWindow::dbusNunchukAcc(uint id, const accdata &acc) {
+void WiimoteRawStream::dbusNunchukAcc(uint id, const accdata &acc) {
   if (m_id != id)
     return;
 
@@ -628,7 +625,7 @@ void ToolkitMainWindow::dbusNunchukAcc(uint id, const accdata &acc) {
 }
 
 
-void ToolkitMainWindow::dbusWiimoteBatteryLife(uint id, uint8 life) {
+void WiimoteRawStream::dbusWiimoteBatteryLife(uint id, uint8 life) {
   if (m_id != id)
     return;
 
@@ -638,7 +635,7 @@ void ToolkitMainWindow::dbusWiimoteBatteryLife(uint id, uint8 life) {
   m_wiimoteStatusItems[2]->setText(1, QString::number(life) + "%");
 }
 
-void ToolkitMainWindow::dbusWiimoteGeneralButtons(uint id, uint64 value) {
+void WiimoteRawStream::dbusWiimoteGeneralButtons(uint id, uint64 value) {
   if (m_id != id)
     return;
 
@@ -661,7 +658,7 @@ void ToolkitMainWindow::dbusWiimoteGeneralButtons(uint id, uint64 value) {
   ui->treeWidget->setUpdatesEnabled(true);
 }
 
-void ToolkitMainWindow::dbusWiimoteInfrared(uint id, const QList< struct irpoint> &points) {
+void WiimoteRawStream::dbusWiimoteInfrared(uint id, const QList< struct irpoint> &points) {
  if (m_id != id)
    return;
 
@@ -693,7 +690,7 @@ void ToolkitMainWindow::dbusWiimoteInfrared(uint id, const QList< struct irpoint
  ui->treeWidget->setUpdatesEnabled(true);
 }
 
-void ToolkitMainWindow::dbusWiimoteLedStatusChanged(uint id, uint8 status) {
+void WiimoteRawStream::dbusWiimoteLedStatusChanged(uint id, uint8 status) {
   if (m_id != id)
     return;
 
@@ -707,7 +704,7 @@ void ToolkitMainWindow::dbusWiimoteLedStatusChanged(uint id, uint8 status) {
     }
 }
 
-void ToolkitMainWindow::dbusWiimoteRumbleStatusChanged(uint id, uint8 status) {
+void WiimoteRawStream::dbusWiimoteRumbleStatusChanged(uint id, uint8 status) {
   if (m_id != id)
     return;
 
@@ -723,28 +720,28 @@ void ToolkitMainWindow::dbusWiimoteRumbleStatusChanged(uint id, uint8 status) {
 }
 
 
-void ToolkitMainWindow::dbusNunchukStick(uint id, const stickdata &stick) {
+void WiimoteRawStream::dbusNunchukStick(uint id, const stickdata &stick) {
   if (m_id != id)
     return;
 
   m_stickItems[0]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 
-void ToolkitMainWindow::dbusClassicControllerLStick(uint id, const stickdata &stick) {
+void WiimoteRawStream::dbusClassicControllerLStick(uint id, const stickdata &stick) {
   if (m_id != id)
     return;
 
   m_stickItems[1]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 
-void ToolkitMainWindow::dbusClassicControllerRStick(uint id, const stickdata &stick) {
+void WiimoteRawStream::dbusClassicControllerRStick(uint id, const stickdata &stick) {
   if (m_id != id)
     return;
 
   m_stickItems[2]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 
-ToolkitMainWindow::~ToolkitMainWindow()
+WiimoteRawStream::~WiimoteRawStream()
 {
   delete ui;
 }
