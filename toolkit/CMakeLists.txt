@@ -5,7 +5,7 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}
-${CMAKE_SOURCE_DIR}/linux/usr/include/
+        ${CMAKE_SOURCE_DIR}/linux/usr/include/
 		    ${QT_INCLUDE_DIR}
 		    ${QT_QTCORE_INCLUDE_DIR}
 		    ${QT_QTDBUS_INCLUDE_DIR}
@@ -17,7 +17,7 @@ set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FL
 
 set(toolkit_sources
   src/infraredcameraview.cpp
-  src/toolkitmainwindow.cpp
+  src/wiimoterawstream.cpp
   src/mainwindow.cpp
   main.cpp
 )
@@ -29,12 +29,12 @@ set(toolkit_headers
 set(toolkit_headers_qt
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
   src/infraredcameraview.h
-  src/toolkitmainwindow.h
+  src/wiimoterawstream.h
   src/mainwindow.h
 )
 
 set(toolkit_uis
-  ui/toolkitmainwindow.ui
+  ui/wiimoterawstream.ui
   ui/mainwindow.ui
 )
 

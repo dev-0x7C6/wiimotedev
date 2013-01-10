@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "wiimoterawstream.h"
 
 namespace Ui {
 class MainWindow;
@@ -10,9 +11,10 @@ class MainWindow;
 class MainWindow : public QMainWindow
 {
   Q_OBJECT
-  
+private:
+  WiimoteRawStream *m_wiimoteRawStreamWidget;
 public:
-  explicit MainWindow(QWidget *parent = 0);
+  explicit MainWindow(WiimoteRawStream *stream, QWidget *parent = 0);
   ~MainWindow();
   
 private:
