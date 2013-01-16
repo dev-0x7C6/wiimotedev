@@ -18,6 +18,7 @@ set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FL
 set(managersources
   src/infraredcameraview.cpp
   src/wiimoterawstream.cpp
+  src/virtualgamepads.cpp
   src/mainwindow.cpp
   main.cpp
 )
@@ -30,12 +31,14 @@ set(managerheaders_qt
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
   src/infraredcameraview.h
   src/wiimoterawstream.h
+  src/virtualgamepads.h
   src/mainwindow.h
 )
 
 set(manageruis
   ui/wiimoterawstream.ui
   ui/mainwindow.ui
+  ui/virtualgamepads.ui
 )
 
 set(resources

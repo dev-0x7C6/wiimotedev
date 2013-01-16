@@ -29,7 +29,6 @@ WiimotedevSettings::WiimotedevSettings(QObject *parent):
 
 uint WiimotedevSettings::registerWiiremote(const QString &mac) {
   uint id = m_sequence.value(mac, 0);
-
   if (id)
     return id;
 
