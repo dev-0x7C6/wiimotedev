@@ -32,7 +32,7 @@
 
 #include <QCoreApplication>
 #include <QFileInfo>
-
+#include <QDebug>
 QCoreApplication *pointer;
 
 void signal_handler(int sig) {
@@ -115,7 +115,7 @@ int main(int argc, char *argv[])
   systemlog::information("service started");
 
   WiimoteManager *manager_thread = new WiimoteManager();
-  manager_thread->start(QThread::NormalPriority);
+  manager_thread->start();
   application.exec();
   manager_thread->setThreadQuitStatus();
   manager_thread->wait();

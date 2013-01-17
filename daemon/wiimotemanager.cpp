@@ -221,12 +221,19 @@ bool WiimoteManager::dbusWiimoteGetRumbleStatus(uint id)
   return false;
 }
 
+#include <QDebug>
+
 bool WiimoteManager::dbusWiimoteSetLedStatus(uint id, uint status)
 {
+  QElapsedTimer timer;
+  timer.start();
   WiimoteMessageThread *thread = threads.value(id);
+  bool yes = false;
   if (thread)
-    return threads.value(id)->dbusWiimoteSetLedStatus(status);
-  return false;
+    yes = threads.value(id)->dbusWiimoteSetLedStatus(status);
+
+  qDebug() << timer.elapsed() << "ms";
+  return yes;
 }
 
 bool WiimoteManager::dbusWiimoteSetRumbleStatus(uint id, bool status)

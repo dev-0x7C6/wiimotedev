@@ -20,7 +20,7 @@
 #include "wiimotemessagethread.h"
 #include "wiimotedevice.h"
 
-#include <QMutex>
+#include <QReadWriteLock>
 #include <QElapsedTimer>
 
 #include <qmath.h>
@@ -28,7 +28,8 @@
 WiimoteMessageThread::WiimoteMessageThread(WiimoteDevice *device, int id, QObject *parent) :
   QThread(parent),
   m_device(device),
-  m_mutex(new QMutex()),
+  m_variable_locker(new QReadWriteLock()),
+  m_device_locker(new QReadWriteLock()),
   m_threadQuit(false),
   m_id(id),
   m_currentLatency(0),
@@ -43,6 +44,8 @@ WiimoteMessageThread::WiimoteMessageThread(WiimoteDevice *device, int id, QObjec
 
 WiimoteMessageThread::~WiimoteMessageThread() {
   delete m_device;
+  delete m_variable_locker;
+  delete m_device_locker;
 }
 
 void WiimoteMessageThread::run() {
@@ -76,9 +79,9 @@ void WiimoteMessageThread::run() {
   cwiid_process_classic_init();
   cwiid_process_nunchuk_init();
 
-  m_mutex->lock();
+  m_device_locker->lockForRead();
   m_device->requestStatus();
-  m_mutex->unlock();
+  m_device_locker->unlock();
 
   emit dbusWiimoteConnected(m_id);
 
@@ -94,15 +97,14 @@ void WiimoteMessageThread::run() {
       m_bufferCounter = 1;
     }
 
-    m_mutex->lock();
+    m_device_locker->lockForRead();
     m_device->getMesgStruct(&count, &mesg, &time);
 
     if (m_updateState->hasExpired(60000)) {
       m_device->requestStatus();
       m_updateState->restart();
     }
-
-    m_mutex->unlock();
+    m_device_locker->unlock();
 
     for (register int i = 0; i < count; ++i) {
       switch (mesg[i].type) {
@@ -194,62 +196,62 @@ double WiimoteMessageThread::calcVirtualCursorDiff(double c1[], double c2[]) {
 }
 
 void WiimoteMessageThread::setThreadQuitState(bool quit) {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_variable_locker);
   m_threadQuit = quit;
 }
 
 bool WiimoteMessageThread::threadQuitState() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_threadQuit;
 }
 
 void WiimoteMessageThread::setDeviceAvailable(DeviceType dev, bool available) {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_variable_locker);
   m_available[dev] = available;
 }
 
 bool WiimoteMessageThread::deviceAvailable(DeviceType dev) {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_available[dev];
 }
 
 void WiimoteMessageThread::setDeviceBatteryState(double state) {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_variable_locker);
   m_batteryLife = state;
 }
 
 double WiimoteMessageThread::deviceBatteryState() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_batteryLife;
 }
 
 void WiimoteMessageThread::setDeviceCurrentLatency(uint latency) {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_variable_locker);
   m_currentLatency = latency;
 }
 
 uint WiimoteMessageThread::deviceCurrentLatency() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_currentLatency;
 }
 
 void WiimoteMessageThread::setDeviceAverageLatency(uint latency) {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_variable_locker);
   m_averageLatency = latency;
 }
 
 uint WiimoteMessageThread::deviceAverageLatency() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_averageLatency;
 }
 
 void WiimoteMessageThread::setPowerSafeTimeout(int64 timeout) {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_variable_locker);
   m_powerSaveTimeout = timeout;
 }
 
 int64 WiimoteMessageThread::powerSafeTimeout() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_powerSaveTimeout;
 }
 
@@ -270,22 +272,22 @@ void WiimoteMessageThread::calcAccelerometerValues(uint8 acc[3], acc_cal &cal, a
 }
 
 bool WiimoteMessageThread::dbusIsClassicConnected() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_available[ix_classic_device];
 }
 
 bool WiimoteMessageThread::dbusIsNunchukConnected() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_available[ix_nunchuk_device];
 }
 
 bool WiimoteMessageThread::dbusIsWiimoteConnected() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_available[ix_wiimote_device];
 }
 
 QList< uint> WiimoteMessageThread::dbusNunchukGetAccelerometrCalibration() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   QList < uint> params;
   for (register int i = 0; i < 3; ++i) {
     params << calibration[ix_nunchuk_device].one[i];
@@ -296,7 +298,7 @@ QList< uint> WiimoteMessageThread::dbusNunchukGetAccelerometrCalibration() {
 }
 
 QList< uint> WiimoteMessageThread::dbusWiimoteGetAccelerometrCalibration() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   QList < uint> params;
   for (register int i = 0; i < 3; ++i) {
     params << calibration[ix_wiimote_device].one[i];
@@ -307,32 +309,32 @@ QList< uint> WiimoteMessageThread::dbusWiimoteGetAccelerometrCalibration() {
 }
 
 uint WiimoteMessageThread::dbusWiimoteGetAverageLatency() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_averageLatency;
 }
 
 uint WiimoteMessageThread::dbusWiimoteGetBatteryLife() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_batteryLife;
 }
 
 uint WiimoteMessageThread::dbusWiimoteGetCurrentLatency() {
-  QMutexLocker locker(m_mutex);
+  QReadLocker locker(m_variable_locker);
   return m_currentLatency;
 }
 
 QString WiimoteMessageThread::dbusWiimoteGetMacAddress() {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_device_locker);
   return m_device->getWiimoteSAddr();
 }
 
 uint8 WiimoteMessageThread::dbusWiimoteGetLedStatus() {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_device_locker);
   return m_device->getLedStatus();
 }
 
 bool WiimoteMessageThread::dbusWiimoteGetRumbleStatus() {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_device_locker);
   return m_device->getRumbleStatus();
 }
 
@@ -349,12 +351,12 @@ uint8 WiimoteMessageThread::dbusWiimoteGetStatus() {
 }
 
 bool WiimoteMessageThread::dbusWiimoteSetLedStatus(uint status) {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_device_locker);
   return m_device->setLedStatus(status);
 }
 
 bool WiimoteMessageThread::dbusWiimoteSetRumbleStatus(bool status) {
-  QMutexLocker locker(m_mutex);
+  QWriteLocker locker(m_device_locker);
   return m_device->setRumbleStatus(status);
 }
 

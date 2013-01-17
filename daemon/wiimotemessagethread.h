@@ -27,6 +27,7 @@
 #include "virtualcursor/virtualcursor.h"
 
 class QMutex;
+class QReadWriteLock;
 class QElapsedTimer;
 class WiimoteDevice;
 
@@ -51,7 +52,8 @@ class WiimoteMessageThread : public QThread
   Q_OBJECT
 private:
   WiimoteDevice *m_device;
-  QMutex *m_mutex;
+  QReadWriteLock *m_variable_locker;
+  QReadWriteLock *m_device_locker;
   bool m_threadQuit;
   double m_batteryLife;
   int64 m_powerSaveTimeout;
