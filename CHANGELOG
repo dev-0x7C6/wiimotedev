@@ -6,12 +6,17 @@ Known issues:
 (I want to rewrite all shift code and get better precission and prediction,
  so I'm reserching new alghoritm for shifts)
 
-1.4.3 (development)
+
+1.4.4
 General:
+- Fixed CORE BUG that assign 0 id for every wiiremote that is connected first time!
+- Fixed unacceptable long locking on 1 core platform (this should latency
+provided by wiimotedev interface!)
 - Many source managment cleanups
 
-Fixed:
-- Licence date
+1.4.3
+General:
+- Fixed CORE BUG that assign 0 id for every wiiremote that is connected first time!
 
 1.4.2
 General:
