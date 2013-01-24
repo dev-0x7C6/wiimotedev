@@ -54,6 +54,9 @@
       <property name="lineWidth">
        <number>0</number>
       </property>
+      <attribute name="headerVisible">
+       <bool>false</bool>
+      </attribute>
       <column>
        <property name="text">
         <string>Type</string>
@@ -64,13 +67,6 @@
         <string>Value</string>
        </property>
       </column>
-     </widget>
-    </item>
-    <item>
-     <widget class="Line" name="line">
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
      </widget>
     </item>
    </layout>
