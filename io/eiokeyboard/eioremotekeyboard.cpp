@@ -23,10 +23,10 @@ extern QMap < QString, uint> scancodes;
 
 enum KeyboardExtension {
   keyboardExt = 0xFFFF,
-  keyboardExtMouseHWheelUp,
-  keyboardExtMouseHWheelDown,
-  keyboardExtMouseVWheelUp,
-  keyboardExtMouseVWheelDown
+  keyboardExtMouseWheelLeft,
+  keyboardExtMouseWheelRight,
+  keyboardExtMouseWheelUp,
+  keyboardExtMouseWheelDown
 };
 
 EIO_RemoteKeyboard::EIO_RemoteKeyboard(EIO_EventDevice *device) :
@@ -97,16 +97,16 @@ void EIO_RemoteKeyboard::dbusWiimoteGeneralButtons(uint id, uint64 value) {
 
 void EIO_RemoteKeyboard::pressKeyboardExtendedButton(uint key) {
   switch (key) {
-  case keyboardExtMouseHWheelUp:
-    device->moveMouseHWheel(1);
-    break;
-  case keyboardExtMouseHWheelDown:
+  case keyboardExtMouseWheelLeft:
     device->moveMouseHWheel(-1);
     break;
-  case keyboardExtMouseVWheelUp:
+  case keyboardExtMouseWheelRight:
+    device->moveMouseHWheel(1);
+    break;
+  case keyboardExtMouseWheelUp:
     device->moveMouseVWheel(1);
     break;
-  case keyboardExtMouseVWheelDown:
+  case keyboardExtMouseWheelDown:
     device->moveMouseVWheel(-1);
     break;
   }
@@ -120,10 +120,11 @@ void EIO_RemoteKeyboard::pressKeyboardButtons(QList < uint> &list) {
   if (list.isEmpty())
     return;
 
-  foreach (const uint key, list)
+  foreach (const uint key, list) {
     if (key <= keyboardExt)
       device->pressKeyboardButton(key); else
       pressKeyboardExtendedButton(key);
+  }
 }
 
 void EIO_RemoteKeyboard::releaseKeyboardButtons(QList < uint> &list) {

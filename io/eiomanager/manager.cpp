@@ -24,7 +24,7 @@
 #include "eiomanager/manager.h"
 
 extern QMap < QString, uint64> devicebuttons;
-extern QMap < QString, uint16> scancodes;
+extern QMap < QString, uint> scancodes;
 
 const QRegExp deviceEventRegExp(".*(\\[.*(\\d+)\\])");
 

@@ -80,23 +80,16 @@ void EIO_EventDevice::pressKeyboardButtonOnce(uint16 button) {
 }
 
 void EIO_EventDevice::moveMouseVWheel(int32 direction) {
-  if (direction)
-      return;
-
   sendEvent(EV_REL, REL_WHEEL, direction);
   sendEventSync();
 }
 
 void EIO_EventDevice::moveMouseHWheel(int32 direction) {
-  if (direction)
-      return;
-
   sendEvent(EV_REL, REL_HWHEEL, direction);
   sendEventSync();
 }
 
-void EIO_EventDevice::moveMousePointerRel(int32 x, int32 y)
-{
+void EIO_EventDevice::moveMousePointerRel(int32 x, int32 y) {
   if (x) sendEvent(EV_REL, REL_X, x);
   if (y) sendEvent(EV_REL, REL_Y, y);
   sendEventSync();
