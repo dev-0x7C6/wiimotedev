@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
   }
 
   if (application.arguments().indexOf("--version") != -1) {
-    qDebug("Version: %d.%d.%d",
+    printf("Version: %d.%d.%d",
            WIIMOTEDEV_VERSION_MAJOR,
            WIIMOTEDEV_VERSION_MINOR,
            WIIMOTEDEV_VERSION_PATCH);

@@ -19,7 +19,6 @@
 
 #include "eioinfraredmouse.h"
 #include <math.h>
-#include <QDebug>
 #include <QCursor>
 #include <QRect>
 #include <QApplication>

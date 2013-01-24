@@ -113,8 +113,6 @@ void UInputProfileManager::dbusWiimoteGeneralButtons(uint id, uint64 buttons) {
   processCommandEvents();
 }
 
-#include <QDebug>
-
 bool UInputProfileManager::loadProfile(QString file) {
   if (!QFile::exists(file))
     return false;
