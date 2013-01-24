@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "wiimotemanager.h"
+#include "wiimotedevcore.h"
 #include "syslog/syslog.h"
 
 #include <QCoreApplication>
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
   systemlog::open(DAEMON_NAME);
   systemlog::information("service started");
 
-  WiimoteManager *manager_thread = new WiimoteManager();
+  WiimotedevCore *manager_thread = new WiimotedevCore();
   manager_thread->start();
   application.exec();
   manager_thread->setThreadQuitStatus();

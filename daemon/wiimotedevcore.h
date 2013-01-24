@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTEMANAGER_H
-#define WiimoteManager_H
+#ifndef WIIMOTEDEVCORE_H
+#define WIIMOTEDEVCORE_H
 
 #include <QThread>
 #include <QMutex>
@@ -28,9 +28,9 @@
 #include "dbus/daemonservice.h"
 #include "settings.h"
 #include "linux/usr/include/wiimotedev/consts.h"
-#include "wiimotemessagethread.h"
+#include "wiimotedevconnection.h"
 
-class WiimoteManager : public QThread
+class WiimotedevCore : public QThread
 {
   Q_OBJECT
 private:
@@ -46,8 +46,8 @@ private:
   bool m_threadQuitStatus;
 
 public:
-  WiimoteManager(QObject *parent = 0);
- ~WiimoteManager();
+  WiimotedevCore(QObject *parent = 0);
+ ~WiimotedevCore();
 
   void setThreadQuitStatus(bool quit = true);
   bool threadQuitStatus();
@@ -57,7 +57,7 @@ public:
   static const int BluetoothFlood = 100;
   static const int WaitForBluetooth = 3000;
 
-  QHash <uint, WiimoteMessageThread*> threads;
+  QHash <uint, WiimotedevConnection*> threads;
 
 protected:
   void run();
@@ -87,4 +87,4 @@ Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
 };
 
-#endif // WiimoteManager_H
+#endif // WIIMOTEDEVCORE_H

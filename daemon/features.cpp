@@ -17,10 +17,10 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "wiimotemessagethread.h"
-#include "wiimotedevice.h"
+#include "wiimotedevconnection.h"
+#include "wiimotedevdevice.h"
 
-void WiimoteMessageThread::connect_animation() {
+void WiimotedevConnection::connect_animation() {
   m_device->setRumbleStatus(true);
   for (register int i = 0; i < 2; ++i) {
     switch (i%2) {
@@ -42,7 +42,7 @@ void WiimoteMessageThread::connect_animation() {
   m_device->setRumbleStatus(false);
 }
 
-void WiimoteMessageThread::disconnect_animation() {
+void WiimotedevConnection::disconnect_animation() {
   m_device->setRumbleStatus(true);
   for (register int i = 0; i < 2; ++i) {
     switch (i%2) {

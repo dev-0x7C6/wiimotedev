@@ -17,31 +17,31 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "wiimotemessagethread.h"
-#include "wiimotedevice.h"
+#include "wiimotedevconnection.h"
+#include "wiimotedevdevice.h"
 #include <QReadWriteLock>
 
-void WiimoteMessageThread::cwiid_process_nunchuk_init() {
+void WiimotedevConnection::cwiid_process_nunchuk_init() {
   cwiid_process_nunchuk_clear();
 }
 
-void WiimoteMessageThread::cwiid_process_nunchuk_done() {
+void WiimotedevConnection::cwiid_process_nunchuk_done() {
   cwiid_process_nunchuk_clear();
 }
 
-void WiimoteMessageThread::cwiid_process_nunchuk_clear() {
+void WiimotedevConnection::cwiid_process_nunchuk_clear() {
   cstate[ix_nunchuk_device] = lstate[ix_nunchuk_device] =
   stick[ix_nunchuk_stick].x = stick[ix_nunchuk_stick].y = 0x00;
   setDeviceAvailable(ix_nunchuk_device, false);
 }
 
-void WiimoteMessageThread::cwiid_process_nunchuk_buttons(uint8 cwiid_buttons) {
+void WiimotedevConnection::cwiid_process_nunchuk_buttons(uint8 cwiid_buttons) {
   cstate[ix_nunchuk_device] &= NUNCHUK_BUTTON_NOTMASK;
   if (cwiid_buttons & CWIID_NUNCHUK_BTN_C) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_C;
   if (cwiid_buttons & CWIID_NUNCHUK_BTN_Z) cstate[ix_nunchuk_device] |= NUNCHUK_BTN_Z;
 }
 
-void WiimoteMessageThread::cwiid_process_nunchuk_stick(uint8 cwiid_stick[2]) {
+void WiimotedevConnection::cwiid_process_nunchuk_stick(uint8 cwiid_stick[2]) {
   cstate[ix_nunchuk_device] &= NUNCHUK_STICK_NOTMASK;
   if (stick[ix_nunchuk_stick].x != cwiid_stick[ix_x_axis] ||
       stick[ix_nunchuk_stick].y != cwiid_stick[ix_y_axis]) {
@@ -56,7 +56,7 @@ void WiimoteMessageThread::cwiid_process_nunchuk_stick(uint8 cwiid_stick[2]) {
   if (stick[ix_nunchuk_stick].y < nunchukStickMinY) cstate[ix_nunchuk_device]|= NUNCHUK_BTN_STICK_DOWN;
 }
 
-void WiimoteMessageThread::cwiid_process_nunchuk_acc(uint8 cwiid_acc[3]) {
+void WiimotedevConnection::cwiid_process_nunchuk_acc(uint8 cwiid_acc[3]) {
   cstate[ix_nunchuk_device] &= NUNCHUK_TILT_NOTMASK;
   calcAccelerometerValues(cwiid_acc, calibration[ix_nunchuk_device], acc[ix_nunchuk_device]);
 
@@ -67,7 +67,7 @@ void WiimoteMessageThread::cwiid_process_nunchuk_acc(uint8 cwiid_acc[3]) {
   emit dbusNunchukAcc(m_id, acc[ix_nunchuk_device]);
 }
 
-void WiimoteMessageThread::cwiid_process_nunchuk_status(cwiid_ext_type type) {
+void WiimotedevConnection::cwiid_process_nunchuk_status(cwiid_ext_type type) {
   switch (type) {
   case CWIID_EXT_NONE:
     if (deviceAvailable(ix_nunchuk_device)) {

@@ -22,10 +22,10 @@ set(sources
   ${CMAKE_SOURCE_DIR}/syslog/syslog.h
   ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
 
-  wiimotemanager.cpp
+  wiimotedevcore.cpp
   settings.cpp
-  wiimotedevice.cpp
-  wiimotemessagethread.cpp
+  wiimotedevdevice.cpp
+  wiimotedevconnection.cpp
   messages/classicmessages.cpp
   messages/nunchukmessages.cpp
   messages/wiimotemessages.cpp
@@ -41,10 +41,10 @@ set(headers
   dbus/deviceevents.h
   dbus/daemonservice.h
 
-  wiimotemessagethread.h
-  wiimotemanager.h
+  wiimotedevconnection.h
+  wiimotedevcore.h
   settings.h
-  wiimotedevice.h
+  wiimotedevdevice.h
 )
 
 qt4_wrap_cpp(sources ${headers})

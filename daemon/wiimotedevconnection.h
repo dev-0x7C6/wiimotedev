@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTEMESSAGETHREAD_H
-#define WIIMOTEMESSAGETHREAD_H
+#ifndef WiimotedevConnection_H
+#define WiimotedevConnection_H
 
 #include <QThread>
 #include "dbus/deviceevents.h"
@@ -29,7 +29,7 @@
 class QMutex;
 class QReadWriteLock;
 class QElapsedTimer;
-class WiimoteDevice;
+class WiimotedevDevice;
 
 const uint8 classicLToleranceValue = (0x3F >> 2);
 const uint8 classicRToleranceValue = (0x1F >> 2);
@@ -47,11 +47,11 @@ const uint8 nunchukStickMinX = (0xFF >> 1) - nunchukToleranceValue;
 const uint8 nunchukStickMaxY = (0xFF >> 1) + nunchukToleranceValue;
 const uint8 nunchukStickMinY = (0xFF >> 1) - nunchukToleranceValue;
 
-class WiimoteMessageThread : public QThread
+class WiimotedevConnection : public QThread
 {
   Q_OBJECT
 private:
-  WiimoteDevice *m_device;
+  WiimotedevDevice *m_device;
   QReadWriteLock *m_variable_locker;
   QReadWriteLock *m_device_locker;
   bool m_threadQuit;
@@ -143,8 +143,8 @@ private:
   void disconnect_animation();
 
 public:
-  explicit WiimoteMessageThread(WiimoteDevice *device, int id, QObject *parent = 0);
- ~WiimoteMessageThread();
+  explicit WiimotedevConnection(WiimotedevDevice *device, int id, QObject *parent = 0);
+ ~WiimotedevConnection();
 
   uint id() { return m_id; }
 
@@ -212,4 +212,4 @@ signals:
   void dbusClassicControllerRStick(uint, struct stickdata);
 };
 
-#endif // WIIMOTEMESSAGETHREAD_H
+#endif // WiimotedevConnection_H

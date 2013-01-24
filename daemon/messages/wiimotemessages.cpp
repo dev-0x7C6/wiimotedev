@@ -17,25 +17,25 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "wiimotemessagethread.h"
-#include "wiimotedevice.h"
+#include "wiimotedevconnection.h"
+#include "wiimotedevdevice.h"
 
-void WiimoteMessageThread::cwiid_process_wiimote_init() {
+void WiimotedevConnection::cwiid_process_wiimote_init() {
   cwiid_process_wiimote_clear();
   setDeviceAvailable(ix_wiimote_device, true);
 }
 
-void WiimoteMessageThread::cwiid_process_wiimote_done() {
+void WiimotedevConnection::cwiid_process_wiimote_done() {
   cwiid_process_wiimote_clear();
   setDeviceAvailable(ix_wiimote_device, false);
 }
 
-void WiimoteMessageThread::cwiid_process_wiimote_clear() {
+void WiimotedevConnection::cwiid_process_wiimote_clear() {
   cstate[ix_wiimote_device] = lstate[ix_wiimote_device] =
   cstate[ix_general_device] = lstate[ix_general_device] = 0x00;
 }
 
-void WiimoteMessageThread::cwiid_process_wiimote_buttons(uint16 buttons) {
+void WiimotedevConnection::cwiid_process_wiimote_buttons(uint16 buttons) {
   cstate[ix_wiimote_device] &= WIIMOTE_BUTTON_NOTMASK;
   if (buttons & CWIID_BTN_1) cstate[ix_wiimote_device] |= WIIMOTE_BTN_1;
   if (buttons & CWIID_BTN_2) cstate[ix_wiimote_device] |= WIIMOTE_BTN_2;
@@ -50,7 +50,7 @@ void WiimoteMessageThread::cwiid_process_wiimote_buttons(uint16 buttons) {
   if (buttons & CWIID_BTN_UP) cstate[ix_wiimote_device] |= WIIMOTE_BTN_UP;
 }
 
-void WiimoteMessageThread::cwiid_process_wiimote_acc(uint8 cwiid_acc[3]) {
+void WiimotedevConnection::cwiid_process_wiimote_acc(uint8 cwiid_acc[3]) {
   cstate[ix_wiimote_device] &= WIIMOTE_TILT_NOTMASK;
   calcAccelerometerValues(cwiid_acc, calibration[ix_wiimote_device], acc[ix_wiimote_device]);
 
@@ -61,7 +61,7 @@ void WiimoteMessageThread::cwiid_process_wiimote_acc(uint8 cwiid_acc[3]) {
   emit dbusWiimoteAcc(m_id, acc[ix_wiimote_device]);
 }
 
-void WiimoteMessageThread::cwiid_process_wiimote_ir(cwiid_ir_src ir[]) {
+void WiimotedevConnection::cwiid_process_wiimote_ir(cwiid_ir_src ir[]) {
   current_ir_table.clear();
 
   irpoint point;
@@ -92,12 +92,12 @@ void WiimoteMessageThread::cwiid_process_wiimote_ir(cwiid_ir_src ir[]) {
   last_ir_table = current_ir_table;
 }
 
-void WiimoteMessageThread::cwiid_process_wiimote_error() {
+void WiimotedevConnection::cwiid_process_wiimote_error() {
   m_device->disconnectFromDevice(false);
   setThreadQuitState(true);
 }
 
-void WiimoteMessageThread::cwiid_process_wiimote_status(uint8 battery) {
+void WiimotedevConnection::cwiid_process_wiimote_status(uint8 battery) {
   setDeviceBatteryState(100.0 * double(battery)/double(CWIID_BATTERY_MAX));
   emit dbusWiimoteBatteryLife(m_id, deviceBatteryState());
 }

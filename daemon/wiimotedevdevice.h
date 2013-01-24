@@ -17,8 +17,8 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTE_DEVICE_H
-#define WIIMOTE_DEVICE_H
+#ifndef WIIMOTEDEVDEVICE_H
+#define WIIMOTEDEVDEVICE_H
 
 // NOTE: This is wrapper class, for changes in cwiid API or when wiimotedev-daemon
 // NOTE: will use other library like *libwiimotedev (when is done)
@@ -37,7 +37,7 @@
   CWIID_RPT_CLASSIC | \
   CWIID_RPT_ACC
 
-class WiimoteDevice : public QObject
+class WiimotedevDevice : public QObject
 {
   Q_OBJECT
 private:
@@ -55,8 +55,8 @@ private:
   struct acc_cal nunchuk_acc_cal;
 
 public:
-  explicit WiimoteDevice(QObject *parent = 0);
-  virtual ~WiimoteDevice();
+  explicit WiimotedevDevice(QObject *parent = 0);
+  virtual ~WiimotedevDevice();
 
   bool connectToDevice(const uint timeout = 3);
   bool disconnectFromDevice(const bool switchOfReport = true);
@@ -85,4 +85,4 @@ public:
   bdaddr_t getWiimoteAddr();
 };
 
-#endif // WIIMOTE_DEVICE_H
+#endif // WIIMOTEDEVDEVICE_H

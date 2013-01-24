@@ -17,9 +17,9 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "wiimotedevice.h"
+#include "wiimotedevdevice.h"
 
-WiimoteDevice::WiimoteDevice(QObject *parent):
+WiimotedevDevice::WiimotedevDevice(QObject *parent):
   QObject(parent),
   device(0),
   haveWiimoteCallibration(false),
@@ -33,13 +33,13 @@ WiimoteDevice::WiimoteDevice(QObject *parent):
   memset(&nunchuk_acc_cal, 0, sizeof(acc_cal));
 }
 
-WiimoteDevice::~WiimoteDevice()
+WiimotedevDevice::~WiimotedevDevice()
 {
   if (isConnected())
     disconnectFromDevice(true);
 }
 
-bool WiimoteDevice::connectToDevice(const uint timeout)
+bool WiimotedevDevice::connectToDevice(const uint timeout)
 {
   memset(&bdaddr, 0, sizeof(bdaddr_t));
 
@@ -52,7 +52,7 @@ bool WiimoteDevice::connectToDevice(const uint timeout)
   return false;
 }
 
-bool WiimoteDevice::disconnectFromDevice(const bool switchOfReport) {
+bool WiimotedevDevice::disconnectFromDevice(const bool switchOfReport) {
   if (isDisconnected())
     return false;
 
@@ -68,11 +68,11 @@ bool WiimoteDevice::disconnectFromDevice(const bool switchOfReport) {
   return true;
 }
 
-void WiimoteDevice::requestStatus() {
+void WiimotedevDevice::requestStatus() {
   cwiid_request_status(device);
 }
 
-bool WiimoteDevice::getMesgStruct(int *count, union cwiid_mesg *mesg[], struct timespec *time) {
+bool WiimotedevDevice::getMesgStruct(int *count, union cwiid_mesg *mesg[], struct timespec *time) {
   if (isDisconnected())
     return false;
 
@@ -84,7 +84,7 @@ bool WiimoteDevice::getMesgStruct(int *count, union cwiid_mesg *mesg[], struct t
   return true;
 }
 
-bool WiimoteDevice::setLedStatus(uint8 led) {
+bool WiimotedevDevice::setLedStatus(uint8 led) {
   if (isDisconnected()) return false;
 
   cwiid_set_led(device, switchOnLeds = led);
@@ -92,7 +92,7 @@ bool WiimoteDevice::setLedStatus(uint8 led) {
   return true;
 }
 
-bool WiimoteDevice::setRumbleStatus(bool rumble) {
+bool WiimotedevDevice::setRumbleStatus(bool rumble) {
   if (isDisconnected()) return false;
 
   cwiid_set_rumble(device, isRumble = rumble);
@@ -100,7 +100,7 @@ bool WiimoteDevice::setRumbleStatus(bool rumble) {
   return true;
 }
 
-bool WiimoteDevice::setReportMode(uint8 mode) {
+bool WiimotedevDevice::setReportMode(uint8 mode) {
   if (isDisconnected()) return false;
 
   if (cwiid_set_rpt_mode(device, reportMode = mode)) {
@@ -111,37 +111,37 @@ bool WiimoteDevice::setReportMode(uint8 mode) {
   return true;
 }
 
-uint8 WiimoteDevice::getLedStatus() {
+uint8 WiimotedevDevice::getLedStatus() {
   if (isDisconnected()) return 0;
 
   return switchOnLeds;
 }
 
-bool WiimoteDevice::getRumbleStatus() {
+bool WiimotedevDevice::getRumbleStatus() {
   if (isDisconnected())
     return false;
 
   return isRumble;
 }
 
-uint8 WiimoteDevice::getReportMode() {
+uint8 WiimotedevDevice::getReportMode() {
   if (isDisconnected())
     return 0;
 
   return reportMode;
 }
 
-QString WiimoteDevice::getWiimoteSAddr() {
+QString WiimotedevDevice::getWiimoteSAddr() {
   char addr[17];
   ba2str(&bdaddr, addr);
   return QString::fromAscii(addr, 17);
 }
 
-bdaddr_t WiimoteDevice::getWiimoteAddr() {
+bdaddr_t WiimotedevDevice::getWiimoteAddr() {
   return bdaddr;
 }
 
-bool WiimoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal) {
+bool WiimotedevDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal) {
   if (isDisconnected())
     return false;
 
@@ -164,14 +164,14 @@ bool WiimoteDevice::getDeviceCallibration(enum cwiid_ext_type ext_type, struct a
   return true;
 }
 
-struct acc_cal WiimoteDevice::getLastWiimoteCallibration(bool &valid) {
+struct acc_cal WiimotedevDevice::getLastWiimoteCallibration(bool &valid) {
   valid = haveWiimoteCallibration;
   struct acc_cal copy;
   memcpy(&copy, &wiimote_acc_cal, sizeof(acc_cal));
   return copy;
 }
 
-struct acc_cal WiimoteDevice::getLastNunchukCallibration(bool &valid) {
+struct acc_cal WiimotedevDevice::getLastNunchukCallibration(bool &valid) {
   valid = haveNunchukCallibration;
   struct acc_cal copy;
   memcpy(&copy, &nunchuk_acc_cal, sizeof(acc_cal));
@@ -180,7 +180,7 @@ struct acc_cal WiimoteDevice::getLastNunchukCallibration(bool &valid) {
 }
 
 
-bool WiimoteDevice::getWiimoteState(struct cwiid_state &state) {
+bool WiimotedevDevice::getWiimoteState(struct cwiid_state &state) {
   if (isDisconnected()) return false;
 
   if (cwiid_get_state(device, &state)){
