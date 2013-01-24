@@ -2,6 +2,8 @@
 # Copyright (C) 2008 Bartłomiej Burdukiewicz
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
+set(WIIMOTEDEV_SETTINGS_FILE "/etc/wiimotedev/wiimotedev.conf")
+set(WIIMOTEDEV_CONNECTIONS_FILE "/etc/wiimotedev/connections.conf")
 set(WIIMOTEDEV_VERSION_MAJOR 1)
 set(WIIMOTEDEV_VERSION_MINOR 4)
 set(WIIMOTEDEV_VERSION_PATCH 5)

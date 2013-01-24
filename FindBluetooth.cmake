@@ -6,7 +6,6 @@
 #  BLUETOOTH_INCLUDE_DIRS - where to find bluetooth/bluetooth.h
 #  BLUETOOTH_LIBRARIES - the libraries to link against
 
-
 if (BLUETOOTH_LIBRARIES AND BLUETOOTH_INCLUDE_DIRS)
 	# path set by user or was found in the past
 	set(BLUETOOTH_FOUND TRUE)

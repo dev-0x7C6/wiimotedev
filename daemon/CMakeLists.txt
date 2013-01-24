@@ -19,22 +19,24 @@ set(CMAKE_CXX_FLAGS "-Wall ${CMAKE_CXX_FLAGS}")
 
 set(sources
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
+  ${CMAKE_SOURCE_DIR}/config.h
   ${CMAKE_SOURCE_DIR}/syslog/syslog.h
   ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
 
-  wiimotedevcore.cpp
-  settings.cpp
-  wiimotedevdevice.cpp
-  wiimotedevconnection.cpp
+  daemon.cpp
+
   messages/classicmessages.cpp
   messages/nunchukmessages.cpp
   messages/wiimotemessages.cpp
+  fancy/fancy.cpp
+
+  wiimotedevconnection.cpp
+  wiimotedevcore.cpp
+  wiimotedevdevice.cpp
+  wiimotedevsettings.cpp
+
   virtualcursor/virtualcursor.cpp
   virtualcursor/virtualcursor.h
-  features.cpp
-  daemon.cpp
-
-  ${CMAKE_SOURCE_DIR}/config.h
 )
 
 set(headers
@@ -43,8 +45,8 @@ set(headers
 
   wiimotedevconnection.h
   wiimotedevcore.h
-  settings.h
   wiimotedevdevice.h
+  wiimotedevsettings.h
 )
 
 qt4_wrap_cpp(sources ${headers})

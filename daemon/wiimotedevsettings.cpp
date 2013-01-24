@@ -17,13 +17,14 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "settings.h"
+#include "wiimotedevsettings.h"
+#include "../config.h"
 
 WiimotedevSettings::WiimotedevSettings(QObject *parent):
   QObject(parent)
 {
-  m_settings = new QSettings(WIIMOTEDEV_CONFIG_FILE, QSettings::IniFormat, this);
-  m_connections = new QSettings(WIIMOTEDEV_CONNECTIONS_CONFIG_FILE, QSettings::IniFormat, this);
+  m_settings = new QSettings(WIIMOTEDEV_SETTINGS_FILE, QSettings::IniFormat, this);
+  m_connections = new QSettings(WIIMOTEDEV_CONNECTIONS_FILE, QSettings::IniFormat, this);
   reload();
 }
 

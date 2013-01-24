@@ -34,13 +34,13 @@ WiimotedevCore::WiimotedevCore(QObject *parent):
   m_threadQuitStatus(false),
   result(EXIT_SUCCESS)
 {
-  if (!QFile::exists(WIIMOTEDEV_CONFIG_FILE)) {
-    systemlog::critical(QString("missing configuration file %1").arg(WIIMOTEDEV_CONFIG_FILE));
+  if (!QFile::exists(WIIMOTEDEV_SETTINGS_FILE)) {
+    systemlog::critical(QString("missing configuration file %1").arg(WIIMOTEDEV_SETTINGS_FILE));
     result = EXIT_FAILURE;
     return;
   }
 
-  systemlog::notice(QString("config: %1").arg(WIIMOTEDEV_CONFIG_FILE));
+  systemlog::notice(QString("config: %1").arg(WIIMOTEDEV_SETTINGS_FILE));
   settings = new WiimotedevSettings(this);
   sequence = settings->connectionTable();
 
@@ -163,7 +163,7 @@ bool WiimotedevCore::threadQuitStatus() {
 }
 
 bool WiimotedevCore::dbusReloadSequenceList() {
-  systemlog::notice(QString("loading sequences from %1").arg(WIIMOTEDEV_CONFIG_FILE));
+  systemlog::notice(QString("loading sequences from %1").arg(WIIMOTEDEV_SETTINGS_FILE));
 
   settings->reload();
   sequence = settings->connectionTable();
@@ -221,19 +221,12 @@ bool WiimotedevCore::dbusWiimoteGetRumbleStatus(uint id)
   return false;
 }
 
-#include <QDebug>
-
 bool WiimotedevCore::dbusWiimoteSetLedStatus(uint id, uint status)
 {
-  QElapsedTimer timer;
-  timer.start();
   WiimotedevConnection *thread = threads.value(id);
-  bool yes = false;
   if (thread)
-    yes = threads.value(id)->dbusWiimoteSetLedStatus(status);
-
-  qDebug() << timer.elapsed() << "ms";
-  return yes;
+    return threads.value(id)->dbusWiimoteSetLedStatus(status);
+  return false;
 }
 
 bool WiimotedevCore::dbusWiimoteSetRumbleStatus(uint id, bool status)

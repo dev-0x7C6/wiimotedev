@@ -26,9 +26,9 @@
 
 #include "dbus/deviceevents.h"
 #include "dbus/daemonservice.h"
-#include "settings.h"
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "wiimotedevconnection.h"
+#include "wiimotedevsettings.h"
 
 class WiimotedevCore : public QThread
 {

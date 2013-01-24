@@ -20,11 +20,7 @@
 #ifndef WIIMOTEDEV_H
 #define WIIMOTEDEV_H
 
-#define WIIMOTEDEV_CONFIG_FILE "/etc/wiimotedev/wiimotedev.conf"
-#define WIIMOTEDEV_CONNECTIONS_CONFIG_FILE "/etc/wiimotedev/connections.conf"
-
 #define WIIMOTEDEV_DBUS_SERVICE_NAME "org.wiimotedev.daemon"
-
 #define WIIMOTEDEV_DBUS_IFACE_EVENTS "org.wiimotedev.deviceEvents"
 #define WIIMOTEDEV_DBUS_IFACE_SERVICE "org.wiimotedev.service"
 #define WIIMOTEDEV_DBUS_OBJECT_EVENTS "/deviceEvents"
