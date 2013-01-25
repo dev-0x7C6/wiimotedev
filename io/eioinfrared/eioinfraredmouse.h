@@ -40,6 +40,7 @@ class EIO_InfraredMouse: public QObject
   int accelerationTimeoutValue;
 
 //variables
+  double moves[6];
   double moveX;
   double moveY;
   double lastX;

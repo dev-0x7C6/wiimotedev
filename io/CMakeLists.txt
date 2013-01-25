@@ -12,8 +12,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_SOURCE_DIR}/linux/usr/include/
 )
 
-set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
+set(CMAKE_C_FLAGS "-Wall -g -pg  ${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -g -pg -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
 
 set(sources
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h

@@ -28,8 +28,8 @@ EIO_InfraredMouse::EIO_InfraredMouse(EIO_EventDevice *device, uint id) :
   device(device),
   id(id),
   mode(EIO_InfraredMouse::RelativeDevice),
-  lastX(0),
-  lastY(0),
+  lastX(-0xFFFF),
+  lastY(-0xFFFF),
   accVectorX(0),
   accVectorY(0),
   accVectorXAccumulation(0),
@@ -50,11 +50,20 @@ EIO_InfraredMouse::EIO_InfraredMouse(EIO_EventDevice *device, uint id) :
   useAimHelper(true),
   useAccelerationTimeout(true)
 {
+  accelerationClockTimeout.setInterval(5);
+
   if (mode == EIO_InfraredMouse::AbsoluteDevice)  {
     connect(&accelerationClockTimeout, SIGNAL(timeout()), this, SLOT(axisAccelerationTimeout()));
-    accelerationClockTimeout.setInterval(1);
+
   }
   memset(&wiimote_acc, 0, sizeof(wiimote_acc));
+
+  moves[0] = -0xFFFF;
+  moves[1] = -0xFFFF;
+  moves[2] = 0;
+  moves[3] = 0;
+  moves[4] = 0;
+  moves[5] = 0;
 }
 
 EIO_InfraredMouse::~EIO_InfraredMouse()
@@ -62,7 +71,6 @@ EIO_InfraredMouse::~EIO_InfraredMouse()
   accelerationClockTimeout.stop();
   disconnect(&accelerationClockTimeout, 0, 0, 0);
 }
-
 
 void EIO_InfraredMouse::setDeviceId(int _id) {
   id = _id;
@@ -150,19 +158,23 @@ void EIO_InfraredMouse::dbusVirtualCursorPosition(uint _id, double x, double y, 
     return;
 
   if (mode == EIO_InfraredMouse::RelativeDevice) {
-    if (lastX == -1.0) lastX = x;
-    if (lastY == -1.0) lastY = y;
-    moveX = lastX - x;
-    moveY = lastY - y;
-    lastX = x;
-    lastY = y;
+    if (moves[0] == -0xFFFF)
+      moves[0] = x;
+    if (moves[1] == -0xFFFF)
+      moves[1] = y;
+    moves[2] = moves[0] - x;
+    moves[3] = moves[1] - y;
+    moves[0] = x;
+    moves[1] = y;
 
-    if (useAimHelper) {
-      if (x >= -aimHelperXRange && x <= aimHelperXRange)
-        moveX *= aimHelperSensitivityXMultiplier;
-      if (y >= -aimHelperYRange && y <= aimHelperYRange)
-        moveY *= aimHelperSensitivityYMultiplier;
+    for (register int i = 0; i < 5; ++i) {
+      moves[4] += (moves[2] / 5.0);
+      moves[5] += (moves[3] / 5.0);
+      device->moveMousePointerRel(moves[4], moves[5]);
+      moves[4] -= static_cast< int>(moves[4]);
+      moves[5] -= static_cast< int>(moves[5]);
     }
+
     if (useAcceleration) {
       useAccelerationTimeout = false;
       if (x < -deadzoneXRange || x > deadzoneXRange) {
@@ -228,11 +240,11 @@ void EIO_InfraredMouse::axisAccelerationY()
 
 void EIO_InfraredMouse::axisAccelerationTimeout()
 {
-   accelerationTimeoutValue += accelerationClockTimeout.interval();
-   if (accelerationTimeoutValue <= accelerationTimeout) {
-     axisAccelerationX();
-     axisAccelerationY();
-   } else
-     accelerationClockTimeout.stop();
+  accelerationTimeoutValue += accelerationClockTimeout.interval();
+  if (accelerationTimeoutValue <= accelerationTimeout) {
+    axisAccelerationX();
+    axisAccelerationY();
+  } else
+    accelerationClockTimeout.stop();
 }
 

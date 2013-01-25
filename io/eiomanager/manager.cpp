@@ -47,15 +47,15 @@ UInputProfileManager::UInputProfileManager(QObject *parent) :QObject(parent),
   rumbleStatus(false),
   virtualEvent(new EIO_EventDevice())
 {
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint,uint64)), this, SLOT(dbusWiimoteGeneralButtons(uint,uint64)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteButtons(uint,uint64)), this, SLOT(dbusWiimoteButtons(uint,uint64)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(uint,accdata)), this, SLOT(dbusWiimoteAcc(uint,accdata)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukButtons(uint,uint64)), this, SLOT(dbusNunchukButtons(uint,uint64)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukStick(uint,stickdata)), this, SLOT(dbusNunchukStick(uint,stickdata)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukAcc(uint,accdata)), this, SLOT(dbusNunchukAcc(uint,accdata)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerButtons(uint,uint64)), this, SLOT(dbusClassicControllerButtons(uint,uint64)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerLStick(uint,stickdata)), this, SLOT(dbusClassicControllerLStick(uint,stickdata)));
-  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerRStick(uint,stickdata)), this, SLOT(dbusClassicControllerRStick(uint,stickdata)));
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint,uint64)), this, SLOT(dbusWiimoteGeneralButtons(uint,uint64)), Qt::DirectConnection);
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteButtons(uint,uint64)), this, SLOT(dbusWiimoteButtons(uint,uint64)), Qt::DirectConnection);
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(uint,accdata)), this, SLOT(dbusWiimoteAcc(uint,accdata)), Qt::DirectConnection);
+  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukButtons(uint,uint64)), this, SLOT(dbusNunchukButtons(uint,uint64)), Qt::DirectConnection);
+  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukStick(uint,stickdata)), this, SLOT(dbusNunchukStick(uint,stickdata)), Qt::DirectConnection);
+  connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukAcc(uint,accdata)), this, SLOT(dbusNunchukAcc(uint,accdata)), Qt::DirectConnection);
+  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerButtons(uint,uint64)), this, SLOT(dbusClassicControllerButtons(uint,uint64)), Qt::DirectConnection);
+  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerLStick(uint,stickdata)), this, SLOT(dbusClassicControllerLStick(uint,stickdata)), Qt::DirectConnection);
+  connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerRStick(uint,stickdata)), this, SLOT(dbusClassicControllerRStick(uint,stickdata)), Qt::DirectConnection);
 
   virtualEvent->uinput_open();
 
