@@ -18,10 +18,10 @@ depend() {
 start() {
   ebegin "Starting Wiimotedev-daemon"
 
-  if [ -z $(cat /etc/group | grep $GROUP) ]; then
+  if [ -z $(grep ^$GROUP: /etc/group) ]; then
     groupadd $GROUP &> /dev/null
 
-    if [ ! -n $(cat /etc/group | grep $GROUP) ]; then
+    if [ ! -n $(grep ^$GROUP: /etc/group) ]; then
       eend 1
       echo "Cannot add new group $GROUP"
       exit 1

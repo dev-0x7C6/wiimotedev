@@ -13,10 +13,10 @@ CONFIG=/etc/wiimotedev/wiimotedev.conf
 
 start() {
 
-  if [ -z $(cat /etc/group | grep $GROUP) ]; then
+  if [ -z $(grep ^$GROUP: /etc/group) ]; then
     groupadd $GROUP &> /dev/null
 
-    if [ ! -n $(cat /etc/group | grep $GROUP) ]; then
+    if [ ! -n $(grep ^$GROUP: /etc/group) ]; then
       stat_fail
       echo "Cannot add new group $GROUP"
       exit 1

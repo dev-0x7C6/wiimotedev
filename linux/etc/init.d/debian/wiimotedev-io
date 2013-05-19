@@ -19,10 +19,10 @@ CONFIG=/etc/wiimotedev/io.conf
 
 start() {
 
-  if [ -z $(cat /etc/group | grep $GROUP) ]; then
+  if [ -z $(grep ^$GROUP: /etc/group) ]; then
     groupadd $GROUP &> /dev/null
 
-    if [ ! -n $(cat /etc/group | grep $GROUP) ]; then
+    if [ ! -n $(grep ^$GROUP: /etc/group) ]; then
       echo "Cannot add new group $GROUP"
       exit 1
     fi
