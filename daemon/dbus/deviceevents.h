@@ -106,7 +106,7 @@
 
 #endif
 
-class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
+class WiimotedevDBusEvents : public QDBusAbstractAdaptor
 {
   Q_OBJECT
   Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.deviceEvents")
@@ -262,7 +262,7 @@ class DBusDeviceEventsAdaptor : public QDBusAbstractAdaptor
 "  </interface>")
 
 public:
-  DBusDeviceEventsAdaptor (QObject *parent);
+  WiimotedevDBusEvents (QObject *parent);
 
 public Q_SLOTS:
   bool dbusIsClassicConnected(uint id);
@@ -316,14 +316,14 @@ Q_SIGNALS:
   void dbusClassicControllerRStick(uint, struct stickdata);
 };
 
-class DBusDeviceEventsAdaptorWrapper : public QObject
+class WiimotedevDBusEventsWrapper : public QObject
 {
   Q_OBJECT
 private:
   bool registred;
 
 public:
-  DBusDeviceEventsAdaptorWrapper(QObject *parent, QDBusConnection &connection);
+  WiimotedevDBusEventsWrapper(QObject *parent, QDBusConnection &connection);
 
   inline bool isRegistred() { return registred; }
 
@@ -383,7 +383,7 @@ Q_SIGNALS:
 };
 
 
-inline DBusDeviceEventsAdaptor::DBusDeviceEventsAdaptor (QObject *parent) : QDBusAbstractAdaptor(parent)
+inline WiimotedevDBusEvents::WiimotedevDBusEvents (QObject *parent) : QDBusAbstractAdaptor(parent)
 {
   qRegisterMetaType< uint8> ("uint8");
   qRegisterMetaType< uint16> ("uint16");
@@ -408,157 +408,157 @@ inline DBusDeviceEventsAdaptor::DBusDeviceEventsAdaptor (QObject *parent) : QDBu
   setAutoRelaySignals(true);
 }
 
-inline QList < uint> DBusDeviceEventsAdaptor::dbusGetWiimoteList()
+inline QList < uint> WiimotedevDBusEvents::dbusGetWiimoteList()
 {
   QList < uint> list;
   QMetaObject::invokeMethod(parent(), "dbusGetWiimoteList", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, list));
   return list;
 }
 
-inline bool DBusDeviceEventsAdaptor::dbusIsClassicConnected(uint id)
+inline bool WiimotedevDBusEvents::dbusIsClassicConnected(uint id)
 {
   bool connected;
   QMetaObject::invokeMethod(parent(), "dbusIsClassicConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(uint, id));
   return connected;
 }
 
-inline bool DBusDeviceEventsAdaptor::dbusIsNunchukConnected(uint id)
+inline bool WiimotedevDBusEvents::dbusIsNunchukConnected(uint id)
 {
   bool connected;
   QMetaObject::invokeMethod(parent(), "dbusIsNunchukConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(uint, id));
   return connected;
 }
 
-inline bool DBusDeviceEventsAdaptor::dbusIsWiimoteConnected(uint id)
+inline bool WiimotedevDBusEvents::dbusIsWiimoteConnected(uint id)
 {
   bool connected;
   QMetaObject::invokeMethod(parent(), "dbusIsWiimoteConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(uint, id));
   return connected;
 }
 
-inline uint8 DBusDeviceEventsAdaptor::dbusWiimoteGetLedStatus(uint id)
+inline uint8 WiimotedevDBusEvents::dbusWiimoteGetLedStatus(uint id)
 {
   uint8 value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(uint8, value), Q_ARG(uint, id));
   return value;
 }
 
-inline bool DBusDeviceEventsAdaptor::dbusWiimoteGetRumbleStatus(uint id)
+inline bool WiimotedevDBusEvents::dbusWiimoteGetRumbleStatus(uint id)
 {
   bool value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetRumbleStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(uint, id));
   return value;
 }
 
-inline bool DBusDeviceEventsAdaptor::dbusWiimoteSetLedStatus(uint id, uint status)
+inline bool WiimotedevDBusEvents::dbusWiimoteSetLedStatus(uint id, uint status)
 {
   bool value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(uint, id), Q_ARG(uint, status));
   return value;
 }
 
-inline bool DBusDeviceEventsAdaptor::dbusWiimoteSetRumbleStatus(uint id, bool status)
+inline bool WiimotedevDBusEvents::dbusWiimoteSetRumbleStatus(uint id, bool status)
 {
   bool value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteSetRumbleStatus", Qt::DirectConnection,  Q_RETURN_ARG(bool, value), Q_ARG(uint, id), Q_ARG(bool, status));
   return value;
 }
 
-inline uint DBusDeviceEventsAdaptor::dbusWiimoteGetCurrentLatency(uint id)
+inline uint WiimotedevDBusEvents::dbusWiimoteGetCurrentLatency(uint id)
 {
   uint latency;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetCurrentLatency", Qt::DirectConnection, Q_RETURN_ARG(uint, latency), Q_ARG(uint, id));
   return latency;
 }
 
-inline uint DBusDeviceEventsAdaptor::dbusWiimoteGetBatteryLife(uint id)
+inline uint WiimotedevDBusEvents::dbusWiimoteGetBatteryLife(uint id)
 {
   uint life;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetBatteryLife", Qt::DirectConnection, Q_RETURN_ARG(uint, life), Q_ARG(uint, id));
   return life;
 }
 
-inline QList < uint> DBusDeviceEventsAdaptor::dbusNunchukGetAccelerometrCalibration(uint id)
+inline QList < uint> WiimotedevDBusEvents::dbusNunchukGetAccelerometrCalibration(uint id)
 {
   QList < uint> value;
   QMetaObject::invokeMethod(parent(), "dbusNunchukGetAccelerometrCalibration", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, value), Q_ARG(uint, id));
   return value;
 }
 
-inline QList < uint> DBusDeviceEventsAdaptor::dbusWiimoteGetAccelerometrCalibration(uint id) {
+inline QList < uint> WiimotedevDBusEvents::dbusWiimoteGetAccelerometrCalibration(uint id) {
   QList < uint> value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibration", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, value), Q_ARG(uint, id));
   return value;
 }
 
-inline uint DBusDeviceEventsAdaptor::dbusWiimoteGetAverageLatency(uint id)
+inline uint WiimotedevDBusEvents::dbusWiimoteGetAverageLatency(uint id)
 {
   uint latency;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAverageLatency", Qt::DirectConnection, Q_RETURN_ARG(uint, latency), Q_ARG(uint, id));
   return latency;
 }
 
-inline QString DBusDeviceEventsAdaptor::dbusWiimoteGetMacAddress(uint id)
+inline QString WiimotedevDBusEvents::dbusWiimoteGetMacAddress(uint id)
 {
   QString macAddress;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetMacAddress", Qt::DirectConnection, Q_RETURN_ARG(QString, macAddress), Q_ARG(uint, id));
   return macAddress;
 }
 
-inline DBusDeviceEventsAdaptorWrapper::DBusDeviceEventsAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
+inline WiimotedevDBusEventsWrapper::WiimotedevDBusEventsWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
 {
-  new DBusDeviceEventsAdaptor(this);
+  new WiimotedevDBusEvents(this);
   registred = connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_EVENTS, this);
 }
 
 
-inline uint DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetCurrentLatency(uint id){
+inline uint WiimotedevDBusEventsWrapper::dbusWiimoteGetCurrentLatency(uint id){
   uint latency;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetCurrentLatency", Qt::DirectConnection, Q_RETURN_ARG(uint, latency), Q_ARG(uint, id));
   return latency;
 }
 
-inline uint DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAverageLatency(uint id) {
+inline uint WiimotedevDBusEventsWrapper::dbusWiimoteGetAverageLatency(uint id) {
   uint latency;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAverageLatency", Qt::DirectConnection, Q_RETURN_ARG(uint, latency), Q_ARG(uint, id));
   return latency;
 }
 
-inline QList < uint> DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetAccelerometrCalibration(uint id)
+inline QList < uint> WiimotedevDBusEventsWrapper::dbusWiimoteGetAccelerometrCalibration(uint id)
 {
   QList < uint> value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetAccelerometrCalibration", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, value), Q_ARG(uint, id));
   return value;
 }
 
-inline QList < uint> DBusDeviceEventsAdaptorWrapper::dbusNunchukGetAccelerometrCalibration(uint id)
+inline QList < uint> WiimotedevDBusEventsWrapper::dbusNunchukGetAccelerometrCalibration(uint id)
 {
   QList < uint> value;
   QMetaObject::invokeMethod(parent(), "dbusNunchukGetAccelerometrCalibration", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, value), Q_ARG(uint, id));
   return value;
 }
 
-inline QString DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetMacAddress(uint id)
+inline QString WiimotedevDBusEventsWrapper::dbusWiimoteGetMacAddress(uint id)
 {
   QString macAddress;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetMacAddress", Qt::DirectConnection, Q_RETURN_ARG(QString, macAddress), Q_ARG(uint, id));
   return macAddress;
 }
 
-inline bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetRumbleStatus(uint id){
+inline bool WiimotedevDBusEventsWrapper::dbusWiimoteGetRumbleStatus(uint id){
   bool value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetRumbleStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(uint, id));
   return value;
 }
 
-inline uint DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetBatteryLife(uint id)
+inline uint WiimotedevDBusEventsWrapper::dbusWiimoteGetBatteryLife(uint id)
 {
   uint life;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetBatteryLife", Qt::DirectConnection, Q_RETURN_ARG(uint, life), Q_ARG(uint, id));
   return life;
 }
 
-inline bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetRumbleStatus(uint id, bool status)
+inline bool WiimotedevDBusEventsWrapper::dbusWiimoteSetRumbleStatus(uint id, bool status)
 {
   bool value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteSetRumbleStatus", Qt::DirectConnection,  Q_RETURN_ARG(bool, value), Q_ARG(uint, id), Q_ARG(bool, status));
@@ -569,13 +569,13 @@ inline bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetRumbleStatus(uint id, 
   return value;
 }
 
-inline uint8 DBusDeviceEventsAdaptorWrapper::dbusWiimoteGetLedStatus(uint id){
+inline uint8 WiimotedevDBusEventsWrapper::dbusWiimoteGetLedStatus(uint id){
   uint8 value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteGetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(uint8, value), Q_ARG(uint, id));
   return value;
 }
 
-inline bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetLedStatus(uint id, uint status)
+inline bool WiimotedevDBusEventsWrapper::dbusWiimoteSetLedStatus(uint id, uint status)
 {
   bool value;
   QMetaObject::invokeMethod(parent(), "dbusWiimoteSetLedStatus", Qt::DirectConnection, Q_RETURN_ARG(bool, value), Q_ARG(uint, id), Q_ARG(uint, status));
@@ -586,34 +586,34 @@ inline bool DBusDeviceEventsAdaptorWrapper::dbusWiimoteSetLedStatus(uint id, uin
   return value;
 }
 
-inline QList < uint> DBusDeviceEventsAdaptorWrapper::dbusGetWiimoteList()
+inline QList < uint> WiimotedevDBusEventsWrapper::dbusGetWiimoteList()
 {
   QList < uint> list;
   QMetaObject::invokeMethod(parent(), "dbusGetWiimoteList", Qt::DirectConnection, Q_RETURN_ARG(QList < uint>, list));
   return list;
 }
 
-inline QStringList DBusDeviceEventsAdaptorWrapper::dbusGetUnregistredWiimoteList() {
+inline QStringList WiimotedevDBusEventsWrapper::dbusGetUnregistredWiimoteList() {
   QStringList list;
   QMetaObject::invokeMethod(parent(), "dbusGetUnregistredWiimoteList", Qt::DirectConnection, Q_RETURN_ARG(QStringList, list));
   return list;
 }
 
-inline bool DBusDeviceEventsAdaptorWrapper::dbusIsClassicConnected(uint id)
+inline bool WiimotedevDBusEventsWrapper::dbusIsClassicConnected(uint id)
 {
   bool connected;
   QMetaObject::invokeMethod(parent(), "dbusIsClassicConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(uint, id));
   return connected;
 }
 
-inline bool DBusDeviceEventsAdaptorWrapper::dbusIsNunchukConnected(uint id)
+inline bool WiimotedevDBusEventsWrapper::dbusIsNunchukConnected(uint id)
 {
   bool connected;
   QMetaObject::invokeMethod(parent(), "dbusIsNunchukConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(uint, id));
   return connected;
 }
 
-inline bool DBusDeviceEventsAdaptorWrapper::dbusIsWiimoteConnected(uint id)
+inline bool WiimotedevDBusEventsWrapper::dbusIsWiimoteConnected(uint id)
 {
   bool connected;
   QMetaObject::invokeMethod(parent(), "dbusIsWiimoteConnected", Qt::DirectConnection, Q_RETURN_ARG(bool, connected), Q_ARG(uint, id));

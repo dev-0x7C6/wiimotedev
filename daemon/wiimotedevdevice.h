@@ -51,8 +51,8 @@ private:
   bool isRumble;
   uint8 switchOnLeds;
   uint8 reportMode;
-  struct acc_cal wiimote_acc_cal;
-  struct acc_cal nunchuk_acc_cal;
+  acc_cal wiimote_acc_cal;
+  acc_cal nunchuk_acc_cal;
 
 public:
   explicit WiimotedevDevice(QObject *parent = 0);
@@ -61,10 +61,10 @@ public:
   bool connectToDevice(const uint timeout = 3);
   bool disconnectFromDevice(const bool switchOfReport = true);
 
-  bool getMesgStruct(int *count, union cwiid_mesg *mesg[], struct timespec *time);
+  bool fetchMessage(int *count, union cwiid_mesg *mesg[], timespec *time);
 
-  inline bool isConnected() { return (device != 0); }
-  inline bool isDisconnected() { return (device == 0); }
+  bool isConnected();
+  bool isDisconnected();
 
   bool setLedStatus(uint8 led);
   bool setRumbleStatus(bool rumble);
@@ -75,11 +75,11 @@ public:
   uint8 getLedStatus();
   bool getRumbleStatus();
   uint8 getReportMode();
-  bool getWiimoteState(struct cwiid_state &state);
+  bool getWiimoteState(cwiid_state &state);
 
-  bool getDeviceCallibration(enum cwiid_ext_type ext_type, struct acc_cal *acc_cal);
-  struct acc_cal getLastWiimoteCallibration(bool &valid);
-  struct acc_cal getLastNunchukCallibration(bool &valid);
+  bool requestCallibration(enum cwiid_ext_type ext_type, acc_cal *acc_cal);
+  acc_cal fetchWiimoteCallibration(bool &valid);
+  acc_cal fetchNunchukCallibration(bool &valid);
 
   QString getWiimoteSAddr();
   bdaddr_t getWiimoteAddr();

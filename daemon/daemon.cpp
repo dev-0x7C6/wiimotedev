@@ -32,6 +32,7 @@
 
 #include <QCoreApplication>
 #include <QFileInfo>
+
 QCoreApplication *pointer;
 
 void signal_handler(int sig) {
@@ -39,6 +40,7 @@ void signal_handler(int sig) {
     case SIGHUP:
     case SIGTERM:
     case SIGINT:
+    case SIGALRM:
     case SIGQUIT: pointer->quit(); break;
     case SIGPIPE: signal(SIGPIPE, signal_handler); break;
   }
@@ -56,7 +58,6 @@ int main(int argc, char *argv[])
 
   if (application.arguments().indexOf("--help") != -1) {
     printf("Wiimotedev-daemon argument list\n\n" \
-      "  --debug\t\tfor additional debug output\n" \
       "  --help\t\tprint help page\n" \
       "  --no-daemon\t\tdo not run in background\n" \
       "  --no-quiet\t\tdo not block stdout messages\n" \
@@ -105,6 +106,7 @@ int main(int argc, char *argv[])
   }
 
   signal(SIGHUP, signal_handler);
+  signal(SIGALRM, signal_handler);
   signal(SIGTERM, signal_handler);
   signal(SIGINT, signal_handler);
   signal(SIGQUIT, signal_handler);

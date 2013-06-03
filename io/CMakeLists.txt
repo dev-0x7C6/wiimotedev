@@ -27,6 +27,7 @@ set(sources
   eiojoystick/eioclassicjoystick.cpp
   eiojoystick/eionunchukjoystick.cpp
   eiojoystick/eiowiimotejoystick.cpp
+  eiojoystick/eiogamepadmanager.cpp
  
   eiomanager/infrared.cpp
   eiomanager/keyboard.cpp
@@ -60,6 +61,7 @@ set(headers_wrap
   eiojoystick/eioclassicjoystick.h
   eiojoystick/eionunchukjoystick.h
   eiojoystick/eiowiimotejoystick.h
+  eiojoystick/eiogamepadmanager.h
 
   eiomanager/manager.h
   eiokeyboard/eioremotekeyboard.h

@@ -57,7 +57,7 @@ void WiimotedevConnection::run() {
 
   connect_animation();
 
-  m_device->getDeviceCallibration(CWIID_EXT_NONE, &calibration[ix_wiimote_device]);
+  m_device->requestCallibration(CWIID_EXT_NONE, &calibration[ix_wiimote_device]);
   m_device->setReportMode();
 
   int count;
@@ -98,7 +98,7 @@ void WiimotedevConnection::run() {
     }
 
     m_device_locker->lockForRead();
-    m_device->getMesgStruct(&count, &mesg, &time);
+    m_device->fetchMessage(&count, &mesg, &time);
 
     if (m_updateState->hasExpired(60000)) {
       m_device->requestStatus();

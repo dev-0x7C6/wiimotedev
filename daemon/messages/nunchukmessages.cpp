@@ -80,7 +80,7 @@ void WiimotedevConnection::cwiid_process_nunchuk_status(cwiid_ext_type type) {
     if (!deviceAvailable(ix_nunchuk_device)) {
       setDeviceAvailable(ix_nunchuk_device, true);
       m_device_locker->lockForRead();
-      m_device->getDeviceCallibration(CWIID_EXT_NUNCHUK, &calibration[ix_nunchuk_device]);
+      m_device->requestCallibration(CWIID_EXT_NUNCHUK, &calibration[ix_nunchuk_device]);
       m_device_locker->unlock();
       emit dbusNunchukPlugged(m_id);
     }

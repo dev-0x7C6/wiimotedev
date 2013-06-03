@@ -35,7 +35,7 @@ class WiimotedevCore : public QThread
   Q_OBJECT
 private:
 // Adaptor section ------------------------------------------ /
-  DBusDeviceEventsAdaptorWrapper *dbusDeviceEventsAdaptor;
+  WiimotedevDBusEventsWrapper *WiimotedevDBusEvents;
   DBusServiceAdaptorWrapper *dbusServiceAdaptor;
 
 // Settings ------------------------------------------------- /
