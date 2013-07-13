@@ -5,6 +5,8 @@
 
 ### BEGIN INIT INFO
 # Provides:          wiimotedev-io
+# Required-Start:    bluetooth
+# Required-Stop:     bluetooth
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
 # Short-Description: wiimotedev io
@@ -17,10 +19,10 @@ CONFIG=/etc/wiimotedev/io.conf
 
 start() {
 
-  if [ -z $(cat /etc/group | grep $GROUP) ]; then
+  if [ -z $(grep ^$GROUP: /etc/group) ]; then
     groupadd $GROUP &> /dev/null
 
-    if [ ! -n $(cat /etc/group | grep $GROUP) ]; then
+    if [ ! -n $(grep ^$GROUP: /etc/group) ]; then
       echo "Cannot add new group $GROUP"
       exit 1
     fi
