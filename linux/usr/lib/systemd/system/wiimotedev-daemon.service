@@ -1,0 +1,11 @@
+[Unit]
+Description=Wiiremote connection service and data provider
+
+[Service]
+Type=forking
+PIDFile=/var/run/wiimotedev-daemon.pid 
+BusName=org.wiimotedev.daemon
+ExecStart=/usr/sbin/wiimotedev-daemon
+
+[Install]
+WantedBy=bluetooth.target
