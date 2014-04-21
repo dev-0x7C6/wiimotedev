@@ -9,7 +9,7 @@ set(services
   wiimotedev-io.target
 )
 
-install(FILES services DESTINATION "${WIIMOTEDEV_SYSD_DIR}"
+install(FILES ${services} DESTINATION "${WIIMOTEDEV_SYSD_DIR}"
     PERMISSIONS
     OWNER_READ  OWNER_WRITE  OWNER_EXECUTE
     GROUP_READ
