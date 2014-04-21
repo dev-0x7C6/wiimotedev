@@ -57,7 +57,16 @@ void WiimotedevConnection::run() {
 
   connect_animation();
 
+
+  calibration[ix_wiimote_device].one[0x00] = 0x00;
+  calibration[ix_wiimote_device].one[0x01] = 0x00;
+  calibration[ix_wiimote_device].one[0x02] = 0x00;
+  calibration[ix_wiimote_device].zero[0x00] = 0x00;
+  calibration[ix_wiimote_device].zero[0x01] = 0x00;
+  calibration[ix_wiimote_device].zero[0x02] = 0x00;
   m_device->requestCallibration(CWIID_EXT_NONE, &calibration[ix_wiimote_device]);
+
+
   m_device->setReportMode();
 
   int count;
@@ -179,8 +188,9 @@ void WiimotedevConnection::run() {
   cwiid_process_nunchuk_done();
 
   if (m_device->isConnected()) {
-    if (!threadQuitState())
-      disconnect_animation();
+//FIXME: Animation sometimes freeze wiiremote firmware
+//    if (!threadQuitState())
+//      disconnect_animation();
     m_device->disconnectFromDevice();
   }
 

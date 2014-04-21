@@ -52,8 +52,7 @@ void WiimotedevConnection::cwiid_process_wiimote_buttons(uint16 buttons) {
 
 void WiimotedevConnection::cwiid_process_wiimote_acc(uint8 cwiid_acc[3]) {
   cstate[ix_wiimote_device] &= WIIMOTE_TILT_NOTMASK;
-  calcAccelerometerValues(cwiid_acc, calibration[ix_wiimote_device], acc[ix_wiimote_device]);
-
+  calcAccelerometerValues(cwiid_acc, calibration[ix_wiimote_device], acc[ix_wiimote_device]);  
   if (acc[ix_wiimote_device].pitch < -45.0) cstate[ix_wiimote_device] |= WIIMOTE_BTN_TILT_FRONT; else
   if (acc[ix_wiimote_device].pitch > 45.0) cstate[ix_wiimote_device] |= WIIMOTE_BTN_TILT_BACK;
   if (acc[ix_wiimote_device].roll > 45.0) cstate[ix_wiimote_device] |= WIIMOTE_BTN_TILT_RIGHT; else
