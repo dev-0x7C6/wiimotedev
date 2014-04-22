@@ -6,6 +6,11 @@ Type=forking
 PIDFile=/var/run/wiimotedev-daemon.pid 
 BusName=org.wiimotedev.daemon
 ExecStart=/usr/sbin/wiimotedev-daemon
+IgnoreSIGPIPE=no
+SendSIGHUP=no
+TimeoutStopSec=3
+
 
 [Install]
-WantedBy=bluetooth.target
+WantedBy=multi-user.target
+
