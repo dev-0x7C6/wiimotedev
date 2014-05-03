@@ -4,7 +4,6 @@ Description=Wiiremote mouse/keyboard/joystick emulator
 [Service]
 Type=forking
 PIDFile=/var/run/wiimotedev-io.pid 
-BusName=org.wiimotedev.io
 ExecStart=/usr/sbin/wiimotedev-io
 
 [Install]
