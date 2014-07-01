@@ -17,23 +17,12 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef UINPUT_EVENTDEVICE_H
-#define UINPUT_EVENTDEVICE_H
+#include "wiimotedevconnection.h"
+#include "wiimotedevdevice.h"
 
-#include "eiobase/eiouinputobject.h"
+void WiimotedevConnection::cwiid_process_motionplus(uint16 angle[], uint8 low_speed[]) {
+}
 
-class EIO_EventDevice: public EIO_UInputObject
-{
-public:
-  bool uinput_open(bool replay = true);
+void WiimotedevConnection::cwiid_process_motionplus_status(cwiid_ext_type type) {
 
-  void pressKeyboardButton(uint16);
-  void pressKeyboardButtonOnce(uint16);
-  void releaseKeyboardButton(uint16);
-
-  void moveMouseVWheel(int32);
-  void moveMouseHWheel(int32);
-  void moveMousePointerRel(int32, int32);
-};
-
-#endif // UINPUT_EVENTDEVICE_H
+}

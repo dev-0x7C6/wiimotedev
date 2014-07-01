@@ -1,6 +1,6 @@
 /**********************************************************************************
  * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
- * Copyright (C) 2008  Bartłomiej Burdukiewicz                                    *
+ * Copyright (C) 2008-2014  Bartłomiej Burdukiewicz                               *
  * Contact: bartlomiej.burdukiewicz@gmail.com                                     *
  *                                                                                *
  * This program is free software; you can redistribute it and/or                  *
@@ -85,6 +85,11 @@ private:
 
   VirtualCursor *m_virtualCursor;
 
+  QList < double> wfXmotion; QList < double> nfXmotion;
+  QList < double> wfYmotion; QList < double> nfYmotion;
+  QList < double> wfZmotion; QList < double> nfZmotion;
+  double wcounter, ncounter;
+
   struct stickdata stick[ix_all_sticks];
   uint64 cstate[ix_all_devices];
   uint64 lstate[ix_all_devices];
@@ -135,6 +140,9 @@ private:
   void cwiid_process_nunchuk_stick(uint8 cwiid_stick[2]);
   void cwiid_process_nunchuk_acc(uint8 cwiid_acc[3]);
   void cwiid_process_nunchuk_status(cwiid_ext_type type);
+
+  void cwiid_process_motionplus_status(cwiid_ext_type type);
+  void cwiid_process_motionplus(uint16 angle[], uint8 low_speed[]);
 
   double calcVirtualCursorDiff(double c1[], double c2[]);
   void calcAccelerometerValues(uint8 acc[3], acc_cal &cal, accdata &out);

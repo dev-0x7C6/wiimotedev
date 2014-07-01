@@ -1,6 +1,6 @@
 /**********************************************************************************
  * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
- * Copyright (C) 2008  Bartłomiej Burdukiewicz                                    *
+ * Copyright (C) 2008-2014  Bartłomiej Burdukiewicz                               *
  * Contact: bartlomiej.burdukiewicz@gmail.com                                     *
  *                                                                                *
  * This program is free software; you can redistribute it and/or                  *
@@ -35,6 +35,7 @@
   CWIID_RPT_IR | \
   CWIID_RPT_NUNCHUK | \
   CWIID_RPT_CLASSIC | \
+  CWIID_RPT_MOTIONPLUS | \
   CWIID_RPT_ACC
 
 class WiimotedevDevice : public QObject

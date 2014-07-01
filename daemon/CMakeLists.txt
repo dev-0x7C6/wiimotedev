@@ -28,6 +28,7 @@ set(sources
   messages/classicmessages.cpp
   messages/nunchukmessages.cpp
   messages/wiimotemessages.cpp
+  messages/motionplusmessages.cpp
   fancy/fancy.cpp
 
   wiimotedevconnection.cpp

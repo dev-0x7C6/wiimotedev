@@ -1,6 +1,6 @@
 /**********************************************************************************
  * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
- * Copyright (C) 2008  Bartłomiej Burdukiewicz                                    *
+ * Copyright (C) 2008-2014  Bartłomiej Burdukiewicz                               *
  * Contact: bartlomiej.burdukiewicz@gmail.com                                     *
  *                                                                                *
  * This program is free software; you can redistribute it and/or                  *
@@ -111,6 +111,9 @@ bool WiimotedevDevice::setRumbleStatus(bool rumble) {
 
 bool WiimotedevDevice::setReportMode(uint8 mode) {
   if (isDisconnected()) return false;
+
+  //cwiid_enable(device, CWIID_FLAG_MOTIONPLUS | CWIID_FLAG_MESG_IFC);
+  //cwiid_write(device, CWIID_RW_REG,)
 
   if (cwiid_set_rpt_mode(device, reportMode = mode)) {
     disconnectFromDevice(false);

@@ -1,6 +1,6 @@
 /**********************************************************************************
  * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
- * Copyright (C) 2008  Bartłomiej Burdukiewicz                                    *
+ * Copyright (C) 2008-2014  Bartłomiej Burdukiewicz                               *
  * Contact: bartlomiej.burdukiewicz@gmail.com                                     *
  *                                                                                *
  * This program is free software; you can redistribute it and/or                  *
@@ -57,6 +57,8 @@ void WiimotedevConnection::run() {
 
   connect_animation();
 
+  wcounter = 0;
+  ncounter = 0;
 
   calibration[ix_wiimote_device].one[0x00] = 0x00;
   calibration[ix_wiimote_device].one[0x01] = 0x00;
@@ -109,7 +111,7 @@ void WiimotedevConnection::run() {
     m_device_locker->lockForRead();
     m_device->fetchMessage(&count, &mesg, &time);
 
-    if (m_updateState->hasExpired(60000)) {
+    if (m_updateState->hasExpired(1000)) {
       m_device->requestStatus();
       m_updateState->restart();
     }
@@ -125,6 +127,7 @@ void WiimotedevConnection::run() {
           cwiid_process_wiimote_status(mesg[i].status_mesg.battery);
           cwiid_process_classic_status(mesg[i].status_mesg.ext_type);
           cwiid_process_nunchuk_status(mesg[i].status_mesg.ext_type);
+          cwiid_process_motionplus_status(mesg[i].status_mesg.ext_type);
           break;
 
         case CWIID_MESG_IR:
@@ -134,6 +137,10 @@ void WiimotedevConnection::run() {
         case CWIID_MESG_BTN:
           if (deviceAvailable(ix_wiimote_device))
             cwiid_process_wiimote_buttons(mesg[i].btn_mesg.buttons);
+          break;
+
+        case CWIID_MESG_MOTIONPLUS:
+          cwiid_process_motionplus(mesg[i].motionplus_mesg.angle_rate, mesg[i].motionplus_mesg.low_speed);
           break;
 
         case CWIID_MESG_ACC:
