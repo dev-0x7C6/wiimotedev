@@ -21,8 +21,7 @@
 #include "../config.h"
 
 WiimotedevSettings::WiimotedevSettings(QObject *parent):
-  QObject(parent)
-{
+  QObject(parent) {
   m_settings = new QSettings(WIIMOTEDEV_SETTINGS_FILE, QSettings::IniFormat, this);
   m_connections = new QSettings(WIIMOTEDEV_CONNECTIONS_FILE, QSettings::IniFormat, this);
   reload();
@@ -30,14 +29,16 @@ WiimotedevSettings::WiimotedevSettings(QObject *parent):
 
 uint WiimotedevSettings::registerWiiremote(const QString &mac) {
   uint id = m_sequence.value(mac, 0);
+
   if (id)
     return id;
 
   id = 1;
+  QHashIterator <QString, uint> iterator(m_sequence);
 
-  QHashIterator < QString, uint> iterator(m_sequence);
   while (iterator.hasNext()) {
     iterator.next();
+
     if (iterator.value() == id) {
       id++;
       iterator.toFront();
@@ -48,21 +49,18 @@ uint WiimotedevSettings::registerWiiremote(const QString &mac) {
   m_connections->setValue("WIIREMOTE-" + mac + "/id", id);
   m_connections->setValue("WIIREMOTE-" + mac + "/mac", mac);
   m_connections->sync();
-
   return id;
 }
 
-void WiimotedevSettings::reload()
-{
+void WiimotedevSettings::reload() {
   m_powersave = m_settings->value("features/powersave", 10).toUInt();
   m_sequence.clear();
-
-  foreach (const QString &key, m_connections->childGroups())
-    m_sequence[m_connections->value(key + "/mac", QString()).toString().toUpper()]
-        = m_connections->value(key + "/id", 0).toULongLong();
+  foreach(const QString & key, m_connections->childGroups())
+  m_sequence[m_connections->value(key + "/mac", QString()).toString().toUpper()]
+    = m_connections->value(key + "/id", 0).toULongLong();
 }
 
-QHash < QString, uint> WiimotedevSettings::connectionTable() {
+QHash <QString, uint> WiimotedevSettings::connectionTable() {
   return m_sequence;
 }
 

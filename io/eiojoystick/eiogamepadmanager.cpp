@@ -20,9 +20,7 @@
 #include "eiogamepadmanager.h"
 
 EIO_GamepadManager::EIO_GamepadManager(QObject *parent) :
-  QObject(parent)
-{
-
+  QObject(parent) {
 }
 
 //uint32 EIO_GamepadManager::create(EIO_GamepadVariants variant, uint32 assign, QList< QPair< QString, QVariant> > arguments) {
@@ -30,5 +28,4 @@ EIO_GamepadManager::EIO_GamepadManager(QObject *parent) :
 //}
 
 bool EIO_GamepadManager::destroy(uint32 id) {
-
 }

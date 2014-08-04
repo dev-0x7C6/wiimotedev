@@ -27,54 +27,50 @@
 #include <QDBusReply>
 #include <QDBusMetaType>
 
-class DBusServiceAdaptor : public QDBusAbstractAdaptor
-{
+class DBusServiceAdaptor : public QDBusAbstractAdaptor {
   Q_OBJECT
   Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
   Q_CLASSINFO("D-Bus Introspection", ""
-"<interface name=\"org.wiimotedev.service\">\n"
-"    <method name=\"dbusReloadSequenceList\">\n"
-"      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
-"    </method>\n"
-"  </interface>")
+              "<interface name=\"org.wiimotedev.service\">\n"
+              "    <method name=\"dbusReloadSequenceList\">\n"
+              "      <arg direction=\"out\" type=\"y\" name=\"status\"/>\n"
+              "    </method>\n"
+              "  </interface>")
 
 public:
   DBusServiceAdaptor(QObject *parent);
   Q_SLOT bool dbusReloadSequenceList();
 };
 
-class DBusServiceAdaptorWrapper : public QObject
-{
+class DBusServiceAdaptorWrapper : public QObject {
   Q_OBJECT
 private:
   bool registred;
 
 public:
   DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection);
-  inline bool isRegistred() { return registred; }
+  inline bool isRegistred() {
+    return registred;
+  }
   Q_SLOT bool dbusReloadSequenceList();
 };
 
-inline DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent)
-{
+inline DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent) {
   setAutoRelaySignals(true);
 }
 
-inline bool DBusServiceAdaptor::dbusReloadSequenceList()
-{
+inline bool DBusServiceAdaptor::dbusReloadSequenceList() {
   bool value;
   QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
   return value;
 }
 
-inline DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent)
-{
+inline DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection &connection) : QObject(parent) {
   new DBusServiceAdaptor(this);
   registred = connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_SERVICE, this);
 }
 
-inline bool DBusServiceAdaptorWrapper::dbusReloadSequenceList()
-{
+inline bool DBusServiceAdaptorWrapper::dbusReloadSequenceList() {
   bool value;
   QMetaObject::invokeMethod(parent(), "dbusReloadSequenceList", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
   return value;

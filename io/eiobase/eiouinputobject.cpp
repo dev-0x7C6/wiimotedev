@@ -28,8 +28,7 @@ EIO_UInputObject::EIO_UInputObject() {
   uinputFile = QString::fromUtf8("");
   uinput_fd = 0;
   alreadyOpened = false;
-
-  foreach (const QString &file, UInputLocation) {
+  foreach(const QString & file, UInputLocation) {
     if (QFile::exists(file)) {
       uinputFile = file;
       break;
@@ -38,11 +37,9 @@ EIO_UInputObject::EIO_UInputObject() {
 }
 
 EIO_UInputObject::~EIO_UInputObject() {
-
 }
 
-void EIO_UInputObject::uinput_close(bool force)
-{
+void EIO_UInputObject::uinput_close(bool force) {
   if (!force && !alreadyOpened)
     return;
 
@@ -54,7 +51,7 @@ void EIO_UInputObject::uinput_close(bool force)
 
 void EIO_UInputObject::sendEvent(uint16 type, uint16 code, int32 value) {
   if (!uinput_fd)
-      return;
+    return;
 
   struct input_event event;
   memset(&event.time, 0, sizeof(event.time));

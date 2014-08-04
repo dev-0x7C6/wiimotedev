@@ -36,8 +36,7 @@ WiimotedevConnection::WiimotedevConnection(WiimotedevDevice *device, int id, QOb
   m_averageLatency(0),
   m_bufferLatency(0),
   m_bufferCounter(0),
-  m_virtualCursorVisible(false)
-{
+  m_virtualCursorVisible(false) {
   setTerminationEnabled(true);
   m_device->moveToThread(this);
 }
@@ -50,16 +49,15 @@ WiimotedevConnection::~WiimotedevConnection() {
 
 void WiimotedevConnection::run() {
   int timeout = 0;
+
   do {
     msleep(10);
     timeout += 10;
   } while (!threadQuitState() && timeout < 1000);
 
   connect_animation();
-
   wcounter = 0;
   ncounter = 0;
-
   calibration[ix_wiimote_device].one[0x00] = 0x00;
   calibration[ix_wiimote_device].one[0x01] = 0x00;
   calibration[ix_wiimote_device].one[0x02] = 0x00;
@@ -67,17 +65,12 @@ void WiimotedevConnection::run() {
   calibration[ix_wiimote_device].zero[0x01] = 0x00;
   calibration[ix_wiimote_device].zero[0x02] = 0x00;
   m_device->requestCallibration(CWIID_EXT_NONE, &calibration[ix_wiimote_device]);
-
-
   m_device->setReportMode();
-
   int count;
   union cwiid_mesg *mesg;
   struct timespec time;
-
   cstate[ix_general_device] = 0x00;
   lstate[ix_general_device] = 0x00;
-
   QElapsedTimer *m_elapsed = new QElapsedTimer();
   QElapsedTimer *m_powersave = new QElapsedTimer();
   QElapsedTimer *m_updateState = new QElapsedTimer();
@@ -85,15 +78,12 @@ void WiimotedevConnection::run() {
   m_elapsed->start();
   m_powersave->start();
   m_updateState->start();
-
   cwiid_process_wiimote_init();
   cwiid_process_classic_init();
   cwiid_process_nunchuk_init();
-
   m_device_locker->lockForRead();
   m_device->requestStatus();
   m_device_locker->unlock();
-
   emit dbusWiimoteConnected(m_id);
 
   do {
@@ -115,6 +105,7 @@ void WiimotedevConnection::run() {
       m_device->requestStatus();
       m_updateState->restart();
     }
+
     m_device_locker->unlock();
 
     for (register int i = 0; i < count; ++i) {
@@ -133,10 +124,13 @@ void WiimotedevConnection::run() {
         case CWIID_MESG_IR:
           if (deviceAvailable(ix_wiimote_device))
             cwiid_process_wiimote_ir(mesg[i].ir_mesg.src);
+
           break;
+
         case CWIID_MESG_BTN:
           if (deviceAvailable(ix_wiimote_device))
             cwiid_process_wiimote_buttons(mesg[i].btn_mesg.buttons);
+
           break;
 
         case CWIID_MESG_MOTIONPLUS:
@@ -146,6 +140,7 @@ void WiimotedevConnection::run() {
         case CWIID_MESG_ACC:
           if (deviceAvailable(ix_wiimote_device))
             cwiid_process_wiimote_acc(mesg[i].acc_mesg.acc);
+
           break;
 
         case CWIID_MESG_CLASSIC:
@@ -154,6 +149,7 @@ void WiimotedevConnection::run() {
             cwiid_process_classic_lstick(mesg[i].classic_mesg.l_stick);
             cwiid_process_classic_rstick(mesg[i].classic_mesg.r_stick);
           }
+
           break;
 
         case CWIID_MESG_NUNCHUK:
@@ -162,13 +158,15 @@ void WiimotedevConnection::run() {
             cwiid_process_nunchuk_stick(mesg[i].nunchuk_mesg.stick);
             cwiid_process_nunchuk_acc(mesg[i].nunchuk_mesg.acc);
           }
+
           break;
+
         default:
           break;
       }
 
       if ((cstate[ix_general_device] = cstate[ix_wiimote_device] |
-           cstate[ix_nunchuk_device] | cstate[ix_classic_device]) != lstate[ix_general_device]) {
+                                       cstate[ix_nunchuk_device] | cstate[ix_classic_device]) != lstate[ix_general_device]) {
         emit dbusWiimoteGeneralButtons(m_id, lstate[ix_general_device] = cstate[ix_general_device]);
         m_powersave->restart();
       }
@@ -187,7 +185,6 @@ void WiimotedevConnection::run() {
 
     if (m_powersave->elapsed() > powerSafeTimeout())
       break;
-
   } while (!threadQuitState());
 
   cwiid_process_wiimote_done();
@@ -195,16 +192,15 @@ void WiimotedevConnection::run() {
   cwiid_process_nunchuk_done();
 
   if (m_device->isConnected()) {
-//FIXME: Animation sometimes freeze wiiremote firmware
-//    if (!threadQuitState())
-//      disconnect_animation();
+    //FIXME: Animation sometimes freeze wiiremote firmware
+    //    if (!threadQuitState())
+    //      disconnect_animation();
     m_device->disconnectFromDevice();
   }
 
   delete m_elapsed;
   delete m_updateState;
   delete m_virtualCursor;
-
   emit dbusWiimoteDisconnected(m_id);
 }
 
@@ -283,7 +279,7 @@ void WiimotedevConnection::calcAccelerometerValues(uint8 acc[3], acc_cal &cal, a
     if (z < 0.0)
       out.roll += 3.14159265358979323 * ((x > 0.0) ? 1 : -1);
 
-    out.pitch = atan(-y / -z * cos(-out.roll))*-59.0;
+    out.pitch = atan(-y / -z * cos(-out.roll)) * -59.0;
     out.roll *= 58.8;
   }
 }
@@ -303,9 +299,10 @@ bool WiimotedevConnection::dbusIsWiimoteConnected() {
   return m_available[ix_wiimote_device];
 }
 
-QList< uint> WiimotedevConnection::dbusNunchukGetAccelerometrCalibration() {
+QList<uint> WiimotedevConnection::dbusNunchukGetAccelerometrCalibration() {
   QReadLocker locker(m_variable_locker);
-  QList < uint> params;
+  QList <uint> params;
+
   for (register int i = 0; i < 3; ++i) {
     params << calibration[ix_nunchuk_device].one[i];
     params << calibration[ix_nunchuk_device].zero[i];
@@ -314,9 +311,10 @@ QList< uint> WiimotedevConnection::dbusNunchukGetAccelerometrCalibration() {
   return params;
 }
 
-QList< uint> WiimotedevConnection::dbusWiimoteGetAccelerometrCalibration() {
+QList<uint> WiimotedevConnection::dbusWiimoteGetAccelerometrCalibration() {
   QReadLocker locker(m_variable_locker);
-  QList < uint> params;
+  QList <uint> params;
+
   for (register int i = 0; i < 3; ++i) {
     params << calibration[ix_wiimote_device].one[i];
     params << calibration[ix_wiimote_device].zero[i];
@@ -357,10 +355,13 @@ bool WiimotedevConnection::dbusWiimoteGetRumbleStatus() {
 
 uint8 WiimotedevConnection::dbusWiimoteGetStatus() {
   bool result = 0;
+
   if (deviceAvailable(ix_wiimote_device))
     result |= STATUS_WIIMOTE_CONNECTED;
+
   if (deviceAvailable(ix_nunchuk_device))
     result |= STATUS_NUNCHUK_CONNECTED;
+
   if (deviceAvailable(ix_classic_device))
     result |= STATUS_CLASSIC_CONNECTED;
 

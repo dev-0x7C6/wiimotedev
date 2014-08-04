@@ -26,9 +26,9 @@
 const int16 NUNCHUK_STICK_MAX = 0xFF - 0x15;
 const int16 NUNCHUK_STICK_MIN = 0x00 + 0x15;
 const int16 NUNCHUK_PITCH_MAX = 90;
-const int16 NUNCHUK_PITCH_MIN =-90;
+const int16 NUNCHUK_PITCH_MIN = -90;
 const int16 NUNCHUK_ROLL_MAX = 180;
-const int16 NUNCHUK_ROLL_MIN =-180;
+const int16 NUNCHUK_ROLL_MIN = -180;
 const int8 NUNCHUK_BUTTON_PUSHED = 1;
 const int8 NUNCHUK_BUTTON_RELEASED = 0;
 
@@ -37,8 +37,7 @@ const int NUNCHUK_STICK_LINUX_AXIS_Y = ABS_Y;
 const int NUNCHUK_ROLL_LINUX_AXIS = ABS_TILT_X;
 const int NUNCHUK_PITCH_LINUX_AXIS = ABS_TILT_Y;
 
-class EIO_NunchukJoystick : public QObject, public EIO_UInputObject
-{
+class EIO_NunchukJoystick : public QObject, public EIO_UInputObject {
   Q_OBJECT
 public:
   enum Position {

@@ -30,28 +30,27 @@
 #include <QMap>
 
 struct KeyboardAction {
-  QHash< uint, uint64> event;
-  QList< uint> keys;
+  QHash<uint, uint64> event;
+  QList<uint> keys;
   bool pushed;
 };
 
-class EIO_RemoteKeyboard: public QObject
-{
+class EIO_RemoteKeyboard: public QObject {
   Q_OBJECT
-//general
+  //general
   EIO_EventDevice *device;
   uint id;
   uint compareType;
 
   QHash <uint, uint64> buttons;
 
-  QList < KeyboardAction*> keyboardActions;
+  QList <KeyboardAction *> keyboardActions;
 
 public:
   EIO_RemoteKeyboard(EIO_EventDevice *device);
- ~EIO_RemoteKeyboard();
+  ~EIO_RemoteKeyboard();
 
-  void addKeyboardAction(KeyboardAction&);
+  void addKeyboardAction(KeyboardAction &);
   void clearKeyboardActions();
   void setCompareType(QString);
 
@@ -59,8 +58,8 @@ public Q_SLOTS:
   void dbusWiimoteGeneralButtons(uint, uint64);
 
 private:
-  void pressKeyboardButtons(QList < uint>&);
-  void releaseKeyboardButtons(QList < uint>&);
+  void pressKeyboardButtons(QList <uint> &);
+  void releaseKeyboardButtons(QList <uint> &);
   void pressKeyboardExtendedButton(uint);
   void releaseKeyboardExtendedButton(uint);
 

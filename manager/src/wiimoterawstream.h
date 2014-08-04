@@ -11,13 +11,12 @@ class QProgressBar;
 class QTreeWidgetItem;
 
 namespace Ui {
-class WiimoteRawStream;
+  class WiimoteRawStream;
 }
 
-class WiimoteRawStream : public QMainWindow
-{
+class WiimoteRawStream : public QMainWindow {
   Q_OBJECT
-  
+
 public:
   explicit WiimoteRawStream(WiimotedevDeviceEvents *iface, InfraredCameraView *graphics, QWidget *parent = 0);
   ~WiimoteRawStream();
@@ -32,11 +31,11 @@ private:
   QComboBox *m_wiimoteComboBox;
   QProgressBar *m_wiimoteBatteryProgressBar;
 
-  QTreeWidgetItem* m_accelerometerItems[2][5];
-  QTreeWidgetItem* m_infraredItems[10];
-  QTreeWidgetItem* m_wiimoteStatusItems[10];
-  QTreeWidgetItem* m_wiimoteButtonItems[64];
-  QTreeWidgetItem* m_stickItems[3];
+  QTreeWidgetItem *m_accelerometerItems[2][5];
+  QTreeWidgetItem *m_infraredItems[10];
+  QTreeWidgetItem *m_wiimoteStatusItems[10];
+  QTreeWidgetItem *m_wiimoteButtonItems[64];
+  QTreeWidgetItem *m_stickItems[3];
 
   QAction *m_wiimoteLeds[4];
   QAction *m_wiimotePoints[4];
@@ -45,7 +44,7 @@ private:
   QAction *m_classicConnected;
   QAction *m_nunchukConnected;
   QAction *m_cursorVisible;
-  QList < QTreeWidgetItem*> opts;
+  QList <QTreeWidgetItem *> opts;
 
   void updateWiimoteComboBox();
 
@@ -76,7 +75,7 @@ private slots:
   void dbusWiimoteConnected(uint id);
   void dbusWiimoteDisconnected(uint id);
   void dbusWiimoteGeneralButtons(uint id, uint64 value);
-  void dbusWiimoteInfrared(uint id, const QList< struct irpoint> &points);
+  void dbusWiimoteInfrared(uint id, const QList<struct irpoint> &points);
   void dbusWiimoteLedStatusChanged(uint, uint8);
   void dbusWiimoteRumbleStatusChanged(uint, uint8);
   void dbusNunchukPlugged(uint id);

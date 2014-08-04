@@ -26,8 +26,7 @@
 #include "eionunchukjoystick.h"
 #include "eiowiimotejoystick.h"
 
-class EIO_GamepadManager : public QObject
-{
+class EIO_GamepadManager : public QObject {
   Q_OBJECT
 public:
   explicit EIO_GamepadManager(QObject *parent = 0);
@@ -41,11 +40,11 @@ public:
   //uint32 create(EIO_GamepadVariants variant, uint32 assign, QList< QPair< QString, QVariant> > arguments);
   bool destroy(uint32 id);
 
-  
+
 signals:
-  
+
 public slots:
-  
+
 };
 
 #endif // EIOGAMEPADMANAGER_H

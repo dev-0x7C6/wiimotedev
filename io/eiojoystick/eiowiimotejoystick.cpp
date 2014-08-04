@@ -33,8 +33,7 @@ EIO_WiimoteJoystick::EIO_WiimoteJoystick(QString deviceName, int id, Mode mode, 
   m_report_buttons(0x01),
   m_report_dstick(0x01),
   m_report_pitch(0x01),
-  m_report_roll(0x01)
-{
+  m_report_roll(0x01) {
   if (m_deviceName.isEmpty())
     m_deviceName = QString::fromUtf8("Wiimote Gamepad Device (undefined)");
 }
@@ -73,12 +72,13 @@ void EIO_WiimoteJoystick::setReportRoll(bool report) {
 
 bool EIO_WiimoteJoystick::create() {
   switch (m_horizontal) {
-  case EIO_WiimoteJoystick::GamepadHorizontal:
-    emit setLedState(m_id, 1 + 2);
-    break;
-  case EIO_WiimoteJoystick::GamepadVertical:
-    emit setLedState(m_id, 4 + 8);
-    break;
+    case EIO_WiimoteJoystick::GamepadHorizontal:
+      emit setLedState(m_id, 1 + 2);
+      break;
+
+    case EIO_WiimoteJoystick::GamepadVertical:
+      emit setLedState(m_id, 4 + 8);
+      break;
   }
 
   if (alreadyOpened)
@@ -91,12 +91,10 @@ bool EIO_WiimoteJoystick::create() {
 
   memset(&dev, 0, sizeof(dev));
   strncpy(dev.name, m_deviceName.toAscii().constData(), m_deviceName.length());
-
   dev.id.product = UINPUT_PRODUCT_ID;
   dev.id.version = UINPUT_VERSION_ID;
   dev.id.vendor = UINPUT_VENDOR_ID;
   dev.id.bustype = UINPUT_BUSTYPE_ID;
-
   linux_register_evbit(EV_KEY);
   linux_register_evbit(EV_MSC);
   linux_register_evbit(EV_ABS);
@@ -137,8 +135,8 @@ bool EIO_WiimoteJoystick::create() {
   centerStick(EIO_WiimoteJoystick::DpadStick);
   centerStick(EIO_WiimoteJoystick::WiimoteAccelerometer);
   centerStick(EIO_WiimoteJoystick::NunchukAccelerometer);
-
   write(uinput_fd, &dev, sizeof(dev));
+
   if (ioctl(uinput_fd, UI_DEV_CREATE)) {
     qWarning("%s: Unable to create virtual input device", m_deviceName.toAscii().constData());
     uinput_close();
@@ -173,14 +171,15 @@ void EIO_WiimoteJoystick::setWiimoteButtons(uint64 buttons) {
 
     if (((buttons & WIIMOTE_BTN_HOME) == WIIMOTE_BTN_HOME) && (m_home_pressed == false))
       switch (m_horizontal) {
-      case EIO_WiimoteJoystick::GamepadHorizontal:
-        m_horizontal = EIO_WiimoteJoystick::GamepadVertical;
-        emit setLedState(m_id, 1 + 2);
-        break;
-      case EIO_WiimoteJoystick::GamepadVertical:
-        m_horizontal = EIO_WiimoteJoystick::GamepadHorizontal;
-        emit setLedState(m_id, 4 + 8);
-        break;
+        case EIO_WiimoteJoystick::GamepadHorizontal:
+          m_horizontal = EIO_WiimoteJoystick::GamepadVertical;
+          emit setLedState(m_id, 1 + 2);
+          break;
+
+        case EIO_WiimoteJoystick::GamepadVertical:
+          m_horizontal = EIO_WiimoteJoystick::GamepadHorizontal;
+          emit setLedState(m_id, 4 + 8);
+          break;
       }
   }
 
@@ -189,12 +188,14 @@ void EIO_WiimoteJoystick::setWiimoteButtons(uint64 buttons) {
   m_last_dpad_y = 0x00;
 
   if (m_report_dstick) {
-    if (buttons & WIIMOTE_BTN_RIGHT) m_last_dpad_x = WIIMOTE_DPAD_MAX; else
-    if (buttons & WIIMOTE_BTN_LEFT) m_last_dpad_x = WIIMOTE_DPAD_MIN;
-    if (buttons & WIIMOTE_BTN_DOWN) m_last_dpad_y = WIIMOTE_DPAD_MAX; else
-    if (buttons & WIIMOTE_BTN_UP) m_last_dpad_y = WIIMOTE_DPAD_MIN;
+    if (buttons & WIIMOTE_BTN_RIGHT) m_last_dpad_x = WIIMOTE_DPAD_MAX;
+    else if (buttons & WIIMOTE_BTN_LEFT) m_last_dpad_x = WIIMOTE_DPAD_MIN;
+
+    if (buttons & WIIMOTE_BTN_DOWN) m_last_dpad_y = WIIMOTE_DPAD_MAX;
+    else if (buttons & WIIMOTE_BTN_UP) m_last_dpad_y = WIIMOTE_DPAD_MIN;
 
     if (m_dpad_invert_x) m_last_dpad_x *= -1;
+
     if (m_dpad_invert_y) m_last_dpad_y *= -1;
   }
 
@@ -203,34 +204,38 @@ void EIO_WiimoteJoystick::setWiimoteButtons(uint64 buttons) {
 
 void EIO_WiimoteJoystick::centerStick(Stick id) {
   switch (id) {
-  case EIO_WiimoteJoystick::DpadStick:
-    m_last_dpad_x = 0x00;
-    m_last_dpad_y = 0x00;
-    break;
-  case EIO_WiimoteJoystick::NunchukAccelerometer:
-    m_last_nunchuk_acc_pitch = 0x00;
-    m_last_nunchuk_acc_roll = 0x00;
-    break;
-  case EIO_WiimoteJoystick::WiimoteAccelerometer:
-    m_last_wiimote_acc_pitch = 0x00;
-    m_last_wiimote_acc_roll = 0x00;
-    break;
-  default:
-    break;
+    case EIO_WiimoteJoystick::DpadStick:
+      m_last_dpad_x = 0x00;
+      m_last_dpad_y = 0x00;
+      break;
+
+    case EIO_WiimoteJoystick::NunchukAccelerometer:
+      m_last_nunchuk_acc_pitch = 0x00;
+      m_last_nunchuk_acc_roll = 0x00;
+      break;
+
+    case EIO_WiimoteJoystick::WiimoteAccelerometer:
+      m_last_wiimote_acc_pitch = 0x00;
+      m_last_wiimote_acc_roll = 0x00;
+      break;
+
+    default:
+      break;
   }
 }
 
 void EIO_WiimoteJoystick::syncAxes() {
   if (m_report_dstick) {
     switch (m_horizontal) {
-    case EIO_WiimoteJoystick::GamepadHorizontal:
-      sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_X, m_last_dpad_y);
-      sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_Y, m_last_dpad_x * -0x01);
-      break;
-    case EIO_WiimoteJoystick::GamepadVertical:
-      sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_X, m_last_dpad_x);
-      sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_Y, m_last_dpad_y);
-      break;
+      case EIO_WiimoteJoystick::GamepadHorizontal:
+        sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_X, m_last_dpad_y);
+        sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_Y, m_last_dpad_x * -0x01);
+        break;
+
+      case EIO_WiimoteJoystick::GamepadVertical:
+        sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_X, m_last_dpad_x);
+        sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_Y, m_last_dpad_y);
+        break;
     }
   }
 

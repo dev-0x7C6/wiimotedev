@@ -28,11 +28,9 @@
 #include "src/wiimoterawstream.h"
 #include "src/mainwindow.h"
 
-int main(int argc, char *argv[])
-{  
+int main(int argc, char *argv[]) {
   QApplication application(argc, argv);
   QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Utf-8"));
-
   WiimotedevDeviceEvents interface;
 
   if (!interface.isValid()) {
@@ -41,18 +39,14 @@ int main(int argc, char *argv[])
   }
 
   InfraredCameraView *infrared = new InfraredCameraView(&interface, 0);
-  QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(uint,double,double,double,double)), infrared, SLOT(dbusVirtualCursorPosition(uint,double,double,double,double)));
+  QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(uint, double, double, double, double)), infrared, SLOT(dbusVirtualCursorPosition(uint, double, double, double, double)));
   QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(uint)), infrared, SLOT(dbusVirtualCursorFound(uint)));
   QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(uint)), infrared, SLOT(dbusVirtualCursorLost(uint)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(uint,const accdata&)), infrared, SLOT(dbusWiimoteAcc(uint,const accdata&)));
-  QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(uint, const QList< irpoint>&)), infrared, SLOT(dbusWiimoteInfrared(uint, const QList<struct irpoint>&)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(uint, const accdata &)), infrared, SLOT(dbusWiimoteAcc(uint, const accdata &)));
+  QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(uint, const QList<irpoint> &)), infrared, SLOT(dbusWiimoteInfrared(uint, const QList<struct irpoint> &)));
   QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(uint)), infrared, SLOT(dbusWiimoteDisconnected(uint)));
-
   WiimoteRawStream *toolkit = new WiimoteRawStream(&interface, infrared);
-
-
   MainWindow window(toolkit);
   window.show();
-
   return application.exec();
 }

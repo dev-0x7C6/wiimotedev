@@ -33,14 +33,15 @@ void UInputProfileManager::setupClassicJoystick(uint assign, const QString &name
   device->setReportRStick(settings.value("ReportRStick", 0x01).toBool());
 
   if (device->create())
-    EIO_ClassicJoysticks << device; else
+    EIO_ClassicJoysticks << device;
+  else
     delete device;
 }
 
 void UInputProfileManager::setupWiimoteJoystick(uint assign, const QString &name, QSettings &settings) {
   EIO_WiimoteJoystick *device = new EIO_WiimoteJoystick(name, assign,
-                                                          EIO_WiimoteJoystick::DPadPositionSwitchable,
-                                                          EIO_WiimoteJoystick::GamepadVertical);
+      EIO_WiimoteJoystick::DPadPositionSwitchable,
+      EIO_WiimoteJoystick::GamepadVertical);
   device->setDStickInvertX(settings.value("DStickInvertX", 0x00).toBool());
   device->setDStickInvertY(settings.value("DStickInvertY", 0x00).toBool());
   device->setHomeSwitchPosition(settings.value("PositionSwitchable", 0x01).toBool());
@@ -50,7 +51,8 @@ void UInputProfileManager::setupWiimoteJoystick(uint assign, const QString &name
   device->setReportRoll(settings.value("ReportRoll", 0x01).toBool());
 
   if (device->create())
-    EIO_WiimoteJoysticks << device; else
+    EIO_WiimoteJoysticks << device;
+  else
     delete device;
 }
 
@@ -64,49 +66,46 @@ void UInputProfileManager::setupNunchukJoystick(uint assign, const QString &name
   device->setReportRoll(settings.value("ReportRoll", 0x01).toBool());
 
   if (device->create())
-    EIO_NunchukJoysticks << device; else
+    EIO_NunchukJoysticks << device;
+  else
     delete device;
 }
 
 void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &settings) {
   settings.beginGroup(key);
-
   uint assign = settings.value("assign").toULongLong();
   QString device = settings.value("device").toString().toLower();
   QString name = settings.value("name").toString();
 
   if (device == QString::fromUtf8("classic"))
-    setupClassicJoystick(assign, name, settings); else
-  if (device == QString::fromUtf8("nunchuk"))
-    setupNunchukJoystick(assign, name, settings); else
-  if (device == QString::fromUtf8("wiimote"))
+    setupClassicJoystick(assign, name, settings);
+  else if (device == QString::fromUtf8("nunchuk"))
+    setupNunchukJoystick(assign, name, settings);
+  else if (device == QString::fromUtf8("wiimote"))
     setupWiimoteJoystick(assign, name, settings);
 
   settings.endGroup();
 }
 
 void UInputProfileManager::freeJoystickEvents() {
-  foreach (EIO_ClassicJoystick *device, EIO_ClassicJoysticks) {
+  foreach(EIO_ClassicJoystick * device, EIO_ClassicJoysticks) {
     device->uinput_close();
     delete device;
   }
-
-  foreach (EIO_NunchukJoystick *device, EIO_NunchukJoysticks) {
+  foreach(EIO_NunchukJoystick * device, EIO_NunchukJoysticks) {
     device->uinput_close();
     delete device;
   }
-
-  foreach (EIO_WiimoteJoystick *device, EIO_WiimoteJoysticks) {
+  foreach(EIO_WiimoteJoystick * device, EIO_WiimoteJoysticks) {
     device->uinput_close();
     delete device;
   }
-
   EIO_ClassicJoysticks.clear();
   EIO_NunchukJoysticks.clear();
   EIO_WiimoteJoysticks.clear();
 }
 
-void UInputProfileManager::dbusWiimoteAcc(uint id, struct accdata acc) { 
+void UInputProfileManager::dbusWiimoteAcc(uint id, struct accdata acc) {
   for (register int i = 0; i < EIO_WiimoteJoysticks.count(); ++i)
     if (EIO_WiimoteJoysticks[i]->assign() == id) {
       EIO_WiimoteJoysticks[i]->setWiimoteAcc(acc.pitch, acc.roll);
@@ -114,7 +113,7 @@ void UInputProfileManager::dbusWiimoteAcc(uint id, struct accdata acc) {
     }
 }
 
-void UInputProfileManager::dbusWiimoteButtons(uint id, uint64 buttons) { 
+void UInputProfileManager::dbusWiimoteButtons(uint id, uint64 buttons) {
   for (register int i = 0; i < EIO_WiimoteJoysticks.count(); ++i)
     if (EIO_WiimoteJoysticks[i]->assign() == id) {
       EIO_WiimoteJoysticks[i]->setWiimoteButtons(buttons);
@@ -146,7 +145,7 @@ void UInputProfileManager::dbusNunchukStick(uint id, struct stickdata stick) {
     }
 }
 
-void UInputProfileManager::dbusClassicControllerButtons(uint id, uint64 buttons) {  
+void UInputProfileManager::dbusClassicControllerButtons(uint id, uint64 buttons) {
   for (register int i = 0; i < EIO_ClassicJoysticks.count(); ++i)
     if (EIO_ClassicJoysticks[i]->assign() == id) {
       EIO_ClassicJoysticks[i]->setButtons(buttons);

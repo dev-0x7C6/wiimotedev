@@ -20,41 +20,38 @@
 #include "helper/hashcompare.h"
 #include "eiomanager/manager.h"
 
-extern QMap < QString, uint> scancodes;
+extern QMap <QString, uint> scancodes;
 
 void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &settings) {
   freeKeyboardEvents();
-
   settings.beginGroup(key);
   EIO_RemoteKeyboard *device = new EIO_RemoteKeyboard(virtualEvent);
-  foreach (const QString &string, settings.allKeys()) {
+  foreach(const QString & string, settings.allKeys()) {
     if (string.toLower() == "module")
       continue;
 
     KeyboardAction action;
     action.event = extractDeviceEvent(string);
-    if (action.event.isEmpty()) {
+
+    if (action.event.isEmpty())
       continue;
-    }
 
     action.keys = extractScancodes(settings.value(string, QStringList()).toStringList());
-    if (action.keys.isEmpty()) {
+
+    if (action.keys.isEmpty())
       continue;
-    }
 
     action.pushed = false;
     device->addKeyboardAction(action);
   }
-
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint,uint64)), device, SLOT(dbusWiimoteGeneralButtons(uint,uint64)));
-
+  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint, uint64)), device, SLOT(dbusWiimoteGeneralButtons(uint, uint64)));
   settings.endGroup();
   EIO_RemoteKeyboards << device;
 }
 
 
 void UInputProfileManager::freeKeyboardEvents() {
-  foreach (EIO_RemoteKeyboard *device, EIO_RemoteKeyboards)
-    delete device;
+  foreach(EIO_RemoteKeyboard * device, EIO_RemoteKeyboards)
+  delete device;
   EIO_RemoteKeyboards.clear();
 }

@@ -24,5 +24,4 @@ void WiimotedevConnection::cwiid_process_motionplus(uint16 angle[], uint8 low_sp
 }
 
 void WiimotedevConnection::cwiid_process_motionplus_status(cwiid_ext_type type) {
-
 }

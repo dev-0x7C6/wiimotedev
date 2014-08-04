@@ -27,19 +27,18 @@
 #include <QTimer>
 #include <QTime>
 
-class EIO_InfraredMouse: public QObject
-{
+class EIO_InfraredMouse: public QObject {
   Q_OBJECT
-//general
+  //general
   EIO_EventDevice *device;
   uint id;
   uint8 mode;
 
-// timers
+  // timers
   QTimer accelerationClockTimeout;
   int accelerationTimeoutValue;
 
-//variables
+  //variables
   double moves[6];
   double moveX;
   double moveY;
@@ -51,9 +50,9 @@ class EIO_InfraredMouse: public QObject
   double accVectorYAccumulation;
   struct accdata wiimote_acc;
 
-  QList< irpoint> lastPoints;
+  QList<irpoint> lastPoints;
 
-//settings
+  //settings
   int accelerationTimeout;
   int deadzoneXRange;
   int deadzoneYRange;
@@ -76,7 +75,7 @@ class EIO_InfraredMouse: public QObject
 
 public:
   EIO_InfraredMouse(EIO_EventDevice *device, uint id);
- ~EIO_InfraredMouse();
+  ~EIO_InfraredMouse();
 
   enum AxisMode {
     AbsoluteDevice = 0,
@@ -105,7 +104,7 @@ public:
 public Q_SLOTS:
   void dbusVirtualCursorPosition(uint, double, double, double, double);
   void dbusVirtualCursorLost(uint);
-  void dbusWiimoteAcc(uint, const accdata&);
+  void dbusWiimoteAcc(uint, const accdata &);
 
 private:
   void axisAccelerationX();

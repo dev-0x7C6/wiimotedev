@@ -66,7 +66,7 @@ public:
   void setWiimoteId(uint id);
 
 protected:
-  virtual void resizeEvent(QResizeEvent*);
+  virtual void resizeEvent(QResizeEvent *);
 
 private:
   QGraphicsLineItem *line;
@@ -98,7 +98,7 @@ private slots:
   void dbusWiimoteAcc(uint id, const accdata &acc);
   void dbusWiimoteConnected(uint id);
   void dbusWiimoteDisconnected(uint id);
-  void dbusWiimoteInfrared(uint id, const QList< struct irpoint> &points);
+  void dbusWiimoteInfrared(uint id, const QList<struct irpoint> &points);
 };
 
 #endif // INFRAREDCAMERAVIEW_H

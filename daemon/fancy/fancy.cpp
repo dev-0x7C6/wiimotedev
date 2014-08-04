@@ -22,44 +22,54 @@
 
 void WiimotedevConnection::connect_animation() {
   m_device->setRumbleStatus(true);
+
   for (register int i = 0; i < 2; ++i) {
-    switch (i%2) {
-    case 0:
-      for (register int j = 0; j < 4; ++j) {
-        m_device->setLedStatus(1 << j);
-        msleep(30);
-      }
-      break;
-    case 1:
-      for (register int j = 3; j >= 0; --j) {
-        m_device->setLedStatus(1 << j);
-        msleep(30);
-      }
-      break;
+    switch (i % 2) {
+      case 0:
+        for (register int j = 0; j < 4; ++j) {
+          m_device->setLedStatus(1 << j);
+          msleep(30);
+        }
+
+        break;
+
+      case 1:
+        for (register int j = 3; j >= 0; --j) {
+          m_device->setLedStatus(1 << j);
+          msleep(30);
+        }
+
+        break;
     }
   }
+
   m_device->setLedStatus(m_id);
   m_device->setRumbleStatus(false);
 }
 
 void WiimotedevConnection::disconnect_animation() {
   m_device->setRumbleStatus(true);
+
   for (register int i = 0; i < 2; ++i) {
-    switch (i%2) {
-    case 0:
-      for (register int j = 0; j < 4; ++j) {
-        m_device->setLedStatus(1 << j);
-        msleep(30);
-      }
-      break;
-    case 1:
-      for (register int j = 3; j >= 0; --j) {
-        m_device->setLedStatus(1 << j);
-        msleep(30);
-      }
-      break;
+    switch (i % 2) {
+      case 0:
+        for (register int j = 0; j < 4; ++j) {
+          m_device->setLedStatus(1 << j);
+          msleep(30);
+        }
+
+        break;
+
+      case 1:
+        for (register int j = 3; j >= 0; --j) {
+          m_device->setLedStatus(1 << j);
+          msleep(30);
+        }
+
+        break;
     }
   }
+
   m_device->setLedStatus(0x0F);
   m_device->setRumbleStatus(false);
 }

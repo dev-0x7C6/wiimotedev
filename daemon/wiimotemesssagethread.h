@@ -3,16 +3,15 @@
 
 #include <QThread>
 
-class WiimoteMesssageThread : public QThread
-{
+class WiimoteMesssageThread : public QThread {
   Q_OBJECT
 public:
   explicit WiimoteMesssageThread(QObject *parent = 0);
-  
+
 signals:
-  
+
 public slots:
-  
+
 };
 
 #endif // WIIMOTEMESSSAGETHREAD_H

@@ -24,21 +24,18 @@ const QRegExp deviceEventRegExp(".*(\\(.*(\\d+)\\))");
 
 void UInputProfileManager::loadCommandEvents(QSettings &settings) {
   unloadCommandEvents();
-
-  QMap < QString, uint8> actionConfigList;
+  QMap <QString, uint8> actionConfigList;
   actionConfigList["actions-bit"] = HashCompare<QString, uint8>::BitCompare;
   actionConfigList["actions"] = HashCompare<QString, uint8>::BitCompare;
   actionConfigList["actions-equal"] = HashCompare<QString, uint8>::EqualCompare;
   actionConfigList["actions-notequal"] = HashCompare<QString, uint8>::NotEqualCompare;
-
-  QMapIterator < QString, uint8> map(actionConfigList);
+  QMapIterator <QString, uint8> map(actionConfigList);
 
   while (map.hasNext()) {
     map.next();
     settings.beginGroup(map.key());
-    foreach (const QString &string, settings.allKeys()) {
+    foreach(const QString & string, settings.allKeys()) {
       QStringList params = settings.value(string, QString()).toString().split(QChar(' '));
-
       int32 index;
 
       while ((index = params.indexOf("")) != -1)
@@ -59,9 +56,8 @@ void UInputProfileManager::loadCommandEvents(QSettings &settings) {
 }
 
 void UInputProfileManager::unloadCommandEvents() {
-  foreach (CommandAction *action, commandActions)
-    delete action;
-
+  foreach(CommandAction * action, commandActions)
+  delete action;
   commandActions.clear();
 }
 
@@ -78,8 +74,7 @@ void UInputProfileManager::processCommandEvents() {
     return;
 
   HashCompare<uint, uint64> compare;
-
-  foreach (CommandAction *action, commandActions) {
+  foreach(CommandAction * action, commandActions) {
     if (action->event.isEmpty())
       continue;
 
@@ -88,35 +83,36 @@ void UInputProfileManager::processCommandEvents() {
     if (matched && !action->actived) {
       action->actived = !action->actived;
       activeCommandEvent(action->params);
-    } else
-    if (!matched && action->actived) {
+    } else if (!matched && action->actived) {
       action->actived = !action->actived;
       deactiveCommandEvent(action->params);
     }
-
   }
 }
 
 void UInputProfileManager::activeCommandEvent(QStringList &params) {
   switch (commandIds.value(params.at(0))) {
-  case rumbleAction:
-    dbusDeviceEventsIface->dbusWiimoteSetRumbleStatus(QString(params.value(1, "1")).toUInt(), true);
-    break;
-  case executeAction:
-    emit executeRequest(params);
-    break;
-  case hwheelAction:
-    virtualEvent->moveMouseHWheel(QString(params.value(1, "0")).toInt());
-    break;
-  case vwheelAction:
-    virtualEvent->moveMouseVWheel(QString(params.value(1, "0")).toInt());
-    break;
+    case rumbleAction:
+      dbusDeviceEventsIface->dbusWiimoteSetRumbleStatus(QString(params.value(1, "1")).toUInt(), true);
+      break;
+
+    case executeAction:
+      emit executeRequest(params);
+      break;
+
+    case hwheelAction:
+      virtualEvent->moveMouseHWheel(QString(params.value(1, "0")).toInt());
+      break;
+
+    case vwheelAction:
+      virtualEvent->moveMouseVWheel(QString(params.value(1, "0")).toInt());
+      break;
   }
 }
 
 void UInputProfileManager::deactiveCommandEvent(QStringList &params) {
   switch (commandIds.value(params.at(0))) {
-  case rumbleAction:
-    dbusDeviceEventsIface->dbusWiimoteSetRumbleStatus(QString(params.value(1, "1")).toUInt(), false);
+    case rumbleAction:
+      dbusDeviceEventsIface->dbusWiimoteSetRumbleStatus(QString(params.value(1, "1")).toUInt(), false);
   }
 }

@@ -29,8 +29,7 @@ EIO_NunchukJoystick::EIO_NunchukJoystick(QString deviceName, int id, QObject *pa
   m_report_buttons(0x01),
   m_report_stick(0x01),
   m_report_pitch(0x01),
-  m_report_roll(0x01)
-{
+  m_report_roll(0x01) {
   if (m_deviceName.isEmpty())
     m_deviceName = QString::fromUtf8("Wiimote Gamepad Device (undefined)");
 }
@@ -75,12 +74,10 @@ bool EIO_NunchukJoystick::create() {
 
   memset(&dev, 0, sizeof(dev));
   strncpy(dev.name, m_deviceName.toAscii().constData(), m_deviceName.length());
-
   dev.id.product = UINPUT_PRODUCT_ID;
   dev.id.version = UINPUT_VERSION_ID;
   dev.id.vendor = UINPUT_VENDOR_ID;
   dev.id.bustype = UINPUT_BUSTYPE_ID;
-
   linux_register_evbit(EV_KEY);
   linux_register_evbit(EV_MSC);
   linux_register_evbit(EV_ABS);
@@ -108,8 +105,8 @@ bool EIO_NunchukJoystick::create() {
   }
 
   centerStick(EIO_NunchukJoystick::NunchukStick);
-
   write(uinput_fd, &dev, sizeof(dev));
+
   if (ioctl(uinput_fd, UI_DEV_CREATE)) {
     qWarning("%s: Unable to create virtual input device", m_deviceName.toAscii().constData());
     uinput_close();
@@ -130,22 +127,25 @@ void EIO_NunchukJoystick::setNunchukButtons(uint64 buttons) {
 
 void EIO_NunchukJoystick::centerStick(Stick id) {
   switch (id) {
-  case EIO_NunchukJoystick::NunchukStick:
-    m_last_stick_x = (NUNCHUK_STICK_MAX - NUNCHUK_STICK_MIN) / 2;
-    m_last_stick_y = (NUNCHUK_STICK_MAX - NUNCHUK_STICK_MIN) / 2;
-    break;
-  case EIO_NunchukJoystick::DpadStick:
-    m_last_dpad_x = 0x00;
-    m_last_dpad_y = 0x00;
-    break;
-  case EIO_NunchukJoystick::NunchukAccelerometer:
-    m_last_nunchuk_acc_pitch = 0x00;
-    m_last_nunchuk_acc_roll = 0x00;
-    break;
-  case EIO_NunchukJoystick::WiimoteAccelerometer:
-    m_last_wiimote_acc_pitch = 0x00;
-    m_last_wiimote_acc_roll = 0x00;
-    break;
+    case EIO_NunchukJoystick::NunchukStick:
+      m_last_stick_x = (NUNCHUK_STICK_MAX - NUNCHUK_STICK_MIN) / 2;
+      m_last_stick_y = (NUNCHUK_STICK_MAX - NUNCHUK_STICK_MIN) / 2;
+      break;
+
+    case EIO_NunchukJoystick::DpadStick:
+      m_last_dpad_x = 0x00;
+      m_last_dpad_y = 0x00;
+      break;
+
+    case EIO_NunchukJoystick::NunchukAccelerometer:
+      m_last_nunchuk_acc_pitch = 0x00;
+      m_last_nunchuk_acc_roll = 0x00;
+      break;
+
+    case EIO_NunchukJoystick::WiimoteAccelerometer:
+      m_last_wiimote_acc_pitch = 0x00;
+      m_last_wiimote_acc_roll = 0x00;
+      break;
   }
 }
 
@@ -166,7 +166,7 @@ void EIO_NunchukJoystick::syncAxes() {
 
 void EIO_NunchukJoystick::setNunchukStick(int32 x, int32 y) {
   m_last_stick_x = x;
-  m_last_stick_y = y;  
+  m_last_stick_y = y;
   syncAxes();
 }
 

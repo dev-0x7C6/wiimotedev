@@ -47,8 +47,7 @@ const uint8 nunchukStickMinX = (0xFF >> 1) - nunchukToleranceValue;
 const uint8 nunchukStickMaxY = (0xFF >> 1) + nunchukToleranceValue;
 const uint8 nunchukStickMinY = (0xFF >> 1) - nunchukToleranceValue;
 
-class WiimotedevConnection : public QThread
-{
+class WiimotedevConnection : public QThread {
   Q_OBJECT
 private:
   WiimotedevDevice *m_device;
@@ -85,9 +84,12 @@ private:
 
   VirtualCursor *m_virtualCursor;
 
-  QList < double> wfXmotion; QList < double> nfXmotion;
-  QList < double> wfYmotion; QList < double> nfYmotion;
-  QList < double> wfZmotion; QList < double> nfZmotion;
+  QList <double> wfXmotion;
+  QList <double> nfXmotion;
+  QList <double> wfYmotion;
+  QList <double> nfYmotion;
+  QList <double> wfZmotion;
+  QList <double> nfZmotion;
   double wcounter, ncounter;
 
   struct stickdata stick[ix_all_sticks];
@@ -102,8 +104,8 @@ private:
   struct acc_cal nunchukAcc;
   struct acc_cal wiimoteAcc;
 
-  QList < struct irpoint > current_ir_table;
-  QList < struct irpoint > last_ir_table;
+  QList <struct irpoint> current_ir_table;
+  QList <struct irpoint> last_ir_table;
 
   double m_currentLatency;
   double m_averageLatency;
@@ -152,9 +154,11 @@ private:
 
 public:
   explicit WiimotedevConnection(WiimotedevDevice *device, int id, QObject *parent = 0);
- ~WiimotedevConnection();
+  ~WiimotedevConnection();
 
-  uint id() { return m_id; }
+  uint id() {
+    return m_id;
+  }
 
   void setThreadQuitState(bool quit = true);
   bool threadQuitState();
@@ -179,8 +183,8 @@ public:
   bool dbusIsNunchukConnected();
   bool dbusIsWiimoteConnected();
 
-  QList< uint> dbusNunchukGetAccelerometrCalibration();
-  QList< uint> dbusWiimoteGetAccelerometrCalibration();
+  QList<uint> dbusNunchukGetAccelerometrCalibration();
+  QList<uint> dbusWiimoteGetAccelerometrCalibration();
 
   uint dbusWiimoteGetAverageLatency();
   uint dbusWiimoteGetBatteryLife();
@@ -206,7 +210,7 @@ signals:
   void dbusWiimoteDisconnected(uint);
   void dbusWiimoteBatteryLife(uint, uint8);
   void dbusWiimoteButtons(uint, uint64);
-  void dbusWiimoteInfrared(uint, QList< struct irpoint>);
+  void dbusWiimoteInfrared(uint, QList<struct irpoint>);
   void dbusWiimoteAcc(uint, struct accdata);
   void dbusNunchukPlugged(uint);
   void dbusNunchukUnplugged(uint);

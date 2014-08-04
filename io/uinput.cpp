@@ -40,28 +40,31 @@
 
 const QString scancodeFile("/etc/wiimotedev/scancode.conf");
 
-QMap < QString, uint64> devicebuttons;
-QMap < QString, uint> scancodes;
+QMap <QString, uint64> devicebuttons;
+QMap <QString, uint> scancodes;
 
 bool additional_debug = false;
 
 QCoreApplication *pointer;
 
 void signal_handler(int sig) {
-  switch(sig) {
+  switch (sig) {
     case SIGHUP:
     case SIGTERM:
     case SIGINT:
-    case SIGQUIT: pointer->quit(); break;
-    case SIGPIPE: signal(SIGPIPE, signal_handler); break;
+    case SIGQUIT:
+      pointer->quit();
+      break;
+
+    case SIGPIPE:
+      signal(SIGPIPE, signal_handler);
+      break;
   }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
   QCoreApplication application(argc, argv);
   pointer = &application;
-
   application.setApplicationName(DAEMON_NAME);
   application.setApplicationVersion(
     QString::number(WIIMOTEDEV_VERSION_MAJOR) + '.' +
@@ -70,11 +73,11 @@ int main(int argc, char *argv[])
 
   if (application.arguments().indexOf("--help") != -1) {
     printf("Wiimotedev-daemon argument list\n\n" \
-      "  --debug\t\tfor additional debug output\n" \
-      "  --help\t\tprint help page\n" \
-      "  --no-daemon\t\tdo not run in background\n" \
-      "  --no-quiet\t\tdo not block stdout messages\n" \
-      "  --version\t\tprint version\n\n");
+           "  --debug\t\tfor additional debug output\n" \
+           "  --help\t\tprint help page\n" \
+           "  --no-daemon\t\tdo not run in background\n" \
+           "  --no-quiet\t\tdo not block stdout messages\n" \
+           "  --version\t\tprint version\n\n");
     exit(EXIT_SUCCESS);
   }
 
@@ -92,21 +95,24 @@ int main(int argc, char *argv[])
   }
 
   additional_debug = (application.arguments().indexOf("--debug") != -1);
-
   pid_t pid;
 
   if (application.arguments().indexOf("--no-daemon") == -1) {
     QFileInfo info(PID_FILE);
-    if (info.isFile()) {
 
+    if (info.isFile()) {
     }
 
     pid = fork();
+
     if (pid < 0) exit(EXIT_FAILURE);
+
     if (pid > 0) exit(EXIT_SUCCESS);
 
     pid_t sid = setsid();
+
     if (sid < 0) exit(EXIT_FAILURE);
+
     if (chdir("/") < 0) exit(EXIT_FAILURE);
 
     int fd = open(PID_FILE, O_CREAT | O_WRONLY | O_SYNC, PID_MODE);
@@ -116,7 +122,6 @@ int main(int argc, char *argv[])
     write(fd, QString::number(sid).toAscii().constData(), QString::number(sid).length());
     close(fd);
   }
-
 
   if (application.arguments().indexOf("--no-quiet") == -1) {
     close(STDIN_FILENO);
@@ -129,7 +134,6 @@ int main(int argc, char *argv[])
   signal(SIGINT, signal_handler);
   signal(SIGQUIT, signal_handler);
   signal(SIGPIPE, signal_handler);
-
   systemlog::open(DAEMON_NAME);
   systemlog::information("system service started");
 
@@ -138,13 +142,12 @@ int main(int argc, char *argv[])
 
   QSettings settings(scancodeFile, QSettings::IniFormat);
   settings.beginGroup("scancode");
-
   QStringList list = settings.allKeys();
+
   for (register int32 i = 0; i < settings.allKeys().count(); ++i)
-      scancodes[QString(settings.allKeys().at(i)).toLower().remove(QChar(' '))] = settings.value(settings.allKeys().at(i), 0).toInt();
+    scancodes[QString(settings.allKeys().at(i)).toLower().remove(QChar(' '))] = settings.value(settings.allKeys().at(i), 0).toInt();
 
   settings.endGroup();
-
   devicebuttons.insert("wiimote.1", WIIMOTE_BTN_1);
   devicebuttons.insert("wiimote.2", WIIMOTE_BTN_2);
   devicebuttons.insert("wiimote.a", WIIMOTE_BTN_A);
@@ -207,13 +210,9 @@ int main(int argc, char *argv[])
   devicebuttons.insert("classic.rstick.right", CLASSIC_BTN_RSTICK_RIGHT);
   devicebuttons.insert("wiimote.shift.shake", WIIMOTE_BTN_SHIFT_SHAKE);
   devicebuttons.insert("nunchuk.shift.shake", NUNCHUK_BTN_SHIFT_SHAKE);
-
   UInputProfileManager profileManager;
-
   application.exec();
-
   systemlog::information("system service closed");
   systemlog::close();
-
   exit(EXIT_SUCCESS);
 }

@@ -26,15 +26,13 @@ WiimotedevDevice::WiimotedevDevice(QObject *parent):
   haveNunchukCallibration(false),
   isRumble(false),
   switchOnLeds(0),
-  reportMode(0)
-{
+  reportMode(0) {
   memset(&bdaddr, 0, sizeof(bdaddr_t));
   memset(&wiimote_acc_cal, 0, sizeof(acc_cal));
   memset(&nunchuk_acc_cal, 0, sizeof(acc_cal));
 }
 
-WiimotedevDevice::~WiimotedevDevice()
-{
+WiimotedevDevice::~WiimotedevDevice() {
   if (isConnected())
     disconnectFromDevice(true);
 }
@@ -43,13 +41,11 @@ bool WiimotedevDevice::isConnected() {
   return (device != 0);
 }
 
-bool WiimotedevDevice::isDisconnected()
-{
+bool WiimotedevDevice::isDisconnected() {
   return (device == 0);
 }
 
-bool WiimotedevDevice::connectToDevice(const uint timeout)
-{
+bool WiimotedevDevice::connectToDevice(const uint timeout) {
   memset(&bdaddr, 0, sizeof(bdaddr_t));
 
   if ((device = cwiid_open_timeout(&bdaddr, CWIID_FLAG_MESG_IFC, timeout))) {
@@ -97,7 +93,6 @@ bool WiimotedevDevice::setLedStatus(uint8 led) {
   if (isDisconnected()) return false;
 
   cwiid_set_led(device, switchOnLeds = led);
-
   return true;
 }
 
@@ -105,7 +100,6 @@ bool WiimotedevDevice::setRumbleStatus(bool rumble) {
   if (isDisconnected()) return false;
 
   cwiid_set_rumble(device, isRumble = rumble);
-
   return true;
 }
 
@@ -161,16 +155,18 @@ bool WiimotedevDevice::requestCallibration(enum cwiid_ext_type ext_type, acc_cal
     return false;
 
   switch (ext_type) {
-  case CWIID_EXT_NONE:
-    wiimote_acc_cal = *acc_cal;
-    haveWiimoteCallibration = true;
-    break;
-  case CWIID_EXT_NUNCHUK:
-    nunchuk_acc_cal = *acc_cal;
-    haveWiimoteCallibration = true;
-    break;
-  default:
-    break;
+    case CWIID_EXT_NONE:
+      wiimote_acc_cal = *acc_cal;
+      haveWiimoteCallibration = true;
+      break;
+
+    case CWIID_EXT_NUNCHUK:
+      nunchuk_acc_cal = *acc_cal;
+      haveWiimoteCallibration = true;
+      break;
+
+    default:
+      break;
   }
 
   return true;
@@ -187,7 +183,6 @@ acc_cal WiimotedevDevice::fetchNunchukCallibration(bool &valid) {
   valid = haveNunchukCallibration;
   acc_cal copy;
   memcpy(&copy, &nunchuk_acc_cal, sizeof(acc_cal));
-
   return copy;
 }
 
@@ -195,7 +190,7 @@ acc_cal WiimotedevDevice::fetchNunchukCallibration(bool &valid) {
 bool WiimotedevDevice::getWiimoteState(struct cwiid_state &state) {
   if (isDisconnected()) return false;
 
-  if (cwiid_get_state(device, &state)){
+  if (cwiid_get_state(device, &state)) {
     disconnectFromDevice(false);
     return false;
   }

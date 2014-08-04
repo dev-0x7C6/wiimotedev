@@ -97,7 +97,6 @@ EIO_ClassicJoystick::~EIO_ClassicJoystick() {
 
 
 void EIO_ClassicJoystick::setButtons(uint64 buttons) {
-
   if (m_report_buttons) {
     sendEvent(EV_KEY, BTN_A, (buttons & CLASSIC_BTN_A) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
     sendEvent(EV_KEY, BTN_B, (buttons & CLASSIC_BTN_B) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
@@ -119,12 +118,17 @@ void EIO_ClassicJoystick::setButtons(uint64 buttons) {
 
   if (m_report_dpad) {
     centerStick(EIO_ClassicJoystick::DpadStick);
-    if (buttons & CLASSIC_BTN_RIGHT) m_last_dpad_x = CLASSIC_DPAD_MAX; else
-    if (buttons & CLASSIC_BTN_LEFT) m_last_dpad_x = CLASSIC_DPAD_MIN;
-    if (buttons & CLASSIC_BTN_DOWN) m_last_dpad_y = CLASSIC_DPAD_MAX; else
-    if (buttons & CLASSIC_BTN_UP) m_last_dpad_y = CLASSIC_DPAD_MIN;
+
+    if (buttons & CLASSIC_BTN_RIGHT) m_last_dpad_x = CLASSIC_DPAD_MAX;
+    else if (buttons & CLASSIC_BTN_LEFT) m_last_dpad_x = CLASSIC_DPAD_MIN;
+
+    if (buttons & CLASSIC_BTN_DOWN) m_last_dpad_y = CLASSIC_DPAD_MAX;
+    else if (buttons & CLASSIC_BTN_UP) m_last_dpad_y = CLASSIC_DPAD_MIN;
+
     if (m_dpad_invert_x) m_last_dpad_x *= -0x01;
+
     if (m_dpad_invert_y) m_last_dpad_y *= -0x01;
+
     syncAxes();
   }
 }
@@ -139,26 +143,22 @@ bool EIO_ClassicJoystick::create() {
   }
 
   memset(&dev, 0, sizeof(dev));
-
   strncpy(dev.name, m_deviceName.toAscii().constData(), m_deviceName.length());
-
   dev.id.product = UINPUT_PRODUCT_ID;
   dev.id.version = UINPUT_VERSION_ID;
   dev.id.vendor = UINPUT_VENDOR_ID;
   dev.id.bustype = UINPUT_BUSTYPE_ID;
-
-/* Register events ---------------------------------------------- */
+  /* Register events ---------------------------------------------- */
   linux_register_evbit(EV_KEY);
   linux_register_evbit(EV_MSC);
   linux_register_evbit(EV_ABS);
 
-/* Joystick events ---------------------------------------------- */
+  /* Joystick events ---------------------------------------------- */
   if (m_report_buttons) {
     linux_register_keybit(BTN_0); // arrows
     linux_register_keybit(BTN_1); // arrows
     linux_register_keybit(BTN_2); // arrows
     linux_register_keybit(BTN_3); // arrows
-
     linux_register_keybit(BTN_GAMEPAD);
     linux_register_keybit(BTN_B);
     linux_register_keybit(BTN_X);
@@ -194,6 +194,7 @@ bool EIO_ClassicJoystick::create() {
   }
 
   write(uinput_fd, &dev, sizeof(dev));
+
   if (ioctl(uinput_fd, UI_DEV_CREATE)) {
     qWarning("%s: Unable to create virtual input device", m_deviceName.toAscii().constData());
     uinput_close();
@@ -204,52 +205,61 @@ bool EIO_ClassicJoystick::create() {
   centerStick(EIO_ClassicJoystick::RightStick);
   centerStick(EIO_ClassicJoystick::DpadStick);
   syncAxes();
-
   return (alreadyOpened = true);
 }
 
 void EIO_ClassicJoystick::centerStick(Sticks stick) {
   switch (stick) {
-  case EIO_ClassicJoystick::LeftStick:
-    m_last_l_stick_x = (CLASSIC_LEFT_STICK_MIN + CLASSIC_LEFT_STICK_MAX) / 2;
-    m_last_l_stick_y = (CLASSIC_LEFT_STICK_MIN + CLASSIC_LEFT_STICK_MAX) / 2;
-    break;
-  case EIO_ClassicJoystick::RightStick:
-    m_last_r_stick_x = (CLASSIC_RIGHT_STICK_MIN + CLASSIC_RIGHT_STICK_MAX) / 2;
-    m_last_r_stick_y = (CLASSIC_RIGHT_STICK_MIN + CLASSIC_RIGHT_STICK_MAX) / 2;
-    break;
-  case EIO_ClassicJoystick::DpadStick:
-    m_last_dpad_x = 0;
-    m_last_dpad_y = 0;
+    case EIO_ClassicJoystick::LeftStick:
+      m_last_l_stick_x = (CLASSIC_LEFT_STICK_MIN + CLASSIC_LEFT_STICK_MAX) / 2;
+      m_last_l_stick_y = (CLASSIC_LEFT_STICK_MIN + CLASSIC_LEFT_STICK_MAX) / 2;
+      break;
+
+    case EIO_ClassicJoystick::RightStick:
+      m_last_r_stick_x = (CLASSIC_RIGHT_STICK_MIN + CLASSIC_RIGHT_STICK_MAX) / 2;
+      m_last_r_stick_y = (CLASSIC_RIGHT_STICK_MIN + CLASSIC_RIGHT_STICK_MAX) / 2;
+      break;
+
+    case EIO_ClassicJoystick::DpadStick:
+      m_last_dpad_x = 0;
+      m_last_dpad_y = 0;
   }
 }
 
 void EIO_ClassicJoystick::setStick(Sticks stick, int32 x, int32 y) {
   switch (stick) {
-  case EIO_ClassicJoystick::LeftStick:
-    if (m_left_stick_invert_x) x = 0x41 - x;
-    if (!m_left_stick_invert_y) y = 0x41 - y;
-    if (CLASSIC_LEFT_STICK_MAX < x) x = CLASSIC_LEFT_STICK_MAX; else
-    if (CLASSIC_LEFT_STICK_MIN > x) x = CLASSIC_LEFT_STICK_MIN;
-    if (CLASSIC_LEFT_STICK_MAX < y) y = CLASSIC_LEFT_STICK_MAX; else
-    if (CLASSIC_LEFT_STICK_MIN > y) y = CLASSIC_LEFT_STICK_MIN;
-    m_last_l_stick_x = x;
-    m_last_l_stick_y = y;
-    break;
+    case EIO_ClassicJoystick::LeftStick:
+      if (m_left_stick_invert_x) x = 0x41 - x;
 
-  case EIO_ClassicJoystick::RightStick:
-    if (m_left_stick_invert_x) x = 0x1F - x;
-    if (!m_left_stick_invert_y) y = 0x1F - y;
-    if (CLASSIC_RIGHT_STICK_MAX < x) x = CLASSIC_RIGHT_STICK_MAX; else
-    if (CLASSIC_RIGHT_STICK_MIN > x) x = CLASSIC_RIGHT_STICK_MIN;
-    if (CLASSIC_RIGHT_STICK_MAX < y) y = CLASSIC_RIGHT_STICK_MAX; else
-    if (CLASSIC_RIGHT_STICK_MIN > y) y = CLASSIC_RIGHT_STICK_MIN;
-    m_last_r_stick_x = x;
-    m_last_r_stick_y = y;
-    break;
+      if (!m_left_stick_invert_y) y = 0x41 - y;
 
-  case EIO_ClassicJoystick::DpadStick:
-    break;
+      if (CLASSIC_LEFT_STICK_MAX < x) x = CLASSIC_LEFT_STICK_MAX;
+      else if (CLASSIC_LEFT_STICK_MIN > x) x = CLASSIC_LEFT_STICK_MIN;
+
+      if (CLASSIC_LEFT_STICK_MAX < y) y = CLASSIC_LEFT_STICK_MAX;
+      else if (CLASSIC_LEFT_STICK_MIN > y) y = CLASSIC_LEFT_STICK_MIN;
+
+      m_last_l_stick_x = x;
+      m_last_l_stick_y = y;
+      break;
+
+    case EIO_ClassicJoystick::RightStick:
+      if (m_left_stick_invert_x) x = 0x1F - x;
+
+      if (!m_left_stick_invert_y) y = 0x1F - y;
+
+      if (CLASSIC_RIGHT_STICK_MAX < x) x = CLASSIC_RIGHT_STICK_MAX;
+      else if (CLASSIC_RIGHT_STICK_MIN > x) x = CLASSIC_RIGHT_STICK_MIN;
+
+      if (CLASSIC_RIGHT_STICK_MAX < y) y = CLASSIC_RIGHT_STICK_MAX;
+      else if (CLASSIC_RIGHT_STICK_MIN > y) y = CLASSIC_RIGHT_STICK_MIN;
+
+      m_last_r_stick_x = x;
+      m_last_r_stick_y = y;
+      break;
+
+    case EIO_ClassicJoystick::DpadStick:
+      break;
   }
 
   syncAxes();

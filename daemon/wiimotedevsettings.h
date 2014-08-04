@@ -27,11 +27,10 @@
 
 class QStringList;
 
-class WiimotedevSettings : public QObject
-{
+class WiimotedevSettings : public QObject {
   Q_OBJECT
 private:
-  QHash < QString, uint> m_sequence;
+  QHash <QString, uint> m_sequence;
   QSettings *m_settings;
   uint m_powersave;
 
@@ -47,7 +46,7 @@ public:
 
   uint registerWiiremote(const QString &mac);
 
-  QHash < QString, uint> connectionTable();
+  QHash <QString, uint> connectionTable();
 };
 
 #endif // WIIMOTEDEV_SETTINGS_H

@@ -26,8 +26,7 @@
 
 #include <qmath.h>
 
-class VirtualCursor
-{
+class VirtualCursor {
 private:
   QPointF m_cursor;
   bool m_visible;
@@ -45,9 +44,9 @@ private:
 public:
   VirtualCursor();
 
-  bool calculate(QList < struct irpoint > &points, double roll);
+  bool calculate(QList <struct irpoint> &points, double roll);
   bool visible();
-  QPointF& cursor();
+  QPointF &cursor();
   double distance();
   double angle();
 };

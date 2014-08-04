@@ -5,11 +5,10 @@
 #include "wiimoterawstream.h"
 
 namespace Ui {
-class MainWindow;
+  class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
   Q_OBJECT
 private:
   Ui::MainWindow *ui;

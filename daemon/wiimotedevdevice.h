@@ -38,8 +38,7 @@
   CWIID_RPT_MOTIONPLUS | \
   CWIID_RPT_ACC
 
-class WiimotedevDevice : public QObject
-{
+class WiimotedevDevice : public QObject {
   Q_OBJECT
 private:
   bdaddr_t bdaddr;

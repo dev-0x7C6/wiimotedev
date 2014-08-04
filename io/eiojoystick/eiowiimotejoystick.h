@@ -23,21 +23,20 @@
 #include "eiobase/eiouinputobject.h"
 
 const int16 WIIMOTE_PITCH_MAX = 90;
-const int16 WIIMOTE_PITCH_MIN =-90;
+const int16 WIIMOTE_PITCH_MIN = -90;
 const int16 WIIMOTE_ROLL_MAX = 180;
-const int16 WIIMOTE_ROLL_MIN =-180;
+const int16 WIIMOTE_ROLL_MIN = -180;
 const int8 WIIMOTE_BUTTON_PUSHED = 1;
 const int8 WIIMOTE_BUTTON_RELEASED = 0;
 const int8 WIIMOTE_DPAD_MAX = 1;
-const int8 WIIMOTE_DPAD_MIN =-1;
+const int8 WIIMOTE_DPAD_MIN = -1;
 
 const int WIIMOTE_DPAD_LINUX_AXIS_X = ABS_HAT0X;
 const int WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
 const int WIIMOTE_PITCH_LINUX_AXIS = ABS_X;
 const int WIIMOTE_ROLL_LINUX_AXIS = ABS_RX;
 
-class EIO_WiimoteJoystick: public QObject, public EIO_UInputObject
-{
+class EIO_WiimoteJoystick: public QObject, public EIO_UInputObject {
   Q_OBJECT
 public:
   enum Position {

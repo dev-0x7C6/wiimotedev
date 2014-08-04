@@ -3,12 +3,10 @@
 
 VirtualGamepads::VirtualGamepads(QWidget *parent) :
   QMainWindow(parent),
-  ui(new Ui::VirtualGamepads)
-{
+  ui(new Ui::VirtualGamepads) {
   ui->setupUi(this);
 }
 
-VirtualGamepads::~VirtualGamepads()
-{
+VirtualGamepads::~VirtualGamepads() {
   delete ui;
 }

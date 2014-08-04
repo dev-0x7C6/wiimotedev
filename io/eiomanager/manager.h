@@ -66,22 +66,20 @@ struct InfraredConfigurationStruct {
   uint8 alghoritm;
 };
 
-namespace profiles
-{
-    namespace infrared
-    {
-        const QString section("infrared/");
-        const QString wiimoteid("wiimoteid");
-        const QString mode("mode");
-        const QString alghoritm("alghoritm");
-        const QString sensx("sensitivity.x");
-        const QString sensy("sensitivity.y");
-        const QString freezonex("freezone.x");
-        const QString freezoney("freezone.y");
-        const QString timeout("timeout");
-        const QString latency("latency");
-        const QString range("range");
-    }
+namespace profiles {
+  namespace infrared {
+    const QString section("infrared/");
+    const QString wiimoteid("wiimoteid");
+    const QString mode("mode");
+    const QString alghoritm("alghoritm");
+    const QString sensx("sensitivity.x");
+    const QString sensy("sensitivity.y");
+    const QString freezonex("freezone.x");
+    const QString freezoney("freezone.y");
+    const QString timeout("timeout");
+    const QString latency("latency");
+    const QString range("range");
+  }
 }
 
 enum KeyboardActionAlghortim {
@@ -91,26 +89,25 @@ enum KeyboardActionAlghortim {
 };
 
 
-class UInputProfileManager :public QObject
-{
+class UInputProfileManager : public QObject {
   Q_OBJECT
 private:
-//Interfaces
+  //Interfaces
   WiimotedevDeviceEvents *dbusDeviceEventsIface;
 
-//Adaptors
+  //Adaptors
   DBusProfileManagerAdaptorWrapper *dbusProfileManager;
   DBusServiceAdaptorWrapper *dbusService;
   DBusCustomJobsAdaptorWrapper *dbusCustomJobs;
 
-//Profile section
+  //Profile section
   QString author;
   QString email;
   QString name;
   QString path;
   QString version;
 
-//Settings
+  //Settings
 
   bool disableNunchukExtShift;
   bool disableNunchukExtShake;
@@ -126,7 +123,7 @@ private:
   const static char *keyboardSection;
 
   struct CommandAction {
-    QHash< uint, uint64> event;
+    QHash<uint, uint64> event;
     QStringList params;
     bool actived;
     uint8 alghoritm;
@@ -139,32 +136,32 @@ private:
     vwheelAction
   };
 
-  QList < CommandAction*> commandActions;
-  QHash< uint, uint64> lastWiiremoteButtons;
+  QList <CommandAction *> commandActions;
+  QHash<uint, uint64> lastWiiremoteButtons;
 
-  QList < EIO_ClassicJoystick*> EIO_ClassicJoysticks;
-  QList < EIO_NunchukJoystick*> EIO_NunchukJoysticks;
-  QList < EIO_WiimoteJoystick*> EIO_WiimoteJoysticks;
-  QList < EIO_RemoteKeyboard*> EIO_RemoteKeyboards;
-  QList < EIO_InfraredMouse*> EIO_InfraredMouses;
+  QList <EIO_ClassicJoystick *> EIO_ClassicJoysticks;
+  QList <EIO_NunchukJoystick *> EIO_NunchukJoysticks;
+  QList <EIO_WiimoteJoystick *> EIO_WiimoteJoysticks;
+  QList <EIO_RemoteKeyboard *> EIO_RemoteKeyboards;
+  QList <EIO_InfraredMouse *> EIO_InfraredMouses;
 
 
   EIO_EventDevice *virtualEvent;
 
-/* General variables --------------------------------------------- */
+  /* General variables --------------------------------------------- */
 
   QString profileName;
   QPoint cursor;
 
 public:
   UInputProfileManager(QObject *parent = 0);
- ~UInputProfileManager();
+  ~UInputProfileManager();
 
 private:
-  QHash < uint, uint64> extractDeviceEvent(QString);
-  QList < uint> extractScancodes(QStringList);
+  QHash <uint, uint64> extractDeviceEvent(QString);
+  QList <uint> extractScancodes(QStringList);
 
-  QMap < QString, uint> commandIds;
+  QMap <QString, uint> commandIds;
 
   void initializeCommandEvents();
 
@@ -184,16 +181,16 @@ private:
 
   //void assignCommandEvents(const QString &key, QSettings &settings);
 
-  void loadCommandEvents(QSettings&);
+  void loadCommandEvents(QSettings &);
   void unloadCommandEvents();
 
-  void loadInfraredEvents(QSettings&);
+  void loadInfraredEvents(QSettings &);
   void unloadInfraredEvents();
 
   void processCommandEvents();
 
-  void activeCommandEvent(QStringList&);
-  void deactiveCommandEvent(QStringList&);
+  void activeCommandEvent(QStringList &);
+  void deactiveCommandEvent(QStringList &);
 
 private Q_SLOTS:
   void dbusWiimoteGeneralButtons(uint, uint64);
@@ -208,7 +205,9 @@ private Q_SLOTS:
   void dbusClassicControllerRStick(uint, stickdata);
 
 public Q_SLOTS:
-  inline bool isWiimotedevServiceAvailable(){ return dbusDeviceEventsIface->isValid(); }
+  inline bool isWiimotedevServiceAvailable() {
+    return dbusDeviceEventsIface->isValid();
+  }
 
   bool loadProfile(QString);
   bool unloadProfile();
