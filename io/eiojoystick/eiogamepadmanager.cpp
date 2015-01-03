@@ -28,4 +28,6 @@ EIO_GamepadManager::EIO_GamepadManager(QObject *parent) :
 //}
 
 bool EIO_GamepadManager::destroy(uint32 id) {
+  Q_UNUSED(id)
+  return false;
 }

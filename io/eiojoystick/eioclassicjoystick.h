@@ -43,7 +43,7 @@ class EIO_ClassicJoystick: public QObject, public EIO_UInputObject {
   Q_OBJECT
 private:
   QString m_deviceName;
-  int m_id;
+  quint32 m_id;
   int32 m_last_r_stick_x;
   int32 m_last_r_stick_y;
   int32 m_last_l_stick_x;
@@ -73,7 +73,8 @@ public:
     DpadStick
   };
 
-  int assign();
+  quint32 assign();
+
   void setDpadInvertX(bool option);
   void setDpadInvertY(bool option);
   void setLStickInvertX(bool option);

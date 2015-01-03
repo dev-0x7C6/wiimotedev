@@ -72,7 +72,7 @@ private:
   int m_last_nunchuk_acc_roll;
   int m_last_wiimote_acc_pitch;
   int m_last_wiimote_acc_roll;
-  int m_id;
+  quint32 m_id;
   bool m_stick_invert_x;
   bool m_stick_invert_y;
   bool m_report_buttons;
@@ -84,7 +84,7 @@ public:
   EIO_NunchukJoystick(QString deviceName, int id, QObject *parent = 0);
   bool create();
 
-  int assign();
+  quint32 assign();
   void setStickInvertX(bool option);
   void setStickInvertY(bool option);
   void setReportButtons(bool report);

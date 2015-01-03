@@ -6,10 +6,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
 		    ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}
         ${CMAKE_SOURCE_DIR}/linux/usr/include/
-		    ${QT_INCLUDE_DIR}
-		    ${QT_QTCORE_INCLUDE_DIR}
-		    ${QT_QTDBUS_INCLUDE_DIR}
-		    ${QT_QTGUI_INCLUDE_DIR}
 )
 
 set(CMAKE_C_FLAGS "-Wall -pg ${CMAKE_C_FLAGS}")
@@ -45,16 +41,17 @@ set(resources
   data/data.qrc
 )
 
-qt4_add_resources(managersources ${resources})
+qt5_add_resources(managersources ${resources})
 
-qt4_wrap_ui(managersources ${manageruis})
-qt4_wrap_cpp(managersources ${managerheaders_qt} )
+#qt5_wrap_ui(managersources ${manageruis})
+#qt5_wrap_cpp(managersources ${managerheaders_qt} )
 
-add_executable(wiimotedev-manager ${managersources} ${managerheaders})
+add_executable(wiimotedev-manager ${managersources} ${managerheaders} ${managerheaders_qt})
 target_link_libraries(wiimotedev-manager
-  ${QT_QTCORE_LIBRARY}
-  ${QT_QTDBUS_LIBRARY}
-  ${QT_QTGUI_LIBRARY}
+  Qt5::Core
+  Qt5::DBus
+  Qt5::Gui
+  Qt5::Widgets
 )
 
 install(TARGETS wiimotedev-manager DESTINATION  ${WIIMOTEDEV_BIN_DIR})

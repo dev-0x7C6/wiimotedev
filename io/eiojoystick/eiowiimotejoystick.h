@@ -74,7 +74,7 @@ private:
   Position m_horizontal;
   Mode m_mode;
   bool m_home_pressed;
-  int m_id;
+  quint32 m_id;
   bool m_dpad_invert_x;
   bool m_dpad_invert_y;
   bool m_home_switch_position;
@@ -87,7 +87,7 @@ public:
   EIO_WiimoteJoystick(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
   bool create();
 
-  int assign();
+  quint32 assign();
 
   void setDStickInvertX(bool option);
   void setDStickInvertY(bool option);

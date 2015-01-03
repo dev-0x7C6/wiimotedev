@@ -30,7 +30,6 @@
 
 int main(int argc, char *argv[]) {
   QApplication application(argc, argv);
-  QTextCodec::setCodecForCStrings(QTextCodec::codecForName("Utf-8"));
   WiimotedevDeviceEvents interface;
 
   if (!interface.isValid()) {

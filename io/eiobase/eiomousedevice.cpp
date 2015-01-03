@@ -22,8 +22,8 @@
 bool UInputMouse::uinput_open(QRect absRect, bool abs) {
   if (alreadyOpened) uinput_close();
 
-  if (!(uinput_fd = open(uinputFile.toAscii().constData(), O_WRONLY | O_NDELAY))) {
-    qWarning("%s: Unable to open %s", "mouse", uinputFile.toAscii().constData());
+  if (!(uinput_fd = open(uinputFile.toLocal8Bit().constData(), O_WRONLY | O_NDELAY))) {
+    qWarning("%s: Unable to open %s", "mouse", uinputFile.toLocal8Bit().constData());
     return false;
   }
 

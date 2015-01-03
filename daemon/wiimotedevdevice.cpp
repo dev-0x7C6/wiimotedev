@@ -140,7 +140,7 @@ uint8 WiimotedevDevice::getReportMode() {
 QString WiimotedevDevice::getWiimoteSAddr() {
   char addr[17];
   ba2str(&bdaddr, addr);
-  return QString::fromAscii(addr, 17);
+  return QString::fromLocal8Bit(addr, 17);
 }
 
 bdaddr_t WiimotedevDevice::getWiimoteAddr() {

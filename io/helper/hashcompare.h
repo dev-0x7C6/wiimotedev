@@ -20,6 +20,7 @@
 #ifndef HASHCOMPARE_H
 #define HASHCOMPARE_H
 
+#include <QObject>
 #include <QHash>
 #include <QHashIterator>
 

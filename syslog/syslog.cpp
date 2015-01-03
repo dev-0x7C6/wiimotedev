@@ -31,25 +31,25 @@ void systemlog::close() {
 }
 
 void systemlog::critical(const QString message) {
-  syslog(LOG_CRIT, "%s", message.toAscii().constData());
+  syslog(LOG_CRIT, "%s", message.toLocal8Bit().data());
 }
 
 void systemlog::debug(const QString message) {
-  syslog(LOG_DEBUG, "%s", message.toAscii().constData());
+  syslog(LOG_DEBUG, "%s", message.toLocal8Bit().data());
 }
 
 void systemlog::error(const QString message) {
-  syslog(LOG_ERR, "%s", message.toAscii().constData());
+  syslog(LOG_ERR, "%s", message.toLocal8Bit().data());
 }
 
 void systemlog::information(const QString message) {
-  syslog(LOG_INFO, "%s", message.toAscii().constData());
+  syslog(LOG_INFO, "%s", message.toLocal8Bit().data());
 }
 
 void systemlog::notice(const QString message) {
-  syslog(LOG_NOTICE, "%s", message.toAscii().constData());
+  syslog(LOG_NOTICE, "%s", message.toLocal8Bit().data());
 }
 
 void systemlog::warning(const QString message) {
-  syslog(LOG_WARNING, "%s", message.toAscii().constData());
+  syslog(LOG_WARNING, "%s", message.toLocal8Bit().data());
 }

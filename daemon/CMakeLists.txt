@@ -2,20 +2,16 @@
 # Copyright (C) 2008 Bartłomiej Burdukiewicz
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
+#get_target_property(QtCore_location Qt5::Core LOCATION)
+#get_target_property(QtDbus_location Qt5::Dbus LOCATION)
+#get_target_property(QtNetwork_location Qt5::Network LOCATION)
+
 include_directories(
   ${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}/linux/usr/include/
-  ${QT_INCLUDE_DIR}
-  ${QT_QTCORE_INCLUDE_DIR}
-  ${QT_QTDBUS_INCLUDE_DIR}
-  ${QT_QTGUI_INCLUDE_DIR}
-  ${QT_QTNETWORK_INCLUDE_DIR}
 )
-
-set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "-Wall ${CMAKE_CXX_FLAGS}")
 
 set(sources
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
@@ -50,14 +46,13 @@ set(headers
   wiimotedevsettings.h
 )
 
-qt4_wrap_cpp(sources ${headers})
-
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
+
 target_link_libraries(wiimotedev-daemon
   ${BLUETOOTH_LIBRARIES}
-  ${QT_QTCORE_LIBRARY}
-  ${QT_QTDBUS_LIBRARY}
-  ${QT_QTNETWORK_LIBRARY}
+  Qt5::Core
+  Qt5::DBus
+  Qt5::Network
   libcwiid
 )
 

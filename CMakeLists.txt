@@ -2,8 +2,21 @@
 # Copyright (C) 2008-2014 Bartłomiej Burdukiewicz
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
-cmake_minimum_required(VERSION 2.6)
+cmake_minimum_required(VERSION 2.8.11)
+
 project( WiimotedevProject )
+
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+set(CMAKE_AUTOMOC ON)
+
+find_package(Qt5Core)
+find_package(Qt5Gui)
+find_package(Qt5DBus)
+find_package(Qt5Widgets)
+find_package(Qt5Network)
+
+set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
+set(CMAKE_CXX_FLAGS "-Wall -std=c++11 ${CMAKE_CXX_FLAGS}")
 
 set (wiimotedev_project_files
   ${CMAKE_SOURCE_DIR}/linux/etc/dbus-1/system.d/org.wiimotedev-daemon.conf
@@ -26,7 +39,6 @@ set (wiimotedev_project_files
   ${CMAKE_SOURCE_DIR}/README
 )
 
-find_package(Qt4 REQUIRED QtCore QtDbus QtNetwork QtGui QtOpenGL)
 
 option(INSTALL_SYSTEMD "Install systemd services" ON)
 option(INSTALL_INITD "Install init.d services")

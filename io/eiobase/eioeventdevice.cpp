@@ -22,8 +22,8 @@
 bool EIO_EventDevice::uinput_open(bool replay) {
   if (alreadyOpened) uinput_close();
 
-  if (!(uinput_fd = open(uinputFile.toAscii().constData(), O_WRONLY | O_NDELAY))) {
-    qWarning("event device: Unable to open %s", uinputFile.toAscii().constData());
+  if (!(uinput_fd = open(uinputFile.toLocal8Bit().constData(), O_WRONLY | O_NDELAY))) {
+    qWarning("event device: Unable to open %s", uinputFile.toLocal8Bit().constData());
     return false;
   }
 

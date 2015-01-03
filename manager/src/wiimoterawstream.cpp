@@ -220,10 +220,10 @@ WiimoteRawStream::WiimoteRawStream(WiimotedevDeviceEvents *iface, InfraredCamera
   m_wiimoteStatusItems[3]->addChild(m_wiimoteLedItems[3] = new QTreeWidgetItem(QStringList("Led [4]")));
   ui->centralwidget->layout()->addWidget(graphics);
   ui->treeWidget->header()->setStretchLastSection(false);
-  ui->treeWidget->header()->setResizeMode(0, QHeaderView::Stretch);
-  ui->treeWidget->header()->setResizeMode(1, QHeaderView::ResizeToContents);
-  ui->treeWidget->header()->setResizeMode(2, QHeaderView::ResizeToContents);
-  ui->treeWidget->header()->setResizeMode(3, QHeaderView::ResizeToContents);
+  //  ui->treeWidget->header()->setResizeMode(0, QHeaderView::Stretch);
+  //  ui->treeWidget->header()->setResizeMode(1, QHeaderView::ResizeToContents);
+  //  ui->treeWidget->header()->setResizeMode(2, QHeaderView::ResizeToContents);
+  //  ui->treeWidget->header()->setResizeMode(3, QHeaderView::ResizeToContents);
   ui->treeWidget->insertTopLevelItems(0, opts);
   label->setMargin(2);
   connect(m_wiimotePoints[0], SIGNAL(triggered()), this, SLOT(pressedPoint1()));

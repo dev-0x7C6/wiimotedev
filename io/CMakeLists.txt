@@ -5,10 +5,6 @@
 include_directories(${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${CMAKE_SOURCE_DIR}
-  ${QT_INCLUDE_DIR}
-  ${QT_QTCORE_INCLUDE_DIR}
-  ${QT_QTGUI_INCLUDE_DIR}
-  ${QT_QTDBUS_INCLUDE_DIR}
   ${CMAKE_SOURCE_DIR}/linux/usr/include/
 )
 
@@ -68,14 +64,13 @@ set(headers_wrap
   eioinfrared/eioinfraredmouse.h
 )
 
-
-qt4_wrap_cpp(headers ${headers_wrap})
-
 add_executable(wiimotedev-io ${headers_wrap} ${headers} ${sources})
+
 target_link_libraries(wiimotedev-io
-  ${QT_QTCORE_LIBRARY}
-  ${QT_QTGUI_LIBRARY}
-  ${QT_QTDBUS_LIBRARY}
+  Qt5::Core
+  Qt5::DBus
+  Qt5::Network
+  Qt5::Widgets
 )
 
 install(TARGETS wiimotedev-io DESTINATION ${WIIMOTEDEV_SBIN_DIR})

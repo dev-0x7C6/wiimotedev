@@ -119,7 +119,7 @@ int main(int argc, char *argv[]) {
 
     if (!fd) exit(EXIT_FAILURE);
 
-    write(fd, QString::number(sid).toAscii().constData(), QString::number(sid).length());
+    write(fd, QString::number(sid).toLocal8Bit().constData(), QString::number(sid).length());
     close(fd);
   }
 

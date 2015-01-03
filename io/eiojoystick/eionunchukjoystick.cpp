@@ -34,7 +34,7 @@ EIO_NunchukJoystick::EIO_NunchukJoystick(QString deviceName, int id, QObject *pa
     m_deviceName = QString::fromUtf8("Wiimote Gamepad Device (undefined)");
 }
 
-int EIO_NunchukJoystick::assign() {
+quint32 EIO_NunchukJoystick::assign() {
   return m_id;
 }
 
@@ -67,13 +67,13 @@ bool EIO_NunchukJoystick::create() {
   if (alreadyOpened)
     uinput_close();
 
-  if (!(uinput_fd = open(uinputFile.toAscii().constData(), O_WRONLY | O_NDELAY))) {
-    qWarning("%s: Unable to open %s", m_deviceName.toAscii().constData(), uinputFile.toAscii().constData());
+  if (!(uinput_fd = open(uinputFile.toLocal8Bit().constData(), O_WRONLY | O_NDELAY))) {
+    qWarning("%s: Unable to open %s", m_deviceName.toLocal8Bit().constData(), uinputFile.toLocal8Bit().constData());
     return false;
   }
 
   memset(&dev, 0, sizeof(dev));
-  strncpy(dev.name, m_deviceName.toAscii().constData(), m_deviceName.length());
+  strncpy(dev.name, m_deviceName.toLocal8Bit().constData(), m_deviceName.length());
   dev.id.product = UINPUT_PRODUCT_ID;
   dev.id.version = UINPUT_VERSION_ID;
   dev.id.vendor = UINPUT_VENDOR_ID;
@@ -108,7 +108,7 @@ bool EIO_NunchukJoystick::create() {
   write(uinput_fd, &dev, sizeof(dev));
 
   if (ioctl(uinput_fd, UI_DEV_CREATE)) {
-    qWarning("%s: Unable to create virtual input device", m_deviceName.toAscii().constData());
+    qWarning("%s: Unable to create virtual input device", m_deviceName.toLocal8Bit().constData());
     uinput_close();
     return false;
   }
