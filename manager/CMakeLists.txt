@@ -43,8 +43,7 @@ set(resources
 
 qt5_add_resources(managersources ${resources})
 
-#qt5_wrap_ui(managersources ${manageruis})
-#qt5_wrap_cpp(managersources ${managerheaders_qt} )
+qt5_wrap_ui(managersources ${manageruis})
 
 add_executable(wiimotedev-manager ${managersources} ${managerheaders} ${managerheaders_qt})
 target_link_libraries(wiimotedev-manager

@@ -6,7 +6,13 @@ Known issues:
 (I want to rewrite all shift code and get better precission and prediction,
  so I'm reserching new alghoritm for shifts)
 
+2.0.0
+General:
+- Run on top Qt5
+
 1.4.5
+General:
+- Systemd support
 
 1.4.4
 General:

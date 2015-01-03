@@ -7,4 +7,4 @@ In oder to compile, run:
 # make all
 # make install
 
-Requirement: Qt4 Libraries, Bluez
+Requirement: Qt5 Libraries, Bluez
