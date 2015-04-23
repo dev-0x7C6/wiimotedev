@@ -47,6 +47,10 @@ WiimotedevConnection::~WiimotedevConnection() {
   delete m_device_locker;
 }
 
+uint WiimotedevConnection::id() {
+  return m_id;
+}
+
 void WiimotedevConnection::run() {
   int timeout = 0;
 

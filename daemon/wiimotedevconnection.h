@@ -156,9 +156,7 @@ public:
   explicit WiimotedevConnection(WiimotedevDevice *device, int id, QObject *parent = 0);
   ~WiimotedevConnection();
 
-  uint id() {
-    return m_id;
-  }
+  uint id();
 
   void setThreadQuitState(bool quit = true);
   bool threadQuitState();
