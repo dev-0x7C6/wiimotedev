@@ -22,12 +22,12 @@
 
 void WiimotedevConnection::cwiid_process_wiimote_init() {
   cwiid_process_wiimote_clear();
-  setDeviceAvailable(ix_wiimote_device, true);
+  m_available[ix_wiimote_device] = true;
 }
 
 void WiimotedevConnection::cwiid_process_wiimote_done() {
   cwiid_process_wiimote_clear();
-  setDeviceAvailable(ix_wiimote_device, false);
+  m_available[ix_wiimote_device] = false;
 }
 
 void WiimotedevConnection::cwiid_process_wiimote_clear() {
@@ -177,10 +177,9 @@ void WiimotedevConnection::cwiid_process_wiimote_ir(cwiid_ir_src ir[]) {
 
 void WiimotedevConnection::cwiid_process_wiimote_error() {
   m_device->disconnectFromDevice(false);
-  setThreadQuitState(true);
+  interrupt();
 }
 
 void WiimotedevConnection::cwiid_process_wiimote_status(uint8 battery) {
-  setDeviceBatteryState(100.0 * double(battery) / double(CWIID_BATTERY_MAX));
-  emit dbusWiimoteBatteryLife(m_id, deviceBatteryState());
+  emit dbusWiimoteBatteryLife(m_id, m_batteryLife = (100.0 * double(battery) / double(CWIID_BATTERY_MAX)));
 }

@@ -17,17 +17,16 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WiimotedevConnection_H
-#define WiimotedevConnection_H
+#pragma once
 
 #include <QThread>
+#include <atomic>
+#include <memory>
+
 #include "dbus/deviceevents.h"
 #include "static/libcwiid/cwiid.h"
-
 #include "virtualcursor/virtualcursor.h"
 
-class QMutex;
-class QReadWriteLock;
 class QElapsedTimer;
 class WiimotedevDevice;
 
@@ -50,12 +49,10 @@ const uint8 nunchukStickMinY = (0xFF >> 1) - nunchukToleranceValue;
 class WiimotedevConnection : public QThread {
   Q_OBJECT
 private:
-  WiimotedevDevice *m_device;
-  QReadWriteLock *m_variable_locker;
-  QReadWriteLock *m_device_locker;
-  bool m_threadQuit;
-  double m_batteryLife;
-  int64 m_powerSaveTimeout;
+  std::unique_ptr<WiimotedevDevice> m_device;
+  std::atomic<bool> m_interrupted;
+  std::atomic<double> m_batteryLife;
+  std::atomic<uint64_t> m_powerSaveTimeout;
 
   enum DeviceType {
     ix_wiimote_device = 0,
@@ -82,7 +79,7 @@ private:
     ix_min
   };
 
-  VirtualCursor *m_virtualCursor;
+  std::unique_ptr<VirtualCursor> m_virtualCursor;
 
   QList <double> wfXmotion;
   QList <double> nfXmotion;
@@ -95,10 +92,10 @@ private:
   struct stickdata stick[ix_all_sticks];
   uint64 cstate[ix_all_devices];
   uint64 lstate[ix_all_devices];
-  bool m_available[ix_general_device];
+  std::atomic<bool> m_available[ix_general_device];
 
-  struct acc_cal calibration[ix_all_devices - 1];
-  struct accdata acc[ix_all_devices - 1];
+  acc_cal calibration[ix_all_devices - 1];
+  accdata acc[ix_all_devices - 1];
 
   int m_id;
   struct acc_cal nunchukAcc;
@@ -107,8 +104,8 @@ private:
   QList <struct irpoint> current_ir_table;
   QList <struct irpoint> last_ir_table;
 
-  double m_currentLatency;
-  double m_averageLatency;
+  std::atomic<uint32_t> m_currentLatency;
+  std::atomic<uint32_t> m_averageLatency;
   double m_bufferLatency;
   int32 m_bufferCounter;
 
@@ -156,24 +153,9 @@ public:
   explicit WiimotedevConnection(WiimotedevDevice *device, int id, QObject *parent = 0);
   ~WiimotedevConnection();
 
-  uint id() {
-    return m_id;
-  }
+  uint id() const;
 
-  void setThreadQuitState(bool quit = true);
-  bool threadQuitState();
-
-  void setDeviceAvailable(DeviceType dev, bool available);
-  bool deviceAvailable(DeviceType dev);
-
-  void setDeviceBatteryState(double state);
-  double deviceBatteryState();
-
-  void setDeviceCurrentLatency(uint latency);
-  uint deviceCurrentLatency();
-
-  void setDeviceAverageLatency(uint latency);
-  uint deviceAverageLatency();
+  void interrupt();
 
   void setPowerSafeTimeout(int64 timeout);
   int64 powerSafeTimeout();
@@ -223,5 +205,3 @@ signals:
   void dbusClassicControllerLStick(uint, struct stickdata);
   void dbusClassicControllerRStick(uint, struct stickdata);
 };
-
-#endif // WiimotedevConnection_H

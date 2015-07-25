@@ -123,7 +123,7 @@ int main(int argc, char *argv[]) {
   WiimotedevCore *manager_thread = new WiimotedevCore();
   manager_thread->start();
   application.exec();
-  manager_thread->setThreadQuitStatus();
+  manager_thread->interrupt();
   manager_thread->wait();
   int result = manager_thread->result;
   delete manager_thread;

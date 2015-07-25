@@ -20,6 +20,8 @@
 #ifndef WIIMOTEDEVCORE_H
 #define WIIMOTEDEVCORE_H
 
+#include <atomic>
+
 #include <QThread>
 #include <QMutex>
 #include <QMutexLocker>
@@ -40,18 +42,17 @@ private:
   // Settings ------------------------------------------------- /
   WiimotedevSettings *settings;
   QHash <QString, uint> sequence;
-  QMutex *m_mutex;
+  QMutex m_mutex;
 
-  bool m_threadQuitStatus;
+  std::atomic<bool> m_interrupted;
 
 public:
   WiimotedevCore(QObject *parent = 0);
   ~WiimotedevCore();
 
-  void setThreadQuitStatus(bool quit = true);
-  bool threadQuitStatus();
-
   uint result;
+
+  void interrupt();
 
   static const int BluetoothFlood = 100;
   static const int WaitForBluetooth = 3000;

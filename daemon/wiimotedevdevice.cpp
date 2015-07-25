@@ -18,6 +18,7 @@
  **********************************************************************************/
 
 #include "wiimotedevdevice.h"
+#include <QMutexLocker>
 
 WiimotedevDevice::WiimotedevDevice(QObject *parent):
   QObject(parent),
@@ -46,6 +47,7 @@ bool WiimotedevDevice::isDisconnected() {
 }
 
 bool WiimotedevDevice::connectToDevice(const uint timeout) {
+  QMutexLocker locker(&m_mutex);
   memset(&bdaddr, 0, sizeof(bdaddr_t));
 
   if ((device = cwiid_open_timeout(&bdaddr, CWIID_FLAG_MESG_IFC, timeout))) {
@@ -58,6 +60,8 @@ bool WiimotedevDevice::connectToDevice(const uint timeout) {
 }
 
 bool WiimotedevDevice::disconnectFromDevice(const bool switchOfReport) {
+  QMutexLocker locker(&m_mutex);
+
   if (isDisconnected())
     return false;
 
@@ -74,10 +78,13 @@ bool WiimotedevDevice::disconnectFromDevice(const bool switchOfReport) {
 }
 
 void WiimotedevDevice::requestStatus() {
+  QMutexLocker locker(&m_mutex);
   cwiid_request_status(device);
 }
 
 bool WiimotedevDevice::fetchMessage(int *count, union cwiid_mesg *mesg[], timespec *time) {
+  QMutexLocker locker(&m_mutex);
+
   if (isDisconnected())
     return false;
 
@@ -90,6 +97,8 @@ bool WiimotedevDevice::fetchMessage(int *count, union cwiid_mesg *mesg[], timesp
 }
 
 bool WiimotedevDevice::setLedStatus(uint8 led) {
+  QMutexLocker locker(&m_mutex);
+
   if (isDisconnected()) return false;
 
   cwiid_set_led(device, switchOnLeds = led);
@@ -97,6 +106,8 @@ bool WiimotedevDevice::setLedStatus(uint8 led) {
 }
 
 bool WiimotedevDevice::setRumbleStatus(bool rumble) {
+  QMutexLocker locker(&m_mutex);
+
   if (isDisconnected()) return false;
 
   cwiid_set_rumble(device, isRumble = rumble);
@@ -104,10 +115,9 @@ bool WiimotedevDevice::setRumbleStatus(bool rumble) {
 }
 
 bool WiimotedevDevice::setReportMode(uint8 mode) {
-  if (isDisconnected()) return false;
+  QMutexLocker locker(&m_mutex);
 
-  //cwiid_enable(device, CWIID_FLAG_MOTIONPLUS | CWIID_FLAG_MESG_IFC);
-  //cwiid_write(device, CWIID_RW_REG,)
+  if (isDisconnected()) return false;
 
   if (cwiid_set_rpt_mode(device, reportMode = mode)) {
     disconnectFromDevice(false);
@@ -148,6 +158,8 @@ bdaddr_t WiimotedevDevice::getWiimoteAddr() {
 }
 
 bool WiimotedevDevice::requestCallibration(enum cwiid_ext_type ext_type, acc_cal *acc_cal) {
+  QMutexLocker locker(&m_mutex);
+
   if (isDisconnected())
     return false;
 
@@ -173,21 +185,21 @@ bool WiimotedevDevice::requestCallibration(enum cwiid_ext_type ext_type, acc_cal
 }
 
 acc_cal WiimotedevDevice::fetchWiimoteCallibration(bool &valid) {
+  QMutexLocker locker(&m_mutex);
   valid = haveWiimoteCallibration;
-  acc_cal copy;
-  memcpy(&copy, &wiimote_acc_cal, sizeof(acc_cal));
-  return copy;
+  return wiimote_acc_cal;
 }
 
 acc_cal WiimotedevDevice::fetchNunchukCallibration(bool &valid) {
+  QMutexLocker locker(&m_mutex);
   valid = haveNunchukCallibration;
-  acc_cal copy;
-  memcpy(&copy, &nunchuk_acc_cal, sizeof(acc_cal));
-  return copy;
+  return nunchuk_acc_cal;
 }
 
 
 bool WiimotedevDevice::getWiimoteState(struct cwiid_state &state) {
+  QMutexLocker locker(&m_mutex);
+
   if (isDisconnected()) return false;
 
   if (cwiid_get_state(device, &state)) {

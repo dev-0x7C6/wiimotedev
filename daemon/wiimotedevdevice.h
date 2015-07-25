@@ -25,6 +25,7 @@
 
 #include "../config.h"
 
+#include <atomic>
 #include <QObject>
 #include "static/libcwiid/cwiid.h"
 #include "linux/usr/include/wiimotedev/consts.h"
@@ -38,19 +39,22 @@
   CWIID_RPT_MOTIONPLUS | \
   CWIID_RPT_ACC
 
+#include <QMutex>
+
 class WiimotedevDevice : public QObject {
   Q_OBJECT
 private:
   bdaddr_t bdaddr;
-  cwiid_wiimote_t *device;
+  std::atomic<cwiid_wiimote_t *> device;
   int32 id;
-  bool haveWiimoteCallibration;
-  bool haveNunchukCallibration;
+  std::atomic<bool> haveWiimoteCallibration;
+  std::atomic<bool> haveNunchukCallibration;
+  QMutex m_mutex;
 
 private:
-  bool isRumble;
-  uint8 switchOnLeds;
-  uint8 reportMode;
+  std::atomic<bool> isRumble;
+  std::atomic<uint8> switchOnLeds;
+  std::atomic<uint8> reportMode;
   acc_cal wiimote_acc_cal;
   acc_cal nunchuk_acc_cal;
 

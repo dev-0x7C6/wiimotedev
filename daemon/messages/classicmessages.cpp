@@ -28,16 +28,19 @@ void WiimotedevConnection::cwiid_process_classic_done() {
 }
 
 void WiimotedevConnection::cwiid_process_classic_clear() {
-  cstate[ix_classic_device] = lstate[ix_classic_device] =
-                                stick[ix_classic_lstick].x = stick[ix_classic_lstick].y =
-                                      stick[ix_classic_rstick].x = stick[ix_classic_rstick].y = 0x00;
-  setDeviceAvailable(ix_classic_device, false);
+  cstate[ix_classic_device] = 0x00;
+  lstate[ix_classic_device] = 0x00;
+  stick[ix_classic_lstick].x = 0x00;
+  stick[ix_classic_lstick].y = 0x00;
+  stick[ix_classic_rstick].x = 0x00;
+  stick[ix_classic_rstick].y = 0x00;
+  m_available[ix_classic_device] = false;
 }
 
 void WiimotedevConnection::cwiid_process_classic_status(cwiid_ext_type type) {
   switch (type) {
     case CWIID_EXT_NONE:
-      if (deviceAvailable(ix_classic_device)) {
+      if (m_available[ix_classic_device]) {
         cwiid_process_classic_clear();
         emit dbusClassicControllerUnplugged(m_id);
       }
@@ -45,8 +48,8 @@ void WiimotedevConnection::cwiid_process_classic_status(cwiid_ext_type type) {
       break;
 
     case CWIID_EXT_CLASSIC:
-      if (!deviceAvailable(ix_classic_device)) {
-        setDeviceAvailable(ix_classic_device, true);
+      if (!m_available[ix_classic_device]) {
+        m_available[ix_classic_device] = true;
         emit dbusClassicControllerPlugged(m_id);
       }
 

@@ -30,9 +30,11 @@ void WiimotedevConnection::cwiid_process_nunchuk_done() {
 }
 
 void WiimotedevConnection::cwiid_process_nunchuk_clear() {
-  cstate[ix_nunchuk_device] = lstate[ix_nunchuk_device] =
-                                stick[ix_nunchuk_stick].x = stick[ix_nunchuk_stick].y = 0x00;
-  setDeviceAvailable(ix_nunchuk_device, false);
+  cstate[ix_nunchuk_device] = 0x00;
+  lstate[ix_nunchuk_device] = 0x00;
+  stick[ix_nunchuk_stick].x = 0x00;
+  stick[ix_nunchuk_stick].y = 0x00;
+  m_available[ix_nunchuk_device] = false;
 }
 
 void WiimotedevConnection::cwiid_process_nunchuk_buttons(uint8 cwiid_buttons) {
@@ -145,7 +147,7 @@ void WiimotedevConnection::cwiid_process_nunchuk_acc(uint8 cwiid_acc[3]) {
 void WiimotedevConnection::cwiid_process_nunchuk_status(cwiid_ext_type type) {
   switch (type) {
     case CWIID_EXT_NONE:
-      if (deviceAvailable(ix_nunchuk_device)) {
+      if (m_available[ix_nunchuk_device]) {
         cwiid_process_nunchuk_clear();
         emit dbusNunchukUnplugged(m_id);
       }
@@ -153,11 +155,9 @@ void WiimotedevConnection::cwiid_process_nunchuk_status(cwiid_ext_type type) {
       break;
 
     case CWIID_EXT_NUNCHUK:
-      if (!deviceAvailable(ix_nunchuk_device)) {
-        setDeviceAvailable(ix_nunchuk_device, true);
-        m_device_locker->lockForRead();
+      if (!m_available[ix_nunchuk_device]) {
+        m_available[ix_nunchuk_device] = true;
         m_device->requestCallibration(CWIID_EXT_NUNCHUK, &calibration[ix_nunchuk_device]);
-        m_device_locker->unlock();
         emit dbusNunchukPlugged(m_id);
       }
 
