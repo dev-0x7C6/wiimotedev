@@ -165,7 +165,7 @@ void EIOInfraredMouse::dbusVirtualCursorPosition(uint _id, double x, double y, d
     moves[0] = x;
     moves[1] = y;
 
-    for (register int i = 0; i < 5; ++i) {
+    for (int i = 0; i < 5; ++i) {
       moves[4] += (moves[2] / 5.0);
       moves[5] += (moves[3] / 5.0);
       device->moveMousePointerRel(moves[4], moves[5]);

@@ -295,7 +295,7 @@ void WiimoteRawStream::updateWiimoteComboBox() {
     m_wiimoteComboBox->setItemData(m_wiimoteComboBox->count() - 1, id);
   }
 
-  for (register int i = 0; i < m_wiimoteComboBox->count(); ++i) {
+  for (int i = 0; i < m_wiimoteComboBox->count(); ++i) {
     if (m_wiimoteComboBox->itemData(i).toUInt() == m_id) {
       m_wiimoteComboBox->setCurrentIndex(i);
       break;
@@ -307,7 +307,7 @@ void WiimoteRawStream::changeWiimote(uint id) {
   m_id = id;
   m_mainWindow->setWiimoteId(id);
 
-  for (register int i = 0; i < 60; ++i) {
+  for (int i = 0; i < 60; ++i) {
     m_wiimoteButtonItems[i]->setText(1, "[ ]");
     m_wiimoteButtonItems[i]->setData(0, Qt::UserRole, false);
   }
@@ -552,7 +552,7 @@ void WiimoteRawStream::dbusWiimoteGeneralButtons(uint id, uint64 value) {
 
   ui->treeWidget->setUpdatesEnabled(false);
 
-  for (register int i = 0; i < 60; ++i) {
+  for (int i = 0; i < 60; ++i) {
     if (value & (uint64(1) << i)) {
       if (!m_wiimoteButtonItems[i]->data(0, Qt::UserRole).toBool()) {
         m_wiimoteButtonItems[i]->setText(1, "[*]");
@@ -608,7 +608,7 @@ void WiimoteRawStream::dbusWiimoteLedStatusChanged(uint id, uint8 status) {
   if (m_id != id)
     return;
 
-  for (register int i = 0; i < 4; ++i)
+  for (int i = 0; i < 4; ++i)
     if (status & (1 << i)) {
       m_wiimoteLeds[i]->setIcon(QIcon(":/enabled_blue24.png"));
       m_wiimoteLedItems[i]->setText(1, "on");

@@ -53,7 +53,7 @@ InfraredCameraView::InfraredCameraView(WiimotedevDeviceEvents *iface, uint id, Q
   line = new QGraphicsLineItem();
   line->setZValue(-1);
 
-  for (register int i = 0; i < 4; ++i) {
+  for (int i = 0; i < 4; ++i) {
     infraredPoints[i] = new QGraphicsEllipseItem();
     infraredPoints[i]->setPen(QPen(Qt::white));
     infraredPoints[i]->setBrush(QBrush(Qt::black));
@@ -103,7 +103,7 @@ InfraredCameraView::~InfraredCameraView() {
 void InfraredCameraView::infraredCleanup() {
   infraredTimeout.stop();
 
-  for (register int i = 0; i < 4; ++i)
+  for (int i = 0; i < 4; ++i)
     infraredPoints[i]->hide();
 }
 
@@ -120,7 +120,7 @@ void InfraredCameraView::dbusWiimoteInfrared(uint id, const QList<irpoint> &poin
   dotSizeMultiplier = (widthMultiplier + heightMultiplier) / 2.0;
   infraredTimeout.start();
 
-  for (register int i = 0; i < 4; ++i) {
+  for (int i = 0; i < 4; ++i) {
     if (i < points.count()) {
       register int size = points.at(i).size * 2;
       infraredPoints[i]->setRect(-size / 2, -size / 2, size, size);
@@ -139,13 +139,13 @@ void InfraredCameraView::dbusWiimoteInfrared(uint id, const QList<irpoint> &poin
   switch (points.count()) {
     case ir0source:
     case ir1source:
-      for (register int i = 0; i < 4; ++i)
+      for (int i = 0; i < 4; ++i)
         if (infraredLine[i]->isVisible()) infraredLine[i]->hide();
 
       break;
 
     case ir2source:
-      for (register int i = 1; i < 4; ++i)
+      for (int i = 1; i < 4; ++i)
         if (infraredLine[i]->isVisible()) infraredLine[i]->hide();
 
       infraredLine[0]->setLine(infraredPoints[0]->x(), infraredPoints[0]->y(), infraredPoints[1]->x(), infraredPoints[1]->y());

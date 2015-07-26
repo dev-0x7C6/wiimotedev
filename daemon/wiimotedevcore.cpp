@@ -117,7 +117,7 @@ void WiimotedevCore::run() {
     }
 
     if (m_bluetoothInertia.elapsed() < WiimotedevCore::BluetoothFlood && !m_interrupted) {
-      for (register int i = 0; i < 100; ++i) {
+      for (int i = 0; i < 100; ++i) {
         m_bluetoothBlocking.tryLock(WiimotedevCore::WaitForBluetooth / 100);
 
         if (m_interrupted)

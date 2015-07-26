@@ -84,7 +84,7 @@ QHash <uint, uint64> UInputProfileManager::extractDeviceEvent(QString input) {
 QList <uint> UInputProfileManager::extractScancodes(QStringList list) {
   QList <uint> values;
 
-  for (register int i = 0; i < list.count(); ++i)
+  for (int i = 0; i < list.count(); ++i)
     if (scancodes.value(list.at(i), QString(list.at(i)).toUInt()))
       values << scancodes.value(list.at(i), QString(list.at(i)).toUInt());
 

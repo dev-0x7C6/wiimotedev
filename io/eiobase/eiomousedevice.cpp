@@ -39,7 +39,7 @@ bool UInputMouse::uinput_open(QRect absRect, bool abs) {
       linux_register_evbit(EV_REL);
 
   /* Mouse events ------------------------------------------------- */
-  for (register uint16 i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
+  for (uint16 i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
     linux_register_keybit(i);
 
   if (abs) {

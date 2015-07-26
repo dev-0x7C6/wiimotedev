@@ -41,11 +41,11 @@ bool EIOEventDevice::uinput_open(bool replay) {
   linux_register_evbit(EV_REL);
 
   /* Keyboard events ---------------------------------------------- */
-  for (register uint16 i = 0; i < 0xFF; ++i)
+  for (uint16 i = 0; i < 0xFF; ++i)
     linux_register_keybit(i);
 
   /* Mouse events ------------------------------------------------- */
-  for (register uint16 i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
+  for (uint16 i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
     linux_register_keybit(i);
 
   linux_register_relbit(REL_X);

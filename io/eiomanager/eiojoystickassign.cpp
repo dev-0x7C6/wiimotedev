@@ -106,7 +106,7 @@ void UInputProfileManager::freeJoystickEvents() {
 }
 
 void UInputProfileManager::dbusWiimoteAcc(uint id, struct accdata acc) {
-  for (register int i = 0; i < EIOWiimoteJoysticks.count(); ++i)
+  for (int i = 0; i < EIOWiimoteJoysticks.count(); ++i)
     if (EIOWiimoteJoysticks[i]->assign() == id) {
       EIOWiimoteJoysticks[i]->setWiimoteAcc(acc.pitch, acc.roll);
       return;
@@ -114,7 +114,7 @@ void UInputProfileManager::dbusWiimoteAcc(uint id, struct accdata acc) {
 }
 
 void UInputProfileManager::dbusWiimoteButtons(uint id, uint64 buttons) {
-  for (register int i = 0; i < EIOWiimoteJoysticks.count(); ++i)
+  for (int i = 0; i < EIOWiimoteJoysticks.count(); ++i)
     if (EIOWiimoteJoysticks[i]->assign() == id) {
       EIOWiimoteJoysticks[i]->setWiimoteButtons(buttons);
       return;
@@ -122,7 +122,7 @@ void UInputProfileManager::dbusWiimoteButtons(uint id, uint64 buttons) {
 }
 
 void UInputProfileManager::dbusNunchukAcc(uint id, struct accdata acc) {
-  for (register int i = 0; i < EIONunchukJoysticks.count(); ++i)
+  for (int i = 0; i < EIONunchukJoysticks.count(); ++i)
     if (EIONunchukJoysticks[i]->assign() == id) {
       EIONunchukJoysticks[i]->setNunchukAcc(acc.pitch, acc.roll);
       return;
@@ -130,7 +130,7 @@ void UInputProfileManager::dbusNunchukAcc(uint id, struct accdata acc) {
 }
 
 void UInputProfileManager::dbusNunchukButtons(uint id, uint64 buttons) {
-  for (register int i = 0; i < EIONunchukJoysticks.count(); ++i)
+  for (int i = 0; i < EIONunchukJoysticks.count(); ++i)
     if (EIONunchukJoysticks[i]->assign() == id) {
       EIONunchukJoysticks[i]->setNunchukButtons(buttons);
       return;
@@ -138,7 +138,7 @@ void UInputProfileManager::dbusNunchukButtons(uint id, uint64 buttons) {
 }
 
 void UInputProfileManager::dbusNunchukStick(uint id, struct stickdata stick) {
-  for (register int i = 0; i < EIONunchukJoysticks.count(); ++i)
+  for (int i = 0; i < EIONunchukJoysticks.count(); ++i)
     if (EIONunchukJoysticks[i]->assign() == id) {
       EIONunchukJoysticks[i]->setNunchukStick(stick.x, 0xFF - stick.y);
       return;
@@ -146,7 +146,7 @@ void UInputProfileManager::dbusNunchukStick(uint id, struct stickdata stick) {
 }
 
 void UInputProfileManager::dbusClassicControllerButtons(uint id, uint64 buttons) {
-  for (register int i = 0; i < EIOClassicJoysticks.count(); ++i)
+  for (int i = 0; i < EIOClassicJoysticks.count(); ++i)
     if (EIOClassicJoysticks[i]->assign() == id) {
       EIOClassicJoysticks[i]->setButtons(buttons);
       return;
@@ -154,7 +154,7 @@ void UInputProfileManager::dbusClassicControllerButtons(uint id, uint64 buttons)
 }
 
 void UInputProfileManager::dbusClassicControllerLStick(uint id, struct stickdata stick) {
-  for (register int i = 0; i < EIOClassicJoysticks.count(); ++i)
+  for (int i = 0; i < EIOClassicJoysticks.count(); ++i)
     if (EIOClassicJoysticks[i]->assign() == id) {
       EIOClassicJoysticks[i]->setStick(EIOClassicJoystick::LeftStick, stick.x, stick.y);
       return;
@@ -162,7 +162,7 @@ void UInputProfileManager::dbusClassicControllerLStick(uint id, struct stickdata
 }
 
 void UInputProfileManager::dbusClassicControllerRStick(uint id, struct stickdata stick) {
-  for (register int i = 0; i < EIOClassicJoysticks.count(); ++i)
+  for (int i = 0; i < EIOClassicJoysticks.count(); ++i)
     if (EIOClassicJoysticks[i]->assign() == id) {
       EIOClassicJoysticks[i]->setStick(EIOClassicJoystick::RightStick, stick.x, stick.y);
       return;

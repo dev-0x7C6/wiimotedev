@@ -147,7 +147,7 @@ void WiimotedevConnection::cwiid_process_wiimote_ir(cwiid_ir_src ir[]) {
   current_ir_table.clear();
   irpoint point;
 
-  for (register int i = 0; i < 4; ++i) if (ir[i].valid) {
+  for (int i = 0; i < 4; ++i) if (ir[i].valid) {
       point.size = (ir[i].size <= 0) ? 1 : ir[i].size;
       point.x = ir[i].pos[0];
       point.y = ir[i].pos[1];

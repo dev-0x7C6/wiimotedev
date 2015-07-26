@@ -23,14 +23,17 @@
 
 #include "../config.h"
 #include <fcntl.h>
+#include <iostream>
 #include <signal.h>
 #include <stdlib.h>
 
+#include "eiomanager/manager.h"
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "syslog/syslog.h"
-#include "eiomanager/manager.h"
 
 #include <QCoreApplication>
+#include <QCommandLineParser>
+#include <QCommandLineOption>
 #include <QFile>
 #include <QFileInfo>
 #include <QMap>
@@ -42,8 +45,6 @@ const QString scancodeFile("/etc/wiimotedev/scancode.conf");
 
 QMap <QString, uint64> devicebuttons;
 QMap <QString, uint> scancodes;
-
-bool additional_debug = false;
 
 void signal_handler(int sig) {
   switch (sig) {
@@ -68,38 +69,27 @@ int main(int argc, char *argv[]) {
     QString::number(WIIMOTEDEV_VERSION_MINOR) + '.' +
     QString::number(WIIMOTEDEV_VERSION_PATCH));
 
-  if (application.arguments().indexOf("--help") != -1) {
-    printf("Wiimotedev-daemon argument list\n\n" \
-           "  --debug\t\tfor additional debug output\n" \
-           "  --help\t\tprint help page\n" \
-           "  --no-daemon\t\tdo not run in background\n" \
-           "  --no-quiet\t\tdo not block stdout messages\n" \
-           "  --version\t\tprint version\n\n");
-    exit(EXIT_SUCCESS);
-  }
 
-  if (application.arguments().indexOf("--version") != -1) {
-    printf("Version: %d.%d.%d",
-           WIIMOTEDEV_VERSION_MAJOR,
-           WIIMOTEDEV_VERSION_MINOR,
-           WIIMOTEDEV_VERSION_PATCH);
-    exit(EXIT_SUCCESS);
-  }
+  QCommandLineParser parser;
+  parser.setApplicationDescription("Wiimotedev general service");
+  parser.addHelpOption();
+  parser.addVersionOption();
+
+  QCommandLineOption optionNoQuiet({"q", "no-quiet"}, "do not block stdout messages");
+  QCommandLineOption optionNoDaemon({"d", "no-daemon"}, "do not run in background");
+
+  parser.addOption(optionNoDaemon);
+  parser.addOption(optionNoQuiet);
+  parser.process(application);
 
   if (getuid()) {
-    printf("root privilages needed.\n");
+    std::cout << "root privilages needed." << std::endl;
     exit(EXIT_FAILURE);
   }
 
-  additional_debug = (application.arguments().indexOf("--debug") != -1);
   pid_t pid;
 
-  if (application.arguments().indexOf("--no-daemon") == -1) {
-    QFileInfo info(PID_FILE);
-
-    if (info.isFile()) {
-    }
-
+  if (!parser.isSet(optionNoDaemon)) {
     pid = fork();
 
     if (pid < 0) exit(EXIT_FAILURE);
@@ -120,7 +110,7 @@ int main(int argc, char *argv[]) {
     close(fd);
   }
 
-  if (application.arguments().indexOf("--no-quiet") == -1) {
+  if (parser.isSet(optionNoQuiet)) {
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
@@ -134,14 +124,10 @@ int main(int argc, char *argv[]) {
   systemlog::open(DAEMON_NAME);
   systemlog::information("system service started");
 
-  if (additional_debug)
-    systemlog::debug("additional debug mode switch-on");
-
   QSettings settings(scancodeFile, QSettings::IniFormat);
   settings.beginGroup("scancode");
-  QStringList list = settings.allKeys();
 
-  for (register int32 i = 0; i < settings.allKeys().count(); ++i)
+  for (int32 i = 0; i < settings.allKeys().count(); ++i)
     scancodes[QString(settings.allKeys().at(i)).toLower().remove(QChar(' '))] = settings.value(settings.allKeys().at(i), 0).toInt();
 
   settings.endGroup();

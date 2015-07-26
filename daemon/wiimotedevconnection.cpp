@@ -107,7 +107,7 @@ void WiimotedevConnection::run() {
       m_updateState->restart();
     }
 
-    for (register int i = 0; i < count; ++i) {
+    for (int i = 0; i < count; ++i) {
       switch (mesg[i].type) {
         case CWIID_MESG_ERROR:
           cwiid_process_wiimote_error();
@@ -244,7 +244,7 @@ bool WiimotedevConnection::dbusIsWiimoteConnected() {
 QList<uint> WiimotedevConnection::dbusNunchukGetAccelerometrCalibration() {
   QList <uint> params;
 
-  for (register int i = 0; i < 3; ++i) {
+  for (int i = 0; i < 3; ++i) {
     params << calibration[ix_nunchuk_device].one[i];
     params << calibration[ix_nunchuk_device].zero[i];
   }
@@ -255,7 +255,7 @@ QList<uint> WiimotedevConnection::dbusNunchukGetAccelerometrCalibration() {
 QList<uint> WiimotedevConnection::dbusWiimoteGetAccelerometrCalibration() {
   QList <uint> params;
 
-  for (register int i = 0; i < 3; ++i) {
+  for (int i = 0; i < 3; ++i) {
     params << calibration[ix_wiimote_device].one[i];
     params << calibration[ix_wiimote_device].zero[i];
   }
