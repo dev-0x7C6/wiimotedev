@@ -19,15 +19,15 @@
 
 #include "eiogamepadmanager.h"
 
-EIO_GamepadManager::EIO_GamepadManager(QObject *parent) :
+EIOGamepadManager::EIOGamepadManager(QObject *parent) :
   QObject(parent) {
 }
 
-//uint32 EIO_GamepadManager::create(EIO_GamepadVariants variant, uint32 assign, QList< QPair< QString, QVariant> > arguments) {
+//uint32 EIOGamepadManager::create(EIOGamepadVariants variant, uint32 assign, QList< QPair< QString, QVariant> > arguments) {
 
 //}
 
-bool EIO_GamepadManager::destroy(uint32 id) {
+bool EIOGamepadManager::destroy(uint32 id) {
   Q_UNUSED(id)
   return false;
 }

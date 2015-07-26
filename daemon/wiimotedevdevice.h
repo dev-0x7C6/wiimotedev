@@ -17,11 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTEDEVDEVICE_H
-#define WIIMOTEDEVDEVICE_H
-
-// NOTE: This is wrapper class, for changes in cwiid API or when wiimotedev-daemon
-// NOTE: will use other library like *libwiimotedev (when is done)
+#pragma once
 
 #include "../config.h"
 
@@ -88,5 +84,3 @@ public:
   QString getWiimoteSAddr();
   bdaddr_t getWiimoteAddr();
 };
-
-#endif // WIIMOTEDEVDEVICE_H

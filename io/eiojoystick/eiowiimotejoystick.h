@@ -36,7 +36,7 @@ const int WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
 const int WIIMOTE_PITCH_LINUX_AXIS = ABS_X;
 const int WIIMOTE_ROLL_LINUX_AXIS = ABS_RX;
 
-class EIO_WiimoteJoystick: public QObject, public EIO_UInputObject {
+class EIOWiimoteJoystick: public QObject, public EIOUInputObject {
   Q_OBJECT
 public:
   enum Position {
@@ -84,7 +84,7 @@ private:
   bool m_report_roll;
 
 public:
-  EIO_WiimoteJoystick(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
+  EIOWiimoteJoystick(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
   bool create();
 
   quint32 assign();

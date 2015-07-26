@@ -17,8 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTEDEV_SETTINGS_H
-#define WIIMOTEDEV_SETTINGS_H
+#pragma once
 
 #include <QSettings>
 #include <QStringList>
@@ -48,5 +47,3 @@ public:
 
   QHash <QString, uint> connectionTable();
 };
-
-#endif // WIIMOTEDEV_SETTINGS_H

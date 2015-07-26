@@ -17,8 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef WIIMOTEDEVCORE_H
-#define WIIMOTEDEVCORE_H
+#pragma once
 
 #include <atomic>
 
@@ -86,5 +85,3 @@ public Q_SLOTS:
 Q_SIGNALS:
   void dbusReportUnregistredWiimote(QString);
 };
-
-#endif // WIIMOTEDEVCORE_H

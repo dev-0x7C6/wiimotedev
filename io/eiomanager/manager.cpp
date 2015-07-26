@@ -45,7 +45,7 @@ UInputProfileManager::UInputProfileManager(QObject *parent) : QObject(parent),
   disableKeyboardModule(true),
   enableWiiremoteInfraredMouse(false),
   rumbleStatus(false),
-  virtualEvent(new EIO_EventDevice()) {
+  virtualEvent(new EIOEventDevice()) {
   connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint, uint64)), this, SLOT(dbusWiimoteGeneralButtons(uint, uint64)), Qt::DirectConnection);
   connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteButtons(uint, uint64)), this, SLOT(dbusWiimoteButtons(uint, uint64)), Qt::DirectConnection);
   connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(uint, accdata)), this, SLOT(dbusWiimoteAcc(uint, accdata)), Qt::DirectConnection);

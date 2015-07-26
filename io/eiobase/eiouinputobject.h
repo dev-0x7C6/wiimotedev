@@ -44,7 +44,7 @@
 #define UINPUT_VERSION_ID 0x01
 #define UINPUT_BUSTYPE_ID BUS_USB
 
-class EIO_UInputObject {
+class EIOUInputObject {
 protected:
   QString uinputFile;
 
@@ -52,8 +52,8 @@ protected:
   struct uinput_user_dev dev;
 
 public:
-  explicit EIO_UInputObject();
-  virtual ~EIO_UInputObject();
+  explicit EIOUInputObject();
+  virtual ~EIOUInputObject();
 
   bool alreadyOpened;
   virtual void uinput_close(bool force = true);

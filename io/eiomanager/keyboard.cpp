@@ -25,7 +25,7 @@ extern QMap <QString, uint> scancodes;
 void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &settings) {
   freeKeyboardEvents();
   settings.beginGroup(key);
-  EIO_RemoteKeyboard *device = new EIO_RemoteKeyboard(virtualEvent);
+  EIORemoteKeyboard *device = new EIORemoteKeyboard(virtualEvent);
   foreach(const QString & string, settings.allKeys()) {
     if (string.toLower() == "module")
       continue;
@@ -46,12 +46,12 @@ void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &s
   }
   connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint, uint64)), device, SLOT(dbusWiimoteGeneralButtons(uint, uint64)));
   settings.endGroup();
-  EIO_RemoteKeyboards << device;
+  EIORemoteKeyboards << device;
 }
 
 
 void UInputProfileManager::freeKeyboardEvents() {
-  foreach(EIO_RemoteKeyboard * device, EIO_RemoteKeyboards)
+  foreach(EIORemoteKeyboard * device, EIORemoteKeyboards)
   delete device;
-  EIO_RemoteKeyboards.clear();
+  EIORemoteKeyboards.clear();
 }

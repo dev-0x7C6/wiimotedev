@@ -19,7 +19,7 @@
 
 #include "eioeventdevice.h"
 
-bool EIO_EventDevice::uinput_open(bool replay) {
+bool EIOEventDevice::uinput_open(bool replay) {
   if (alreadyOpened) uinput_close();
 
   if (!(uinput_fd = open(uinputFile.toLocal8Bit().constData(), O_WRONLY | O_NDELAY))) {
@@ -64,34 +64,34 @@ bool EIO_EventDevice::uinput_open(bool replay) {
 }
 
 
-void EIO_EventDevice::pressKeyboardButton(uint16 button) {
+void EIOEventDevice::pressKeyboardButton(uint16 button) {
   sendEvent(EV_KEY, button, 1);
   sendEventSync();
 }
 
-void EIO_EventDevice::releaseKeyboardButton(uint16 button) {
+void EIOEventDevice::releaseKeyboardButton(uint16 button) {
   sendEvent(EV_KEY, button, 0);
   sendEventSync();
 }
 
-void EIO_EventDevice::pressKeyboardButtonOnce(uint16 button) {
+void EIOEventDevice::pressKeyboardButtonOnce(uint16 button) {
   sendEvent(EV_KEY, button, true);
   sendEventSync();
   sendEvent(EV_KEY, button, false);
   sendEventSync();
 }
 
-void EIO_EventDevice::moveMouseVWheel(int32 direction) {
+void EIOEventDevice::moveMouseVWheel(int32 direction) {
   sendEvent(EV_REL, REL_WHEEL, direction);
   sendEventSync();
 }
 
-void EIO_EventDevice::moveMouseHWheel(int32 direction) {
+void EIOEventDevice::moveMouseHWheel(int32 direction) {
   sendEvent(EV_REL, REL_HWHEEL, direction);
   sendEventSync();
 }
 
-void EIO_EventDevice::moveMousePointerRel(int32 x, int32 y) {
+void EIOEventDevice::moveMousePointerRel(int32 x, int32 y) {
   if (x) sendEvent(EV_REL, REL_X, x);
 
   if (y) sendEvent(EV_REL, REL_Y, y);

@@ -19,9 +19,9 @@
 
 #include "eioclassicjoystick.h"
 
-EIO_ClassicJoystick::EIO_ClassicJoystick(QString deviceName, int id, QObject *parent) :
+EIOClassicJoystick::EIOClassicJoystick(QString deviceName, int id, QObject *parent) :
   QObject(parent),
-  EIO_UInputObject(),
+  EIOUInputObject(),
   m_deviceName(deviceName),
   m_id(id),
   m_last_r_stick_x(0x00),
@@ -46,57 +46,57 @@ EIO_ClassicJoystick::EIO_ClassicJoystick(QString deviceName, int id, QObject *pa
     m_deviceName = QString::fromUtf8("Noname classic joystick");
 }
 
-quint32 EIO_ClassicJoystick::assign() {
+quint32 EIOClassicJoystick::assign() {
   return m_id;
 }
 
 
-void EIO_ClassicJoystick::setDpadInvertX(bool option) {
+void EIOClassicJoystick::setDpadInvertX(bool option) {
   m_dpad_invert_x = option;
 }
 
-void EIO_ClassicJoystick::setDpadInvertY(bool option) {
+void EIOClassicJoystick::setDpadInvertY(bool option) {
   m_dpad_invert_y = option;
 }
 
-void EIO_ClassicJoystick::setLStickInvertX(bool option) {
+void EIOClassicJoystick::setLStickInvertX(bool option) {
   m_left_stick_invert_x = option;
 }
 
-void EIO_ClassicJoystick::setLStickInvertY(bool option) {
+void EIOClassicJoystick::setLStickInvertY(bool option) {
   m_left_stick_invert_y = option;
 }
 
-void EIO_ClassicJoystick::setRStickInvertX(bool option) {
+void EIOClassicJoystick::setRStickInvertX(bool option) {
   m_right_stick_invert_x = option;
 }
 
-void EIO_ClassicJoystick::setRStickInvertY(bool option) {
+void EIOClassicJoystick::setRStickInvertY(bool option) {
   m_left_stick_invert_y = option;
 }
 
-void EIO_ClassicJoystick::setReportButtons(bool report) {
+void EIOClassicJoystick::setReportButtons(bool report) {
   m_report_buttons = report;
 }
 
-void EIO_ClassicJoystick::setReportDStick(bool report) {
+void EIOClassicJoystick::setReportDStick(bool report) {
   m_report_dpad = report;
 }
 
-void EIO_ClassicJoystick::setReportLStick(bool report) {
+void EIOClassicJoystick::setReportLStick(bool report) {
   m_report_left_stick = report;
 }
 
-void EIO_ClassicJoystick::setReportRStick(bool report) {
+void EIOClassicJoystick::setReportRStick(bool report) {
   m_report_right_stick = report;
 }
 
 
-EIO_ClassicJoystick::~EIO_ClassicJoystick() {
+EIOClassicJoystick::~EIOClassicJoystick() {
 }
 
 
-void EIO_ClassicJoystick::setButtons(uint64 buttons) {
+void EIOClassicJoystick::setButtons(uint64 buttons) {
   if (m_report_buttons) {
     sendEvent(EV_KEY, BTN_A, (buttons & CLASSIC_BTN_A) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
     sendEvent(EV_KEY, BTN_B, (buttons & CLASSIC_BTN_B) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
@@ -117,7 +117,7 @@ void EIO_ClassicJoystick::setButtons(uint64 buttons) {
   }
 
   if (m_report_dpad) {
-    centerStick(EIO_ClassicJoystick::DpadStick);
+    centerStick(EIOClassicJoystick::DpadStick);
 
     if (buttons & CLASSIC_BTN_RIGHT) m_last_dpad_x = CLASSIC_DPAD_MAX;
     else if (buttons & CLASSIC_BTN_LEFT) m_last_dpad_x = CLASSIC_DPAD_MIN;
@@ -133,7 +133,7 @@ void EIO_ClassicJoystick::setButtons(uint64 buttons) {
   }
 }
 
-bool EIO_ClassicJoystick::create() {
+bool EIOClassicJoystick::create() {
   if (alreadyOpened)
     uinput_close();
 
@@ -201,34 +201,34 @@ bool EIO_ClassicJoystick::create() {
     return false;
   }
 
-  centerStick(EIO_ClassicJoystick::LeftStick);
-  centerStick(EIO_ClassicJoystick::RightStick);
-  centerStick(EIO_ClassicJoystick::DpadStick);
+  centerStick(EIOClassicJoystick::LeftStick);
+  centerStick(EIOClassicJoystick::RightStick);
+  centerStick(EIOClassicJoystick::DpadStick);
   syncAxes();
   return (alreadyOpened = true);
 }
 
-void EIO_ClassicJoystick::centerStick(Sticks stick) {
+void EIOClassicJoystick::centerStick(Sticks stick) {
   switch (stick) {
-    case EIO_ClassicJoystick::LeftStick:
+    case EIOClassicJoystick::LeftStick:
       m_last_l_stick_x = (CLASSIC_LEFT_STICK_MIN + CLASSIC_LEFT_STICK_MAX) / 2;
       m_last_l_stick_y = (CLASSIC_LEFT_STICK_MIN + CLASSIC_LEFT_STICK_MAX) / 2;
       break;
 
-    case EIO_ClassicJoystick::RightStick:
+    case EIOClassicJoystick::RightStick:
       m_last_r_stick_x = (CLASSIC_RIGHT_STICK_MIN + CLASSIC_RIGHT_STICK_MAX) / 2;
       m_last_r_stick_y = (CLASSIC_RIGHT_STICK_MIN + CLASSIC_RIGHT_STICK_MAX) / 2;
       break;
 
-    case EIO_ClassicJoystick::DpadStick:
+    case EIOClassicJoystick::DpadStick:
       m_last_dpad_x = 0;
       m_last_dpad_y = 0;
   }
 }
 
-void EIO_ClassicJoystick::setStick(Sticks stick, int32 x, int32 y) {
+void EIOClassicJoystick::setStick(Sticks stick, int32 x, int32 y) {
   switch (stick) {
-    case EIO_ClassicJoystick::LeftStick:
+    case EIOClassicJoystick::LeftStick:
       if (m_left_stick_invert_x) x = 0x41 - x;
 
       if (!m_left_stick_invert_y) y = 0x41 - y;
@@ -243,7 +243,7 @@ void EIO_ClassicJoystick::setStick(Sticks stick, int32 x, int32 y) {
       m_last_l_stick_y = y;
       break;
 
-    case EIO_ClassicJoystick::RightStick:
+    case EIOClassicJoystick::RightStick:
       if (m_left_stick_invert_x) x = 0x1F - x;
 
       if (!m_left_stick_invert_y) y = 0x1F - y;
@@ -258,14 +258,14 @@ void EIO_ClassicJoystick::setStick(Sticks stick, int32 x, int32 y) {
       m_last_r_stick_y = y;
       break;
 
-    case EIO_ClassicJoystick::DpadStick:
+    case EIOClassicJoystick::DpadStick:
       break;
   }
 
   syncAxes();
 }
 
-void EIO_ClassicJoystick::syncAxes() {
+void EIOClassicJoystick::syncAxes() {
   if (m_report_dpad) {
     sendEvent(EV_ABS, CLASSIC_DPAD_LINUX_AXIS_X, m_last_dpad_x);
     sendEvent(EV_ABS, CLASSIC_DPAD_LINUX_AXIS_Y, m_last_dpad_y);

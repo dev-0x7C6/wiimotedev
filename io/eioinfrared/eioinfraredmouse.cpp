@@ -24,10 +24,10 @@
 #include <QApplication>
 #include <QDesktopWidget>
 
-EIO_InfraredMouse::EIO_InfraredMouse(EIO_EventDevice *device, uint id) :
+EIOInfraredMouse::EIOInfraredMouse(EIOEventDevice *device, uint id) :
   device(device),
   id(id),
-  mode(EIO_InfraredMouse::RelativeDevice),
+  mode(EIOInfraredMouse::RelativeDevice),
   lastX(-0xFFFF),
   lastY(-0xFFFF),
   accVectorX(0),
@@ -51,7 +51,7 @@ EIO_InfraredMouse::EIO_InfraredMouse(EIO_EventDevice *device, uint id) :
   useAccelerationTimeout(true) {
   accelerationClockTimeout.setInterval(5);
 
-  if (mode == EIO_InfraredMouse::AbsoluteDevice)
+  if (mode == EIOInfraredMouse::AbsoluteDevice)
     connect(&accelerationClockTimeout, SIGNAL(timeout()), this, SLOT(axisAccelerationTimeout()));
 
   memset(&wiimote_acc, 0, sizeof(wiimote_acc));
@@ -63,83 +63,83 @@ EIO_InfraredMouse::EIO_InfraredMouse(EIO_EventDevice *device, uint id) :
   moves[5] = 0;
 }
 
-EIO_InfraredMouse::~EIO_InfraredMouse() {
+EIOInfraredMouse::~EIOInfraredMouse() {
   accelerationClockTimeout.stop();
   disconnect(&accelerationClockTimeout, 0, 0, 0);
 }
 
-void EIO_InfraredMouse::setDeviceId(int _id) {
+void EIOInfraredMouse::setDeviceId(int _id) {
   id = _id;
 }
 
-void EIO_InfraredMouse::setInterfaceEnabled(bool enabled) {
+void EIOInfraredMouse::setInterfaceEnabled(bool enabled) {
   interfaceEnabled = enabled;
 }
 
-void EIO_InfraredMouse::setAccelerationTimeoutValue(int value) {
+void EIOInfraredMouse::setAccelerationTimeoutValue(int value) {
   accelerationTimeout = value;
 }
 
-void EIO_InfraredMouse::setAimHelperXRange(int value) {
+void EIOInfraredMouse::setAimHelperXRange(int value) {
   aimHelperXRange = value;
 }
 
-void EIO_InfraredMouse::setAimHelperYRange(int value) {
+void EIOInfraredMouse::setAimHelperYRange(int value) {
   aimHelperYRange = value;
 }
 
-void EIO_InfraredMouse::setDeadzoneXRange(int value) {
+void EIOInfraredMouse::setDeadzoneXRange(int value) {
   deadzoneXRange = value;
 }
 
-void EIO_InfraredMouse::setDeadzoneYRange(int value) {
+void EIOInfraredMouse::setDeadzoneYRange(int value) {
   deadzoneYRange = value;
 }
 
-void EIO_InfraredMouse::setAimHelperSensitivityXMultiplier(double sensitivity) {
+void EIOInfraredMouse::setAimHelperSensitivityXMultiplier(double sensitivity) {
   aimHelperSensitivityXMultiplier = sensitivity;
 }
 
-void EIO_InfraredMouse::setAimHelperSensitivityYMultiplier(double sensitivity) {
+void EIOInfraredMouse::setAimHelperSensitivityYMultiplier(double sensitivity) {
   aimHelperSensitivityYMultiplier = sensitivity;
 }
 
-void EIO_InfraredMouse::setAccelerationSensitivityXPower(double sensitivity) {
+void EIOInfraredMouse::setAccelerationSensitivityXPower(double sensitivity) {
   sensitivityXPower = sensitivity;
 }
 
-void EIO_InfraredMouse::setAccelerationSensitivityYPower(double sensitivity) {
+void EIOInfraredMouse::setAccelerationSensitivityYPower(double sensitivity) {
   sensitivityYPower = sensitivity;
 }
 
-void EIO_InfraredMouse::setAccelerationSensitivityXMultiplier(double sensitivity) {
+void EIOInfraredMouse::setAccelerationSensitivityXMultiplier(double sensitivity) {
   sensitivityXMultiplier = sensitivity;
 }
 
-void EIO_InfraredMouse::setAccelerationSensitivityYMultiplier(double sensitivity) {
+void EIOInfraredMouse::setAccelerationSensitivityYMultiplier(double sensitivity) {
   sensitivityYMultiplier = sensitivity;
 }
 
-void EIO_InfraredMouse::setAccelerationFeatureEnabled(bool enabled) {
+void EIOInfraredMouse::setAccelerationFeatureEnabled(bool enabled) {
   useAcceleration = enabled;
 }
 
-void EIO_InfraredMouse::setAimHelperFeatureEnabled(bool enabled) {
+void EIOInfraredMouse::setAimHelperFeatureEnabled(bool enabled) {
   useAimHelper = enabled;
 }
 
-void EIO_InfraredMouse::setAccelerationTimeoutFeatureEnabled(bool enabled) {
+void EIOInfraredMouse::setAccelerationTimeoutFeatureEnabled(bool enabled) {
   accelerationTimeout = enabled;
 }
 
-void EIO_InfraredMouse::dbusWiimoteAcc(uint _id, const accdata &table) {
+void EIOInfraredMouse::dbusWiimoteAcc(uint _id, const accdata &table) {
   if (id != _id)
     return;
 
   memcpy(&wiimote_acc, &table, sizeof(table));
 }
 
-void EIO_InfraredMouse::dbusVirtualCursorLost(uint _id) {
+void EIOInfraredMouse::dbusVirtualCursorLost(uint _id) {
   if ((id != _id) || (!interfaceEnabled))
     return;
 
@@ -149,11 +149,11 @@ void EIO_InfraredMouse::dbusVirtualCursorLost(uint _id) {
     accelerationClockTimeout.start();
 }
 
-void EIO_InfraredMouse::dbusVirtualCursorPosition(uint _id, double x, double y, double size, double angle) {
+void EIOInfraredMouse::dbusVirtualCursorPosition(uint _id, double x, double y, double size, double angle) {
   if ((id != _id) || (!interfaceEnabled))
     return;
 
-  if (mode == EIO_InfraredMouse::RelativeDevice) {
+  if (mode == EIOInfraredMouse::RelativeDevice) {
     if (moves[0] == -0xFFFF)
       moves[0] = x;
 
@@ -213,7 +213,7 @@ void EIO_InfraredMouse::dbusVirtualCursorPosition(uint _id, double x, double y, 
     axisAccelerationY();
   }
 
-  if (mode == EIO_InfraredMouse::AbsoluteDevice) {
+  if (mode == EIOInfraredMouse::AbsoluteDevice) {
     QRect rect = QApplication::desktop()->screenGeometry(1);
     x = x * (rect.width() / 1024.0);
     y = y * (rect.height() / 768.0);
@@ -223,7 +223,7 @@ void EIO_InfraredMouse::dbusVirtualCursorPosition(uint _id, double x, double y, 
   }
 }
 
-void EIO_InfraredMouse::axisAccelerationX() {
+void EIOInfraredMouse::axisAccelerationX() {
   if (useAcceleration)
     accVectorXAccumulation += accVectorX;
 
@@ -233,7 +233,7 @@ void EIO_InfraredMouse::axisAccelerationX() {
   moveX = 0;
 }
 
-void EIO_InfraredMouse::axisAccelerationY() {
+void EIOInfraredMouse::axisAccelerationY() {
   if (useAcceleration)
     accVectorYAccumulation += accVectorY;
 
@@ -243,7 +243,7 @@ void EIO_InfraredMouse::axisAccelerationY() {
   moveY = 0;
 }
 
-void EIO_InfraredMouse::axisAccelerationTimeout() {
+void EIOInfraredMouse::axisAccelerationTimeout() {
   accelerationTimeoutValue += accelerationClockTimeout.interval();
 
   if (accelerationTimeoutValue <= accelerationTimeout) {

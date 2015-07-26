@@ -24,7 +24,7 @@
 
 const QStringList UInputLocation(QStringList() << "/dev/uinput" << "/dev/input/uinput" << "/dev/misc/uinput");
 
-EIO_UInputObject::EIO_UInputObject() {
+EIOUInputObject::EIOUInputObject() {
   uinputFile = QString::fromUtf8("");
   uinput_fd = 0;
   alreadyOpened = false;
@@ -36,10 +36,10 @@ EIO_UInputObject::EIO_UInputObject() {
   }
 }
 
-EIO_UInputObject::~EIO_UInputObject() {
+EIOUInputObject::~EIOUInputObject() {
 }
 
-void EIO_UInputObject::uinput_close(bool force) {
+void EIOUInputObject::uinput_close(bool force) {
   if (!force && !alreadyOpened)
     return;
 
@@ -49,7 +49,7 @@ void EIO_UInputObject::uinput_close(bool force) {
   alreadyOpened = false;
 }
 
-void EIO_UInputObject::sendEvent(uint16 type, uint16 code, int32 value) {
+void EIOUInputObject::sendEvent(uint16 type, uint16 code, int32 value) {
   if (!uinput_fd)
     return;
 
@@ -61,6 +61,6 @@ void EIO_UInputObject::sendEvent(uint16 type, uint16 code, int32 value) {
   write(uinput_fd, &event, sizeof(event));
 }
 
-void EIO_UInputObject::sendEventSync() {
+void EIOUInputObject::sendEventSync() {
   sendEvent(EV_SYN, SYN_REPORT, 0);
 }

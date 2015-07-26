@@ -29,22 +29,22 @@ enum KeyboardExtension {
   keyboardExtMouseWheelDown
 };
 
-EIO_RemoteKeyboard::EIO_RemoteKeyboard(EIO_EventDevice *device) :
+EIORemoteKeyboard::EIORemoteKeyboard(EIOEventDevice *device) :
   device(device) {
   compareType = HashCompare<uint, uint64>::BitCompare;
 }
 
 
-EIO_RemoteKeyboard::~EIO_RemoteKeyboard() {
+EIORemoteKeyboard::~EIORemoteKeyboard() {
   disconnect(this, 0, 0, 0);
   foreach(struct KeyboardAction * action, keyboardActions) {
-    EIO_RemoteKeyboard::releaseKeyboardButtons(action->keys);
+    EIORemoteKeyboard::releaseKeyboardButtons(action->keys);
     delete action;
   }
   keyboardActions.clear();
 }
 
-void EIO_RemoteKeyboard::setCompareType(QString type) {
+void EIORemoteKeyboard::setCompareType(QString type) {
   compareType = HashCompare<uint, uint64>::BitCompare;
 
   if (type.toLower() == QString("bitCompare").toLower())
@@ -55,7 +55,7 @@ void EIO_RemoteKeyboard::setCompareType(QString type) {
     compareType = HashCompare<uint, uint64>::NotEqualCompare;
 }
 
-void EIO_RemoteKeyboard::addKeyboardAction(KeyboardAction &action) {
+void EIORemoteKeyboard::addKeyboardAction(KeyboardAction &action) {
   KeyboardAction *kbdAction = new KeyboardAction;
   kbdAction->event = action.event;
   kbdAction->keys = action.keys;
@@ -63,13 +63,13 @@ void EIO_RemoteKeyboard::addKeyboardAction(KeyboardAction &action) {
   keyboardActions << kbdAction;
 }
 
-void EIO_RemoteKeyboard::clearKeyboardActions() {
+void EIORemoteKeyboard::clearKeyboardActions() {
   foreach(KeyboardAction * action, keyboardActions)
   delete action;
   keyboardActions.clear();
 }
 
-void EIO_RemoteKeyboard::dbusWiimoteGeneralButtons(uint id, uint64 value) {
+void EIORemoteKeyboard::dbusWiimoteGeneralButtons(uint id, uint64 value) {
   if (value == buttons.value(id, -1))
     return;
 
@@ -91,7 +91,7 @@ void EIO_RemoteKeyboard::dbusWiimoteGeneralButtons(uint id, uint64 value) {
   }
 }
 
-void EIO_RemoteKeyboard::pressKeyboardExtendedButton(uint key) {
+void EIORemoteKeyboard::pressKeyboardExtendedButton(uint key) {
   switch (key) {
     case keyboardExtMouseWheelLeft:
       device->moveMouseHWheel(-1);
@@ -111,11 +111,11 @@ void EIO_RemoteKeyboard::pressKeyboardExtendedButton(uint key) {
   }
 }
 
-void EIO_RemoteKeyboard::releaseKeyboardExtendedButton(uint key) {
+void EIORemoteKeyboard::releaseKeyboardExtendedButton(uint key) {
   Q_UNUSED(key);
 }
 
-void EIO_RemoteKeyboard::pressKeyboardButtons(QList <uint> &list) {
+void EIORemoteKeyboard::pressKeyboardButtons(QList <uint> &list) {
   if (list.isEmpty())
     return;
 
@@ -127,7 +127,7 @@ void EIO_RemoteKeyboard::pressKeyboardButtons(QList <uint> &list) {
   }
 }
 
-void EIO_RemoteKeyboard::releaseKeyboardButtons(QList <uint> &list) {
+void EIORemoteKeyboard::releaseKeyboardButtons(QList <uint> &list) {
   if (list.isEmpty())
     return;
 

@@ -19,9 +19,9 @@
 
 #include "eionunchukjoystick.h"
 
-EIO_NunchukJoystick::EIO_NunchukJoystick(QString deviceName, int id, QObject *parent) :
+EIONunchukJoystick::EIONunchukJoystick(QString deviceName, int id, QObject *parent) :
   QObject(parent),
-  EIO_UInputObject(),
+  EIOUInputObject(),
   m_deviceName(deviceName),
   m_id(id),
   m_stick_invert_x(0x00),
@@ -34,36 +34,36 @@ EIO_NunchukJoystick::EIO_NunchukJoystick(QString deviceName, int id, QObject *pa
     m_deviceName = QString::fromUtf8("Wiimote Gamepad Device (undefined)");
 }
 
-quint32 EIO_NunchukJoystick::assign() {
+quint32 EIONunchukJoystick::assign() {
   return m_id;
 }
 
-void EIO_NunchukJoystick::setStickInvertX(bool option) {
+void EIONunchukJoystick::setStickInvertX(bool option) {
   m_stick_invert_x = option;
 }
 
-void EIO_NunchukJoystick::setStickInvertY(bool option) {
+void EIONunchukJoystick::setStickInvertY(bool option) {
   m_stick_invert_y = option;
 }
 
-void EIO_NunchukJoystick::setReportButtons(bool report) {
+void EIONunchukJoystick::setReportButtons(bool report) {
   m_report_buttons = report;
 }
 
-void EIO_NunchukJoystick::setReportStick(bool report) {
+void EIONunchukJoystick::setReportStick(bool report) {
   m_report_stick = report;
 }
 
-void EIO_NunchukJoystick::setReportPitch(bool report) {
+void EIONunchukJoystick::setReportPitch(bool report) {
   m_report_pitch = report;
 }
 
-void EIO_NunchukJoystick::setReportRoll(bool report) {
+void EIONunchukJoystick::setReportRoll(bool report) {
   m_report_roll = report;
 }
 
 
-bool EIO_NunchukJoystick::create() {
+bool EIONunchukJoystick::create() {
   if (alreadyOpened)
     uinput_close();
 
@@ -104,7 +104,7 @@ bool EIO_NunchukJoystick::create() {
     linux_abs_set_range(NUNCHUK_ROLL_LINUX_AXIS, NUNCHUK_ROLL_MAX, NUNCHUK_ROLL_MIN);
   }
 
-  centerStick(EIO_NunchukJoystick::NunchukStick);
+  centerStick(EIONunchukJoystick::NunchukStick);
   write(uinput_fd, &dev, sizeof(dev));
 
   if (ioctl(uinput_fd, UI_DEV_CREATE)) {
@@ -116,7 +116,7 @@ bool EIO_NunchukJoystick::create() {
   return (alreadyOpened = true);
 }
 
-void EIO_NunchukJoystick::setNunchukButtons(uint64 buttons) {
+void EIONunchukJoystick::setNunchukButtons(uint64 buttons) {
   if (!m_report_buttons)
     return;
 
@@ -125,31 +125,31 @@ void EIO_NunchukJoystick::setNunchukButtons(uint64 buttons) {
   sendEventSync();
 }
 
-void EIO_NunchukJoystick::centerStick(Stick id) {
+void EIONunchukJoystick::centerStick(Stick id) {
   switch (id) {
-    case EIO_NunchukJoystick::NunchukStick:
+    case EIONunchukJoystick::NunchukStick:
       m_last_stick_x = (NUNCHUK_STICK_MAX - NUNCHUK_STICK_MIN) / 2;
       m_last_stick_y = (NUNCHUK_STICK_MAX - NUNCHUK_STICK_MIN) / 2;
       break;
 
-    case EIO_NunchukJoystick::DpadStick:
+    case EIONunchukJoystick::DpadStick:
       m_last_dpad_x = 0x00;
       m_last_dpad_y = 0x00;
       break;
 
-    case EIO_NunchukJoystick::NunchukAccelerometer:
+    case EIONunchukJoystick::NunchukAccelerometer:
       m_last_nunchuk_acc_pitch = 0x00;
       m_last_nunchuk_acc_roll = 0x00;
       break;
 
-    case EIO_NunchukJoystick::WiimoteAccelerometer:
+    case EIONunchukJoystick::WiimoteAccelerometer:
       m_last_wiimote_acc_pitch = 0x00;
       m_last_wiimote_acc_roll = 0x00;
       break;
   }
 }
 
-void EIO_NunchukJoystick::syncAxes() {
+void EIONunchukJoystick::syncAxes() {
   if (m_report_stick) {
     sendEvent(EV_ABS, NUNCHUK_STICK_LINUX_AXIS_X, m_last_stick_x);
     sendEvent(EV_ABS, NUNCHUK_STICK_LINUX_AXIS_Y, m_last_stick_y);
@@ -164,13 +164,13 @@ void EIO_NunchukJoystick::syncAxes() {
   sendEventSync();
 }
 
-void EIO_NunchukJoystick::setNunchukStick(int32 x, int32 y) {
+void EIONunchukJoystick::setNunchukStick(int32 x, int32 y) {
   m_last_stick_x = x;
   m_last_stick_y = y;
   syncAxes();
 }
 
-void EIO_NunchukJoystick::setNunchukAcc(double pitch, double roll) {
+void EIONunchukJoystick::setNunchukAcc(double pitch, double roll) {
   m_last_nunchuk_acc_pitch = pitch;
   m_last_nunchuk_acc_roll = roll;
   syncAxes();

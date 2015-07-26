@@ -1,14 +1,14 @@
 Wiimotedev Project Changelog
 ============================
 
-Known issues:
-- Shifts buttons for wiimote/nunchuk are broken since 1.4.0
-(I want to rewrite all shift code and get better precission and prediction,
- so I'm reserching new alghoritm for shifts)
-
 2.0.0
 General:
 - Run on top Qt5
+- Micro scheduler optimalization
+- Multithreading optimializations
+
+Bug-fixes:
+- Shifts now are back.
 
 1.4.5
 General:

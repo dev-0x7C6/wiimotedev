@@ -24,9 +24,9 @@
 
 #include <QRect>
 
-class UInputMouse: public EIO_UInputObject {
+class UInputMouse: public EIOUInputObject {
 public:
-  UInputMouse() : EIO_UInputObject() {}
+  UInputMouse() : EIOUInputObject() {}
 
   bool uinput_open(QRect absRect = QRect(-512, -384, 1024, 768), bool abs = false);
 

@@ -26,18 +26,18 @@
 #include "eionunchukjoystick.h"
 #include "eiowiimotejoystick.h"
 
-class EIO_GamepadManager : public QObject {
+class EIOGamepadManager : public QObject {
   Q_OBJECT
 public:
-  explicit EIO_GamepadManager(QObject *parent = 0);
+  explicit EIOGamepadManager(QObject *parent = 0);
 
-  enum EIO_GamepadVariants {
+  enum EIOGamepadVariants {
     ClassicGamepadVariant,
     NunchukGamepadVariant,
     WiimoteGamepadVariant
   };
 
-  //uint32 create(EIO_GamepadVariants variant, uint32 assign, QList< QPair< QString, QVariant> > arguments);
+  //uint32 create(EIOGamepadVariants variant, uint32 assign, QList< QPair< QString, QVariant> > arguments);
   bool destroy(uint32 id);
 
 

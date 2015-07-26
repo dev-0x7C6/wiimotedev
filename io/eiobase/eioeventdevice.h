@@ -22,7 +22,7 @@
 
 #include "eiobase/eiouinputobject.h"
 
-class EIO_EventDevice: public EIO_UInputObject {
+class EIOEventDevice: public EIOUInputObject {
 public:
   bool uinput_open(bool replay = true);
 

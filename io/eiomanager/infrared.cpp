@@ -36,7 +36,7 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
     if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "infrared" ||
         settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "mouse") {
       settings.beginGroup(key);
-      EIO_InfraredMouse *device = new EIO_InfraredMouse(virtualEvent, settings.value("assignWiimote", uint(1)).toLongLong());
+      EIOInfraredMouse *device = new EIOInfraredMouse(virtualEvent, settings.value("assignWiimote", uint(1)).toLongLong());
       device->setAccelerationFeatureEnabled(settings.value("accelerationFeature", bool(false)).toBool());
       device->setAccelerationSensitivityXMultiplier(settings.value("accelerationSensitivityXMultiplier", double(8.0)).toDouble());
       device->setAccelerationSensitivityYMultiplier(settings.value("accelerationSensitivityYMultiplier", double(8.0)).toDouble());
@@ -56,13 +56,13 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
       connect(dbusDeviceEventsIface, SIGNAL(dbusVirtualCursorLost(uint)), device, SLOT(dbusVirtualCursorLost(uint)));
       connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(uint, accdata)), device, SLOT(dbusWiimoteAcc(uint, accdata)));
       settings.endGroup();
-      EIO_InfraredMouses << device;
+      EIOInfraredMouses << device;
     }
   }
 }
 
 void UInputProfileManager::unloadInfraredEvents() {
-  foreach(EIO_InfraredMouse * device, EIO_InfraredMouses)
+  foreach(EIOInfraredMouse * device, EIOInfraredMouses)
   delete device;
-  EIO_InfraredMouses.clear();
+  EIOInfraredMouses.clear();
 }

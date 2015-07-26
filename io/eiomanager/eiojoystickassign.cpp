@@ -20,7 +20,7 @@
 #include "manager.h"
 
 void UInputProfileManager::setupClassicJoystick(uint assign, const QString &name, QSettings &settings) {
-  EIO_ClassicJoystick *device = new EIO_ClassicJoystick(name, assign);
+  EIOClassicJoystick *device = new EIOClassicJoystick(name, assign);
   device->setDpadInvertX(settings.value("DStickInvertX", 0x00).toBool());
   device->setDpadInvertY(settings.value("DStickInvertY", 0x00).toBool());
   device->setLStickInvertX(settings.value("LStickInvertX", 0x00).toBool());
@@ -33,15 +33,15 @@ void UInputProfileManager::setupClassicJoystick(uint assign, const QString &name
   device->setReportRStick(settings.value("ReportRStick", 0x01).toBool());
 
   if (device->create())
-    EIO_ClassicJoysticks << device;
+    EIOClassicJoysticks << device;
   else
     delete device;
 }
 
 void UInputProfileManager::setupWiimoteJoystick(uint assign, const QString &name, QSettings &settings) {
-  EIO_WiimoteJoystick *device = new EIO_WiimoteJoystick(name, assign,
-      EIO_WiimoteJoystick::DPadPositionSwitchable,
-      EIO_WiimoteJoystick::GamepadVertical);
+  EIOWiimoteJoystick *device = new EIOWiimoteJoystick(name, assign,
+      EIOWiimoteJoystick::DPadPositionSwitchable,
+      EIOWiimoteJoystick::GamepadVertical);
   device->setDStickInvertX(settings.value("DStickInvertX", 0x00).toBool());
   device->setDStickInvertY(settings.value("DStickInvertY", 0x00).toBool());
   device->setHomeSwitchPosition(settings.value("PositionSwitchable", 0x01).toBool());
@@ -51,13 +51,13 @@ void UInputProfileManager::setupWiimoteJoystick(uint assign, const QString &name
   device->setReportRoll(settings.value("ReportRoll", 0x01).toBool());
 
   if (device->create())
-    EIO_WiimoteJoysticks << device;
+    EIOWiimoteJoysticks << device;
   else
     delete device;
 }
 
 void UInputProfileManager::setupNunchukJoystick(uint assign, const QString &name, QSettings &settings) {
-  EIO_NunchukJoystick *device = new EIO_NunchukJoystick(name, assign);
+  EIONunchukJoystick *device = new EIONunchukJoystick(name, assign);
   device->setStickInvertX(settings.value("DStickInvertX", 0x00).toBool());
   device->setStickInvertY(settings.value("DStickInvertY", 0x00).toBool());
   device->setReportButtons(settings.value("ReportButtons", 0x01).toBool());
@@ -66,7 +66,7 @@ void UInputProfileManager::setupNunchukJoystick(uint assign, const QString &name
   device->setReportRoll(settings.value("ReportRoll", 0x01).toBool());
 
   if (device->create())
-    EIO_NunchukJoysticks << device;
+    EIONunchukJoysticks << device;
   else
     delete device;
 }
@@ -88,83 +88,83 @@ void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &s
 }
 
 void UInputProfileManager::freeJoystickEvents() {
-  foreach(EIO_ClassicJoystick * device, EIO_ClassicJoysticks) {
+  foreach(EIOClassicJoystick * device, EIOClassicJoysticks) {
     device->uinput_close();
     delete device;
   }
-  foreach(EIO_NunchukJoystick * device, EIO_NunchukJoysticks) {
+  foreach(EIONunchukJoystick * device, EIONunchukJoysticks) {
     device->uinput_close();
     delete device;
   }
-  foreach(EIO_WiimoteJoystick * device, EIO_WiimoteJoysticks) {
+  foreach(EIOWiimoteJoystick * device, EIOWiimoteJoysticks) {
     device->uinput_close();
     delete device;
   }
-  EIO_ClassicJoysticks.clear();
-  EIO_NunchukJoysticks.clear();
-  EIO_WiimoteJoysticks.clear();
+  EIOClassicJoysticks.clear();
+  EIONunchukJoysticks.clear();
+  EIOWiimoteJoysticks.clear();
 }
 
 void UInputProfileManager::dbusWiimoteAcc(uint id, struct accdata acc) {
-  for (register int i = 0; i < EIO_WiimoteJoysticks.count(); ++i)
-    if (EIO_WiimoteJoysticks[i]->assign() == id) {
-      EIO_WiimoteJoysticks[i]->setWiimoteAcc(acc.pitch, acc.roll);
+  for (register int i = 0; i < EIOWiimoteJoysticks.count(); ++i)
+    if (EIOWiimoteJoysticks[i]->assign() == id) {
+      EIOWiimoteJoysticks[i]->setWiimoteAcc(acc.pitch, acc.roll);
       return;
     }
 }
 
 void UInputProfileManager::dbusWiimoteButtons(uint id, uint64 buttons) {
-  for (register int i = 0; i < EIO_WiimoteJoysticks.count(); ++i)
-    if (EIO_WiimoteJoysticks[i]->assign() == id) {
-      EIO_WiimoteJoysticks[i]->setWiimoteButtons(buttons);
+  for (register int i = 0; i < EIOWiimoteJoysticks.count(); ++i)
+    if (EIOWiimoteJoysticks[i]->assign() == id) {
+      EIOWiimoteJoysticks[i]->setWiimoteButtons(buttons);
       return;
     }
 }
 
 void UInputProfileManager::dbusNunchukAcc(uint id, struct accdata acc) {
-  for (register int i = 0; i < EIO_NunchukJoysticks.count(); ++i)
-    if (EIO_NunchukJoysticks[i]->assign() == id) {
-      EIO_NunchukJoysticks[i]->setNunchukAcc(acc.pitch, acc.roll);
+  for (register int i = 0; i < EIONunchukJoysticks.count(); ++i)
+    if (EIONunchukJoysticks[i]->assign() == id) {
+      EIONunchukJoysticks[i]->setNunchukAcc(acc.pitch, acc.roll);
       return;
     }
 }
 
 void UInputProfileManager::dbusNunchukButtons(uint id, uint64 buttons) {
-  for (register int i = 0; i < EIO_NunchukJoysticks.count(); ++i)
-    if (EIO_NunchukJoysticks[i]->assign() == id) {
-      EIO_NunchukJoysticks[i]->setNunchukButtons(buttons);
+  for (register int i = 0; i < EIONunchukJoysticks.count(); ++i)
+    if (EIONunchukJoysticks[i]->assign() == id) {
+      EIONunchukJoysticks[i]->setNunchukButtons(buttons);
       return;
     }
 }
 
 void UInputProfileManager::dbusNunchukStick(uint id, struct stickdata stick) {
-  for (register int i = 0; i < EIO_NunchukJoysticks.count(); ++i)
-    if (EIO_NunchukJoysticks[i]->assign() == id) {
-      EIO_NunchukJoysticks[i]->setNunchukStick(stick.x, 0xFF - stick.y);
+  for (register int i = 0; i < EIONunchukJoysticks.count(); ++i)
+    if (EIONunchukJoysticks[i]->assign() == id) {
+      EIONunchukJoysticks[i]->setNunchukStick(stick.x, 0xFF - stick.y);
       return;
     }
 }
 
 void UInputProfileManager::dbusClassicControllerButtons(uint id, uint64 buttons) {
-  for (register int i = 0; i < EIO_ClassicJoysticks.count(); ++i)
-    if (EIO_ClassicJoysticks[i]->assign() == id) {
-      EIO_ClassicJoysticks[i]->setButtons(buttons);
+  for (register int i = 0; i < EIOClassicJoysticks.count(); ++i)
+    if (EIOClassicJoysticks[i]->assign() == id) {
+      EIOClassicJoysticks[i]->setButtons(buttons);
       return;
     }
 }
 
 void UInputProfileManager::dbusClassicControllerLStick(uint id, struct stickdata stick) {
-  for (register int i = 0; i < EIO_ClassicJoysticks.count(); ++i)
-    if (EIO_ClassicJoysticks[i]->assign() == id) {
-      EIO_ClassicJoysticks[i]->setStick(EIO_ClassicJoystick::LeftStick, stick.x, stick.y);
+  for (register int i = 0; i < EIOClassicJoysticks.count(); ++i)
+    if (EIOClassicJoysticks[i]->assign() == id) {
+      EIOClassicJoysticks[i]->setStick(EIOClassicJoystick::LeftStick, stick.x, stick.y);
       return;
     }
 }
 
 void UInputProfileManager::dbusClassicControllerRStick(uint id, struct stickdata stick) {
-  for (register int i = 0; i < EIO_ClassicJoysticks.count(); ++i)
-    if (EIO_ClassicJoysticks[i]->assign() == id) {
-      EIO_ClassicJoysticks[i]->setStick(EIO_ClassicJoystick::RightStick, stick.x, stick.y);
+  for (register int i = 0; i < EIOClassicJoysticks.count(); ++i)
+    if (EIOClassicJoysticks[i]->assign() == id) {
+      EIOClassicJoysticks[i]->setStick(EIOClassicJoystick::RightStick, stick.x, stick.y);
       return;
     }
 }

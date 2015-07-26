@@ -23,17 +23,19 @@
 
 #include "../config.h"
 #include <fcntl.h>
+#include <iostream>
+#include <memory>
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "wiimotedevcore.h"
-#include "syslog/syslog.h"
-
+#include <QCommandLineOption>
+#include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QFileInfo>
 
-QCoreApplication *pointer;
+#include "syslog/syslog.h"
+#include "wiimotedevcore.h"
 
 void signal_handler(int sig) {
   switch (sig) {
@@ -42,7 +44,7 @@ void signal_handler(int sig) {
     case SIGINT:
     case SIGALRM:
     case SIGQUIT:
-      pointer->quit();
+      qApp->quit();
       break;
 
     case SIGPIPE:
@@ -58,33 +60,27 @@ int main(int argc, char *argv[]) {
     QString::number(WIIMOTEDEV_VERSION_MAJOR) + '.' +
     QString::number(WIIMOTEDEV_VERSION_MINOR) + '.' +
     QString::number(WIIMOTEDEV_VERSION_PATCH));
-  pointer = &application;
 
-  if (application.arguments().indexOf("--help") != -1) {
-    printf("Wiimotedev-daemon argument list\n\n" \
-           "  --help\t\tprint help page\n" \
-           "  --no-daemon\t\tdo not run in background\n" \
-           "  --no-quiet\t\tdo not block stdout messages\n" \
-           "  --version\t\tprint version\n\n");
-    exit(EXIT_SUCCESS);
-  }
+  QCommandLineParser parser;
+  parser.setApplicationDescription("Wiimotedev general service");
+  parser.addHelpOption();
+  parser.addVersionOption();
 
-  if (application.arguments().indexOf("--version") != -1) {
-    printf("Version: %d.%d.%d",
-           WIIMOTEDEV_VERSION_MAJOR,
-           WIIMOTEDEV_VERSION_MINOR,
-           WIIMOTEDEV_VERSION_PATCH);
-    exit(EXIT_SUCCESS);
-  }
+  QCommandLineOption optionNoQuiet({"q", "no-quiet"}, "do not block stdout messages");
+  QCommandLineOption optionNoDaemon({"d", "no-daemon"}, "do not run in background");
+
+  parser.addOption(optionNoDaemon);
+  parser.addOption(optionNoQuiet);
+  parser.process(application);
 
   if (getuid()) {
-    printf("root privilages needed.\n");
+    std::cout << "root privilages needed." << std::endl;
     exit(EXIT_FAILURE);
   }
 
   pid_t pid;
 
-  if (application.arguments().indexOf("--no-daemon") == -1) {
+  if (!parser.isSet(optionNoDaemon)) {
     pid = fork();
 
     if (pid < 0) exit(EXIT_FAILURE);
@@ -106,7 +102,7 @@ int main(int argc, char *argv[]) {
     pid = sid;
   }
 
-  if (application.arguments().indexOf("--no-quiet") == -1) {
+  if (parser.isSet(optionNoQuiet)) {
     close(STDIN_FILENO);
     close(STDOUT_FILENO);
     close(STDERR_FILENO);
@@ -120,18 +116,18 @@ int main(int argc, char *argv[]) {
   signal(SIGPIPE, signal_handler);
   systemlog::open(DAEMON_NAME);
   systemlog::information("service started");
-  WiimotedevCore *manager_thread = new WiimotedevCore();
-  manager_thread->start();
+
+  std::unique_ptr<WiimotedevCore> core = std::make_unique<WiimotedevCore>();
+  core->start();
   application.exec();
-  manager_thread->interrupt();
-  manager_thread->wait();
-  int result = manager_thread->result;
-  delete manager_thread;
+  core->interrupt();
+  core->wait();
+
   systemlog::information("service quited");
   systemlog::close();
 
   if (getpid() == pid)
     unlink(PID_FILE);
 
-  exit(result);
+  exit(core->result);
 }

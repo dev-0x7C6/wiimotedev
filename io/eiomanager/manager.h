@@ -139,14 +139,14 @@ private:
   QList <CommandAction *> commandActions;
   QHash<uint, uint64> lastWiiremoteButtons;
 
-  QList <EIO_ClassicJoystick *> EIO_ClassicJoysticks;
-  QList <EIO_NunchukJoystick *> EIO_NunchukJoysticks;
-  QList <EIO_WiimoteJoystick *> EIO_WiimoteJoysticks;
-  QList <EIO_RemoteKeyboard *> EIO_RemoteKeyboards;
-  QList <EIO_InfraredMouse *> EIO_InfraredMouses;
+  QList <EIOClassicJoystick *> EIOClassicJoysticks;
+  QList <EIONunchukJoystick *> EIONunchukJoysticks;
+  QList <EIOWiimoteJoystick *> EIOWiimoteJoysticks;
+  QList <EIORemoteKeyboard *> EIORemoteKeyboards;
+  QList <EIOInfraredMouse *> EIOInfraredMouses;
 
 
-  EIO_EventDevice *virtualEvent;
+  EIOEventDevice *virtualEvent;
 
   /* General variables --------------------------------------------- */
 

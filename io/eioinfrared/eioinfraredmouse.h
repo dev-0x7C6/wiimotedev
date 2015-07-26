@@ -27,10 +27,10 @@
 #include <QTimer>
 #include <QTime>
 
-class EIO_InfraredMouse: public QObject {
+class EIOInfraredMouse: public QObject {
   Q_OBJECT
   //general
-  EIO_EventDevice *device;
+  EIOEventDevice *device;
   uint id;
   uint8 mode;
 
@@ -74,8 +74,8 @@ class EIO_InfraredMouse: public QObject {
   bool useAccelerationTimeout;
 
 public:
-  EIO_InfraredMouse(EIO_EventDevice *device, uint id);
-  ~EIO_InfraredMouse();
+  EIOInfraredMouse(EIOEventDevice *device, uint id);
+  ~EIOInfraredMouse();
 
   enum AxisMode {
     AbsoluteDevice = 0,

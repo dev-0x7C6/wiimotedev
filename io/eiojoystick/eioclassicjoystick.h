@@ -39,7 +39,7 @@ const int CLASSIC_RIGHT_STICK_LINUX_AXIS_Y = ABS_RY;
 const int CLASSIC_DPAD_LINUX_AXIS_X = ABS_HAT0X;
 const int CLASSIC_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
 
-class EIO_ClassicJoystick: public QObject, public EIO_UInputObject {
+class EIOClassicJoystick: public QObject, public EIOUInputObject {
   Q_OBJECT
 private:
   QString m_deviceName;
@@ -62,8 +62,8 @@ private:
   bool m_report_right_stick;
 
 public:
-  explicit EIO_ClassicJoystick(QString deviceName, int id, QObject *parent = 0);
-  virtual ~EIO_ClassicJoystick();
+  explicit EIOClassicJoystick(QString deviceName, int id, QObject *parent = 0);
+  virtual ~EIOClassicJoystick();
 
   bool create();
 

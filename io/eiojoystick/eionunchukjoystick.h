@@ -37,7 +37,7 @@ const int NUNCHUK_STICK_LINUX_AXIS_Y = ABS_Y;
 const int NUNCHUK_ROLL_LINUX_AXIS = ABS_TILT_X;
 const int NUNCHUK_PITCH_LINUX_AXIS = ABS_TILT_Y;
 
-class EIO_NunchukJoystick : public QObject, public EIO_UInputObject {
+class EIONunchukJoystick : public QObject, public EIOUInputObject {
   Q_OBJECT
 public:
   enum Position {
@@ -81,7 +81,7 @@ private:
   bool m_report_roll;
 
 public:
-  EIO_NunchukJoystick(QString deviceName, int id, QObject *parent = 0);
+  EIONunchukJoystick(QString deviceName, int id, QObject *parent = 0);
   bool create();
 
   quint32 assign();
