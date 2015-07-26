@@ -15,8 +15,8 @@ find_package(Qt5DBus)
 find_package(Qt5Widgets)
 find_package(Qt5Network)
 
-set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "-Wall -std=c++14 ${CMAKE_CXX_FLAGS}")
+set(CMAKE_C_FLAGS "-march=native -O2 -Wall")
+set(CMAKE_CXX_FLAGS "-march=native -O2 -std=c++14 -Wall")
 
 set (wiimotedev_project_files
   ${CMAKE_SOURCE_DIR}/linux/etc/dbus-1/system.d/org.wiimotedev-daemon.conf
@@ -38,7 +38,6 @@ set (wiimotedev_project_files
   ${CMAKE_SOURCE_DIR}/CHANGELOG
   ${CMAKE_SOURCE_DIR}/README
 )
-
 
 option(INSTALL_SYSTEMD "Install systemd services" ON)
 option(INSTALL_INITD "Install init.d services")

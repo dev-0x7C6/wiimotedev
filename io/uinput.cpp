@@ -45,15 +45,13 @@ QMap <QString, uint> scancodes;
 
 bool additional_debug = false;
 
-QCoreApplication *pointer;
-
 void signal_handler(int sig) {
   switch (sig) {
     case SIGHUP:
     case SIGTERM:
     case SIGINT:
     case SIGQUIT:
-      pointer->quit();
+      qApp->quit();
       break;
 
     case SIGPIPE:
@@ -64,7 +62,6 @@ void signal_handler(int sig) {
 
 int main(int argc, char *argv[]) {
   QCoreApplication application(argc, argv);
-  pointer = &application;
   application.setApplicationName(DAEMON_NAME);
   application.setApplicationVersion(
     QString::number(WIIMOTEDEV_VERSION_MAJOR) + '.' +

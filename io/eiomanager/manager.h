@@ -1,4 +1,3 @@
-
 /**********************************************************************************
  * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
  * Copyright (C) 2008-2015  Bartłomiej Burdukiewicz                               *

@@ -20,9 +20,12 @@
 #include "virtualcursor.h"
 
 VirtualCursor::VirtualCursor() {
-  for (register int i = 0; i < 3; ++i)
-    m_ctable[i][0] = m_ctable[i][1] = m_ltable[i][0] = m_ltable[i][1] = 0x00;
-
+  for (uint32_t i = 0; i < 2; ++i) {
+    m_ctable[i][0] = 0x00;
+    m_ctable[i][1] = 0x00;
+    m_ltable[i][0] = 0x00;
+    m_ltable[i][1] = 0x00;
+  }
   m_index = m_angle[0] = m_angle[1] = m_distance =
                                         m_calibrationPoint[0] = m_calibrationPoint[1] = 0x00;
 }
