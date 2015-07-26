@@ -51,10 +51,6 @@ void WiimotedevConnection::interrupt() {
   m_interrupted = true;
 }
 
-uint WiimotedevConnection::id() {
-  return m_id;
-}
-
 void WiimotedevConnection::run() {
   int timeout = 0;
 
