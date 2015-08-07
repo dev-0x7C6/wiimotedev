@@ -19,69 +19,24 @@
 
 #pragma once
 
-#include "eiobase/eioeventdevice.h"
-#include "common/tick-aligned-loop.h"
-#include "container/infrared-config.h"
-#include "container/infrared-cursor.h"
-#include "linux/usr/include/wiimotedev/consts.h"
-
-#include <QTimer>
-#include <QTime>
-#include <QThread>
-#include <QMutex>
-
-#include <atomic>
-
-class EIOInfraredMouse: public QThread {
+class InfraredCursor {
 public:
-  enum Axis {
-    XAxis = 0,
-    YAxis = 1
-  };
+  InfraredCursor(double x, double y, double distance, double angle, bool valid = true);
+  InfraredCursor(const InfraredCursor &cursor);
+  InfraredCursor();
 
-  enum Mode {
-    Absolute,
-    Relative
-  };
+  double x() const;
+  double y() const;
+  double distance() const;
+  double angle() const;
+  bool isValid() const;
 
-  EIOInfraredMouse(EIOEventDevice &device, QObject *parent = nullptr);
-
-  void dbusVirtualCursorPosition(uint, double, double, double, double);
-  void dbusVirtualCursorLost(uint);
-
-  uint32_t id() const;
-  void setId(const uint32_t id);
-
-  InfraredConfigContainer &config() {
-    return m_config;
-  }
-
-  void interrupt();
-
-protected:
-  void run();
-
-  void processAbsoluteMouse();
-  void processRelativeMouse();
-
-  void setCursor(InfraredCursor &&cursor);
+  InfraredCursor &operator = (const InfraredCursor &other);
 
 private:
-  double_t m_position[2];
-  double_t m_delta[2];
-  double_t m_size[2];
-  double_t m_acc[2];
-  int32_t m_timeout;
-
-  InfraredConfigContainer m_config;
-
-private:
-  EIOEventDevice &m_device;
-  InfraredCursor m_cursor;
-
-  std::atomic<uint32_t> m_id;
-  std::atomic<uint32_t> m_mode;
-  std::atomic<bool> m_interrupted;
-  QMutex m_mutex;
-  TickAlignedLoop m_tick;
+  double m_x;
+  double m_y;
+  double m_distance;
+  double m_angle;
+  bool m_valid;
 };

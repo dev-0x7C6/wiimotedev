@@ -17,71 +17,75 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#pragma once
+#include "infrared-config.h"
 
-#include "eiobase/eioeventdevice.h"
-#include "common/tick-aligned-loop.h"
-#include "container/infrared-config.h"
-#include "container/infrared-cursor.h"
-#include "linux/usr/include/wiimotedev/consts.h"
+bool InfraredConfigContainer::accEnabled() const {
+  return m_accEnabled;
+}
 
-#include <QTimer>
-#include <QTime>
-#include <QThread>
-#include <QMutex>
+void InfraredConfigContainer::setAccEnabled(bool accEnabled) {
+  m_accEnabled = accEnabled;
+}
 
-#include <atomic>
+double InfraredConfigContainer::accMultiX() const {
+  return m_accMultiX;
+}
 
-class EIOInfraredMouse: public QThread {
-public:
-  enum Axis {
-    XAxis = 0,
-    YAxis = 1
-  };
+void InfraredConfigContainer::setAccMultiX(double accMultiX) {
+  m_accMultiX = accMultiX;
+}
 
-  enum Mode {
-    Absolute,
-    Relative
-  };
+double InfraredConfigContainer::accMultiY() const {
+  return m_accMultiY;
+}
 
-  EIOInfraredMouse(EIOEventDevice &device, QObject *parent = nullptr);
+void InfraredConfigContainer::setAccMultiY(double accMultiY) {
+  m_accMultiY = accMultiY;
+}
 
-  void dbusVirtualCursorPosition(uint, double, double, double, double);
-  void dbusVirtualCursorLost(uint);
+double InfraredConfigContainer::accPowX() const {
+  return m_accPowX;
+}
 
-  uint32_t id() const;
-  void setId(const uint32_t id);
+void InfraredConfigContainer::setAccPowX(double accPowX) {
+  m_accPowX = accPowX;
+}
 
-  InfraredConfigContainer &config() {
-    return m_config;
-  }
+double InfraredConfigContainer::accPowY() const {
+  return m_accPowY;
+}
 
-  void interrupt();
+void InfraredConfigContainer::setAccPowY(double accPowY) {
+  m_accPowY = accPowY;
+}
 
-protected:
-  void run();
+double InfraredConfigContainer::deadzoneX() const {
+  return m_deadzoneX;
+}
 
-  void processAbsoluteMouse();
-  void processRelativeMouse();
+void InfraredConfigContainer::setDeadzoneX(double deadzoneX) {
+  m_deadzoneX = deadzoneX;
+}
 
-  void setCursor(InfraredCursor &&cursor);
+double InfraredConfigContainer::deadzoneY() const {
+  return m_deadzoneY;
+}
 
-private:
-  double_t m_position[2];
-  double_t m_delta[2];
-  double_t m_size[2];
-  double_t m_acc[2];
-  int32_t m_timeout;
+void InfraredConfigContainer::setDeadzoneY(double deadzoneY) {
+  m_deadzoneY = deadzoneY;
+}
 
-  InfraredConfigContainer m_config;
+int32_t InfraredConfigContainer::accTimeout() const {
+  return m_accTimeout;
+}
 
-private:
-  EIOEventDevice &m_device;
-  InfraredCursor m_cursor;
+void InfraredConfigContainer::setAccTimeout(const int32_t &accTimeout) {
+  m_accTimeout = accTimeout;
+}
 
-  std::atomic<uint32_t> m_id;
-  std::atomic<uint32_t> m_mode;
-  std::atomic<bool> m_interrupted;
-  QMutex m_mutex;
-  TickAlignedLoop m_tick;
-};
+
+
+
+
+
+

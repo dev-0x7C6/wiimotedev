@@ -17,71 +17,54 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#pragma once
+#include "infrared-cursor.h"
 
-#include "eiobase/eioeventdevice.h"
-#include "common/tick-aligned-loop.h"
-#include "container/infrared-config.h"
-#include "container/infrared-cursor.h"
-#include "linux/usr/include/wiimotedev/consts.h"
+InfraredCursor::InfraredCursor(double x, double y, double distance, double angle, bool valid) :
+  m_x(x),
+  m_y(y),
+  m_distance(distance),
+  m_angle(angle),
+  m_valid(valid) {
+}
 
-#include <QTimer>
-#include <QTime>
-#include <QThread>
-#include <QMutex>
+InfraredCursor::InfraredCursor(const InfraredCursor &cursor) {
+  *this = cursor;
+}
 
-#include <atomic>
+InfraredCursor::InfraredCursor() :
+  m_x(0),
+  m_y(0),
+  m_distance(0),
+  m_angle(0),
+  m_valid(false) {
+}
 
-class EIOInfraredMouse: public QThread {
-public:
-  enum Axis {
-    XAxis = 0,
-    YAxis = 1
-  };
+double InfraredCursor::x() const {
+  return m_x;
+}
 
-  enum Mode {
-    Absolute,
-    Relative
-  };
+double InfraredCursor::y() const {
+  return m_y;
+}
 
-  EIOInfraredMouse(EIOEventDevice &device, QObject *parent = nullptr);
+double InfraredCursor::distance() const {
+  return m_distance;
+}
 
-  void dbusVirtualCursorPosition(uint, double, double, double, double);
-  void dbusVirtualCursorLost(uint);
+double InfraredCursor::angle() const {
+  return m_angle;
+}
 
-  uint32_t id() const;
-  void setId(const uint32_t id);
+bool InfraredCursor::isValid() const {
+  return m_valid;
+}
 
-  InfraredConfigContainer &config() {
-    return m_config;
-  }
+InfraredCursor &InfraredCursor::operator =(const InfraredCursor &other) {
+  m_x = other.m_x;
+  m_y = other.m_y;
+  m_distance = other.m_distance;
+  m_angle = other.m_angle;
+  m_valid = other.m_valid;
+  return *this;
+}
 
-  void interrupt();
-
-protected:
-  void run();
-
-  void processAbsoluteMouse();
-  void processRelativeMouse();
-
-  void setCursor(InfraredCursor &&cursor);
-
-private:
-  double_t m_position[2];
-  double_t m_delta[2];
-  double_t m_size[2];
-  double_t m_acc[2];
-  int32_t m_timeout;
-
-  InfraredConfigContainer m_config;
-
-private:
-  EIOEventDevice &m_device;
-  InfraredCursor m_cursor;
-
-  std::atomic<uint32_t> m_id;
-  std::atomic<uint32_t> m_mode;
-  std::atomic<bool> m_interrupted;
-  QMutex m_mutex;
-  TickAlignedLoop m_tick;
-};

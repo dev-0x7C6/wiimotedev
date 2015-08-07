@@ -68,16 +68,12 @@ int main(int argc, char *argv[]) {
     QString::number(WIIMOTEDEV_VERSION_MAJOR) + '.' +
     QString::number(WIIMOTEDEV_VERSION_MINOR) + '.' +
     QString::number(WIIMOTEDEV_VERSION_PATCH));
-
-
   QCommandLineParser parser;
   parser.setApplicationDescription("Wiimotedev general service");
   parser.addHelpOption();
   parser.addVersionOption();
-
   QCommandLineOption optionNoQuiet({"q", "no-quiet"}, "do not block stdout messages");
   QCommandLineOption optionNoDaemon({"d", "no-daemon"}, "do not run in background");
-
   parser.addOption(optionNoDaemon);
   parser.addOption(optionNoQuiet);
   parser.process(application);
@@ -123,7 +119,6 @@ int main(int argc, char *argv[]) {
   signal(SIGPIPE, signal_handler);
   systemlog::open(DAEMON_NAME);
   systemlog::information("system service started");
-
   QSettings settings(scancodeFile, QSettings::IniFormat);
   settings.beginGroup("scancode");
 

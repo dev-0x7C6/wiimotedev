@@ -8,13 +8,14 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
   ${CMAKE_SOURCE_DIR}/linux/usr/include/
 )
 
-set(CMAKE_C_FLAGS "-Wall ${CMAKE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "-Wall ${CMAKE_CXX_FLAGS}")
-
 set(sources
   ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
   ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
 
+
+  common/tick-aligned-loop.cpp
+  container/infrared-config.cpp
+  container/infrared-cursor.cpp
   eiobase/eiouinputobject.cpp
   eiobase/eiomousedevice.cpp
   eiobase/eioeventdevice.cpp
@@ -40,6 +41,9 @@ set(sources
 set(headers
   ${CMAKE_SOURCE_DIR}/syslog/syslog.h
 
+  common/tick-aligned-loop.h
+  container/infrared-config.h
+  container/infrared-cursor.h
   eiobase/eiouinputobject.h
   eiobase/eiomousedevice.h
   eiobase/eioeventdevice.h

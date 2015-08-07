@@ -19,69 +19,42 @@
 
 #pragma once
 
-#include "eiobase/eioeventdevice.h"
-#include "common/tick-aligned-loop.h"
-#include "container/infrared-config.h"
-#include "container/infrared-cursor.h"
-#include "linux/usr/include/wiimotedev/consts.h"
+#include <cstdlib>
 
-#include <QTimer>
-#include <QTime>
-#include <QThread>
-#include <QMutex>
-
-#include <atomic>
-
-class EIOInfraredMouse: public QThread {
+class InfraredConfigContainer {
 public:
-  enum Axis {
-    XAxis = 0,
-    YAxis = 1
-  };
+  bool accEnabled() const;
+  void setAccEnabled(bool accEnabled);
 
-  enum Mode {
-    Absolute,
-    Relative
-  };
+  double accMultiX() const;
+  void setAccMultiX(double accMultiX);
 
-  EIOInfraredMouse(EIOEventDevice &device, QObject *parent = nullptr);
+  double accMultiY() const;
+  void setAccMultiY(double accMultiY);
 
-  void dbusVirtualCursorPosition(uint, double, double, double, double);
-  void dbusVirtualCursorLost(uint);
+  double accPowX() const;
+  void setAccPowX(double accPowX);
 
-  uint32_t id() const;
-  void setId(const uint32_t id);
+  double accPowY() const;
+  void setAccPowY(double accPowY);
 
-  InfraredConfigContainer &config() {
-    return m_config;
-  }
+  double deadzoneX() const;
+  void setDeadzoneX(double deadzoneX);
 
-  void interrupt();
+  double deadzoneY() const;
+  void setDeadzoneY(double deadzoneY);
 
-protected:
-  void run();
-
-  void processAbsoluteMouse();
-  void processRelativeMouse();
-
-  void setCursor(InfraredCursor &&cursor);
+  int32_t accTimeout() const;
+  void setAccTimeout(const int32_t &accTimeout);
 
 private:
-  double_t m_position[2];
-  double_t m_delta[2];
-  double_t m_size[2];
-  double_t m_acc[2];
-  int32_t m_timeout;
+  bool m_accEnabled;
+  double m_accMultiX;
+  double m_accMultiY;
+  double m_accPowX;
+  double m_accPowY;
+  double m_deadzoneX;
+  double m_deadzoneY;
+  int32_t m_accTimeout;
 
-  InfraredConfigContainer m_config;
-
-private:
-  EIOEventDevice &m_device;
-  InfraredCursor m_cursor;
-
-  std::atomic<uint32_t> m_id;
-  std::atomic<uint32_t> m_mode;
-  std::atomic<bool> m_interrupted;
-  QMutex m_mutex;
-  TickAlignedLoop m_tick;
 };

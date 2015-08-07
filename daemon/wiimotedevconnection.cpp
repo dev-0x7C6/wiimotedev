@@ -184,7 +184,6 @@ void WiimotedevConnection::run() {
 
     if (m_powersave->elapsed() > powerSafeTimeout())
       break;
-
   } while (!m_interrupted);
 
   cwiid_process_wiimote_done();

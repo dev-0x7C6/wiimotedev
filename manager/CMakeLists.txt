@@ -8,9 +8,6 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_SOURCE_DIR}/linux/usr/include/
 )
 
-set(CMAKE_C_FLAGS "-Wall -pg ${CMAKE_C_FLAGS}")
-set(CMAKE_CXX_FLAGS "-Woverloaded-virtual -Wall -Wno-sign-compare ${CMAKE_CXX_FLAGS}")
-
 set(managersources
   src/infraredcameraview.cpp
   src/wiimoterawstream.cpp

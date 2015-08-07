@@ -26,6 +26,7 @@ VirtualCursor::VirtualCursor() {
     m_ltable[i][0] = 0x00;
     m_ltable[i][1] = 0x00;
   }
+
   m_index = m_angle[0] = m_angle[1] = m_distance =
                                         m_calibrationPoint[0] = m_calibrationPoint[1] = 0x00;
 }

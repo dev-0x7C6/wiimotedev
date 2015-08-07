@@ -17,8 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef SYSLOG_H
-#define SYSLOG_H
+#pragma once
 
 class QString;
 
@@ -33,5 +32,3 @@ namespace systemlog {
   void notice(const QString message);
   void warning(const QString message);
 }
-
-#endif // SYSLOG_H

@@ -22,6 +22,7 @@
 
 #include "helper/hashcompare.h"
 #include "eiomanager/manager.h"
+#include "eioinfrared/eioinfraredmouse.h"
 
 extern QMap <QString, uint64> devicebuttons;
 extern QMap <QString, uint> scancodes;
