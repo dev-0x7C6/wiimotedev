@@ -1,5 +1,6 @@
 [Unit]
 Description=Wiiremote mouse/keyboard/joystick emulator
+After=wiimotedev-daemon.service
 
 [Service]
 Type=forking

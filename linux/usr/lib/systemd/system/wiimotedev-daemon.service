@@ -1,5 +1,6 @@
 [Unit]
 Description=Wiiremote connection service and data provider
+After=bluetooth.target
 
 [Service]
 Type=forking
