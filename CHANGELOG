@@ -1,6 +1,11 @@
 Wiimotedev Project Changelog
 ============================
 
+2.0.1
+General:
+- Fixed dependency in systemd services
+- Wiimotedev-daemon now depends on bluetooth.target
+
 2.0.0
 General:
 - Run on top Qt5
