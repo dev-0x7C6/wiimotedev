@@ -32,9 +32,7 @@ set (wiimotedev_project_files
   ${CMAKE_SOURCE_DIR}/linux/etc/init.d/archlinux/wiimotedev-io
   ${CMAKE_SOURCE_DIR}/linux/etc/init.d/slackware/wiimotedev-io
   ${CMAKE_SOURCE_DIR}/linux/usr/lib/systemd/system/wiimotedev-daemon.service
-  ${CMAKE_SOURCE_DIR}/linux/usr/lib/systemd/system/wiimotedev-daemon.target
   ${CMAKE_SOURCE_DIR}/linux/usr/lib/systemd/system/wiimotedev-io.service
-  ${CMAKE_SOURCE_DIR}/linux/usr/lib/systemd/system/wiimotedev-io.target
   ${CMAKE_SOURCE_DIR}/CHANGELOG
   ${CMAKE_SOURCE_DIR}/README
 )
