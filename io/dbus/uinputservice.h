@@ -34,10 +34,10 @@
 #ifndef WIIMOTEDEV_META_TYPES
 #define WIIMOTEDEV_META_TYPES
 
-Q_DECLARE_METATYPE(QList <irpoint>)
-Q_DECLARE_METATYPE(QList <accdata>)
-Q_DECLARE_METATYPE(QList <stickdata>)
-Q_DECLARE_METATYPE(QList <uint>)
+Q_DECLARE_METATYPE(QList<irpoint>)
+Q_DECLARE_METATYPE(QList<accdata>)
+Q_DECLARE_METATYPE(QList<stickdata>)
+Q_DECLARE_METATYPE(QList<uint>)
 
 Q_DECLARE_METATYPE(irpoint)
 Q_DECLARE_METATYPE(accdata)
@@ -55,102 +55,100 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, accdata &acc);
 QDBusArgument &operator<<(QDBusArgument &argument, const stickdata &stick);
 const QDBusArgument &operator>>(const QDBusArgument &argument, stickdata &stick);
 
-
 inline QDBusArgument &operator<<(QDBusArgument &argument, const irpoint &point) {
-  argument.beginStructure();
-  argument << point.size << point.x << point.y;
-  argument.endStructure();
-  return argument;
+	argument.beginStructure();
+	argument << point.size << point.x << point.y;
+	argument.endStructure();
+	return argument;
 }
 
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, irpoint &point) {
-  argument.beginStructure();
-  argument >> point.size >> point.x >> point.y;
-  argument.endStructure();
-  return argument;
+	argument.beginStructure();
+	argument >> point.size >> point.x >> point.y;
+	argument.endStructure();
+	return argument;
 }
 
 inline QDBusArgument &operator<<(QDBusArgument &argument, const accdata &acc) {
-  argument.beginStructure();
-  argument << acc.x << acc.y << acc.z << acc.pitch << acc.roll;
-  argument.endStructure();
-  return argument;
+	argument.beginStructure();
+	argument << acc.x << acc.y << acc.z << acc.pitch << acc.roll;
+	argument.endStructure();
+	return argument;
 }
 
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, accdata &acc) {
-  argument.beginStructure();
-  argument >> acc.x >> acc.y >> acc.z >> acc.pitch >> acc.roll;
-  argument.endStructure();
-  return argument;
+	argument.beginStructure();
+	argument >> acc.x >> acc.y >> acc.z >> acc.pitch >> acc.roll;
+	argument.endStructure();
+	return argument;
 }
 
 inline QDBusArgument &operator<<(QDBusArgument &argument, const stickdata &stick) {
-  argument.beginStructure();
-  argument << stick.x << stick.y;
-  argument.endStructure();
-  return argument;
+	argument.beginStructure();
+	argument << stick.x << stick.y;
+	argument.endStructure();
+	return argument;
 }
 
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, stickdata &stick) {
-  argument.beginStructure();
-  argument >> stick.x >> stick.y;
-  argument.endStructure();
-  return argument;
+	argument.beginStructure();
+	argument >> stick.x >> stick.y;
+	argument.endStructure();
+	return argument;
 }
 
 #endif
 
 class DBusServiceAdaptor : public QDBusAbstractAdaptor {
-  Q_OBJECT
-  Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
-  Q_CLASSINFO("D-Bus Introspection", ""
-              "  <interface name=\"org.wiimotedev.service\">\n"
-              "    <method name=\"isWiimotedevServiceAvailable\">\n"
-              "      <arg type=\"y\" direction=\"out\"/>\n"
-              "    </method>\n"
-              "  </interface>\n"
-              "")
+	Q_OBJECT
+	Q_CLASSINFO("D-Bus Interface", "org.wiimotedev.service")
+	Q_CLASSINFO("D-Bus Introspection", ""
+									   "  <interface name=\"org.wiimotedev.service\">\n"
+									   "    <method name=\"isWiimotedevServiceAvailable\">\n"
+									   "      <arg type=\"y\" direction=\"out\"/>\n"
+									   "    </method>\n"
+									   "  </interface>\n"
+									   "")
 public:
-  DBusServiceAdaptor(QObject *parent = 0);
-  Q_SLOT bool isWiimotedevServiceAvailable();
-
+	DBusServiceAdaptor(QObject *parent = 0);
+	Q_SLOT bool isWiimotedevServiceAvailable();
 };
 
 class DBusServiceAdaptorWrapper : public QObject {
-  Q_OBJECT
+	Q_OBJECT
 private:
-  bool registred;
+	bool registred;
 
 public:
-  DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection connection);
+	DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection connection);
 
-  inline bool isRegistred() {
-    return registred;
-  }
-  Q_SLOT bool isWiimotedevServiceAvailable();
-
+	inline bool isRegistred() {
+		return registred;
+	}
+	Q_SLOT bool isWiimotedevServiceAvailable();
 };
 
-inline DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent): QDBusAbstractAdaptor(parent) {
-  setAutoRelaySignals(true);
+inline DBusServiceAdaptor::DBusServiceAdaptor(QObject *parent)
+		: QDBusAbstractAdaptor(parent) {
+	setAutoRelaySignals(true);
 }
 
 inline bool DBusServiceAdaptor::isWiimotedevServiceAvailable() {
-  bool value;
-  QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-  return value;
+	bool value;
+	QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+	return value;
 }
 
-inline DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection connection) : QObject(parent) {
-  new DBusServiceAdaptor(this);
-  registred = connection.registerObject("/service", this);
+inline DBusServiceAdaptorWrapper::DBusServiceAdaptorWrapper(QObject *parent, QDBusConnection connection)
+		: QObject(parent) {
+	new DBusServiceAdaptor(this);
+	registred = connection.registerObject("/service", this);
 }
 
 inline bool DBusServiceAdaptorWrapper::isWiimotedevServiceAvailable() {
-  bool value;
-  QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
-  return value;
+	bool value;
+	QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
+	return value;
 }
-
 
 #endif // ADAPTORS_UINPUTSERVICE_H

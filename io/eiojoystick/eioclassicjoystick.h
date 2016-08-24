@@ -29,7 +29,7 @@ const int16 CLASSIC_RIGHT_STICK_MIN = 0x02;
 
 const int8 CLASSIC_BUTTON_PUSHED = 0x01;
 const int8 CLASSIC_BUTTON_RELEASED = 0x00;
-const int8 CLASSIC_DPAD_MAX =  0x01;
+const int8 CLASSIC_DPAD_MAX = 0x01;
 const int8 CLASSIC_DPAD_MIN = -0x01;
 
 const int CLASSIC_LEFT_STICK_LINUX_AXIS_X = ABS_X;
@@ -39,60 +39,59 @@ const int CLASSIC_RIGHT_STICK_LINUX_AXIS_Y = ABS_RY;
 const int CLASSIC_DPAD_LINUX_AXIS_X = ABS_HAT0X;
 const int CLASSIC_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
 
-class EIOClassicJoystick: public QObject, public EIOUInputObject {
-  Q_OBJECT
+class EIOClassicJoystick : public QObject, public EIOUInputObject {
+	Q_OBJECT
 private:
-  QString m_deviceName;
-  quint32 m_id;
-  int32 m_last_r_stick_x;
-  int32 m_last_r_stick_y;
-  int32 m_last_l_stick_x;
-  int32 m_last_l_stick_y;
-  int32 m_last_dpad_x;
-  int32 m_last_dpad_y;
-  bool m_dpad_invert_x;
-  bool m_dpad_invert_y;
-  bool m_left_stick_invert_x;
-  bool m_left_stick_invert_y;
-  bool m_right_stick_invert_x;
-  bool m_right_stick_invert_y;
-  bool m_report_buttons;
-  bool m_report_dpad;
-  bool m_report_left_stick;
-  bool m_report_right_stick;
+	QString m_deviceName;
+	quint32 m_id;
+	int32 m_last_r_stick_x;
+	int32 m_last_r_stick_y;
+	int32 m_last_l_stick_x;
+	int32 m_last_l_stick_y;
+	int32 m_last_dpad_x;
+	int32 m_last_dpad_y;
+	bool m_dpad_invert_x;
+	bool m_dpad_invert_y;
+	bool m_left_stick_invert_x;
+	bool m_left_stick_invert_y;
+	bool m_right_stick_invert_x;
+	bool m_right_stick_invert_y;
+	bool m_report_buttons;
+	bool m_report_dpad;
+	bool m_report_left_stick;
+	bool m_report_right_stick;
 
 public:
-  explicit EIOClassicJoystick(QString deviceName, int id, QObject *parent = 0);
-  virtual ~EIOClassicJoystick();
+	explicit EIOClassicJoystick(QString deviceName, int id, QObject *parent = 0);
+	virtual ~EIOClassicJoystick();
 
-  bool create();
+	bool create();
 
-  enum Sticks {
-    LeftStick,
-    RightStick,
-    DpadStick
-  };
+	enum Sticks {
+		LeftStick,
+		RightStick,
+		DpadStick
+	};
 
-  quint32 assign();
+	quint32 assign();
 
-  void setDpadInvertX(bool option);
-  void setDpadInvertY(bool option);
-  void setLStickInvertX(bool option);
-  void setLStickInvertY(bool option);
-  void setRStickInvertX(bool option);
-  void setRStickInvertY(bool option);
-  void setReportButtons(bool report);
-  void setReportDStick(bool report);
-  void setReportLStick(bool report);
-  void setReportRStick(bool report);
+	void setDpadInvertX(bool option);
+	void setDpadInvertY(bool option);
+	void setLStickInvertX(bool option);
+	void setLStickInvertY(bool option);
+	void setRStickInvertX(bool option);
+	void setRStickInvertY(bool option);
+	void setReportButtons(bool report);
+	void setReportDStick(bool report);
+	void setReportLStick(bool report);
+	void setReportRStick(bool report);
 
-  void setButtons(uint64 buttons);
-  void setStick(Sticks stick, int32 x, int32 y);
+	void setButtons(uint64 buttons);
+	void setStick(Sticks stick, int32 x, int32 y);
 
 private:
-  void centerStick(Sticks stick);
-  void syncAxes();
-
+	void centerStick(Sticks stick);
+	void syncAxes();
 };
 
 #endif // UINPUT_CLASSICGAMEPAD_H

@@ -47,161 +47,161 @@ const uint8 nunchukStickMaxY = (0xFF >> 1) + nunchukToleranceValue;
 const uint8 nunchukStickMinY = (0xFF >> 1) - nunchukToleranceValue;
 
 class WiimotedevConnection : public QThread {
-  Q_OBJECT
+	Q_OBJECT
 private:
-  std::unique_ptr<WiimotedevDevice> m_device;
-  std::atomic<bool> m_interrupted;
-  std::atomic<double> m_batteryLife;
-  std::atomic<uint64_t> m_powerSaveTimeout;
+	std::unique_ptr<WiimotedevDevice> m_device;
+	std::atomic<bool> m_interrupted;
+	std::atomic<double> m_batteryLife;
+	std::atomic<uint64_t> m_powerSaveTimeout;
 
-  enum DeviceType {
-    ix_wiimote_device = 0,
-    ix_nunchuk_device,
-    ix_classic_device,
-    ix_general_device,
-    ix_all_devices
-  };
+	enum DeviceType {
+		ix_wiimote_device = 0,
+		ix_nunchuk_device,
+		ix_classic_device,
+		ix_general_device,
+		ix_all_devices
+	};
 
-  enum StickIndex {
-    ix_classic_lstick = 0,
-    ix_classic_rstick,
-    ix_nunchuk_stick,
-    ix_all_sticks
-  };
+	enum StickIndex {
+		ix_classic_lstick = 0,
+		ix_classic_rstick,
+		ix_nunchuk_stick,
+		ix_all_sticks
+	};
 
-  enum AxisIndex {
-    ix_x_axis = 0,
-    ix_y_axis
-  };
+	enum AxisIndex {
+		ix_x_axis = 0,
+		ix_y_axis
+	};
 
-  enum StateIndex {
-    ix_max = 0,
-    ix_min
-  };
+	enum StateIndex {
+		ix_max = 0,
+		ix_min
+	};
 
-  std::unique_ptr<VirtualCursor> m_virtualCursor;
+	std::unique_ptr<VirtualCursor> m_virtualCursor;
 
-  QList <double> wfXmotion;
-  QList <double> nfXmotion;
-  QList <double> wfYmotion;
-  QList <double> nfYmotion;
-  QList <double> wfZmotion;
-  QList <double> nfZmotion;
-  double wcounter, ncounter;
+	QList<double> wfXmotion;
+	QList<double> nfXmotion;
+	QList<double> wfYmotion;
+	QList<double> nfYmotion;
+	QList<double> wfZmotion;
+	QList<double> nfZmotion;
+	double wcounter, ncounter;
 
-  struct stickdata stick[ix_all_sticks];
-  uint64 cstate[ix_all_devices];
-  uint64 lstate[ix_all_devices];
-  std::atomic<bool> m_available[ix_general_device];
+	struct stickdata stick[ix_all_sticks];
+	uint64 cstate[ix_all_devices];
+	uint64 lstate[ix_all_devices];
+	std::atomic<bool> m_available[ix_general_device];
 
-  acc_cal calibration[ix_all_devices - 1];
-  accdata acc[ix_all_devices - 1];
+	acc_cal calibration[ix_all_devices - 1];
+	accdata acc[ix_all_devices - 1];
 
-  int m_id;
-  struct acc_cal nunchukAcc;
-  struct acc_cal wiimoteAcc;
+	int m_id;
+	struct acc_cal nunchukAcc;
+	struct acc_cal wiimoteAcc;
 
-  QList <struct irpoint> current_ir_table;
-  QList <struct irpoint> last_ir_table;
+	QList<struct irpoint> current_ir_table;
+	QList<struct irpoint> last_ir_table;
 
-  std::atomic<uint32_t> m_currentLatency;
-  std::atomic<uint32_t> m_averageLatency;
-  double m_bufferLatency;
-  int32 m_bufferCounter;
+	std::atomic<uint32_t> m_currentLatency;
+	std::atomic<uint32_t> m_averageLatency;
+	double m_bufferLatency;
+	int32 m_bufferCounter;
 
-  bool m_virtualCursorVisible;
+	bool m_virtualCursorVisible;
 
 private:
-  void cwiid_process_wiimote_init();
-  void cwiid_process_wiimote_done();
-  void cwiid_process_wiimote_clear();
+	void cwiid_process_wiimote_init();
+	void cwiid_process_wiimote_done();
+	void cwiid_process_wiimote_clear();
 
-  void cwiid_process_wiimote_buttons(uint16 buttons);
-  void cwiid_process_wiimote_acc(uint8 cwiid_acc[3]);
-  void cwiid_process_wiimote_ir(cwiid_ir_src ir[4]);
-  void cwiid_process_wiimote_status(uint8 battery);
-  void cwiid_process_wiimote_error();
+	void cwiid_process_wiimote_buttons(uint16 buttons);
+	void cwiid_process_wiimote_acc(uint8 cwiid_acc[3]);
+	void cwiid_process_wiimote_ir(cwiid_ir_src ir[4]);
+	void cwiid_process_wiimote_status(uint8 battery);
+	void cwiid_process_wiimote_error();
 
-  void cwiid_process_classic_init();
-  void cwiid_process_classic_done();
-  void cwiid_process_classic_clear();
+	void cwiid_process_classic_init();
+	void cwiid_process_classic_done();
+	void cwiid_process_classic_clear();
 
-  void cwiid_process_classic_lstick(uint8 cwiid_stick[2]);
-  void cwiid_process_classic_rstick(uint8 cwiid_stick[2]);
-  void cwiid_process_classic_buttons(uint16 cwiid_buttons);
-  void cwiid_process_classic_status(cwiid_ext_type type);
+	void cwiid_process_classic_lstick(uint8 cwiid_stick[2]);
+	void cwiid_process_classic_rstick(uint8 cwiid_stick[2]);
+	void cwiid_process_classic_buttons(uint16 cwiid_buttons);
+	void cwiid_process_classic_status(cwiid_ext_type type);
 
-  void cwiid_process_nunchuk_init();
-  void cwiid_process_nunchuk_done();
-  void cwiid_process_nunchuk_clear();
+	void cwiid_process_nunchuk_init();
+	void cwiid_process_nunchuk_done();
+	void cwiid_process_nunchuk_clear();
 
-  void cwiid_process_nunchuk_buttons(uint8 cwiid_buttons);
-  void cwiid_process_nunchuk_stick(uint8 cwiid_stick[2]);
-  void cwiid_process_nunchuk_acc(uint8 cwiid_acc[3]);
-  void cwiid_process_nunchuk_status(cwiid_ext_type type);
+	void cwiid_process_nunchuk_buttons(uint8 cwiid_buttons);
+	void cwiid_process_nunchuk_stick(uint8 cwiid_stick[2]);
+	void cwiid_process_nunchuk_acc(uint8 cwiid_acc[3]);
+	void cwiid_process_nunchuk_status(cwiid_ext_type type);
 
-  void cwiid_process_motionplus_status(cwiid_ext_type type);
-  void cwiid_process_motionplus(uint16 angle[], uint8 low_speed[]);
+	void cwiid_process_motionplus_status(cwiid_ext_type type);
+	void cwiid_process_motionplus(uint16 angle[], uint8 low_speed[]);
 
-  double calcVirtualCursorDiff(double c1[], double c2[]);
-  void calcAccelerometerValues(uint8 acc[3], acc_cal &cal, accdata &out);
+	double calcVirtualCursorDiff(double c1[], double c2[]);
+	void calcAccelerometerValues(uint8 acc[3], acc_cal &cal, accdata &out);
 
-  void connect_animation();
-  void disconnect_animation();
+	void connect_animation();
+	void disconnect_animation();
 
 public:
-  explicit WiimotedevConnection(WiimotedevDevice *device, int id, QObject *parent = 0);
-  ~WiimotedevConnection();
+	explicit WiimotedevConnection(WiimotedevDevice *device, int id, QObject *parent = 0);
+	~WiimotedevConnection();
 
-  uint id() const;
+	uint id() const;
 
-  void interrupt();
+	void interrupt();
 
-  void setPowerSafeTimeout(int64 timeout);
-  int64 powerSafeTimeout();
+	void setPowerSafeTimeout(int64 timeout);
+	int64 powerSafeTimeout();
 
 public:
-  bool dbusIsClassicConnected();
-  bool dbusIsNunchukConnected();
-  bool dbusIsWiimoteConnected();
+	bool dbusIsClassicConnected();
+	bool dbusIsNunchukConnected();
+	bool dbusIsWiimoteConnected();
 
-  QList<uint> dbusNunchukGetAccelerometrCalibration();
-  QList<uint> dbusWiimoteGetAccelerometrCalibration();
+	QList<uint> dbusNunchukGetAccelerometrCalibration();
+	QList<uint> dbusWiimoteGetAccelerometrCalibration();
 
-  uint dbusWiimoteGetAverageLatency();
-  uint dbusWiimoteGetBatteryLife();
-  uint dbusWiimoteGetCurrentLatency();
-  QString dbusWiimoteGetMacAddress();
+	uint dbusWiimoteGetAverageLatency();
+	uint dbusWiimoteGetBatteryLife();
+	uint dbusWiimoteGetCurrentLatency();
+	QString dbusWiimoteGetMacAddress();
 
-  uint8 dbusWiimoteGetLedStatus();
+	uint8 dbusWiimoteGetLedStatus();
 
-  bool dbusWiimoteGetRumbleStatus();
-  bool dbusWiimoteSetLedStatus(uint status);
-  bool dbusWiimoteSetRumbleStatus(bool status);
-  uint8 dbusWiimoteGetStatus();
+	bool dbusWiimoteGetRumbleStatus();
+	bool dbusWiimoteSetLedStatus(uint status);
+	bool dbusWiimoteSetRumbleStatus(bool status);
+	uint8 dbusWiimoteGetStatus();
 
 protected:
-  void run();
+	void run();
 
 signals:
-  void dbusVirtualCursorPosition(uint, double, double, double, double);
-  void dbusVirtualCursorFound(uint);
-  void dbusVirtualCursorLost(uint);
-  void dbusWiimoteGeneralButtons(uint, uint64);
-  void dbusWiimoteConnected(uint);
-  void dbusWiimoteDisconnected(uint);
-  void dbusWiimoteBatteryLife(uint, uint8);
-  void dbusWiimoteButtons(uint, uint64);
-  void dbusWiimoteInfrared(uint, QList<struct irpoint>);
-  void dbusWiimoteAcc(uint, struct accdata);
-  void dbusNunchukPlugged(uint);
-  void dbusNunchukUnplugged(uint);
-  void dbusNunchukButtons(uint, uint64);
-  void dbusNunchukStick(uint, struct stickdata);
-  void dbusNunchukAcc(uint, struct accdata);
-  void dbusClassicControllerPlugged(uint);
-  void dbusClassicControllerUnplugged(uint);
-  void dbusClassicControllerButtons(uint, uint64);
-  void dbusClassicControllerLStick(uint, struct stickdata);
-  void dbusClassicControllerRStick(uint, struct stickdata);
+	void dbusVirtualCursorPosition(uint, double, double, double, double);
+	void dbusVirtualCursorFound(uint);
+	void dbusVirtualCursorLost(uint);
+	void dbusWiimoteGeneralButtons(uint, uint64);
+	void dbusWiimoteConnected(uint);
+	void dbusWiimoteDisconnected(uint);
+	void dbusWiimoteBatteryLife(uint, uint8);
+	void dbusWiimoteButtons(uint, uint64);
+	void dbusWiimoteInfrared(uint, QList<struct irpoint>);
+	void dbusWiimoteAcc(uint, struct accdata);
+	void dbusNunchukPlugged(uint);
+	void dbusNunchukUnplugged(uint);
+	void dbusNunchukButtons(uint, uint64);
+	void dbusNunchukStick(uint, struct stickdata);
+	void dbusNunchukAcc(uint, struct accdata);
+	void dbusClassicControllerPlugged(uint);
+	void dbusClassicControllerUnplugged(uint);
+	void dbusClassicControllerButtons(uint, uint64);
+	void dbusClassicControllerLStick(uint, struct stickdata);
+	void dbusClassicControllerRStick(uint, struct stickdata);
 };

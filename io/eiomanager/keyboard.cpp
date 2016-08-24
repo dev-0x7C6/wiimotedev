@@ -20,38 +20,37 @@
 #include "helper/hashcompare.h"
 #include "eiomanager/manager.h"
 
-extern QMap <QString, uint> scancodes;
+extern QMap<QString, uint> scancodes;
 
 void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &settings) {
-  freeKeyboardEvents();
-  settings.beginGroup(key);
-  EIORemoteKeyboard *device = new EIORemoteKeyboard(virtualEvent);
-  foreach(const QString & string, settings.allKeys()) {
-    if (string.toLower() == "module")
-      continue;
+	freeKeyboardEvents();
+	settings.beginGroup(key);
+	EIORemoteKeyboard *device = new EIORemoteKeyboard(virtualEvent);
+	foreach (const QString &string, settings.allKeys()) {
+		if (string.toLower() == "module")
+			continue;
 
-    KeyboardAction action;
-    action.event = extractDeviceEvent(string);
+		KeyboardAction action;
+		action.event = extractDeviceEvent(string);
 
-    if (action.event.isEmpty())
-      continue;
+		if (action.event.isEmpty())
+			continue;
 
-    action.keys = extractScancodes(settings.value(string, QStringList()).toStringList());
+		action.keys = extractScancodes(settings.value(string, QStringList()).toStringList());
 
-    if (action.keys.isEmpty())
-      continue;
+		if (action.keys.isEmpty())
+			continue;
 
-    action.pushed = false;
-    device->addKeyboardAction(action);
-  }
-  connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint, uint64)), device, SLOT(dbusWiimoteGeneralButtons(uint, uint64)));
-  settings.endGroup();
-  EIORemoteKeyboards << device;
+		action.pushed = false;
+		device->addKeyboardAction(action);
+	}
+	connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint, uint64)), device, SLOT(dbusWiimoteGeneralButtons(uint, uint64)));
+	settings.endGroup();
+	EIORemoteKeyboards << device;
 }
 
-
 void UInputProfileManager::freeKeyboardEvents() {
-  foreach(EIORemoteKeyboard * device, EIORemoteKeyboards)
-  delete device;
-  EIORemoteKeyboards.clear();
+	foreach (EIORemoteKeyboard *device, EIORemoteKeyboards)
+		delete device;
+	EIORemoteKeyboards.clear();
 }

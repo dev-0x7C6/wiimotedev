@@ -32,56 +32,56 @@
 #include "wiimotedevsettings.h"
 
 class WiimotedevCore : public QThread {
-  Q_OBJECT
+	Q_OBJECT
 private:
-  // Adaptor section ------------------------------------------ /
-  WiimotedevDBusEventsWrapper *WiimotedevDBusEvents;
-  DBusServiceAdaptorWrapper *dbusServiceAdaptor;
+	// Adaptor section ------------------------------------------ /
+	WiimotedevDBusEventsWrapper *WiimotedevDBusEvents;
+	DBusServiceAdaptorWrapper *dbusServiceAdaptor;
 
-  // Settings ------------------------------------------------- /
-  WiimotedevSettings *settings;
-  QHash <QString, uint> sequence;
-  QMutex m_mutex;
+	// Settings ------------------------------------------------- /
+	WiimotedevSettings *settings;
+	QHash<QString, uint> sequence;
+	QMutex m_mutex;
 
-  std::atomic<bool> m_interrupted;
+	std::atomic<bool> m_interrupted;
 
 public:
-  WiimotedevCore(QObject *parent = 0);
-  ~WiimotedevCore();
+	WiimotedevCore(QObject *parent = 0);
+	~WiimotedevCore();
 
-  uint result;
+	uint result;
 
-  void interrupt();
+	void interrupt();
 
-  static const int BluetoothFlood = 100;
-  static const int WaitForBluetooth = 3000;
+	static const int BluetoothFlood = 100;
+	static const int WaitForBluetooth = 3000;
 
-  QHash <uint, WiimotedevConnection *> threads;
+	QHash<uint, WiimotedevConnection *> threads;
 
 protected:
-  void run();
+	void run();
 
 private Q_SLOTS:
-  void dbusWiimoteDisconnected(uint);
+	void dbusWiimoteDisconnected(uint);
 
 public Q_SLOTS:
-  bool dbusIsClassicConnected(uint id);
-  bool dbusIsNunchukConnected(uint id);
-  bool dbusIsWiimoteConnected(uint id);
-  QList<uint> dbusNunchukGetAccelerometrCalibration(uint id);
-  QList<uint> dbusWiimoteGetAccelerometrCalibration(uint id);
-  uint dbusWiimoteGetAverageLatency(uint id);
-  uint dbusWiimoteGetBatteryLife(uint id);
-  uint dbusWiimoteGetCurrentLatency(uint id);
-  QString dbusWiimoteGetMacAddress(uint id);
-  bool dbusWiimoteGetRumbleStatus(uint id);
-  bool dbusWiimoteSetLedStatus(uint id, uint status);
-  bool dbusWiimoteSetRumbleStatus(uint id, bool status);
-  uint8 dbusWiimoteGetLedStatus(uint id);
-  uint8 dbusWiimoteGetStatus(uint id);
-  QList <uint> dbusGetWiimoteList();
-  bool dbusReloadSequenceList();
+	bool dbusIsClassicConnected(uint id);
+	bool dbusIsNunchukConnected(uint id);
+	bool dbusIsWiimoteConnected(uint id);
+	QList<uint> dbusNunchukGetAccelerometrCalibration(uint id);
+	QList<uint> dbusWiimoteGetAccelerometrCalibration(uint id);
+	uint dbusWiimoteGetAverageLatency(uint id);
+	uint dbusWiimoteGetBatteryLife(uint id);
+	uint dbusWiimoteGetCurrentLatency(uint id);
+	QString dbusWiimoteGetMacAddress(uint id);
+	bool dbusWiimoteGetRumbleStatus(uint id);
+	bool dbusWiimoteSetLedStatus(uint id, uint status);
+	bool dbusWiimoteSetRumbleStatus(uint id, bool status);
+	uint8 dbusWiimoteGetLedStatus(uint id);
+	uint8 dbusWiimoteGetStatus(uint id);
+	QList<uint> dbusGetWiimoteList();
+	bool dbusReloadSequenceList();
 
 Q_SIGNALS:
-  void dbusReportUnregistredWiimote(QString);
+	void dbusReportUnregistredWiimote(QString);
 };

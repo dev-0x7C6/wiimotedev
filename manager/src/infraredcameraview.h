@@ -34,71 +34,70 @@
 
 const double defaultPointMultiplier = 2.5;
 
-
 class InfraredCameraView : public QGraphicsView {
-  Q_OBJECT
+	Q_OBJECT
 private:
-  QString macAddress;
+	QString macAddress;
 
 public:
-  InfraredCameraView(WiimotedevDeviceEvents *iface, uint id = 1, QWidget *parent = 0);
-  ~InfraredCameraView();
+	InfraredCameraView(WiimotedevDeviceEvents *iface, uint id = 1, QWidget *parent = 0);
+	~InfraredCameraView();
 
-  enum Points {
-    ir0source = 0,
-    ir1source,
-    ir2source,
-    ir3source,
-    ir4source
-  };
+	enum Points {
+		ir0source = 0,
+		ir1source,
+		ir2source,
+		ir3source,
+		ir4source
+	};
 
-  enum IROrder {
-    LeftToRight,
-    RightToLeft
-  };
+	enum IROrder {
+		LeftToRight,
+		RightToLeft
+	};
 
-  enum AnalogMode {
-    modeNone,
-    modeClassic,
-    modeNunchuk
-  };
+	enum AnalogMode {
+		modeNone,
+		modeClassic,
+		modeNunchuk
+	};
 
-  void setWiimoteId(uint id);
+	void setWiimoteId(uint id);
 
 protected:
-  virtual void resizeEvent(QResizeEvent *);
+	virtual void resizeEvent(QResizeEvent *);
 
 private:
-  QGraphicsLineItem *line;
-  QGraphicsPixmapItem *cursor;
+	QGraphicsLineItem *line;
+	QGraphicsPixmapItem *cursor;
 
-  QGraphicsEllipseItem *infraredPoints[4];
-  QGraphicsLineItem *infraredLine[4];
-  QTime timer;
+	QGraphicsEllipseItem *infraredPoints[4];
+	QGraphicsLineItem *infraredLine[4];
+	QTime timer;
 
-  WiimotedevDeviceEvents *iface;
-  uint wiimoteId;
+	WiimotedevDeviceEvents *iface;
+	uint wiimoteId;
 
-  QGraphicsScene scene;
-  QTimer infraredTimeout;
+	QGraphicsScene scene;
+	QTimer infraredTimeout;
 
-  double widthMultiplier;
-  double heightMultiplier;
-  double dotSizeMultiplier;
+	double widthMultiplier;
+	double heightMultiplier;
+	double dotSizeMultiplier;
 
-  QString getReadableWiiremoteSequence(uint64);
+	QString getReadableWiiremoteSequence(uint64);
 
 private slots:
-  void infraredCleanup();
+	void infraredCleanup();
 
-  void dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle);
-  void dbusVirtualCursorLost(uint id);
-  void dbusVirtualCursorFound(uint id);
+	void dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle);
+	void dbusVirtualCursorLost(uint id);
+	void dbusVirtualCursorFound(uint id);
 
-  void dbusWiimoteAcc(uint id, const accdata &acc);
-  void dbusWiimoteConnected(uint id);
-  void dbusWiimoteDisconnected(uint id);
-  void dbusWiimoteInfrared(uint id, const QList<struct irpoint> &points);
+	void dbusWiimoteAcc(uint id, const accdata &acc);
+	void dbusWiimoteConnected(uint id);
+	void dbusWiimoteDisconnected(uint id);
+	void dbusWiimoteInfrared(uint id, const QList<struct irpoint> &points);
 };
 
 #endif // INFRAREDCAMERAVIEW_H

@@ -27,24 +27,22 @@
 #include "eiowiimotejoystick.h"
 
 class EIOGamepadManager : public QObject {
-  Q_OBJECT
+	Q_OBJECT
 public:
-  explicit EIOGamepadManager(QObject *parent = 0);
+	explicit EIOGamepadManager(QObject *parent = 0);
 
-  enum EIOGamepadVariants {
-    ClassicGamepadVariant,
-    NunchukGamepadVariant,
-    WiimoteGamepadVariant
-  };
+	enum EIOGamepadVariants {
+		ClassicGamepadVariant,
+		NunchukGamepadVariant,
+		WiimoteGamepadVariant
+	};
 
-  //uint32 create(EIOGamepadVariants variant, uint32 assign, QList< QPair< QString, QVariant> > arguments);
-  bool destroy(uint32 id);
-
+	//uint32 create(EIOGamepadVariants variant, uint32 assign, QList< QPair< QString, QVariant> > arguments);
+	bool destroy(uint32 id);
 
 signals:
 
 public slots:
-
 };
 
 #endif // EIOGAMEPADMANAGER_H

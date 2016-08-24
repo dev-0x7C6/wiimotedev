@@ -17,7 +17,6 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-
 #ifndef NUNCHUKJOYSTICK_H
 #define NUNCHUKJOYSTICK_H
 
@@ -38,70 +37,70 @@ const int NUNCHUK_ROLL_LINUX_AXIS = ABS_TILT_X;
 const int NUNCHUK_PITCH_LINUX_AXIS = ABS_TILT_Y;
 
 class EIONunchukJoystick : public QObject, public EIOUInputObject {
-  Q_OBJECT
+	Q_OBJECT
 public:
-  enum Position {
-    GamepadHorizontal,
-    GamepadVertical
-  };
+	enum Position {
+		GamepadHorizontal,
+		GamepadVertical
+	};
 
-  enum Mode {
-    DPadPositionConstant,
-    DPadPositionSwitchable
-  };
+	enum Mode {
+		DPadPositionConstant,
+		DPadPositionSwitchable
+	};
 
-  enum Stick {
-    NunchukStick,
-    DpadStick,
-    WiimoteAccelerometer,
-    NunchukAccelerometer
-  };
+	enum Stick {
+		NunchukStick,
+		DpadStick,
+		WiimoteAccelerometer,
+		NunchukAccelerometer
+	};
 
-  enum Device {
-    Nunchuk,
-    Wiimote
-  };
+	enum Device {
+		Nunchuk,
+		Wiimote
+	};
 
 private:
-  QString m_deviceName;
-  int m_last_stick_x;
-  int m_last_stick_y;
-  int m_last_dpad_x;
-  int m_last_dpad_y;
-  int m_last_nunchuk_acc_pitch;
-  int m_last_nunchuk_acc_roll;
-  int m_last_wiimote_acc_pitch;
-  int m_last_wiimote_acc_roll;
-  quint32 m_id;
-  bool m_stick_invert_x;
-  bool m_stick_invert_y;
-  bool m_report_buttons;
-  bool m_report_stick;
-  bool m_report_pitch;
-  bool m_report_roll;
+	QString m_deviceName;
+	int m_last_stick_x;
+	int m_last_stick_y;
+	int m_last_dpad_x;
+	int m_last_dpad_y;
+	int m_last_nunchuk_acc_pitch;
+	int m_last_nunchuk_acc_roll;
+	int m_last_wiimote_acc_pitch;
+	int m_last_wiimote_acc_roll;
+	quint32 m_id;
+	bool m_stick_invert_x;
+	bool m_stick_invert_y;
+	bool m_report_buttons;
+	bool m_report_stick;
+	bool m_report_pitch;
+	bool m_report_roll;
 
 public:
-  EIONunchukJoystick(QString deviceName, int id, QObject *parent = 0);
-  bool create();
+	EIONunchukJoystick(QString deviceName, int id, QObject *parent = 0);
+	bool create();
 
-  quint32 assign();
-  void setStickInvertX(bool option);
-  void setStickInvertY(bool option);
-  void setReportButtons(bool report);
-  void setReportStick(bool report);
-  void setReportPitch(bool report);
-  void setReportRoll(bool report);
+	quint32 assign();
+	void setStickInvertX(bool option);
+	void setStickInvertY(bool option);
+	void setReportButtons(bool report);
+	void setReportStick(bool report);
+	void setReportPitch(bool report);
+	void setReportRoll(bool report);
 
-  void setNunchukButtons(uint64);
-  void setNunchukStick(int32, int32);
-  void setNunchukAcc(double, double);
+	void setNunchukButtons(uint64);
+	void setNunchukStick(int32, int32);
+	void setNunchukAcc(double, double);
 
 private:
-  void centerStick(Stick id);
-  void syncAxes();
+	void centerStick(Stick id);
+	void syncAxes();
 
 signals:
-  void setLedState(uint, uint);
+	void setLedState(uint, uint);
 };
 
 #endif // NUNCHUKJOYSTICK_H

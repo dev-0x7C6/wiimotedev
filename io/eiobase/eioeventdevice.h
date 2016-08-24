@@ -22,17 +22,17 @@
 
 #include "eiobase/eiouinputobject.h"
 
-class EIOEventDevice: public EIOUInputObject {
+class EIOEventDevice : public EIOUInputObject {
 public:
-  bool uinput_open(bool replay = true);
+	bool uinput_open(bool replay = true);
 
-  void pressKeyboardButton(uint16);
-  void pressKeyboardButtonOnce(uint16);
-  void releaseKeyboardButton(uint16);
+	void pressKeyboardButton(uint16);
+	void pressKeyboardButtonOnce(uint16);
+	void releaseKeyboardButton(uint16);
 
-  void moveMouseVWheel(int32);
-  void moveMouseHWheel(int32);
-  void moveMousePointerRel(int32, int32);
+	void moveMouseVWheel(int32);
+	void moveMouseHWheel(int32);
+	void moveMousePointerRel(int32, int32);
 };
 
 #endif // UINPUT_EVENTDEVICE_H

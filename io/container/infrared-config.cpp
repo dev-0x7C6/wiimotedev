@@ -20,72 +20,65 @@
 #include "infrared-config.h"
 
 bool InfraredConfigContainer::accEnabled() const {
-  return m_accEnabled;
+	return m_accEnabled;
 }
 
 void InfraredConfigContainer::setAccEnabled(bool accEnabled) {
-  m_accEnabled = accEnabled;
+	m_accEnabled = accEnabled;
 }
 
 double InfraredConfigContainer::accMultiX() const {
-  return m_accMultiX;
+	return m_accMultiX;
 }
 
 void InfraredConfigContainer::setAccMultiX(double accMultiX) {
-  m_accMultiX = accMultiX;
+	m_accMultiX = accMultiX;
 }
 
 double InfraredConfigContainer::accMultiY() const {
-  return m_accMultiY;
+	return m_accMultiY;
 }
 
 void InfraredConfigContainer::setAccMultiY(double accMultiY) {
-  m_accMultiY = accMultiY;
+	m_accMultiY = accMultiY;
 }
 
 double InfraredConfigContainer::accPowX() const {
-  return m_accPowX;
+	return m_accPowX;
 }
 
 void InfraredConfigContainer::setAccPowX(double accPowX) {
-  m_accPowX = accPowX;
+	m_accPowX = accPowX;
 }
 
 double InfraredConfigContainer::accPowY() const {
-  return m_accPowY;
+	return m_accPowY;
 }
 
 void InfraredConfigContainer::setAccPowY(double accPowY) {
-  m_accPowY = accPowY;
+	m_accPowY = accPowY;
 }
 
 double InfraredConfigContainer::deadzoneX() const {
-  return m_deadzoneX;
+	return m_deadzoneX;
 }
 
 void InfraredConfigContainer::setDeadzoneX(double deadzoneX) {
-  m_deadzoneX = deadzoneX;
+	m_deadzoneX = deadzoneX;
 }
 
 double InfraredConfigContainer::deadzoneY() const {
-  return m_deadzoneY;
+	return m_deadzoneY;
 }
 
 void InfraredConfigContainer::setDeadzoneY(double deadzoneY) {
-  m_deadzoneY = deadzoneY;
+	m_deadzoneY = deadzoneY;
 }
 
 int32_t InfraredConfigContainer::accTimeout() const {
-  return m_accTimeout;
+	return m_accTimeout;
 }
 
 void InfraredConfigContainer::setAccTimeout(const int32_t &accTimeout) {
-  m_accTimeout = accTimeout;
+	m_accTimeout = accTimeout;
 }
-
-
-
-
-
-
-

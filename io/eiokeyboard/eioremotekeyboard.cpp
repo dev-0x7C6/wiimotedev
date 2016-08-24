@@ -19,122 +19,121 @@
 
 #include "eioremotekeyboard.h"
 
-extern QMap <QString, uint> scancodes;
+extern QMap<QString, uint> scancodes;
 
 enum KeyboardExtension {
-  keyboardExt = 0xFFFF,
-  keyboardExtMouseWheelLeft,
-  keyboardExtMouseWheelRight,
-  keyboardExtMouseWheelUp,
-  keyboardExtMouseWheelDown
+	keyboardExt = 0xFFFF,
+	keyboardExtMouseWheelLeft,
+	keyboardExtMouseWheelRight,
+	keyboardExtMouseWheelUp,
+	keyboardExtMouseWheelDown
 };
 
-EIORemoteKeyboard::EIORemoteKeyboard(EIOEventDevice *device) :
-  device(device) {
-  compareType = HashCompare<uint, uint64>::BitCompare;
+EIORemoteKeyboard::EIORemoteKeyboard(EIOEventDevice *device)
+		: device(device) {
+	compareType = HashCompare<uint, uint64>::BitCompare;
 }
 
-
 EIORemoteKeyboard::~EIORemoteKeyboard() {
-  disconnect(this, 0, 0, 0);
-  foreach(struct KeyboardAction * action, keyboardActions) {
-    EIORemoteKeyboard::releaseKeyboardButtons(action->keys);
-    delete action;
-  }
-  keyboardActions.clear();
+	disconnect(this, 0, 0, 0);
+	foreach (struct KeyboardAction *action, keyboardActions) {
+		EIORemoteKeyboard::releaseKeyboardButtons(action->keys);
+		delete action;
+	}
+	keyboardActions.clear();
 }
 
 void EIORemoteKeyboard::setCompareType(QString type) {
-  compareType = HashCompare<uint, uint64>::BitCompare;
+	compareType = HashCompare<uint, uint64>::BitCompare;
 
-  if (type.toLower() == QString("bitCompare").toLower())
-    compareType = HashCompare<uint, uint64>::BitCompare;
-  else if (type.toLower() == QString("equal").toLower())
-    compareType = HashCompare<uint, uint64>::EqualCompare;
-  else if (type.toLower() == QString("notEqual").toLower())
-    compareType = HashCompare<uint, uint64>::NotEqualCompare;
+	if (type.toLower() == QString("bitCompare").toLower())
+		compareType = HashCompare<uint, uint64>::BitCompare;
+	else if (type.toLower() == QString("equal").toLower())
+		compareType = HashCompare<uint, uint64>::EqualCompare;
+	else if (type.toLower() == QString("notEqual").toLower())
+		compareType = HashCompare<uint, uint64>::NotEqualCompare;
 }
 
 void EIORemoteKeyboard::addKeyboardAction(KeyboardAction &action) {
-  KeyboardAction *kbdAction = new KeyboardAction;
-  kbdAction->event = action.event;
-  kbdAction->keys = action.keys;
-  kbdAction->pushed = false;
-  keyboardActions << kbdAction;
+	KeyboardAction *kbdAction = new KeyboardAction;
+	kbdAction->event = action.event;
+	kbdAction->keys = action.keys;
+	kbdAction->pushed = false;
+	keyboardActions << kbdAction;
 }
 
 void EIORemoteKeyboard::clearKeyboardActions() {
-  foreach(KeyboardAction * action, keyboardActions)
-  delete action;
-  keyboardActions.clear();
+	foreach (KeyboardAction *action, keyboardActions)
+		delete action;
+	keyboardActions.clear();
 }
 
 void EIORemoteKeyboard::dbusWiimoteGeneralButtons(uint id, uint64 value) {
-  if (value == buttons.value(id, -1))
-    return;
+	if (value == buttons.value(id, -1))
+		return;
 
-  buttons[id] = value;
-  HashCompare<uint, uint64> compare;
-  foreach(KeyboardAction * action, keyboardActions) {
-    if (action->event.isEmpty())
-      continue;
+	buttons[id] = value;
+	HashCompare<uint, uint64> compare;
+	foreach (KeyboardAction *action, keyboardActions) {
+		if (action->event.isEmpty())
+			continue;
 
-    bool matched = compare.compare(&action->event, &buttons, compareType);
+		bool matched = compare.compare(&action->event, &buttons, compareType);
 
-    if (matched && !action->pushed) {
-      action->pushed = !action->pushed;
-      pressKeyboardButtons(action->keys);
-    } else if (!matched && action->pushed) {
-      action->pushed = !action->pushed;
-      releaseKeyboardButtons(action->keys);
-    }
-  }
+		if (matched && !action->pushed) {
+			action->pushed = !action->pushed;
+			pressKeyboardButtons(action->keys);
+		} else if (!matched && action->pushed) {
+			action->pushed = !action->pushed;
+			releaseKeyboardButtons(action->keys);
+		}
+	}
 }
 
 void EIORemoteKeyboard::pressKeyboardExtendedButton(uint key) {
-  switch (key) {
-    case keyboardExtMouseWheelLeft:
-      device->moveMouseHWheel(-1);
-      break;
+	switch (key) {
+		case keyboardExtMouseWheelLeft:
+			device->moveMouseHWheel(-1);
+			break;
 
-    case keyboardExtMouseWheelRight:
-      device->moveMouseHWheel(1);
-      break;
+		case keyboardExtMouseWheelRight:
+			device->moveMouseHWheel(1);
+			break;
 
-    case keyboardExtMouseWheelUp:
-      device->moveMouseVWheel(1);
-      break;
+		case keyboardExtMouseWheelUp:
+			device->moveMouseVWheel(1);
+			break;
 
-    case keyboardExtMouseWheelDown:
-      device->moveMouseVWheel(-1);
-      break;
-  }
+		case keyboardExtMouseWheelDown:
+			device->moveMouseVWheel(-1);
+			break;
+	}
 }
 
 void EIORemoteKeyboard::releaseKeyboardExtendedButton(uint key) {
-  Q_UNUSED(key);
+	Q_UNUSED(key);
 }
 
-void EIORemoteKeyboard::pressKeyboardButtons(QList <uint> &list) {
-  if (list.isEmpty())
-    return;
+void EIORemoteKeyboard::pressKeyboardButtons(QList<uint> &list) {
+	if (list.isEmpty())
+		return;
 
-  foreach(const uint key, list) {
-    if (key <= keyboardExt)
-      device->pressKeyboardButton(key);
-    else
-      pressKeyboardExtendedButton(key);
-  }
+	foreach (const uint key, list) {
+		if (key <= keyboardExt)
+			device->pressKeyboardButton(key);
+		else
+			pressKeyboardExtendedButton(key);
+	}
 }
 
-void EIORemoteKeyboard::releaseKeyboardButtons(QList <uint> &list) {
-  if (list.isEmpty())
-    return;
+void EIORemoteKeyboard::releaseKeyboardButtons(QList<uint> &list) {
+	if (list.isEmpty())
+		return;
 
-  foreach(const uint key, list)
+	foreach (const uint key, list)
 
-  if (key <= keyboardExt)
-    device->releaseKeyboardButton(key);
-  else
-    releaseKeyboardExtendedButton(key);
+		if (key <= keyboardExt)
+			device->releaseKeyboardButton(key);
+		else
+			releaseKeyboardExtendedButton(key);
 }

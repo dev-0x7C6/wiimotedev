@@ -22,34 +22,34 @@
 #include <QString>
 
 void systemlog::open(const char *name) {
-  openlog(name, LOG_PID, LOG_DAEMON);
-  setlogmask(LOG_UPTO(LOG_DEBUG));
+	openlog(name, LOG_PID, LOG_DAEMON);
+	setlogmask(LOG_UPTO(LOG_DEBUG));
 }
 
 void systemlog::close() {
-  closelog();
+	closelog();
 }
 
 void systemlog::critical(const QString message) {
-  syslog(LOG_CRIT, "%s", message.toLocal8Bit().data());
+	syslog(LOG_CRIT, "%s", message.toLocal8Bit().data());
 }
 
 void systemlog::debug(const QString message) {
-  syslog(LOG_DEBUG, "%s", message.toLocal8Bit().data());
+	syslog(LOG_DEBUG, "%s", message.toLocal8Bit().data());
 }
 
 void systemlog::error(const QString message) {
-  syslog(LOG_ERR, "%s", message.toLocal8Bit().data());
+	syslog(LOG_ERR, "%s", message.toLocal8Bit().data());
 }
 
 void systemlog::information(const QString message) {
-  syslog(LOG_INFO, "%s", message.toLocal8Bit().data());
+	syslog(LOG_INFO, "%s", message.toLocal8Bit().data());
 }
 
 void systemlog::notice(const QString message) {
-  syslog(LOG_NOTICE, "%s", message.toLocal8Bit().data());
+	syslog(LOG_NOTICE, "%s", message.toLocal8Bit().data());
 }
 
 void systemlog::warning(const QString message) {
-  syslog(LOG_WARNING, "%s", message.toLocal8Bit().data());
+	syslog(LOG_WARNING, "%s", message.toLocal8Bit().data());
 }

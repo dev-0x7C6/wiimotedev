@@ -22,13 +22,13 @@
 class QString;
 
 namespace systemlog {
-  void open(const char *name);
-  void close();
+void open(const char *name);
+void close();
 
-  void critical(const QString message);
-  void debug(const QString message);
-  void error(const QString message);
-  void information(const QString message);
-  void notice(const QString message);
-  void warning(const QString message);
+void critical(const QString message);
+void debug(const QString message);
+void error(const QString message);
+void information(const QString message);
+void notice(const QString message);
+void warning(const QString message);
 }

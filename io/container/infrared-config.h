@@ -23,38 +23,37 @@
 
 class InfraredConfigContainer {
 public:
-  bool accEnabled() const;
-  void setAccEnabled(bool accEnabled);
+	bool accEnabled() const;
+	void setAccEnabled(bool accEnabled);
 
-  double accMultiX() const;
-  void setAccMultiX(double accMultiX);
+	double accMultiX() const;
+	void setAccMultiX(double accMultiX);
 
-  double accMultiY() const;
-  void setAccMultiY(double accMultiY);
+	double accMultiY() const;
+	void setAccMultiY(double accMultiY);
 
-  double accPowX() const;
-  void setAccPowX(double accPowX);
+	double accPowX() const;
+	void setAccPowX(double accPowX);
 
-  double accPowY() const;
-  void setAccPowY(double accPowY);
+	double accPowY() const;
+	void setAccPowY(double accPowY);
 
-  double deadzoneX() const;
-  void setDeadzoneX(double deadzoneX);
+	double deadzoneX() const;
+	void setDeadzoneX(double deadzoneX);
 
-  double deadzoneY() const;
-  void setDeadzoneY(double deadzoneY);
+	double deadzoneY() const;
+	void setDeadzoneY(double deadzoneY);
 
-  int32_t accTimeout() const;
-  void setAccTimeout(const int32_t &accTimeout);
+	int32_t accTimeout() const;
+	void setAccTimeout(const int32_t &accTimeout);
 
 private:
-  bool m_accEnabled;
-  double m_accMultiX;
-  double m_accMultiY;
-  double m_accPowX;
-  double m_accPowY;
-  double m_deadzoneX;
-  double m_deadzoneY;
-  int32_t m_accTimeout;
-
+	bool m_accEnabled;
+	double m_accMultiX;
+	double m_accMultiY;
+	double m_accPowX;
+	double m_accPowY;
+	double m_deadzoneX;
+	double m_deadzoneY;
+	int32_t m_accTimeout;
 };

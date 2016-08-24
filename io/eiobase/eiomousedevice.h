@@ -24,18 +24,19 @@
 
 #include <QRect>
 
-class UInputMouse: public EIOUInputObject {
+class UInputMouse : public EIOUInputObject {
 public:
-  UInputMouse() : EIOUInputObject() {}
+	UInputMouse()
+			: EIOUInputObject() {}
 
-  bool uinput_open(QRect absRect = QRect(-512, -384, 1024, 768), bool abs = false);
+	bool uinput_open(QRect absRect = QRect(-512, -384, 1024, 768), bool abs = false);
 
-  void moveMousePointerRel(int32 x, int32 y);
-  void moveMousePointerAbs(int32 x, int32 y);
-  void moveMouseVWheel(int32 direction);
-  void moveMouseHWheel(int32 direction);
-  void pressMouseButton(uint16 button);
-  void releaseMouseButton(uint16 button);
+	void moveMousePointerRel(int32 x, int32 y);
+	void moveMousePointerAbs(int32 x, int32 y);
+	void moveMouseVWheel(int32 direction);
+	void moveMouseHWheel(int32 direction);
+	void pressMouseButton(uint16 button);
+	void releaseMouseButton(uint16 button);
 };
 
 #endif // UINPUT_MOUSE_H

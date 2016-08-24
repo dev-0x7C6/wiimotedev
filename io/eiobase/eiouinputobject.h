@@ -34,10 +34,11 @@
 #define linux_register_relbit(x) ioctl(uinput_fd, UI_SET_RELBIT, x);
 #define linux_register_absbit(x) ioctl(uinput_fd, UI_SET_ABSBIT, x);
 
-#define linux_abs_set_range(abs, max, min) dev.absmax[abs] = max; \
-  dev.absmin[abs] = min; \
-  dev.absflat[abs] = 0; \
-  dev.absfuzz[abs] = 0;
+#define linux_abs_set_range(abs, max, min) \
+	dev.absmax[abs] = max;                 \
+	dev.absmin[abs] = min;                 \
+	dev.absflat[abs] = 0;                  \
+	dev.absfuzz[abs] = 0;
 
 #define UINPUT_PRODUCT_ID 0x01
 #define UINPUT_VENDOR_ID 0x01
@@ -46,25 +47,24 @@
 
 class EIOUInputObject {
 protected:
-  QString uinputFile;
+	QString uinputFile;
 
-  int uinput_fd;
-  struct uinput_user_dev dev;
+	int uinput_fd;
+	struct uinput_user_dev dev;
 
 public:
-  explicit EIOUInputObject();
-  virtual ~EIOUInputObject();
+	explicit EIOUInputObject();
+	virtual ~EIOUInputObject();
 
-  bool alreadyOpened;
-  virtual void uinput_close(bool force = true);
+	bool alreadyOpened;
+	virtual void uinput_close(bool force = true);
 
-  QString path() {
-    return uinputFile;
-  }
+	QString path() {
+		return uinputFile;
+	}
 
-  void sendEvent(uint16 type, uint16 code, int32 value);
-  void sendEventSync();
-
+	void sendEvent(uint16 type, uint16 code, int32 value);
+	void sendEventSync();
 };
 
 #endif // UINPUT_GENERAL_H

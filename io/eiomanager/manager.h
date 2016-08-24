@@ -42,178 +42,173 @@
 #include "eiojoystick/eiowiimotejoystick.h"
 
 enum {
-  mouseEmulationModeNone = 0,
-  mouseEmulationModeAbs,
-  mouseEmulationModeAcc
+	mouseEmulationModeNone = 0,
+	mouseEmulationModeAbs,
+	mouseEmulationModeAcc
 };
 
 enum {
-  mouseEmulationAlghoritm1point = 1,
-  mouseEmulationAlghoritm2points,
-  mouseEmulationAlghoritm3points,
-  mouseEmulationAlghoritm4points
+	mouseEmulationAlghoritm1point = 1,
+	mouseEmulationAlghoritm2points,
+	mouseEmulationAlghoritm3points,
+	mouseEmulationAlghoritm4points
 };
 
 struct mouseEmulationStruct {
-  uint8 mode;
-  uint8 alghoritm;
+	uint8 mode;
+	uint8 alghoritm;
 };
 
-
 struct InfraredConfigurationStruct {
-  uint8 mode;
-  uint8 alghoritm;
+	uint8 mode;
+	uint8 alghoritm;
 };
 
 namespace profiles {
-  namespace infrared {
-    const QString section("infrared/");
-    const QString wiimoteid("wiimoteid");
-    const QString mode("mode");
-    const QString alghoritm("alghoritm");
-    const QString sensx("sensitivity.x");
-    const QString sensy("sensitivity.y");
-    const QString freezonex("freezone.x");
-    const QString freezoney("freezone.y");
-    const QString timeout("timeout");
-    const QString latency("latency");
-    const QString range("range");
-  }
+namespace infrared {
+const QString section("infrared/");
+const QString wiimoteid("wiimoteid");
+const QString mode("mode");
+const QString alghoritm("alghoritm");
+const QString sensx("sensitivity.x");
+const QString sensy("sensitivity.y");
+const QString freezonex("freezone.x");
+const QString freezoney("freezone.y");
+const QString timeout("timeout");
+const QString latency("latency");
+const QString range("range");
+}
 }
 
 enum KeyboardActionAlghortim {
-  keyboardBitCompare,
-  keyboardEqual,
-  keyboardNotEqual
+	keyboardBitCompare,
+	keyboardEqual,
+	keyboardNotEqual
 };
 
-
 class UInputProfileManager : public QObject {
-  Q_OBJECT
+	Q_OBJECT
 private:
-  //Interfaces
-  WiimotedevDeviceEvents *dbusDeviceEventsIface;
+	//Interfaces
+	WiimotedevDeviceEvents *dbusDeviceEventsIface;
 
-  //Adaptors
-  DBusProfileManagerAdaptorWrapper *dbusProfileManager;
-  DBusServiceAdaptorWrapper *dbusService;
-  DBusCustomJobsAdaptorWrapper *dbusCustomJobs;
+	//Adaptors
+	DBusProfileManagerAdaptorWrapper *dbusProfileManager;
+	DBusServiceAdaptorWrapper *dbusService;
+	DBusCustomJobsAdaptorWrapper *dbusCustomJobs;
 
-  //Profile section
-  QString author;
-  QString email;
-  QString name;
-  QString path;
-  QString version;
+	//Profile section
+	QString author;
+	QString email;
+	QString name;
+	QString path;
+	QString version;
 
-  //Settings
+	//Settings
 
-  bool disableNunchukExtShift;
-  bool disableNunchukExtShake;
-  bool disableNunchukExtTilt;
-  bool disableWiiremoteShift;
-  bool disableWiiremoteShake;
-  bool disableWiiremoteTilt;
-  bool disableKeyboardModule;
-  bool enableWiiremoteInfraredMouse;
-  bool rumbleStatus;
+	bool disableNunchukExtShift;
+	bool disableNunchukExtShake;
+	bool disableNunchukExtTilt;
+	bool disableWiiremoteShift;
+	bool disableWiiremoteShake;
+	bool disableWiiremoteTilt;
+	bool disableKeyboardModule;
+	bool enableWiiremoteInfraredMouse;
+	bool rumbleStatus;
 
-  //Keyboard section
-  const static char *keyboardSection;
+	//Keyboard section
+	const static char *keyboardSection;
 
-  struct CommandAction {
-    QHash<uint, uint64> event;
-    QStringList params;
-    bool actived;
-    uint8 alghoritm;
-  };
+	struct CommandAction {
+		QHash<uint, uint64> event;
+		QStringList params;
+		bool actived;
+		uint8 alghoritm;
+	};
 
-  enum CommandList {
-    executeAction = 1,
-    rumbleAction,
-    hwheelAction,
-    vwheelAction
-  };
+	enum CommandList {
+		executeAction = 1,
+		rumbleAction,
+		hwheelAction,
+		vwheelAction
+	};
 
-  QList <CommandAction *> commandActions;
-  QHash<uint, uint64> lastWiiremoteButtons;
+	QList<CommandAction *> commandActions;
+	QHash<uint, uint64> lastWiiremoteButtons;
 
-  QList <EIOClassicJoystick *> EIOClassicJoysticks;
-  QList <EIONunchukJoystick *> EIONunchukJoysticks;
-  QList <EIOWiimoteJoystick *> EIOWiimoteJoysticks;
-  QList <EIORemoteKeyboard *> EIORemoteKeyboards;
-  QList <EIOInfraredMouse *> EIOInfraredMouses;
+	QList<EIOClassicJoystick *> EIOClassicJoysticks;
+	QList<EIONunchukJoystick *> EIONunchukJoysticks;
+	QList<EIOWiimoteJoystick *> EIOWiimoteJoysticks;
+	QList<EIORemoteKeyboard *> EIORemoteKeyboards;
+	QList<EIOInfraredMouse *> EIOInfraredMouses;
 
+	EIOEventDevice *virtualEvent;
 
-  EIOEventDevice *virtualEvent;
+	/* General variables --------------------------------------------- */
 
-  /* General variables --------------------------------------------- */
-
-  QString profileName;
-  QPoint cursor;
+	QString profileName;
+	QPoint cursor;
 
 public:
-  UInputProfileManager(QObject *parent = 0);
-  ~UInputProfileManager();
+	UInputProfileManager(QObject *parent = 0);
+	~UInputProfileManager();
 
 private:
-  QHash <uint, uint64> extractDeviceEvent(QString);
-  QList <uint> extractScancodes(QStringList);
+	QHash<uint, uint64> extractDeviceEvent(QString);
+	QList<uint> extractScancodes(QStringList);
 
-  QMap <QString, uint> commandIds;
+	QMap<QString, uint> commandIds;
 
-  void initializeCommandEvents();
+	void initializeCommandEvents();
 
+	void freeKeyboardEvents();
 
-  void freeKeyboardEvents();
+	void setupClassicJoystick(uint assign, const QString &name, QSettings &settings);
+	void setupWiimoteJoystick(uint assign, const QString &name, QSettings &settings);
+	void setupNunchukJoystick(uint assign, const QString &name, QSettings &settings);
+	void setupInfraredMouse(uint assing, const QString &name, QSettings &settings);
 
-  void setupClassicJoystick(uint assign, const QString &name, QSettings &settings);
-  void setupWiimoteJoystick(uint assign, const QString &name, QSettings &settings);
-  void setupNunchukJoystick(uint assign, const QString &name, QSettings &settings);
-  void setupInfraredMouse(uint assing, const QString &name, QSettings &settings);
+	void assignInfraredEvents(const QString &key, QSettings &settings);
+	void assignKeyboardEvents(const QString &key, QSettings &settings);
+	void assignJoystickEvents(const QString &key, QSettings &settings);
 
-  void assignInfraredEvents(const QString &key, QSettings &settings);
-  void assignKeyboardEvents(const QString &key, QSettings &settings);
-  void assignJoystickEvents(const QString &key, QSettings &settings);
+	void freeJoystickEvents();
 
-  void freeJoystickEvents();
+	//void assignCommandEvents(const QString &key, QSettings &settings);
 
-  //void assignCommandEvents(const QString &key, QSettings &settings);
+	void loadCommandEvents(QSettings &);
+	void unloadCommandEvents();
 
-  void loadCommandEvents(QSettings &);
-  void unloadCommandEvents();
+	void loadInfraredEvents(QSettings &);
+	void unloadInfraredEvents();
 
-  void loadInfraredEvents(QSettings &);
-  void unloadInfraredEvents();
+	void processCommandEvents();
 
-  void processCommandEvents();
-
-  void activeCommandEvent(QStringList &);
-  void deactiveCommandEvent(QStringList &);
+	void activeCommandEvent(QStringList &);
+	void deactiveCommandEvent(QStringList &);
 
 private Q_SLOTS:
-  void dbusWiimoteGeneralButtons(uint, uint64);
+	void dbusWiimoteGeneralButtons(uint, uint64);
 
-  void dbusClassicControllerButtons(uint, uint64);
-  void dbusWiimoteAcc(uint, accdata);
-  void dbusWiimoteButtons(uint, uint64);
-  void dbusNunchukAcc(uint, accdata);
-  void dbusNunchukButtons(uint, uint64);
-  void dbusNunchukStick(uint, stickdata);
-  void dbusClassicControllerLStick(uint, stickdata);
-  void dbusClassicControllerRStick(uint, stickdata);
+	void dbusClassicControllerButtons(uint, uint64);
+	void dbusWiimoteAcc(uint, accdata);
+	void dbusWiimoteButtons(uint, uint64);
+	void dbusNunchukAcc(uint, accdata);
+	void dbusNunchukButtons(uint, uint64);
+	void dbusNunchukStick(uint, stickdata);
+	void dbusClassicControllerLStick(uint, stickdata);
+	void dbusClassicControllerRStick(uint, stickdata);
 
 public Q_SLOTS:
-  inline bool isWiimotedevServiceAvailable() {
-    return dbusDeviceEventsIface->isValid();
-  }
+	inline bool isWiimotedevServiceAvailable() {
+		return dbusDeviceEventsIface->isValid();
+	}
 
-  bool loadProfile(QString);
-  bool unloadProfile();
+	bool loadProfile(QString);
+	bool unloadProfile();
 
 Q_SIGNALS:
-  void executeRequest(QStringList);
-
+	void executeRequest(QStringList);
 };
 
 #endif // PROFILEMANAGER_H

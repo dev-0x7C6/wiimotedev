@@ -30,38 +30,37 @@
 #include <QMap>
 
 struct KeyboardAction {
-  QHash<uint, uint64> event;
-  QList<uint> keys;
-  bool pushed;
+	QHash<uint, uint64> event;
+	QList<uint> keys;
+	bool pushed;
 };
 
-class EIORemoteKeyboard: public QObject {
-  Q_OBJECT
-  //general
-  EIOEventDevice *device;
-  uint id;
-  uint compareType;
+class EIORemoteKeyboard : public QObject {
+	Q_OBJECT
+	//general
+	EIOEventDevice *device;
+	uint id;
+	uint compareType;
 
-  QHash <uint, uint64> buttons;
+	QHash<uint, uint64> buttons;
 
-  QList <KeyboardAction *> keyboardActions;
+	QList<KeyboardAction *> keyboardActions;
 
 public:
-  EIORemoteKeyboard(EIOEventDevice *device);
-  ~EIORemoteKeyboard();
+	EIORemoteKeyboard(EIOEventDevice *device);
+	~EIORemoteKeyboard();
 
-  void addKeyboardAction(KeyboardAction &);
-  void clearKeyboardActions();
-  void setCompareType(QString);
+	void addKeyboardAction(KeyboardAction &);
+	void clearKeyboardActions();
+	void setCompareType(QString);
 
 public Q_SLOTS:
-  void dbusWiimoteGeneralButtons(uint, uint64);
+	void dbusWiimoteGeneralButtons(uint, uint64);
 
 private:
-  void pressKeyboardButtons(QList <uint> &);
-  void releaseKeyboardButtons(QList <uint> &);
-  void pressKeyboardExtendedButton(uint);
-  void releaseKeyboardExtendedButton(uint);
-
+	void pressKeyboardButtons(QList<uint> &);
+	void releaseKeyboardButtons(QList<uint> &);
+	void pressKeyboardExtendedButton(uint);
+	void releaseKeyboardExtendedButton(uint);
 };
 #endif // EVENT_VIRTUAL_KEYBOARD_H

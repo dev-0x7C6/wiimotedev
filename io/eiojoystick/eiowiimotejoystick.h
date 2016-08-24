@@ -36,76 +36,76 @@ const int WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
 const int WIIMOTE_PITCH_LINUX_AXIS = ABS_X;
 const int WIIMOTE_ROLL_LINUX_AXIS = ABS_RX;
 
-class EIOWiimoteJoystick: public QObject, public EIOUInputObject {
-  Q_OBJECT
+class EIOWiimoteJoystick : public QObject, public EIOUInputObject {
+	Q_OBJECT
 public:
-  enum Position {
-    GamepadHorizontal,
-    GamepadVertical
-  };
+	enum Position {
+		GamepadHorizontal,
+		GamepadVertical
+	};
 
-  enum Mode {
-    DPadPositionConstant,
-    DPadPositionSwitchable
-  };
+	enum Mode {
+		DPadPositionConstant,
+		DPadPositionSwitchable
+	};
 
-  enum Stick {
-    NunchukStick,
-    DpadStick,
-    WiimoteAccelerometer,
-    NunchukAccelerometer
-  };
+	enum Stick {
+		NunchukStick,
+		DpadStick,
+		WiimoteAccelerometer,
+		NunchukAccelerometer
+	};
 
-  enum Device {
-    Nunchuk,
-    Wiimote
-  };
+	enum Device {
+		Nunchuk,
+		Wiimote
+	};
 
 private:
-  QString m_deviceName;
-  int m_last_stick_x;
-  int m_last_stick_y;
-  int m_last_dpad_x;
-  int m_last_dpad_y;
-  int m_last_nunchuk_acc_pitch;
-  int m_last_nunchuk_acc_roll;
-  int m_last_wiimote_acc_pitch;
-  int m_last_wiimote_acc_roll;
-  Position m_horizontal;
-  Mode m_mode;
-  bool m_home_pressed;
-  quint32 m_id;
-  bool m_dpad_invert_x;
-  bool m_dpad_invert_y;
-  bool m_home_switch_position;
-  bool m_report_buttons;
-  bool m_report_dstick;
-  bool m_report_pitch;
-  bool m_report_roll;
+	QString m_deviceName;
+	int m_last_stick_x;
+	int m_last_stick_y;
+	int m_last_dpad_x;
+	int m_last_dpad_y;
+	int m_last_nunchuk_acc_pitch;
+	int m_last_nunchuk_acc_roll;
+	int m_last_wiimote_acc_pitch;
+	int m_last_wiimote_acc_roll;
+	Position m_horizontal;
+	Mode m_mode;
+	bool m_home_pressed;
+	quint32 m_id;
+	bool m_dpad_invert_x;
+	bool m_dpad_invert_y;
+	bool m_home_switch_position;
+	bool m_report_buttons;
+	bool m_report_dstick;
+	bool m_report_pitch;
+	bool m_report_roll;
 
 public:
-  EIOWiimoteJoystick(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
-  bool create();
+	EIOWiimoteJoystick(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
+	bool create();
 
-  quint32 assign();
+	quint32 assign();
 
-  void setDStickInvertX(bool option);
-  void setDStickInvertY(bool option);
-  void setHomeSwitchPosition(bool option);
-  void setReportButtons(bool report);
-  void setReportDStick(bool report);
-  void setReportPitch(bool report);
-  void setReportRoll(bool report);
+	void setDStickInvertX(bool option);
+	void setDStickInvertY(bool option);
+	void setHomeSwitchPosition(bool option);
+	void setReportButtons(bool report);
+	void setReportDStick(bool report);
+	void setReportPitch(bool report);
+	void setReportRoll(bool report);
 
-  void setWiimoteButtons(uint64);
-  void setWiimoteAcc(double, double);
+	void setWiimoteButtons(uint64);
+	void setWiimoteAcc(double, double);
 
 private:
-  void centerStick(Stick id);
-  void syncAxes();
+	void centerStick(Stick id);
+	void syncAxes();
 
 signals:
-  void setLedState(uint, uint);
+	void setLedState(uint, uint);
 };
 
 #endif // UINPUT_WIIMOTEGAMEPAD_H

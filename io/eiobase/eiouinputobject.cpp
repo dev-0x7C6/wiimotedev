@@ -22,45 +22,47 @@
 #include <QStringList>
 #include <QFile>
 
-const QStringList UInputLocation(QStringList() << "/dev/uinput" << "/dev/input/uinput" << "/dev/misc/uinput");
+const QStringList UInputLocation(QStringList() << "/dev/uinput"
+											   << "/dev/input/uinput"
+											   << "/dev/misc/uinput");
 
 EIOUInputObject::EIOUInputObject() {
-  uinputFile = QString::fromUtf8("");
-  uinput_fd = 0;
-  alreadyOpened = false;
-  foreach(const QString & file, UInputLocation) {
-    if (QFile::exists(file)) {
-      uinputFile = file;
-      break;
-    }
-  }
+	uinputFile = QString::fromUtf8("");
+	uinput_fd = 0;
+	alreadyOpened = false;
+	foreach (const QString &file, UInputLocation) {
+		if (QFile::exists(file)) {
+			uinputFile = file;
+			break;
+		}
+	}
 }
 
 EIOUInputObject::~EIOUInputObject() {
 }
 
 void EIOUInputObject::uinput_close(bool force) {
-  if (!force && !alreadyOpened)
-    return;
+	if (!force && !alreadyOpened)
+		return;
 
-  ioctl(uinput_fd, UI_DEV_DESTROY);
-  close(uinput_fd);
-  uinput_fd = 0;
-  alreadyOpened = false;
+	ioctl(uinput_fd, UI_DEV_DESTROY);
+	close(uinput_fd);
+	uinput_fd = 0;
+	alreadyOpened = false;
 }
 
 void EIOUInputObject::sendEvent(uint16 type, uint16 code, int32 value) {
-  if (!uinput_fd)
-    return;
+	if (!uinput_fd)
+		return;
 
-  struct input_event event;
-  memset(&event.time, 0, sizeof(event.time));
-  event.code = code;
-  event.type = type;
-  event.value = value;
-  write(uinput_fd, &event, sizeof(event));
+	struct input_event event;
+	memset(&event.time, 0, sizeof(event.time));
+	event.code = code;
+	event.type = type;
+	event.value = value;
+	write(uinput_fd, &event, sizeof(event));
 }
 
 void EIOUInputObject::sendEventSync() {
-  sendEvent(EV_SYN, SYN_REPORT, 0);
+	sendEvent(EV_SYN, SYN_REPORT, 0);
 }

@@ -27,23 +27,23 @@
 class QStringList;
 
 class WiimotedevSettings : public QObject {
-  Q_OBJECT
+	Q_OBJECT
 private:
-  QHash <QString, uint> m_sequence;
-  QSettings *m_settings;
-  uint m_powersave;
+	QHash<QString, uint> m_sequence;
+	QSettings *m_settings;
+	uint m_powersave;
 
-  QSettings *m_connections;
-
-public:
-  WiimotedevSettings(QObject *parent = 0);
+	QSettings *m_connections;
 
 public:
-  void reload();
+	WiimotedevSettings(QObject *parent = 0);
 
-  uint powerSaveTiemout();
+public:
+	void reload();
 
-  uint registerWiiremote(const QString &mac);
+	uint powerSaveTiemout();
 
-  QHash <QString, uint> connectionTable();
+	uint registerWiiremote(const QString &mac);
+
+	QHash<QString, uint> connectionTable();
 };
