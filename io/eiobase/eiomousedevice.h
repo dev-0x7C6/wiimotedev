@@ -17,26 +17,23 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef UINPUT_MOUSE_H
-#define UINPUT_MOUSE_H
+#pragma once
 
 #include "eiobase/eiouinputobject.h"
 
 #include <QRect>
 
-class UInputMouse : public EIOUInputObject {
+class UInputMouse : public InputDevice {
 public:
-	UInputMouse()
-			: EIOUInputObject() {}
-
-	bool uinput_open(QRect absRect = QRect(-512, -384, 1024, 768), bool abs = false);
-
+	explicit UInputMouse()
+			: InputDevice("Virtual Mouse") {}
 	void moveMousePointerRel(int32 x, int32 y);
 	void moveMousePointerAbs(int32 x, int32 y);
 	void moveMouseVWheel(int32 direction);
 	void moveMouseHWheel(int32 direction);
 	void pressMouseButton(uint16 button);
 	void releaseMouseButton(uint16 button);
-};
 
-#endif // UINPUT_MOUSE_H
+protected:
+	virtual bool configure() override;
+};

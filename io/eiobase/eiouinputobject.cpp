@@ -18,41 +18,75 @@
  **********************************************************************************/
 
 #include "eiouinputobject.h"
+#include <iostream>
+#include <sys/stat.h>
 
-#include <QStringList>
-#include <QFile>
+InputDevice::InputDevice(std::string name)
+		: m_file(nullptr)
+		, m_fd(-1)
 
-const QStringList UInputLocation(QStringList() << "/dev/uinput"
-											   << "/dev/input/uinput"
-											   << "/dev/misc/uinput");
+{
+	m_interfaceFilePath = findUinputInterface();
 
-EIOUInputObject::EIOUInputObject() {
-	uinputFile = QString::fromUtf8("");
-	uinput_fd = 0;
-	alreadyOpened = false;
-	foreach (const QString &file, UInputLocation) {
-		if (QFile::exists(file)) {
-			uinputFile = file;
-			break;
-		}
+	if (m_interfaceFilePath.empty()) {
+		std::cerr << "error: unable to find uinput interface!" << std::endl;
+		return;
+	}
+
+	m_file = fopen(m_interfaceFilePath.c_str(), "rw");
+
+	if (m_file == nullptr) {
+		std::cerr << "error: unable to open uinput interface!" << std::endl;
+		return;
+	}
+
+	m_fd = fileno(m_file);
+
+	memset(&m_dev, 0, sizeof(m_dev));
+	name.resize(std::min(name.size(), sizeof(m_dev.name)));
+	strcpy(m_dev.name, name.c_str());
+	m_dev.id.product = 1;
+	m_dev.id.version = 1;
+	m_dev.id.vendor = 1;
+	m_dev.id.bustype = BUS_USB;
+}
+
+bool InputDevice::create() {
+	write(m_fd, &m_dev, sizeof(m_dev));
+
+	if (ioctl(m_fd, UI_DEV_CREATE)) {
+		std::cerr << "error: unable to create input device" << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
+InputDevice::~InputDevice() {
+	if (isValid()) {
+		ioctl(m_fd, UI_DEV_DESTROY);
+		fclose(m_file);
 	}
 }
 
-EIOUInputObject::~EIOUInputObject() {
+std::string InputDevice::findUinputInterface() {
+	static auto paths = {
+		"/dev/uinput",
+		"/dev/input/uinput",
+		"/dev/misc/uinput",
+	};
+
+	for (const auto &path : paths) {
+		struct stat buffer;
+		if (stat(path, &buffer) == 0)
+			return path;
+	}
+
+	return {};
 }
 
-void EIOUInputObject::uinput_close(bool force) {
-	if (!force && !alreadyOpened)
-		return;
-
-	ioctl(uinput_fd, UI_DEV_DESTROY);
-	close(uinput_fd);
-	uinput_fd = 0;
-	alreadyOpened = false;
-}
-
-void EIOUInputObject::sendEvent(uint16 type, uint16 code, int32 value) {
-	if (!uinput_fd)
+void InputDevice::sendEvent(uint16 type, uint16 code, int32 value) {
+	if (!isValid())
 		return;
 
 	struct input_event event;
@@ -60,9 +94,12 @@ void EIOUInputObject::sendEvent(uint16 type, uint16 code, int32 value) {
 	event.code = code;
 	event.type = type;
 	event.value = value;
-	write(uinput_fd, &event, sizeof(event));
+	write(m_fd, &event, sizeof(event));
 }
 
-void EIOUInputObject::sendEventSync() {
+void InputDevice::sendEventSync() {
 	sendEvent(EV_SYN, SYN_REPORT, 0);
 }
+
+std::string InputDevice::interfaceFilePath() const { return m_interfaceFilePath; }
+bool InputDevice::isValid() const { return m_file != nullptr && m_fd != -1; }

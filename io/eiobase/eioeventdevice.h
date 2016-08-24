@@ -17,14 +17,14 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef UINPUT_EVENTDEVICE_H
-#define UINPUT_EVENTDEVICE_H
+#pragma once
 
 #include "eiobase/eiouinputobject.h"
 
-class EIOEventDevice : public EIOUInputObject {
+class EIOEventDevice : public InputDevice {
 public:
-	bool uinput_open(bool replay = true);
+	explicit EIOEventDevice()
+			: InputDevice("Virtual Event Device") {}
 
 	void pressKeyboardButton(uint16);
 	void pressKeyboardButtonOnce(uint16);
@@ -33,6 +33,7 @@ public:
 	void moveMouseVWheel(int32);
 	void moveMouseHWheel(int32);
 	void moveMousePointerRel(int32, int32);
-};
 
-#endif // UINPUT_EVENTDEVICE_H
+protected:
+	virtual bool configure() override;
+};

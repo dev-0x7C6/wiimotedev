@@ -57,7 +57,6 @@ UInputProfileManager::UInputProfileManager(QObject *parent)
 	connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerButtons(uint, uint64)), this, SLOT(dbusClassicControllerButtons(uint, uint64)), Qt::DirectConnection);
 	connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerLStick(uint, stickdata)), this, SLOT(dbusClassicControllerLStick(uint, stickdata)), Qt::DirectConnection);
 	connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerRStick(uint, stickdata)), this, SLOT(dbusClassicControllerRStick(uint, stickdata)), Qt::DirectConnection);
-	virtualEvent->uinput_open();
 	initializeCommandEvents();
 	QDBusConnection::systemBus().registerService("org.wiimotedev.io");
 	dbusWiimoteGeneralButtons(1, 0);
@@ -150,6 +149,5 @@ bool UInputProfileManager::unloadProfile() {
 
 UInputProfileManager::~UInputProfileManager() {
 	unloadProfile();
-	virtualEvent->uinput_close(false);
 	delete virtualEvent;
 }

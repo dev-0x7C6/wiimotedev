@@ -19,51 +19,6 @@
 
 #include "eiomousedevice.h"
 
-bool UInputMouse::uinput_open(QRect absRect, bool abs) {
-	if (alreadyOpened) uinput_close();
-
-	if (!(uinput_fd = open(uinputFile.toLocal8Bit().constData(), O_WRONLY | O_NDELAY))) {
-		qWarning("%s: Unable to open %s", "mouse", uinputFile.toLocal8Bit().constData());
-		return false;
-	}
-
-	memset(&dev, 0, sizeof(dev));
-	strncpy(dev.name, "mouse", 5);
-	dev.id.product = UINPUT_PRODUCT_ID;
-	dev.id.version = UINPUT_VERSION_ID;
-	dev.id.vendor = UINPUT_VENDOR_ID;
-	dev.id.bustype = UINPUT_BUSTYPE_ID;
-	/* Register events ---------------------------------------------- */
-	linux_register_evbit(EV_KEY);
-	if (abs) linux_register_evbit(EV_ABS) else linux_register_evbit(EV_REL);
-
-	/* Mouse events ------------------------------------------------- */
-	for (uint16 i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
-		linux_register_keybit(i);
-
-	if (abs) {
-		linux_register_absbit(ABS_X);
-		linux_register_absbit(ABS_Y);
-		linux_abs_set_range(ABS_X, absRect.right(), absRect.left());
-		linux_abs_set_range(ABS_Y, absRect.bottom(), absRect.top());
-	} else {
-		linux_register_relbit(REL_X);
-		linux_register_relbit(REL_Y);
-		linux_register_relbit(REL_HWHEEL);
-		linux_register_relbit(REL_WHEEL);
-	}
-
-	write(uinput_fd, &dev, sizeof(dev));
-
-	if (ioctl(uinput_fd, UI_DEV_CREATE)) {
-		qWarning("%s: Unable to create virtual input device", "mouse");
-		uinput_close();
-		return false;
-	}
-
-	return (alreadyOpened = true);
-}
-
 void UInputMouse::moveMousePointerRel(int32 x, int32 y) {
 	if (x) sendEvent(EV_REL, REL_X, x);
 
@@ -86,6 +41,29 @@ void UInputMouse::releaseMouseButton(uint16 button) {
 
 	sendEvent(EV_KEY, button, false);
 	sendEventSync();
+}
+
+bool UInputMouse::configure() {
+	auto isValid = true;
+	const auto abs = false;
+	QRect absRect = QRect(-512, -384, 1024, 768);
+	isValid &= evbit(EV_KEY) == 0;
+	isValid &= evbit(abs ? EV_ABS : EV_REL) == 0;
+
+	for (uint16_t i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
+		isValid &= keybit(i) == 0;
+
+	if (abs) {
+		isValid &= absbit(ABS_X) == 0;
+		isValid &= absbit(ABS_Y) == 0;
+		range(ABS_X, absRect.right(), absRect.left());
+		range(ABS_Y, absRect.bottom(), absRect.top());
+	} else {
+		isValid &= relbit(REL_X) == 0;
+		isValid &= relbit(REL_Y) == 0;
+		isValid &= relbit(REL_HWHEEL) == 0;
+		isValid &= relbit(REL_WHEEL) == 0;
+	}
 }
 
 void UInputMouse::moveMouseVWheel(int32 direction) {

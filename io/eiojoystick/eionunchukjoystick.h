@@ -36,7 +36,7 @@ const int NUNCHUK_STICK_LINUX_AXIS_Y = ABS_Y;
 const int NUNCHUK_ROLL_LINUX_AXIS = ABS_TILT_X;
 const int NUNCHUK_PITCH_LINUX_AXIS = ABS_TILT_Y;
 
-class EIONunchukJoystick : public QObject, public EIOUInputObject {
+class EIONunchukJoystick : public QObject, public InputDevice {
 	Q_OBJECT
 public:
 	enum Position {
@@ -81,7 +81,6 @@ private:
 
 public:
 	EIONunchukJoystick(QString deviceName, int id, QObject *parent = 0);
-	bool create();
 
 	quint32 assign();
 	void setStickInvertX(bool option);
@@ -101,6 +100,10 @@ private:
 
 signals:
 	void setLedState(uint, uint);
+
+	// InputDevice interface
+protected:
+	virtual bool configure() override;
 };
 
 #endif // NUNCHUKJOYSTICK_H

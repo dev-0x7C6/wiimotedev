@@ -21,7 +21,7 @@
 
 EIOWiimoteJoystick::EIOWiimoteJoystick(QString deviceName, int id, Mode mode, Position horizontal, QObject *parent)
 		: QObject(parent)
-		, EIOUInputObject()
+		, InputDevice(deviceName.toStdString())
 		, m_deviceName(deviceName)
 		, m_horizontal(horizontal)
 		, m_mode(mode)
@@ -34,8 +34,10 @@ EIOWiimoteJoystick::EIOWiimoteJoystick(QString deviceName, int id, Mode mode, Po
 		, m_report_dstick(0x01)
 		, m_report_pitch(0x01)
 		, m_report_roll(0x01) {
-	if (m_deviceName.isEmpty())
-		m_deviceName = QString::fromUtf8("Wiimote Gamepad Device (undefined)");
+
+	centerStick(EIOWiimoteJoystick::DpadStick);
+	centerStick(EIOWiimoteJoystick::WiimoteAccelerometer);
+	centerStick(EIOWiimoteJoystick::NunchukAccelerometer);
 }
 
 quint32 EIOWiimoteJoystick::assign() {
@@ -68,82 +70,6 @@ void EIOWiimoteJoystick::setReportPitch(bool report) {
 
 void EIOWiimoteJoystick::setReportRoll(bool report) {
 	m_report_roll = report;
-}
-
-bool EIOWiimoteJoystick::create() {
-	switch (m_horizontal) {
-		case EIOWiimoteJoystick::GamepadHorizontal:
-			emit setLedState(m_id, 1 + 2);
-			break;
-
-		case EIOWiimoteJoystick::GamepadVertical:
-			emit setLedState(m_id, 4 + 8);
-			break;
-	}
-
-	if (alreadyOpened)
-		uinput_close();
-
-	if (!(uinput_fd = open(uinputFile.toLocal8Bit().constData(), O_WRONLY | O_NDELAY))) {
-		qWarning("%s: Unable to open %s", m_deviceName.toLocal8Bit().constData(), uinputFile.toLocal8Bit().constData());
-		return false;
-	}
-
-	memset(&dev, 0, sizeof(dev));
-	strncpy(dev.name, m_deviceName.toLocal8Bit().constData(), m_deviceName.length());
-	dev.id.product = UINPUT_PRODUCT_ID;
-	dev.id.version = UINPUT_VERSION_ID;
-	dev.id.vendor = UINPUT_VENDOR_ID;
-	dev.id.bustype = UINPUT_BUSTYPE_ID;
-	linux_register_evbit(EV_KEY);
-	linux_register_evbit(EV_MSC);
-	linux_register_evbit(EV_ABS);
-
-	if (m_report_buttons) {
-		linux_register_keybit(BTN_0);
-		linux_register_keybit(BTN_1);
-		linux_register_keybit(BTN_2);
-		linux_register_keybit(BTN_3);
-		linux_register_keybit(BTN_GAMEPAD);
-		linux_register_keybit(BTN_B);
-		linux_register_keybit(BTN_X);
-		linux_register_keybit(BTN_Y);
-		linux_register_keybit(BTN_SELECT);
-		linux_register_keybit(BTN_START);
-
-		if (!m_home_switch_position)
-			linux_register_keybit(BTN_MODE);
-	}
-
-	if (m_report_dstick) {
-		linux_register_absbit(WIIMOTE_DPAD_LINUX_AXIS_X);
-		linux_register_absbit(WIIMOTE_DPAD_LINUX_AXIS_Y);
-		linux_abs_set_range(WIIMOTE_DPAD_LINUX_AXIS_X, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
-		linux_abs_set_range(WIIMOTE_DPAD_LINUX_AXIS_Y, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
-	}
-
-	if (m_report_pitch) {
-		linux_register_absbit(WIIMOTE_PITCH_LINUX_AXIS);
-		linux_abs_set_range(WIIMOTE_PITCH_LINUX_AXIS, WIIMOTE_PITCH_MAX, WIIMOTE_PITCH_MIN);
-	}
-
-	if (m_report_roll) {
-		linux_register_absbit(WIIMOTE_ROLL_LINUX_AXIS);
-		linux_abs_set_range(WIIMOTE_ROLL_LINUX_AXIS, WIIMOTE_ROLL_MAX, WIIMOTE_ROLL_MIN);
-	}
-
-	centerStick(EIOWiimoteJoystick::DpadStick);
-	centerStick(EIOWiimoteJoystick::WiimoteAccelerometer);
-	centerStick(EIOWiimoteJoystick::NunchukAccelerometer);
-	write(uinput_fd, &dev, sizeof(dev));
-
-	if (ioctl(uinput_fd, UI_DEV_CREATE)) {
-		qWarning("%s: Unable to create virtual input device", m_deviceName.toLocal8Bit().constData());
-		uinput_close();
-		return false;
-	}
-
-	return (alreadyOpened = true);
 }
 
 void EIOWiimoteJoystick::setWiimoteButtons(uint64 buttons) {
@@ -250,6 +176,45 @@ void EIOWiimoteJoystick::syncAxes() {
 		sendEvent(EV_ABS, WIIMOTE_ROLL_LINUX_AXIS, m_last_wiimote_acc_roll);
 
 	sendEventSync();
+}
+
+bool EIOWiimoteJoystick::configure() {
+	evbit(EV_KEY);
+	evbit(EV_MSC);
+	evbit(EV_ABS);
+
+	if (m_report_buttons) {
+		keybit(BTN_0);
+		keybit(BTN_1);
+		keybit(BTN_2);
+		keybit(BTN_3);
+		keybit(BTN_GAMEPAD);
+		keybit(BTN_B);
+		keybit(BTN_X);
+		keybit(BTN_Y);
+		keybit(BTN_SELECT);
+		keybit(BTN_START);
+
+		if (!m_home_switch_position)
+			keybit(BTN_MODE);
+	}
+
+	if (m_report_dstick) {
+		absbit(WIIMOTE_DPAD_LINUX_AXIS_X);
+		absbit(WIIMOTE_DPAD_LINUX_AXIS_Y);
+		range(WIIMOTE_DPAD_LINUX_AXIS_X, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
+		range(WIIMOTE_DPAD_LINUX_AXIS_Y, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
+	}
+
+	if (m_report_pitch) {
+		absbit(WIIMOTE_PITCH_LINUX_AXIS);
+		range(WIIMOTE_PITCH_LINUX_AXIS, WIIMOTE_PITCH_MAX, WIIMOTE_PITCH_MIN);
+	}
+
+	if (m_report_roll) {
+		absbit(WIIMOTE_ROLL_LINUX_AXIS);
+		range(WIIMOTE_ROLL_LINUX_AXIS, WIIMOTE_ROLL_MAX, WIIMOTE_ROLL_MIN);
+	}
 }
 
 void EIOWiimoteJoystick::setWiimoteAcc(double pitch, double roll) {

@@ -17,54 +17,56 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef UINPUT_GENERAL_H
-#define UINPUT_GENERAL_H
+#pragma once
 
 #include <QObject>
-
+#include <QString>
+#include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
 #include <linux/input.h>
 #include <linux/uinput.h>
 
+#include <string>
+#include <functional>
+
 #include "linux/usr/include/wiimotedev/consts.h"
 
-#define linux_register_evbit(x) ioctl(uinput_fd, UI_SET_EVBIT, x);
-#define linux_register_keybit(x) ioctl(uinput_fd, UI_SET_KEYBIT, x);
-#define linux_register_relbit(x) ioctl(uinput_fd, UI_SET_RELBIT, x);
-#define linux_register_absbit(x) ioctl(uinput_fd, UI_SET_ABSBIT, x);
-
-#define linux_abs_set_range(abs, max, min) \
-	dev.absmax[abs] = max;                 \
-	dev.absmin[abs] = min;                 \
-	dev.absflat[abs] = 0;                  \
-	dev.absfuzz[abs] = 0;
-
-#define UINPUT_PRODUCT_ID 0x01
-#define UINPUT_VENDOR_ID 0x01
-#define UINPUT_VERSION_ID 0x01
-#define UINPUT_BUSTYPE_ID BUS_USB
-
-class EIOUInputObject {
-protected:
-	QString uinputFile;
-
-	int uinput_fd;
-	struct uinput_user_dev dev;
-
+class InputDevice {
 public:
-	explicit EIOUInputObject();
-	virtual ~EIOUInputObject();
+	explicit InputDevice(std::string name);
+	virtual ~InputDevice();
 
-	bool alreadyOpened;
-	virtual void uinput_close(bool force = true);
-
-	QString path() {
-		return uinputFile;
+	static std::string findUinputInterface();
+	static int evbit(int fd, int bit) { return ioctl(fd, UI_SET_EVBIT, bit); }
+	static int keybit(int fd, int bit) { return ioctl(fd, UI_SET_KEYBIT, bit); }
+	static int relbit(int fd, int bit) { return ioctl(fd, UI_SET_RELBIT, bit); }
+	static int absbit(int fd, int bit) { return ioctl(fd, UI_SET_ABSBIT, bit); }
+	static void range(struct uinput_user_dev &dev, int abs, int max, int min) {
+		dev.absmax[abs] = max;
+		dev.absmin[abs] = min;
+		dev.absflat[abs] = 0;
+		dev.absfuzz[abs] = 0;
 	}
+
+	inline int evbit(int bit) { return evbit(m_fd, bit); }
+	inline int keybit(int bit) { return keybit(m_fd, bit); }
+	inline int relbit(int bit) { return relbit(m_fd, bit); }
+	inline int absbit(int bit) { return absbit(m_fd, bit); }
+	inline void range(int abs, int max, int min) { range(m_dev, abs, max, min); }
 
 	void sendEvent(uint16 type, uint16 code, int32 value);
 	void sendEventSync();
-};
 
-#endif // UINPUT_GENERAL_H
+	std::string interfaceFilePath() const;
+	bool isValid() const;
+
+	virtual bool configure() = 0;
+	virtual bool create();
+
+private:
+	std::string m_interfaceFilePath;
+	FILE *m_file;
+	int m_fd;
+	struct uinput_user_dev m_dev;
+};

@@ -21,7 +21,7 @@
 
 EIOClassicJoystick::EIOClassicJoystick(QString deviceName, int id, QObject *parent)
 		: QObject(parent)
-		, EIOUInputObject()
+		, InputDevice(deviceName.toStdString())
 		, m_deviceName(deviceName)
 		, m_id(id)
 		, m_last_r_stick_x(0x00)
@@ -44,6 +44,9 @@ EIOClassicJoystick::EIOClassicJoystick(QString deviceName, int id, QObject *pare
 {
 	if (m_deviceName.isEmpty())
 		m_deviceName = QString::fromUtf8("Noname classic joystick");
+	centerStick(EIOClassicJoystick::LeftStick);
+	centerStick(EIOClassicJoystick::RightStick);
+	centerStick(EIOClassicJoystick::DpadStick);
 }
 
 quint32 EIOClassicJoystick::assign() {
@@ -134,81 +137,6 @@ void EIOClassicJoystick::setButtons(uint64 buttons) {
 	}
 }
 
-bool EIOClassicJoystick::create() {
-	if (alreadyOpened)
-		uinput_close();
-
-	if (!(uinput_fd = open(uinputFile.toLocal8Bit().constData(), O_WRONLY | O_NDELAY))) {
-		qWarning("%s: Unable to open %s", m_deviceName.toLocal8Bit().constData(), uinputFile.toLocal8Bit().constData());
-		return false;
-	}
-
-	memset(&dev, 0, sizeof(dev));
-	strncpy(dev.name, m_deviceName.toLocal8Bit().constData(), m_deviceName.length());
-	dev.id.product = UINPUT_PRODUCT_ID;
-	dev.id.version = UINPUT_VERSION_ID;
-	dev.id.vendor = UINPUT_VENDOR_ID;
-	dev.id.bustype = UINPUT_BUSTYPE_ID;
-	/* Register events ---------------------------------------------- */
-	linux_register_evbit(EV_KEY);
-	linux_register_evbit(EV_MSC);
-	linux_register_evbit(EV_ABS);
-
-	/* Joystick events ---------------------------------------------- */
-	if (m_report_buttons) {
-		linux_register_keybit(BTN_0); // arrows
-		linux_register_keybit(BTN_1); // arrows
-		linux_register_keybit(BTN_2); // arrows
-		linux_register_keybit(BTN_3); // arrows
-		linux_register_keybit(BTN_GAMEPAD);
-		linux_register_keybit(BTN_B);
-		linux_register_keybit(BTN_X);
-		linux_register_keybit(BTN_Y);
-		linux_register_keybit(BTN_TL);
-		linux_register_keybit(BTN_TR);
-		linux_register_keybit(BTN_TL2);
-		linux_register_keybit(BTN_TR2);
-		linux_register_keybit(BTN_SELECT);
-		linux_register_keybit(BTN_MODE);
-		linux_register_keybit(BTN_START);
-	}
-
-	if (m_report_left_stick) {
-		linux_register_absbit(CLASSIC_LEFT_STICK_LINUX_AXIS_X);
-		linux_register_absbit(CLASSIC_LEFT_STICK_LINUX_AXIS_Y);
-		linux_abs_set_range(CLASSIC_LEFT_STICK_LINUX_AXIS_X, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
-		linux_abs_set_range(CLASSIC_LEFT_STICK_LINUX_AXIS_Y, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
-	}
-
-	if (m_report_right_stick) {
-		linux_register_absbit(CLASSIC_RIGHT_STICK_LINUX_AXIS_X);
-		linux_register_absbit(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y);
-		linux_abs_set_range(CLASSIC_RIGHT_STICK_LINUX_AXIS_X, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
-		linux_abs_set_range(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
-	}
-
-	if (m_report_dpad) {
-		linux_register_absbit(CLASSIC_DPAD_LINUX_AXIS_X);
-		linux_register_absbit(CLASSIC_DPAD_LINUX_AXIS_Y);
-		linux_abs_set_range(CLASSIC_DPAD_LINUX_AXIS_X, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
-		linux_abs_set_range(CLASSIC_DPAD_LINUX_AXIS_Y, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
-	}
-
-	write(uinput_fd, &dev, sizeof(dev));
-
-	if (ioctl(uinput_fd, UI_DEV_CREATE)) {
-		qWarning("%s: Unable to create virtual input device", m_deviceName.toLocal8Bit().constData());
-		uinput_close();
-		return false;
-	}
-
-	centerStick(EIOClassicJoystick::LeftStick);
-	centerStick(EIOClassicJoystick::RightStick);
-	centerStick(EIOClassicJoystick::DpadStick);
-	syncAxes();
-	return (alreadyOpened = true);
-}
-
 void EIOClassicJoystick::centerStick(Sticks stick) {
 	switch (stick) {
 		case EIOClassicJoystick::LeftStick:
@@ -291,4 +219,52 @@ void EIOClassicJoystick::syncAxes() {
 	}
 
 	sendEventSync();
+}
+
+bool EIOClassicJoystick::configure() {
+	bool isValid = true;
+	isValid &= evbit(EV_KEY) == 0;
+	isValid &= evbit(EV_MSC) == 0;
+	isValid &= evbit(EV_ABS) == 0;
+
+	if (m_report_buttons) {
+		isValid &= keybit(BTN_0) == 0;
+		isValid &= keybit(BTN_1) == 0;
+		isValid &= keybit(BTN_2) == 0;
+		isValid &= keybit(BTN_3) == 0;
+		isValid &= keybit(BTN_GAMEPAD) == 0;
+		isValid &= keybit(BTN_B) == 0;
+		isValid &= keybit(BTN_X) == 0;
+		isValid &= keybit(BTN_Y) == 0;
+		isValid &= keybit(BTN_TL) == 0;
+		isValid &= keybit(BTN_TR) == 0;
+		isValid &= keybit(BTN_TL2) == 0;
+		isValid &= keybit(BTN_TR2) == 0;
+		isValid &= keybit(BTN_SELECT) == 0;
+		isValid &= keybit(BTN_MODE) == 0;
+		isValid &= keybit(BTN_START) == 0;
+	}
+
+	if (m_report_left_stick) {
+		isValid &= absbit(CLASSIC_LEFT_STICK_LINUX_AXIS_X) == 0;
+		isValid &= absbit(CLASSIC_LEFT_STICK_LINUX_AXIS_Y) == 0;
+		range(CLASSIC_LEFT_STICK_LINUX_AXIS_X, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
+		range(CLASSIC_LEFT_STICK_LINUX_AXIS_Y, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
+	}
+
+	if (m_report_right_stick) {
+		isValid &= absbit(CLASSIC_RIGHT_STICK_LINUX_AXIS_X) == 0;
+		isValid &= absbit(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y) == 0;
+		range(CLASSIC_RIGHT_STICK_LINUX_AXIS_X, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
+		range(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
+	}
+
+	if (m_report_dpad) {
+		isValid &= absbit(CLASSIC_DPAD_LINUX_AXIS_X) == 0;
+		isValid &= absbit(CLASSIC_DPAD_LINUX_AXIS_Y) == 0;
+		range(CLASSIC_DPAD_LINUX_AXIS_X, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
+		range(CLASSIC_DPAD_LINUX_AXIS_Y, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
+	}
+
+	return isValid;
 }

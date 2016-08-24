@@ -21,7 +21,7 @@
 
 EIONunchukJoystick::EIONunchukJoystick(QString deviceName, int id, QObject *parent)
 		: QObject(parent)
-		, EIOUInputObject()
+		, InputDevice("Joystick")
 		, m_deviceName(deviceName)
 		, m_id(id)
 		, m_stick_invert_x(0x00)
@@ -29,9 +29,9 @@ EIONunchukJoystick::EIONunchukJoystick(QString deviceName, int id, QObject *pare
 		, m_report_buttons(0x01)
 		, m_report_stick(0x01)
 		, m_report_pitch(0x01)
-		, m_report_roll(0x01) {
-	if (m_deviceName.isEmpty())
-		m_deviceName = QString::fromUtf8("Wiimote Gamepad Device (undefined)");
+		, m_report_roll(0x01)
+
+{
 }
 
 quint32 EIONunchukJoystick::assign() {
@@ -60,59 +60,6 @@ void EIONunchukJoystick::setReportPitch(bool report) {
 
 void EIONunchukJoystick::setReportRoll(bool report) {
 	m_report_roll = report;
-}
-
-bool EIONunchukJoystick::create() {
-	if (alreadyOpened)
-		uinput_close();
-
-	if (!(uinput_fd = open(uinputFile.toLocal8Bit().constData(), O_WRONLY | O_NDELAY))) {
-		qWarning("%s: Unable to open %s", m_deviceName.toLocal8Bit().constData(), uinputFile.toLocal8Bit().constData());
-		return false;
-	}
-
-	memset(&dev, 0, sizeof(dev));
-	strncpy(dev.name, m_deviceName.toLocal8Bit().constData(), m_deviceName.length());
-	dev.id.product = UINPUT_PRODUCT_ID;
-	dev.id.version = UINPUT_VERSION_ID;
-	dev.id.vendor = UINPUT_VENDOR_ID;
-	dev.id.bustype = UINPUT_BUSTYPE_ID;
-	linux_register_evbit(EV_KEY);
-	linux_register_evbit(EV_MSC);
-	linux_register_evbit(EV_ABS);
-
-	if (m_report_buttons) {
-		linux_register_keybit(BTN_GAMEPAD);
-		linux_register_keybit(BTN_B);
-	}
-
-	if (m_report_stick) {
-		linux_register_absbit(NUNCHUK_STICK_LINUX_AXIS_X);
-		linux_register_absbit(NUNCHUK_STICK_LINUX_AXIS_Y);
-		linux_abs_set_range(NUNCHUK_STICK_LINUX_AXIS_X, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
-		linux_abs_set_range(NUNCHUK_STICK_LINUX_AXIS_Y, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
-	}
-
-	if (m_report_pitch) {
-		linux_register_absbit(NUNCHUK_PITCH_LINUX_AXIS);
-		linux_abs_set_range(NUNCHUK_PITCH_LINUX_AXIS, NUNCHUK_PITCH_MAX, NUNCHUK_PITCH_MIN);
-	}
-
-	if (m_report_roll) {
-		linux_register_absbit(NUNCHUK_ROLL_LINUX_AXIS);
-		linux_abs_set_range(NUNCHUK_ROLL_LINUX_AXIS, NUNCHUK_ROLL_MAX, NUNCHUK_ROLL_MIN);
-	}
-
-	centerStick(EIONunchukJoystick::NunchukStick);
-	write(uinput_fd, &dev, sizeof(dev));
-
-	if (ioctl(uinput_fd, UI_DEV_CREATE)) {
-		qWarning("%s: Unable to create virtual input device", m_deviceName.toLocal8Bit().constData());
-		uinput_close();
-		return false;
-	}
-
-	return (alreadyOpened = true);
 }
 
 void EIONunchukJoystick::setNunchukButtons(uint64 buttons) {
@@ -161,6 +108,34 @@ void EIONunchukJoystick::syncAxes() {
 		sendEvent(EV_ABS, NUNCHUK_ROLL_LINUX_AXIS, m_last_nunchuk_acc_roll);
 
 	sendEventSync();
+}
+
+bool EIONunchukJoystick::configure() {
+	evbit(EV_KEY);
+	evbit(EV_MSC);
+	evbit(EV_ABS);
+
+	if (m_report_buttons) {
+		keybit(BTN_GAMEPAD);
+		keybit(BTN_B);
+	}
+
+	if (m_report_stick) {
+		absbit(NUNCHUK_STICK_LINUX_AXIS_X);
+		absbit(NUNCHUK_STICK_LINUX_AXIS_Y);
+		range(NUNCHUK_STICK_LINUX_AXIS_X, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
+		range(NUNCHUK_STICK_LINUX_AXIS_Y, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
+	}
+
+	if (m_report_pitch) {
+		absbit(NUNCHUK_PITCH_LINUX_AXIS);
+		range(NUNCHUK_PITCH_LINUX_AXIS, NUNCHUK_PITCH_MAX, NUNCHUK_PITCH_MIN);
+	}
+
+	if (m_report_roll) {
+		absbit(NUNCHUK_ROLL_LINUX_AXIS);
+		range(NUNCHUK_ROLL_LINUX_AXIS, NUNCHUK_ROLL_MAX, NUNCHUK_ROLL_MIN);
+	}
 }
 
 void EIONunchukJoystick::setNunchukStick(int32 x, int32 y) {

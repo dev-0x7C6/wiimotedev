@@ -89,15 +89,12 @@ void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &s
 
 void UInputProfileManager::freeJoystickEvents() {
 	foreach (EIOClassicJoystick *device, EIOClassicJoysticks) {
-		device->uinput_close();
 		delete device;
 	}
 	foreach (EIONunchukJoystick *device, EIONunchukJoysticks) {
-		device->uinput_close();
 		delete device;
 	}
 	foreach (EIOWiimoteJoystick *device, EIOWiimoteJoysticks) {
-		device->uinput_close();
 		delete device;
 	}
 	EIOClassicJoysticks.clear();

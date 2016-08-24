@@ -19,50 +19,6 @@
 
 #include "eioeventdevice.h"
 
-bool EIOEventDevice::uinput_open(bool replay) {
-	if (alreadyOpened) uinput_close();
-
-	if (!(uinput_fd = open(uinputFile.toLocal8Bit().constData(), O_WRONLY | O_NDELAY))) {
-		qWarning("event device: Unable to open %s", uinputFile.toLocal8Bit().constData());
-		return false;
-	}
-
-	memset(&dev, 0, sizeof(dev));
-	strncpy(dev.name, "event device", 12);
-	dev.id.product = UINPUT_PRODUCT_ID;
-	dev.id.version = UINPUT_VERSION_ID;
-	dev.id.vendor = UINPUT_VENDOR_ID;
-	dev.id.bustype = UINPUT_BUSTYPE_ID;
-	/* Register events ---------------------------------------------- */
-	linux_register_evbit(EV_KEY);
-
-	if (replay) linux_register_evbit(EV_REP);
-
-	linux_register_evbit(EV_REL);
-
-	/* Keyboard events ---------------------------------------------- */
-	for (uint16 i = 0; i < 0xFF; ++i)
-		linux_register_keybit(i);
-
-	/* Mouse events ------------------------------------------------- */
-	for (uint16 i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
-		linux_register_keybit(i);
-
-	linux_register_relbit(REL_X);
-	linux_register_relbit(REL_Y);
-	linux_register_relbit(REL_HWHEEL);
-	linux_register_relbit(REL_WHEEL);
-	write(uinput_fd, &dev, sizeof(dev));
-
-	if (ioctl(uinput_fd, UI_DEV_CREATE)) {
-		qWarning("%s: Unable to create virtual input device", "event device");
-		uinput_close();
-		return false;
-	}
-
-	return (alreadyOpened = true);
-}
-
 void EIOEventDevice::pressKeyboardButton(uint16 button) {
 	sendEvent(EV_KEY, button, 1);
 	sendEventSync();
@@ -97,3 +53,22 @@ void EIOEventDevice::moveMousePointerRel(int32 x, int32 y) {
 
 	sendEventSync();
 }
+
+bool EIOEventDevice::configure() {
+	bool isValid = true;
+	isValid &= evbit(EV_KEY) == 0;
+	isValid &= evbit(EV_REP) == 0;
+	isValid &= evbit(EV_REL) == 0;
+
+	for (uint16_t i = 0; i < 0xFF; ++i)
+		isValid &= keybit(i) == 0;
+
+	for (uint16_t i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
+		isValid &= keybit(i) == 0;
+
+	isValid &= relbit(REL_X) == 0;
+	isValid &= relbit(REL_Y) == 0;
+	isValid &= relbit(REL_HWHEEL) == 0;
+	isValid &= relbit(REL_WHEEL) == 0;
+	return isValid;
+};

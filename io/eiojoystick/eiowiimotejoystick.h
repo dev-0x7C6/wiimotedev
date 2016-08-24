@@ -36,7 +36,7 @@ const int WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
 const int WIIMOTE_PITCH_LINUX_AXIS = ABS_X;
 const int WIIMOTE_ROLL_LINUX_AXIS = ABS_RX;
 
-class EIOWiimoteJoystick : public QObject, public EIOUInputObject {
+class EIOWiimoteJoystick : public QObject, public InputDevice {
 	Q_OBJECT
 public:
 	enum Position {
@@ -85,7 +85,6 @@ private:
 
 public:
 	EIOWiimoteJoystick(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
-	bool create();
 
 	quint32 assign();
 
@@ -106,6 +105,10 @@ private:
 
 signals:
 	void setLedState(uint, uint);
+
+	// InputDevice interface
+protected:
+	virtual bool configure() override;
 };
 
 #endif // UINPUT_WIIMOTEGAMEPAD_H
