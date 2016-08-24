@@ -67,10 +67,10 @@ protected:
   void setCursor(InfraredCursor &&cursor);
 
 private:
-  double_t m_position[2];
-  double_t m_delta[2];
-  double_t m_size[2];
-  double_t m_acc[2];
+  double m_position[2];
+  double m_delta[2];
+  double m_size[2];
+  double m_acc[2];
   int32_t m_timeout;
 
   InfraredConfigContainer m_config;

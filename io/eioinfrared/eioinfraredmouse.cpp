@@ -98,10 +98,10 @@ void EIOInfraredMouse::processAbsoluteMouse() {
     return;
 
   QRect rect = QApplication::desktop()->screenGeometry(0);
-  double_t x = -m_position[XAxis] + 0x200;
-  double_t y = -m_position[YAxis] + 0x180;
-  const double_t w = rect.width();
-  const double_t h = rect.height();
+  double x = -m_position[XAxis] + 0x200;
+  double y = -m_position[YAxis] + 0x180;
+  const double w = rect.width();
+  const double h = rect.height();
   x *= (w / static_cast<double>(0x400));
   y *= (h / static_cast<double>(0x300));
   QCursor::setPos(x, y);
