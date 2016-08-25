@@ -17,8 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef ADAPTORS_CUSTOMJOBS_H
-#define ADAPTORS_CUSTOMJOBS_H
+#pragma once
 
 #include <wiimotedev/consts.h>
 
@@ -146,5 +145,3 @@ inline DBusCustomJobsAdaptor::DBusCustomJobsAdaptor(QObject *parent)
 		: QDBusAbstractAdaptor(parent) {
 	setAutoRelaySignals(true);
 }
-
-#endif // ADAPTORS_CUSTOMJOBS_H

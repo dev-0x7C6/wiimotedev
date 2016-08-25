@@ -17,8 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef ADAPTORS_UINPUTSERVICE_H
-#define ADAPTORS_UINPUTSERVICE_H
+#pragma once
 
 #include <wiimotedev/consts.h>
 
@@ -150,5 +149,3 @@ inline bool DBusServiceAdaptorWrapper::isWiimotedevServiceAvailable() {
 	QMetaObject::invokeMethod(parent(), "isWiimotedevServiceAvailable", Qt::DirectConnection, Q_RETURN_ARG(bool, value));
 	return value;
 }
-
-#endif // ADAPTORS_UINPUTSERVICE_H

@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "eiobase/eiouinputobject.h"
+#include <io/emulation/input-device.h>
 
 class EventDevice : public InputDevice {
 public:

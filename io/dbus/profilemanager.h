@@ -17,8 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef ADAPTORS_PROFILEMANAGER_H
-#define ADAPTORS_PROFILEMANAGER_H
+#pragma once
 
 #include <wiimotedev/consts.h>
 
@@ -182,5 +181,3 @@ inline bool DBusProfileManagerAdaptorWrapper::loadProfile(QString file) {
 inline void DBusProfileManagerAdaptorWrapper::unloadProfile() {
 	QMetaObject::invokeMethod(parent(), "unloadProfile", Qt::DirectConnection);
 }
-
-#endif // ADAPTORS_PROFILEMANAGER_H

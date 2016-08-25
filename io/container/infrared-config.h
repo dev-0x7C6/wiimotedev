@@ -24,28 +24,22 @@
 class InfraredConfigContainer {
 public:
 	bool accEnabled() const;
-	void setAccEnabled(bool accEnabled);
-
 	double accMultiX() const;
-	void setAccMultiX(double accMultiX);
-
 	double accMultiY() const;
-	void setAccMultiY(double accMultiY);
-
 	double accPowX() const;
-	void setAccPowX(double accPowX);
-
 	double accPowY() const;
-	void setAccPowY(double accPowY);
-
 	double deadzoneX() const;
-	void setDeadzoneX(double deadzoneX);
-
 	double deadzoneY() const;
-	void setDeadzoneY(double deadzoneY);
-
 	int32_t accTimeout() const;
+
+	void setAccEnabled(bool accEnabled);
+	void setAccMultiX(double accMultiX);
+	void setAccMultiY(double accMultiY);
+	void setAccPowX(double accPowX);
+	void setAccPowY(double accPowY);
 	void setAccTimeout(const int32_t &accTimeout);
+	void setDeadzoneX(double deadzoneX);
+	void setDeadzoneY(double deadzoneY);
 
 private:
 	bool m_accEnabled;

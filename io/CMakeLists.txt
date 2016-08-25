@@ -19,13 +19,12 @@ set(sources
 
   functionals/uinput-helper.cpp
 
-  eiobase/eiouinputobject.cpp
-  eiobase/eioeventdevice.cpp
+  emulation/event-device.cpp
+  emulation/input-device.cpp
 
   eiojoystick/eioclassicjoystick.cpp
   eiojoystick/eionunchukjoystick.cpp
   eiojoystick/eiowiimotejoystick.cpp
-  eiojoystick/eiogamepadmanager.cpp
  
   eiomanager/infrared.cpp
   eiomanager/keyboard.cpp
@@ -47,8 +46,9 @@ set(headers
   common/tick-aligned-loop.h
   container/infrared-config.h
   container/infrared-cursor.h
-  eiobase/eiouinputobject.h
-  eiobase/eioeventdevice.h
+  emulation/event-device.h
+  emulation/input-device.h
+
   helper/hashcompare.h
 )
 
@@ -62,7 +62,6 @@ set(headers_wrap
   eiojoystick/eioclassicjoystick.h
   eiojoystick/eionunchukjoystick.h
   eiojoystick/eiowiimotejoystick.h
-  eiojoystick/eiogamepadmanager.h
 
   eiomanager/manager.h
   eiokeyboard/eioremotekeyboard.h

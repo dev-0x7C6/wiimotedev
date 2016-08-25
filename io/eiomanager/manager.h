@@ -17,8 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef PROFILEMANAGER_H
-#define PROFILEMANAGER_H
+#pragma once
 
 #include <QObject>
 #include <QTimer>
@@ -30,7 +29,7 @@
 #include "dbus/customjobs.h"
 #include "dbus/profilemanager.h"
 #include "dbus/uinputservice.h"
-#include "eiobase/eioeventdevice.h"
+#include <io/emulation/event-device.h>
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "linux/usr/include/wiimotedev/deviceevents.h"
 #include "eiokeyboard/eioremotekeyboard.h"
@@ -209,5 +208,3 @@ public Q_SLOTS:
 Q_SIGNALS:
 	void executeRequest(QStringList);
 };
-
-#endif // PROFILEMANAGER_H

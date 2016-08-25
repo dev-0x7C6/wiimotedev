@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "eiobase/eioeventdevice.h"
+#include <io/emulation/event-device.h>
 #include "common/tick-aligned-loop.h"
 #include "container/infrared-config.h"
 #include "container/infrared-cursor.h"

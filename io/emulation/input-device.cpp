@@ -17,12 +17,12 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "eiouinputobject.h"
+#include <io/emulation/input-device.h>
+#include <io/functionals/uinput-helper.h>
 
 #include <cstring>
 #include <iostream>
 #include <sys/stat.h>
-#include <io/functionals/uinput-helper.h>
 
 InputDevice::InputDevice(std::string name)
 		: m_file(nullptr)

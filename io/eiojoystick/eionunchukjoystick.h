@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "eiobase/eiouinputobject.h"
+#include <io/emulation/input-device.h>
 #include <QObject>
 
 constexpr auto NUNCHUK_STICK_MAX = 0xFF - 0x15;

@@ -17,8 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef HASHCOMPARE_H
-#define HASHCOMPARE_H
+#pragma once
 
 #include <QObject>
 #include <QHash>
@@ -74,5 +73,3 @@ bool HashCompare<typeKey, typeValue>::compare(QHash<typeKey, typeValue> *first, 
 
 	return matched;
 }
-
-#endif // HASHCOMPARE_H

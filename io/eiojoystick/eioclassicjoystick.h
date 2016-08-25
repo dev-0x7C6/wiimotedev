@@ -20,7 +20,7 @@
 #pragma once
 
 #include <QObject>
-#include "eiobase/eiouinputobject.h"
+#include <io/emulation/input-device.h>
 
 constexpr auto CLASSIC_LEFT_STICK_MAX = 0x3B;
 constexpr auto CLASSIC_LEFT_STICK_MIN = 0x09;

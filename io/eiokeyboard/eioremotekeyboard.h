@@ -17,10 +17,9 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef EVENT_VIRTUAL_KEYBOARD_H
-#define EVENT_VIRTUAL_KEYBOARD_H
+#pragma once
 
-#include "eiobase/eioeventdevice.h"
+#include <io/emulation/event-device.h>
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "helper/hashcompare.h"
 
@@ -63,4 +62,3 @@ private:
 	void pressKeyboardExtendedButton(uint32_t);
 	void releaseKeyboardExtendedButton(uint32_t);
 };
-#endif // EVENT_VIRTUAL_KEYBOARD_H

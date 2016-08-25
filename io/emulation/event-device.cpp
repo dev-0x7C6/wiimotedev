@@ -17,17 +17,40 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "eiogamepadmanager.h"
+#include <io/emulation/event-device.h>
 
-EIOGamepadManager::EIOGamepadManager(QObject *parent)
-		: QObject(parent) {
+void EventDevice::pressKeyboardButton(uint16_t button) { report(EV_KEY, button, 1, true); }
+void EventDevice::releaseKeyboardButton(uint16_t button) { report(EV_KEY, button, 0, true); }
+
+void EventDevice::pressKeyboardButtonOnce(uint16_t button) {
+	report(EV_KEY, button, 1, true);
+	report(EV_KEY, button, 0, true);
 }
 
-//uint32_t EIOGamepadManager::create(EIOGamepadVariants variant, uint32_t assign, QList< QPair< QString, QVariant> > arguments) {
+void EventDevice::moveMouseVWheel(int32_t direction) { report(EV_REL, REL_WHEEL, direction, true); }
+void EventDevice::moveMouseHWheel(int32_t direction) { report(EV_REL, REL_HWHEEL, direction, true); }
 
-//}
-
-bool EIOGamepadManager::destroy(uint32_t id) {
-	Q_UNUSED(id)
-	return false;
+void EventDevice::moveMousePointerRel(int32_t x, int32_t y) {
+	report(EV_REL, REL_X, x);
+	report(EV_REL, REL_Y, y);
+	sync();
 }
+
+bool EventDevice::configure() {
+	bool isValid = true;
+	isValid &= set_ev_bit(EV_KEY) == 0;
+	isValid &= set_ev_bit(EV_REP) == 0;
+	isValid &= set_ev_bit(EV_REL) == 0;
+
+	for (uint16_t i = 0; i < 0xFF; ++i)
+		isValid &= set_key_bit(i) == 0;
+
+	for (uint16_t i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
+		isValid &= set_key_bit(i) == 0;
+
+	isValid &= set_rel_bit(REL_X) == 0;
+	isValid &= set_rel_bit(REL_Y) == 0;
+	isValid &= set_rel_bit(REL_HWHEEL) == 0;
+	isValid &= set_rel_bit(REL_WHEEL) == 0;
+	return isValid;
+};
