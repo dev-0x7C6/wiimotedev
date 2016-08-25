@@ -17,7 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#include "helper/hashcompare.h"
+#include <io/functionals/hash-compare.h>
 #include "eiomanager/manager.h"
 
 extern QMap<QString, uint> scancodes;

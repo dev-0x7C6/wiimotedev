@@ -20,7 +20,7 @@
 #include <QFile>
 #include <QSettings>
 
-#include "helper/hashcompare.h"
+#include <io/functionals/hash-compare.h>
 #include "eiomanager/manager.h"
 #include "eioinfrared/eioinfraredmouse.h"
 

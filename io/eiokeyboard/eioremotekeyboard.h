@@ -21,7 +21,7 @@
 
 #include <io/emulation/event-device.h>
 #include "linux/usr/include/wiimotedev/consts.h"
-#include "helper/hashcompare.h"
+#include <io/functionals/hash-compare.h>
 
 #include <QTimer>
 #include <QTime>

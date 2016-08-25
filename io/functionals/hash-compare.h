@@ -24,9 +24,10 @@
 #include <QHashIterator>
 
 template <class typeKey, class typeValue>
-class HashCompare : public QObject {
+class HashCompare {
 public:
-	HashCompare(QObject *parent = 0);
+	explicit HashCompare() = default;
+	virtual ~HashCompare() = default;
 
 	enum CompareStyle {
 		BitCompare = 0,
@@ -36,11 +37,6 @@ public:
 
 	bool compare(QHash<typeKey, typeValue> *, QHash<typeKey, typeValue> *, uint8_t);
 };
-
-template <class typeKey, class typeValue>
-HashCompare<typeKey, typeValue>::HashCompare(QObject *parent)
-		: QObject(parent) {
-}
 
 template <class typeKey, class typeValue>
 bool HashCompare<typeKey, typeValue>::compare(QHash<typeKey, typeValue> *first, QHash<typeKey, typeValue> *second, uint8_t style) {

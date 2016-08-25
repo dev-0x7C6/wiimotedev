@@ -18,7 +18,7 @@
  **********************************************************************************/
 
 #include "eiomanager/manager.h"
-#include "helper/hashcompare.h"
+#include <io/functionals/hash-compare.h>
 
 const QRegExp deviceEventRegExp(".*(\\(.*(\\d+)\\))");
 

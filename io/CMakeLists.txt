@@ -41,6 +41,7 @@ set(sources
 set(headers
   ${CMAKE_SOURCE_DIR}/syslog/syslog.h
 
+  functionals/hash-compare.h
   functionals/uinput-helper.h
 
   common/tick-aligned-loop.h
@@ -48,8 +49,6 @@ set(headers
   container/infrared-cursor.h
   emulation/event-device.h
   emulation/input-device.h
-
-  helper/hashcompare.h
 )
 
 set(headers_wrap
