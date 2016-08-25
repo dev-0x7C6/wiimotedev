@@ -19,28 +19,24 @@
 
 #include "eiomousedevice.h"
 
-void UInputMouse::moveMousePointerRel(int32 x, int32 y) {
-	if (x) sendEvent(EV_REL, REL_X, x);
-
-	if (y) sendEvent(EV_REL, REL_Y, y);
-
-	sendEventSync();
+void UInputMouse::moveMousePointerRel(int32_t x, int32_t y) {
+	report(EV_REL, REL_X, x);
+	report(EV_REL, REL_Y, y);
+	sync();
 }
 
-void UInputMouse::pressMouseButton(uint16 button) {
+void UInputMouse::pressMouseButton(uint16_t button) {
 	if (button < BTN_MOUSE || button >= BTN_JOYSTICK)
 		return;
 
-	sendEvent(EV_KEY, button, true);
-	sendEventSync();
+	report(EV_KEY, button, true, true);
 }
 
-void UInputMouse::releaseMouseButton(uint16 button) {
+void UInputMouse::releaseMouseButton(uint16_t button) {
 	if (button < BTN_MOUSE || button >= BTN_JOYSTICK)
 		return;
 
-	sendEvent(EV_KEY, button, false);
-	sendEventSync();
+	report(EV_KEY, button, false, true);
 }
 
 bool UInputMouse::configure() {
@@ -64,28 +60,14 @@ bool UInputMouse::configure() {
 		isValid &= relbit(REL_HWHEEL) == 0;
 		isValid &= relbit(REL_WHEEL) == 0;
 	}
+	return isValid;
 }
 
-void UInputMouse::moveMouseVWheel(int32 direction) {
-	if (direction)
-		return;
+void UInputMouse::moveMouseVWheel(int32_t direction) { report(EV_REL, REL_WHEEL, direction); }
+void UInputMouse::moveMouseHWheel(int32_t direction) { report(EV_REL, REL_HWHEEL, direction); }
 
-	sendEvent(EV_REL, REL_WHEEL, direction);
-	sendEventSync();
-}
-
-void UInputMouse::moveMouseHWheel(int32 direction) {
-	if (direction)
-		return;
-
-	sendEvent(EV_REL, REL_HWHEEL, direction);
-	sendEventSync();
-}
-
-void UInputMouse::moveMousePointerAbs(int32 x, int32 y) {
-	if (x) sendEvent(EV_ABS, ABS_X, x);
-
-	if (y) sendEvent(EV_ABS, ABS_Y, y);
-
-	sendEventSync();
+void UInputMouse::moveMousePointerAbs(int32_t x, int32_t y) {
+	report(EV_ABS, ABS_X, x);
+	report(EV_ABS, ABS_Y, y);
+	sync();
 }

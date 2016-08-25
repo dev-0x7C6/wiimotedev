@@ -55,8 +55,8 @@ public:
 	inline int absbit(int bit) { return absbit(m_fd, bit); }
 	inline void range(int abs, int max, int min) { range(m_dev, abs, max, min); }
 
-	void sendEvent(uint16 type, uint16 code, int32 value);
-	void sendEventSync();
+	void report(uint16_t type, uint16_t code, int32_t value, bool triggerSync = false);
+	void sync();
 
 	std::string interfaceFilePath() const;
 	bool isValid() const;

@@ -27,12 +27,12 @@ class UInputMouse : public InputDevice {
 public:
 	explicit UInputMouse()
 			: InputDevice("Virtual Mouse") {}
-	void moveMousePointerRel(int32 x, int32 y);
-	void moveMousePointerAbs(int32 x, int32 y);
-	void moveMouseVWheel(int32 direction);
-	void moveMouseHWheel(int32 direction);
-	void pressMouseButton(uint16 button);
-	void releaseMouseButton(uint16 button);
+	void moveMousePointerRel(int32_t x, int32_t y);
+	void moveMousePointerAbs(int32_t x, int32_t y);
+	void moveMouseVWheel(int32_t direction);
+	void moveMouseHWheel(int32_t direction);
+	void pressMouseButton(uint16_t button);
+	void releaseMouseButton(uint16_t button);
 
 protected:
 	virtual bool configure() override;

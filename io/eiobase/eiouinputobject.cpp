@@ -85,7 +85,7 @@ std::string InputDevice::findUinputInterface() {
 	return {};
 }
 
-void InputDevice::sendEvent(uint16 type, uint16 code, int32 value) {
+void InputDevice::report(uint16_t type, uint16_t code, int32_t value, bool triggerSync) {
 	if (!isValid())
 		return;
 
@@ -95,11 +95,12 @@ void InputDevice::sendEvent(uint16 type, uint16 code, int32 value) {
 	event.type = type;
 	event.value = value;
 	write(m_fd, &event, sizeof(event));
+
+	if (triggerSync)
+		sync();
 }
 
-void InputDevice::sendEventSync() {
-	sendEvent(EV_SYN, SYN_REPORT, 0);
-}
+void InputDevice::sync() { report(EV_SYN, SYN_REPORT, 0); }
 
 std::string InputDevice::interfaceFilePath() const { return m_interfaceFilePath; }
 bool InputDevice::isValid() const { return m_file != nullptr && m_fd != -1; }

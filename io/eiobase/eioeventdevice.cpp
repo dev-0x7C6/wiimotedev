@@ -19,39 +19,21 @@
 
 #include "eioeventdevice.h"
 
-void EIOEventDevice::pressKeyboardButton(uint16 button) {
-	sendEvent(EV_KEY, button, 1);
-	sendEventSync();
+void EIOEventDevice::pressKeyboardButton(uint16_t button) { report(EV_KEY, button, 1, true); }
+void EIOEventDevice::releaseKeyboardButton(uint16_t button) { report(EV_KEY, button, 0, true); }
+
+void EIOEventDevice::pressKeyboardButtonOnce(uint16_t button) {
+	report(EV_KEY, button, 1, true);
+	report(EV_KEY, button, 0, true);
 }
 
-void EIOEventDevice::releaseKeyboardButton(uint16 button) {
-	sendEvent(EV_KEY, button, 0);
-	sendEventSync();
-}
+void EIOEventDevice::moveMouseVWheel(int32_t direction) { report(EV_REL, REL_WHEEL, direction, true); }
+void EIOEventDevice::moveMouseHWheel(int32_t direction) { report(EV_REL, REL_HWHEEL, direction, true); }
 
-void EIOEventDevice::pressKeyboardButtonOnce(uint16 button) {
-	sendEvent(EV_KEY, button, true);
-	sendEventSync();
-	sendEvent(EV_KEY, button, false);
-	sendEventSync();
-}
-
-void EIOEventDevice::moveMouseVWheel(int32 direction) {
-	sendEvent(EV_REL, REL_WHEEL, direction);
-	sendEventSync();
-}
-
-void EIOEventDevice::moveMouseHWheel(int32 direction) {
-	sendEvent(EV_REL, REL_HWHEEL, direction);
-	sendEventSync();
-}
-
-void EIOEventDevice::moveMousePointerRel(int32 x, int32 y) {
-	if (x) sendEvent(EV_REL, REL_X, x);
-
-	if (y) sendEvent(EV_REL, REL_Y, y);
-
-	sendEventSync();
+void EIOEventDevice::moveMousePointerRel(int32_t x, int32_t y) {
+	report(EV_REL, REL_X, x);
+	report(EV_REL, REL_Y, y);
+	sync();
 }
 
 bool EIOEventDevice::configure() {

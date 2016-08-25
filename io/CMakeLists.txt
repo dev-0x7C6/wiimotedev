@@ -19,7 +19,6 @@ set(sources
   eiobase/eiouinputobject.cpp
   eiobase/eiomousedevice.cpp
   eiobase/eioeventdevice.cpp
-  eiobase/eiotouchscreen.cpp
 
   eiojoystick/eioclassicjoystick.cpp
   eiojoystick/eionunchukjoystick.cpp
@@ -47,7 +46,6 @@ set(headers
   eiobase/eiouinputobject.h
   eiobase/eiomousedevice.h
   eiobase/eioeventdevice.h
-  eiobase/eiotouchscreen.h
   helper/hashcompare.h
 )
 

@@ -23,17 +23,15 @@
 
 class EIOEventDevice : public InputDevice {
 public:
-	explicit EIOEventDevice()
-			: InputDevice("Virtual Event Device") {}
+	explicit EIOEventDevice() : InputDevice("Virtual Event Device") {}
 
-	void pressKeyboardButton(uint16);
-	void pressKeyboardButtonOnce(uint16);
-	void releaseKeyboardButton(uint16);
+	void pressKeyboardButton(uint16_t);
+	void pressKeyboardButtonOnce(uint16_t);
+	void releaseKeyboardButton(uint16_t);
 
-	void moveMouseVWheel(int32);
-	void moveMouseHWheel(int32);
-	void moveMousePointerRel(int32, int32);
+	void moveMouseVWheel(int32_t);
+	void moveMouseHWheel(int32_t);
+	void moveMousePointerRel(int32_t, int32_t);
 
-protected:
 	virtual bool configure() override;
 };
