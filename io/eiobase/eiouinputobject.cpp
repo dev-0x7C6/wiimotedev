@@ -29,14 +29,14 @@ InputDevice::InputDevice(std::string name)
 		, m_fd(-1)
 
 {
-	m_interfaceFilePath = UInputHelper::findUinputInterface();
+	auto path = UInputHelper::findUinputInterface();
 
-	if (m_interfaceFilePath.empty()) {
+	if (path.empty()) {
 		std::cerr << "error: unable to find uinput interface!" << std::endl;
 		return;
 	}
 
-	m_file = fopen(m_interfaceFilePath.c_str(), "rw");
+	m_file = fopen(path.c_str(), "rw");
 
 	if (m_file == nullptr) {
 		std::cerr << "error: unable to open uinput interface!" << std::endl;
@@ -98,5 +98,4 @@ void InputDevice::report(uint16_t type, uint16_t code, int32_t value, bool trigg
 
 void InputDevice::sync() { report(EV_SYN, SYN_REPORT, 0); }
 
-std::string InputDevice::interfaceFilePath() const { return m_interfaceFilePath; }
 bool InputDevice::isValid() const { return m_file != nullptr && m_fd != -1; }

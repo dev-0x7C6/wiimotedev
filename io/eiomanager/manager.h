@@ -22,6 +22,7 @@
 
 #include <QObject>
 #include <QTimer>
+#include <QPoint>
 
 #include <QScopedPointer>
 #include <QSettings>
@@ -30,7 +31,6 @@
 #include "dbus/profilemanager.h"
 #include "dbus/uinputservice.h"
 #include "eiobase/eioeventdevice.h"
-#include "eiobase/eiomousedevice.h"
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "linux/usr/include/wiimotedev/deviceevents.h"
 #include "eiokeyboard/eioremotekeyboard.h"

@@ -44,7 +44,6 @@ public:
 	void report(uint16_t type, uint16_t code, int32_t value, bool triggerSync = false);
 	void sync();
 
-	std::string interfaceFilePath() const;
 	bool isValid() const;
 
 	virtual bool configure() = 0;
@@ -52,7 +51,6 @@ public:
 	virtual bool destroy();
 
 private:
-	std::string m_interfaceFilePath;
 	FILE *m_file;
 	int m_fd;
 	struct uinput_user_dev m_dev;
