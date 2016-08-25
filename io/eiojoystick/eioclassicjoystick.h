@@ -17,27 +17,27 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef UINPUT_CLASSICGAMEPAD_H
-#define UINPUT_CLASSICGAMEPAD_H
+#pragma once
 
+#include <QObject>
 #include "eiobase/eiouinputobject.h"
 
-const int16_t CLASSIC_LEFT_STICK_MAX = 0x3B;
-const int16_t CLASSIC_LEFT_STICK_MIN = 0x09;
-const int16_t CLASSIC_RIGHT_STICK_MAX = 0x1B;
-const int16_t CLASSIC_RIGHT_STICK_MIN = 0x02;
+constexpr auto CLASSIC_LEFT_STICK_MAX = 0x3B;
+constexpr auto CLASSIC_LEFT_STICK_MIN = 0x09;
+constexpr auto CLASSIC_RIGHT_STICK_MAX = 0x1B;
+constexpr auto CLASSIC_RIGHT_STICK_MIN = 0x02;
 
-const int8_t CLASSIC_BUTTON_PUSHED = 0x01;
-const int8_t CLASSIC_BUTTON_RELEASED = 0x00;
-const int8_t CLASSIC_DPAD_MAX = 0x01;
-const int8_t CLASSIC_DPAD_MIN = -0x01;
+constexpr auto CLASSIC_BUTTON_PUSHED = 0x01;
+constexpr auto CLASSIC_BUTTON_RELEASED = 0x00;
+constexpr auto CLASSIC_DPAD_MAX = 0x01;
+constexpr auto CLASSIC_DPAD_MIN = -0x01;
 
-const int CLASSIC_LEFT_STICK_LINUX_AXIS_X = ABS_X;
-const int CLASSIC_LEFT_STICK_LINUX_AXIS_Y = ABS_Y;
-const int CLASSIC_RIGHT_STICK_LINUX_AXIS_X = ABS_RX;
-const int CLASSIC_RIGHT_STICK_LINUX_AXIS_Y = ABS_RY;
-const int CLASSIC_DPAD_LINUX_AXIS_X = ABS_HAT0X;
-const int CLASSIC_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
+constexpr auto CLASSIC_LEFT_STICK_LINUX_AXIS_X = ABS_X;
+constexpr auto CLASSIC_LEFT_STICK_LINUX_AXIS_Y = ABS_Y;
+constexpr auto CLASSIC_RIGHT_STICK_LINUX_AXIS_X = ABS_RX;
+constexpr auto CLASSIC_RIGHT_STICK_LINUX_AXIS_Y = ABS_RY;
+constexpr auto CLASSIC_DPAD_LINUX_AXIS_X = ABS_HAT0X;
+constexpr auto CLASSIC_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
 
 class EIOClassicJoystick : public QObject, public InputDevice {
 	Q_OBJECT
@@ -91,9 +91,6 @@ private:
 	void centerStick(Sticks stick);
 	void syncAxes();
 
-	// InputDevice interface
 protected:
 	virtual bool configure() override;
 };
-
-#endif // UINPUT_CLASSICGAMEPAD_H

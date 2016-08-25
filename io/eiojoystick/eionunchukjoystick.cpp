@@ -111,30 +111,30 @@ void EIONunchukJoystick::syncAxes() {
 }
 
 bool EIONunchukJoystick::configure() {
-	evbit(EV_KEY);
-	evbit(EV_MSC);
-	evbit(EV_ABS);
+	set_ev_bit(EV_KEY);
+	set_ev_bit(EV_MSC);
+	set_ev_bit(EV_ABS);
 
 	if (m_report_buttons) {
-		keybit(BTN_GAMEPAD);
-		keybit(BTN_B);
+		set_key_bit(BTN_GAMEPAD);
+		set_key_bit(BTN_B);
 	}
 
 	if (m_report_stick) {
-		absbit(NUNCHUK_STICK_LINUX_AXIS_X);
-		absbit(NUNCHUK_STICK_LINUX_AXIS_Y);
-		range(NUNCHUK_STICK_LINUX_AXIS_X, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
-		range(NUNCHUK_STICK_LINUX_AXIS_Y, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
+		set_abs_bit(NUNCHUK_STICK_LINUX_AXIS_X);
+		set_abs_bit(NUNCHUK_STICK_LINUX_AXIS_Y);
+		set_range(NUNCHUK_STICK_LINUX_AXIS_X, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
+		set_range(NUNCHUK_STICK_LINUX_AXIS_Y, NUNCHUK_STICK_MAX, NUNCHUK_STICK_MIN);
 	}
 
 	if (m_report_pitch) {
-		absbit(NUNCHUK_PITCH_LINUX_AXIS);
-		range(NUNCHUK_PITCH_LINUX_AXIS, NUNCHUK_PITCH_MAX, NUNCHUK_PITCH_MIN);
+		set_abs_bit(NUNCHUK_PITCH_LINUX_AXIS);
+		set_range(NUNCHUK_PITCH_LINUX_AXIS, NUNCHUK_PITCH_MAX, NUNCHUK_PITCH_MIN);
 	}
 
 	if (m_report_roll) {
-		absbit(NUNCHUK_ROLL_LINUX_AXIS);
-		range(NUNCHUK_ROLL_LINUX_AXIS, NUNCHUK_ROLL_MAX, NUNCHUK_ROLL_MIN);
+		set_abs_bit(NUNCHUK_ROLL_LINUX_AXIS);
+		set_range(NUNCHUK_ROLL_LINUX_AXIS, NUNCHUK_ROLL_MAX, NUNCHUK_ROLL_MIN);
 	}
 }
 

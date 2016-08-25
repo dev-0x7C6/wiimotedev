@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include <QObject>
-#include <QString>
 #include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
@@ -37,23 +35,11 @@ public:
 	explicit InputDevice(std::string name);
 	virtual ~InputDevice();
 
-	static std::string findUinputInterface();
-	static int evbit(int fd, int bit) { return ioctl(fd, UI_SET_EVBIT, bit); }
-	static int keybit(int fd, int bit) { return ioctl(fd, UI_SET_KEYBIT, bit); }
-	static int relbit(int fd, int bit) { return ioctl(fd, UI_SET_RELBIT, bit); }
-	static int absbit(int fd, int bit) { return ioctl(fd, UI_SET_ABSBIT, bit); }
-	static void range(struct uinput_user_dev &dev, int abs, int max, int min) {
-		dev.absmax[abs] = max;
-		dev.absmin[abs] = min;
-		dev.absflat[abs] = 0;
-		dev.absfuzz[abs] = 0;
-	}
-
-	inline int evbit(int bit) { return evbit(m_fd, bit); }
-	inline int keybit(int bit) { return keybit(m_fd, bit); }
-	inline int relbit(int bit) { return relbit(m_fd, bit); }
-	inline int absbit(int bit) { return absbit(m_fd, bit); }
-	inline void range(int abs, int max, int min) { range(m_dev, abs, max, min); }
+	int set_ev_bit(int bit);
+	int set_key_bit(int bit);
+	int set_rel_bit(int bit);
+	int set_abs_bit(int bit);
+	void set_range(int abs, int max, int min);
 
 	void report(uint16_t type, uint16_t code, int32_t value, bool triggerSync = false);
 	void sync();
@@ -63,6 +49,7 @@ public:
 
 	virtual bool configure() = 0;
 	virtual bool create();
+	virtual bool destroy();
 
 private:
 	std::string m_interfaceFilePath;

@@ -16,6 +16,9 @@ set(sources
   common/tick-aligned-loop.cpp
   container/infrared-config.cpp
   container/infrared-cursor.cpp
+
+  functionals/uinput-helper.cpp
+
   eiobase/eiouinputobject.cpp
   eiobase/eiomousedevice.cpp
   eiobase/eioeventdevice.cpp
@@ -39,6 +42,8 @@ set(sources
 
 set(headers
   ${CMAKE_SOURCE_DIR}/syslog/syslog.h
+
+  functionals/uinput-helper.h
 
   common/tick-aligned-loop.h
   container/infrared-config.h

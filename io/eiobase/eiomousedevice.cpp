@@ -43,22 +43,22 @@ bool UInputMouse::configure() {
 	auto isValid = true;
 	const auto abs = false;
 	QRect absRect = QRect(-512, -384, 1024, 768);
-	isValid &= evbit(EV_KEY) == 0;
-	isValid &= evbit(abs ? EV_ABS : EV_REL) == 0;
+	isValid &= set_ev_bit(EV_KEY) == 0;
+	isValid &= set_ev_bit(abs ? EV_ABS : EV_REL) == 0;
 
 	for (uint16_t i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
-		isValid &= keybit(i) == 0;
+		isValid &= set_key_bit(i) == 0;
 
 	if (abs) {
-		isValid &= absbit(ABS_X) == 0;
-		isValid &= absbit(ABS_Y) == 0;
-		range(ABS_X, absRect.right(), absRect.left());
-		range(ABS_Y, absRect.bottom(), absRect.top());
+		isValid &= set_abs_bit(ABS_X) == 0;
+		isValid &= set_abs_bit(ABS_Y) == 0;
+		set_range(ABS_X, absRect.right(), absRect.left());
+		set_range(ABS_Y, absRect.bottom(), absRect.top());
 	} else {
-		isValid &= relbit(REL_X) == 0;
-		isValid &= relbit(REL_Y) == 0;
-		isValid &= relbit(REL_HWHEEL) == 0;
-		isValid &= relbit(REL_WHEEL) == 0;
+		isValid &= set_rel_bit(REL_X) == 0;
+		isValid &= set_rel_bit(REL_Y) == 0;
+		isValid &= set_rel_bit(REL_HWHEEL) == 0;
+		isValid &= set_rel_bit(REL_WHEEL) == 0;
 	}
 	return isValid;
 }

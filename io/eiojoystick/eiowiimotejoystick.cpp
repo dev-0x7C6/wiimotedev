@@ -179,41 +179,41 @@ void EIOWiimoteJoystick::syncAxes() {
 }
 
 bool EIOWiimoteJoystick::configure() {
-	evbit(EV_KEY);
-	evbit(EV_MSC);
-	evbit(EV_ABS);
+	set_ev_bit(EV_KEY);
+	set_ev_bit(EV_MSC);
+	set_ev_bit(EV_ABS);
 
 	if (m_report_buttons) {
-		keybit(BTN_0);
-		keybit(BTN_1);
-		keybit(BTN_2);
-		keybit(BTN_3);
-		keybit(BTN_GAMEPAD);
-		keybit(BTN_B);
-		keybit(BTN_X);
-		keybit(BTN_Y);
-		keybit(BTN_SELECT);
-		keybit(BTN_START);
+		set_key_bit(BTN_0);
+		set_key_bit(BTN_1);
+		set_key_bit(BTN_2);
+		set_key_bit(BTN_3);
+		set_key_bit(BTN_GAMEPAD);
+		set_key_bit(BTN_B);
+		set_key_bit(BTN_X);
+		set_key_bit(BTN_Y);
+		set_key_bit(BTN_SELECT);
+		set_key_bit(BTN_START);
 
 		if (!m_home_switch_position)
-			keybit(BTN_MODE);
+			set_key_bit(BTN_MODE);
 	}
 
 	if (m_report_dstick) {
-		absbit(WIIMOTE_DPAD_LINUX_AXIS_X);
-		absbit(WIIMOTE_DPAD_LINUX_AXIS_Y);
-		range(WIIMOTE_DPAD_LINUX_AXIS_X, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
-		range(WIIMOTE_DPAD_LINUX_AXIS_Y, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
+		set_abs_bit(WIIMOTE_DPAD_LINUX_AXIS_X);
+		set_abs_bit(WIIMOTE_DPAD_LINUX_AXIS_Y);
+		set_range(WIIMOTE_DPAD_LINUX_AXIS_X, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
+		set_range(WIIMOTE_DPAD_LINUX_AXIS_Y, WIIMOTE_DPAD_MAX, WIIMOTE_DPAD_MIN);
 	}
 
 	if (m_report_pitch) {
-		absbit(WIIMOTE_PITCH_LINUX_AXIS);
-		range(WIIMOTE_PITCH_LINUX_AXIS, WIIMOTE_PITCH_MAX, WIIMOTE_PITCH_MIN);
+		set_abs_bit(WIIMOTE_PITCH_LINUX_AXIS);
+		set_range(WIIMOTE_PITCH_LINUX_AXIS, WIIMOTE_PITCH_MAX, WIIMOTE_PITCH_MIN);
 	}
 
 	if (m_report_roll) {
-		absbit(WIIMOTE_ROLL_LINUX_AXIS);
-		range(WIIMOTE_ROLL_LINUX_AXIS, WIIMOTE_ROLL_MAX, WIIMOTE_ROLL_MIN);
+		set_abs_bit(WIIMOTE_ROLL_LINUX_AXIS);
+		set_range(WIIMOTE_ROLL_LINUX_AXIS, WIIMOTE_ROLL_MAX, WIIMOTE_ROLL_MIN);
 	}
 }
 

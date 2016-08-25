@@ -223,47 +223,47 @@ void EIOClassicJoystick::syncAxes() {
 
 bool EIOClassicJoystick::configure() {
 	bool isValid = true;
-	isValid &= evbit(EV_KEY) == 0;
-	isValid &= evbit(EV_MSC) == 0;
-	isValid &= evbit(EV_ABS) == 0;
+	isValid &= set_ev_bit(EV_KEY) == 0;
+	isValid &= set_ev_bit(EV_MSC) == 0;
+	isValid &= set_ev_bit(EV_ABS) == 0;
 
 	if (m_report_buttons) {
-		isValid &= keybit(BTN_0) == 0;
-		isValid &= keybit(BTN_1) == 0;
-		isValid &= keybit(BTN_2) == 0;
-		isValid &= keybit(BTN_3) == 0;
-		isValid &= keybit(BTN_GAMEPAD) == 0;
-		isValid &= keybit(BTN_B) == 0;
-		isValid &= keybit(BTN_X) == 0;
-		isValid &= keybit(BTN_Y) == 0;
-		isValid &= keybit(BTN_TL) == 0;
-		isValid &= keybit(BTN_TR) == 0;
-		isValid &= keybit(BTN_TL2) == 0;
-		isValid &= keybit(BTN_TR2) == 0;
-		isValid &= keybit(BTN_SELECT) == 0;
-		isValid &= keybit(BTN_MODE) == 0;
-		isValid &= keybit(BTN_START) == 0;
+		isValid &= set_key_bit(BTN_0) == 0;
+		isValid &= set_key_bit(BTN_1) == 0;
+		isValid &= set_key_bit(BTN_2) == 0;
+		isValid &= set_key_bit(BTN_3) == 0;
+		isValid &= set_key_bit(BTN_GAMEPAD) == 0;
+		isValid &= set_key_bit(BTN_B) == 0;
+		isValid &= set_key_bit(BTN_X) == 0;
+		isValid &= set_key_bit(BTN_Y) == 0;
+		isValid &= set_key_bit(BTN_TL) == 0;
+		isValid &= set_key_bit(BTN_TR) == 0;
+		isValid &= set_key_bit(BTN_TL2) == 0;
+		isValid &= set_key_bit(BTN_TR2) == 0;
+		isValid &= set_key_bit(BTN_SELECT) == 0;
+		isValid &= set_key_bit(BTN_MODE) == 0;
+		isValid &= set_key_bit(BTN_START) == 0;
 	}
 
 	if (m_report_left_stick) {
-		isValid &= absbit(CLASSIC_LEFT_STICK_LINUX_AXIS_X) == 0;
-		isValid &= absbit(CLASSIC_LEFT_STICK_LINUX_AXIS_Y) == 0;
-		range(CLASSIC_LEFT_STICK_LINUX_AXIS_X, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
-		range(CLASSIC_LEFT_STICK_LINUX_AXIS_Y, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
+		isValid &= set_abs_bit(CLASSIC_LEFT_STICK_LINUX_AXIS_X) == 0;
+		isValid &= set_abs_bit(CLASSIC_LEFT_STICK_LINUX_AXIS_Y) == 0;
+		set_range(CLASSIC_LEFT_STICK_LINUX_AXIS_X, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
+		set_range(CLASSIC_LEFT_STICK_LINUX_AXIS_Y, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
 	}
 
 	if (m_report_right_stick) {
-		isValid &= absbit(CLASSIC_RIGHT_STICK_LINUX_AXIS_X) == 0;
-		isValid &= absbit(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y) == 0;
-		range(CLASSIC_RIGHT_STICK_LINUX_AXIS_X, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
-		range(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
+		isValid &= set_abs_bit(CLASSIC_RIGHT_STICK_LINUX_AXIS_X) == 0;
+		isValid &= set_abs_bit(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y) == 0;
+		set_range(CLASSIC_RIGHT_STICK_LINUX_AXIS_X, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
+		set_range(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
 	}
 
 	if (m_report_dpad) {
-		isValid &= absbit(CLASSIC_DPAD_LINUX_AXIS_X) == 0;
-		isValid &= absbit(CLASSIC_DPAD_LINUX_AXIS_Y) == 0;
-		range(CLASSIC_DPAD_LINUX_AXIS_X, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
-		range(CLASSIC_DPAD_LINUX_AXIS_Y, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
+		isValid &= set_abs_bit(CLASSIC_DPAD_LINUX_AXIS_X) == 0;
+		isValid &= set_abs_bit(CLASSIC_DPAD_LINUX_AXIS_Y) == 0;
+		set_range(CLASSIC_DPAD_LINUX_AXIS_X, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
+		set_range(CLASSIC_DPAD_LINUX_AXIS_Y, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
 	}
 
 	return isValid;

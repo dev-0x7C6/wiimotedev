@@ -25,8 +25,7 @@
 
 class UInputMouse : public InputDevice {
 public:
-	explicit UInputMouse()
-			: InputDevice("Virtual Mouse") {}
+	explicit UInputMouse() : InputDevice("Virtual Mouse") {}
 	void moveMousePointerRel(int32_t x, int32_t y);
 	void moveMousePointerAbs(int32_t x, int32_t y);
 	void moveMouseVWheel(int32_t direction);

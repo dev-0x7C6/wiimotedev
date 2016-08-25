@@ -17,24 +17,25 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef UINPUT_WIIMOTEGAMEPAD_H
-#define UINPUT_WIIMOTEGAMEPAD_H
+#pragma once
 
 #include "eiobase/eiouinputobject.h"
 
-const int16_t WIIMOTE_PITCH_MAX = 90;
-const int16_t WIIMOTE_PITCH_MIN = -90;
-const int16_t WIIMOTE_ROLL_MAX = 180;
-const int16_t WIIMOTE_ROLL_MIN = -180;
-const int8_t WIIMOTE_BUTTON_PUSHED = 1;
-const int8_t WIIMOTE_BUTTON_RELEASED = 0;
-const int8_t WIIMOTE_DPAD_MAX = 1;
-const int8_t WIIMOTE_DPAD_MIN = -1;
+#include <QObject>
 
-const int WIIMOTE_DPAD_LINUX_AXIS_X = ABS_HAT0X;
-const int WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
-const int WIIMOTE_PITCH_LINUX_AXIS = ABS_X;
-const int WIIMOTE_ROLL_LINUX_AXIS = ABS_RX;
+constexpr auto WIIMOTE_PITCH_MAX = 90;
+constexpr auto WIIMOTE_PITCH_MIN = -90;
+constexpr auto WIIMOTE_ROLL_MAX = 180;
+constexpr auto WIIMOTE_ROLL_MIN = -180;
+constexpr auto WIIMOTE_BUTTON_PUSHED = 1;
+constexpr auto WIIMOTE_BUTTON_RELEASED = 0;
+constexpr auto WIIMOTE_DPAD_MAX = 1;
+constexpr auto WIIMOTE_DPAD_MIN = -1;
+
+constexpr auto WIIMOTE_DPAD_LINUX_AXIS_X = ABS_HAT0X;
+constexpr auto WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
+constexpr auto WIIMOTE_PITCH_LINUX_AXIS = ABS_X;
+constexpr auto WIIMOTE_ROLL_LINUX_AXIS = ABS_RX;
 
 class EIOWiimoteJoystick : public QObject, public InputDevice {
 	Q_OBJECT
@@ -106,9 +107,6 @@ private:
 signals:
 	void setLedState(uint32_t, uint32_t);
 
-	// InputDevice interface
 protected:
 	virtual bool configure() override;
 };
-
-#endif // UINPUT_WIIMOTEGAMEPAD_H

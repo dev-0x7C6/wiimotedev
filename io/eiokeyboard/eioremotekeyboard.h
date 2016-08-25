@@ -38,7 +38,7 @@ struct KeyboardAction {
 class EIORemoteKeyboard : public QObject {
 	Q_OBJECT
 	//general
-	EIOEventDevice *device;
+	EventDevice *device;
 	uint32_t id;
 	uint32_t compareType;
 
@@ -47,7 +47,7 @@ class EIORemoteKeyboard : public QObject {
 	QList<KeyboardAction *> keyboardActions;
 
 public:
-	EIORemoteKeyboard(EIOEventDevice *device);
+	EIORemoteKeyboard(EventDevice *device);
 	~EIORemoteKeyboard();
 
 	void addKeyboardAction(KeyboardAction &);

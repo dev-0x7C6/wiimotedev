@@ -19,38 +19,38 @@
 
 #include "eioeventdevice.h"
 
-void EIOEventDevice::pressKeyboardButton(uint16_t button) { report(EV_KEY, button, 1, true); }
-void EIOEventDevice::releaseKeyboardButton(uint16_t button) { report(EV_KEY, button, 0, true); }
+void EventDevice::pressKeyboardButton(uint16_t button) { report(EV_KEY, button, 1, true); }
+void EventDevice::releaseKeyboardButton(uint16_t button) { report(EV_KEY, button, 0, true); }
 
-void EIOEventDevice::pressKeyboardButtonOnce(uint16_t button) {
+void EventDevice::pressKeyboardButtonOnce(uint16_t button) {
 	report(EV_KEY, button, 1, true);
 	report(EV_KEY, button, 0, true);
 }
 
-void EIOEventDevice::moveMouseVWheel(int32_t direction) { report(EV_REL, REL_WHEEL, direction, true); }
-void EIOEventDevice::moveMouseHWheel(int32_t direction) { report(EV_REL, REL_HWHEEL, direction, true); }
+void EventDevice::moveMouseVWheel(int32_t direction) { report(EV_REL, REL_WHEEL, direction, true); }
+void EventDevice::moveMouseHWheel(int32_t direction) { report(EV_REL, REL_HWHEEL, direction, true); }
 
-void EIOEventDevice::moveMousePointerRel(int32_t x, int32_t y) {
+void EventDevice::moveMousePointerRel(int32_t x, int32_t y) {
 	report(EV_REL, REL_X, x);
 	report(EV_REL, REL_Y, y);
 	sync();
 }
 
-bool EIOEventDevice::configure() {
+bool EventDevice::configure() {
 	bool isValid = true;
-	isValid &= evbit(EV_KEY) == 0;
-	isValid &= evbit(EV_REP) == 0;
-	isValid &= evbit(EV_REL) == 0;
+	isValid &= set_ev_bit(EV_KEY) == 0;
+	isValid &= set_ev_bit(EV_REP) == 0;
+	isValid &= set_ev_bit(EV_REL) == 0;
 
 	for (uint16_t i = 0; i < 0xFF; ++i)
-		isValid &= keybit(i) == 0;
+		isValid &= set_key_bit(i) == 0;
 
 	for (uint16_t i = BTN_MOUSE; i < BTN_JOYSTICK; ++i)
-		isValid &= keybit(i) == 0;
+		isValid &= set_key_bit(i) == 0;
 
-	isValid &= relbit(REL_X) == 0;
-	isValid &= relbit(REL_Y) == 0;
-	isValid &= relbit(REL_HWHEEL) == 0;
-	isValid &= relbit(REL_WHEEL) == 0;
+	isValid &= set_rel_bit(REL_X) == 0;
+	isValid &= set_rel_bit(REL_Y) == 0;
+	isValid &= set_rel_bit(REL_HWHEEL) == 0;
+	isValid &= set_rel_bit(REL_WHEEL) == 0;
 	return isValid;
 };

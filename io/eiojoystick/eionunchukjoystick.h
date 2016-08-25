@@ -17,24 +17,24 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef NUNCHUKJOYSTICK_H
-#define NUNCHUKJOYSTICK_H
+#pragma once
 
 #include "eiobase/eiouinputobject.h"
+#include <QObject>
 
-const int16_t NUNCHUK_STICK_MAX = 0xFF - 0x15;
-const int16_t NUNCHUK_STICK_MIN = 0x00 + 0x15;
-const int16_t NUNCHUK_PITCH_MAX = 90;
-const int16_t NUNCHUK_PITCH_MIN = -90;
-const int16_t NUNCHUK_ROLL_MAX = 180;
-const int16_t NUNCHUK_ROLL_MIN = -180;
-const int8_t NUNCHUK_BUTTON_PUSHED = 1;
-const int8_t NUNCHUK_BUTTON_RELEASED = 0;
+constexpr auto NUNCHUK_STICK_MAX = 0xFF - 0x15;
+constexpr auto NUNCHUK_STICK_MIN = 0x00 + 0x15;
+constexpr auto NUNCHUK_PITCH_MAX = 90;
+constexpr auto NUNCHUK_PITCH_MIN = -90;
+constexpr auto NUNCHUK_ROLL_MAX = 180;
+constexpr auto NUNCHUK_ROLL_MIN = -180;
+constexpr auto NUNCHUK_BUTTON_PUSHED = 1;
+constexpr auto NUNCHUK_BUTTON_RELEASED = 0;
 
-const int NUNCHUK_STICK_LINUX_AXIS_X = ABS_X;
-const int NUNCHUK_STICK_LINUX_AXIS_Y = ABS_Y;
-const int NUNCHUK_ROLL_LINUX_AXIS = ABS_TILT_X;
-const int NUNCHUK_PITCH_LINUX_AXIS = ABS_TILT_Y;
+constexpr auto NUNCHUK_STICK_LINUX_AXIS_X = ABS_X;
+constexpr auto NUNCHUK_STICK_LINUX_AXIS_Y = ABS_Y;
+constexpr auto NUNCHUK_ROLL_LINUX_AXIS = ABS_TILT_X;
+constexpr auto NUNCHUK_PITCH_LINUX_AXIS = ABS_TILT_Y;
 
 class EIONunchukJoystick : public QObject, public InputDevice {
 	Q_OBJECT
@@ -105,5 +105,3 @@ signals:
 protected:
 	virtual bool configure() override;
 };
-
-#endif // NUNCHUKJOYSTICK_H

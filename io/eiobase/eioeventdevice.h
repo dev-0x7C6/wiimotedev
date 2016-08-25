@@ -21,9 +21,10 @@
 
 #include "eiobase/eiouinputobject.h"
 
-class EIOEventDevice : public InputDevice {
+class EventDevice : public InputDevice {
 public:
-	explicit EIOEventDevice() : InputDevice("Virtual Event Device") {}
+	explicit EventDevice() : InputDevice("Virtual Event Device") {}
+	virtual ~EventDevice() = default;
 
 	void pressKeyboardButton(uint16_t);
 	void pressKeyboardButtonOnce(uint16_t);

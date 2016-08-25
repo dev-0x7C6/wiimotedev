@@ -29,7 +29,7 @@ enum KeyboardExtension {
 	keyboardExtMouseWheelDown
 };
 
-EIORemoteKeyboard::EIORemoteKeyboard(EIOEventDevice *device)
+EIORemoteKeyboard::EIORemoteKeyboard(EventDevice *device)
 		: device(device) {
 	compareType = HashCompare<uint32_t, uint64_t>::BitCompare;
 }

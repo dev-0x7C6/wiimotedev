@@ -28,7 +28,7 @@
 #include <iostream>
 #include <cassert>
 
-EIOInfraredMouse::EIOInfraredMouse(EIOEventDevice &device, QObject *parent)
+EIOInfraredMouse::EIOInfraredMouse(EventDevice &device, QObject *parent)
 		: QThread(parent)
 		, m_device(device)
 		, m_id(1)

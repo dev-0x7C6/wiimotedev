@@ -141,7 +141,7 @@ private:
 	QList<EIORemoteKeyboard *> EIORemoteKeyboards;
 	QList<EIOInfraredMouse *> EIOInfraredMouses;
 
-	EIOEventDevice *virtualEvent;
+	EventDevice *virtualEvent;
 
 	/* General variables --------------------------------------------- */
 

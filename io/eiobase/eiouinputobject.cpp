@@ -18,15 +18,18 @@
  **********************************************************************************/
 
 #include "eiouinputobject.h"
+
+#include <cstring>
 #include <iostream>
 #include <sys/stat.h>
+#include <io/functionals/uinput-helper.h>
 
 InputDevice::InputDevice(std::string name)
 		: m_file(nullptr)
 		, m_fd(-1)
 
 {
-	m_interfaceFilePath = findUinputInterface();
+	m_interfaceFilePath = UInputHelper::findUinputInterface();
 
 	if (m_interfaceFilePath.empty()) {
 		std::cerr << "error: unable to find uinput interface!" << std::endl;
@@ -62,28 +65,21 @@ bool InputDevice::create() {
 	return true;
 }
 
+bool InputDevice::destroy()
+{
+	ioctl(m_fd, UI_DEV_DESTROY);
+}
+
 InputDevice::~InputDevice() {
-	if (isValid()) {
-		ioctl(m_fd, UI_DEV_DESTROY);
+	if (isValid())
 		fclose(m_file);
-	}
 }
 
-std::string InputDevice::findUinputInterface() {
-	static auto paths = {
-		"/dev/uinput",
-		"/dev/input/uinput",
-		"/dev/misc/uinput",
-	};
-
-	for (const auto &path : paths) {
-		struct stat buffer;
-		if (stat(path, &buffer) == 0)
-			return path;
-	}
-
-	return {};
-}
+int InputDevice::set_ev_bit(int bit) { return UInputHelper::set_ev_bit(m_fd, bit); }
+int InputDevice::set_key_bit(int bit) { return UInputHelper::set_key_bit(m_fd, bit); }
+int InputDevice::set_rel_bit(int bit) { return UInputHelper::set_rel_bit(m_fd, bit); }
+int InputDevice::set_abs_bit(int bit) { return UInputHelper::set_abs_bit(m_fd, bit); }
+void InputDevice::set_range(int abs, int max, int min) {	UInputHelper::range(m_dev, abs, max, min); }
 
 void InputDevice::report(uint16_t type, uint16_t code, int32_t value, bool triggerSync) {
 	if (!isValid())
