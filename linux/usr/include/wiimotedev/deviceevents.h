@@ -115,61 +115,61 @@ public:
 public Q_SLOTS:
 	QDBusReply<QList<uint>> dbusGetWiimoteList();
 	QDBusReply<QStringList> dbusGetUnregistredWiimoteList();
-	QDBusReply<bool> dbusIsClassicConnected(uint id);
-	QDBusReply<bool> dbusIsNunchukConnected(uint id);
-	QDBusReply<bool> dbusIsWiimoteConnected(uint id);
+	QDBusReply<bool> dbusIsClassicConnected(uint32_t id);
+	QDBusReply<bool> dbusIsNunchukConnected(uint32_t id);
+	QDBusReply<bool> dbusIsWiimoteConnected(uint32_t id);
 
-	QDBusReply<uint> dbusWiimoteGetAverageLatency(uint id);
-	QDBusReply<uint> dbusWiimoteGetCurrentLatency(uint id);
-	QDBusReply<uint8> dbusWiimoteGetStatus(uint id);
-	QDBusReply<uint> dbusWiimoteGetBatteryLife(uint id);
-	QDBusReply<QString> dbusWiimoteGetMacAddress(uint id);
-	QDBusReply<bool> dbusWiimoteGetRumbleStatus(uint id);
-	QDBusReply<uint8> dbusWiimoteGetLedStatus(uint id);
-	QDBusReply<bool> dbusWiimoteSetLedStatus(uint id, uint status);
-	QDBusReply<bool> dbusWiimoteSetRumbleStatus(uint id, bool status);
+	QDBusReply<uint> dbusWiimoteGetAverageLatency(uint32_t id);
+	QDBusReply<uint> dbusWiimoteGetCurrentLatency(uint32_t id);
+	QDBusReply<uint8_t> dbusWiimoteGetStatus(uint32_t id);
+	QDBusReply<uint> dbusWiimoteGetBatteryLife(uint32_t id);
+	QDBusReply<QString> dbusWiimoteGetMacAddress(uint32_t id);
+	QDBusReply<bool> dbusWiimoteGetRumbleStatus(uint32_t id);
+	QDBusReply<uint8_t> dbusWiimoteGetLedStatus(uint32_t id);
+	QDBusReply<bool> dbusWiimoteSetLedStatus(uint32_t id, uint32_t status);
+	QDBusReply<bool> dbusWiimoteSetRumbleStatus(uint32_t id, bool status);
 
 Q_SIGNALS:
-	void dbusWiimoteGeneralButtons(uint, uint64);
+	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
 
-	void dbusVirtualCursorPosition(uint, double, double, double, double);
-	void dbusVirtualCursorFound(uint);
-	void dbusVirtualCursorLost(uint);
+	void dbusVirtualCursorPosition(uint32_t, double, double, double, double);
+	void dbusVirtualCursorFound(uint32_t);
+	void dbusVirtualCursorLost(uint32_t);
 
-	void dbusWiimoteConnected(uint);
-	void dbusWiimoteDisconnected(uint);
-	void dbusWiimoteBatteryLife(uint, uint8);
-	void dbusWiimoteButtons(uint, uint64);
-	void dbusWiimoteLedStatusChanged(uint, uint8);
-	void dbusWiimoteRumbleStatusChanged(uint, uint8);
-	void dbusWiimoteStatus(uint, uint8);
-	void dbusWiimoteInfrared(uint, const QList<irpoint> &);
-	void dbusWiimoteAcc(uint, const accdata &);
+	void dbusWiimoteConnected(uint32_t);
+	void dbusWiimoteDisconnected(uint32_t);
+	void dbusWiimoteBatteryLife(uint32_t, uint8_t);
+	void dbusWiimoteButtons(uint32_t, uint64_t);
+	void dbusWiimoteLedStatusChanged(uint32_t, uint8_t);
+	void dbusWiimoteRumbleStatusChanged(uint32_t, uint8_t);
+	void dbusWiimoteStatus(uint32_t, uint8_t);
+	void dbusWiimoteInfrared(uint32_t, const QList<irpoint> &);
+	void dbusWiimoteAcc(uint32_t, const accdata &);
 
-	void dbusNunchukPlugged(uint);
-	void dbusNunchukUnplugged(uint);
-	void dbusNunchukButtons(uint, uint64);
-	void dbusNunchukStick(uint, const stickdata &);
-	void dbusNunchukAcc(uint, const accdata &);
+	void dbusNunchukPlugged(uint32_t);
+	void dbusNunchukUnplugged(uint32_t);
+	void dbusNunchukButtons(uint32_t, uint64_t);
+	void dbusNunchukStick(uint32_t, const stickdata &);
+	void dbusNunchukAcc(uint32_t, const accdata &);
 
-	void dbusClassicControllerPlugged(uint);
-	void dbusClassicControllerUnplugged(uint);
-	void dbusClassicControllerButtons(uint, uint64);
-	void dbusClassicControllerLStick(uint, const stickdata &);
-	void dbusClassicControllerRStick(uint, const stickdata &);
+	void dbusClassicControllerPlugged(uint32_t);
+	void dbusClassicControllerUnplugged(uint32_t);
+	void dbusClassicControllerButtons(uint32_t, uint64_t);
+	void dbusClassicControllerLStick(uint32_t, const stickdata &);
+	void dbusClassicControllerRStick(uint32_t, const stickdata &);
 };
 
 inline WiimotedevDeviceEvents::WiimotedevDeviceEvents(const QString &service, const QString &path,
 	const QDBusConnection &connection, QObject *parent)
 		: QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent) {
-	qRegisterMetaType<uint8>("uint8");
-	qRegisterMetaType<uint16>("uint16");
-	qRegisterMetaType<uint32>("uint32");
-	qRegisterMetaType<uint64>("uint64");
-	qRegisterMetaType<int8>("int8");
-	qRegisterMetaType<int16>("int16");
-	qRegisterMetaType<int32>("int32");
-	qRegisterMetaType<int64>("int64");
+	qRegisterMetaType<uint8_t>("uint8");
+	qRegisterMetaType<uint16_t>("uint16_t");
+	qRegisterMetaType<uint32_t>("uint32_t");
+	qRegisterMetaType<uint64_t>("uint64");
+	qRegisterMetaType<int8_t>("int8");
+	qRegisterMetaType<int16_t>("int16");
+	qRegisterMetaType<int32_t>("int32_t");
+	qRegisterMetaType<int64_t>("int64");
 	qRegisterMetaType<QList<struct irpoint>>("QList< irpoint>");
 	qRegisterMetaType<QList<struct accdata>>("QList< accdata>");
 	qRegisterMetaType<QList<struct stickdata>>("QList< stickdata>");
@@ -184,20 +184,20 @@ inline WiimotedevDeviceEvents::WiimotedevDeviceEvents(const QString &service, co
 	qDBusRegisterMetaType<struct stickdata>();
 }
 
-inline QDBusReply<bool> WiimotedevDeviceEvents::dbusWiimoteGetRumbleStatus(uint id) {
+inline QDBusReply<bool> WiimotedevDeviceEvents::dbusWiimoteGetRumbleStatus(uint32_t id) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	return callWithArgumentList(QDBus::Block, "dbusWiimoteGetRumbleStatus", argumentList);
 }
 
-inline QDBusReply<bool> WiimotedevDeviceEvents::dbusWiimoteSetLedStatus(uint id, uint status) {
+inline QDBusReply<bool> WiimotedevDeviceEvents::dbusWiimoteSetLedStatus(uint32_t id, uint32_t status) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	argumentList << status;
 	return callWithArgumentList(QDBus::Block, "dbusWiimoteSetLedStatus", argumentList);
 }
 
-inline QDBusReply<bool> WiimotedevDeviceEvents::dbusWiimoteSetRumbleStatus(uint id, bool status) {
+inline QDBusReply<bool> WiimotedevDeviceEvents::dbusWiimoteSetRumbleStatus(uint32_t id, bool status) {
 	QList<QVariant> argumentList;
 	argumentList << id << status;
 	return callWithArgumentList(QDBus::Block, "dbusWiimoteSetRumbleStatus", argumentList);
@@ -211,55 +211,55 @@ inline QDBusReply<QStringList> WiimotedevDeviceEvents::dbusGetUnregistredWiimote
 	return call(QDBus::Block, "dbusGetUnregistredWiimoteList");
 }
 
-inline QDBusReply<bool> WiimotedevDeviceEvents::dbusIsClassicConnected(uint id) {
+inline QDBusReply<bool> WiimotedevDeviceEvents::dbusIsClassicConnected(uint32_t id) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	return callWithArgumentList(QDBus::Block, "dbusIsClassicConnected", argumentList);
 }
 
-inline QDBusReply<bool> WiimotedevDeviceEvents::dbusIsNunchukConnected(uint id) {
+inline QDBusReply<bool> WiimotedevDeviceEvents::dbusIsNunchukConnected(uint32_t id) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	return callWithArgumentList(QDBus::Block, "dbusIsNunchukConnected", argumentList);
 }
 
-inline QDBusReply<bool> WiimotedevDeviceEvents::dbusIsWiimoteConnected(uint id) {
+inline QDBusReply<bool> WiimotedevDeviceEvents::dbusIsWiimoteConnected(uint32_t id) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	return callWithArgumentList(QDBus::Block, "dbusIsWiimoteConnected", argumentList);
 }
 
-inline QDBusReply<uint> WiimotedevDeviceEvents::dbusWiimoteGetAverageLatency(uint id) {
+inline QDBusReply<uint> WiimotedevDeviceEvents::dbusWiimoteGetAverageLatency(uint32_t id) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	return callWithArgumentList(QDBus::Block, "dbusWiimoteGetAverageLatency", argumentList);
 }
 
-inline QDBusReply<uint> WiimotedevDeviceEvents::dbusWiimoteGetCurrentLatency(uint id) {
+inline QDBusReply<uint> WiimotedevDeviceEvents::dbusWiimoteGetCurrentLatency(uint32_t id) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	return callWithArgumentList(QDBus::Block, "dbusWiimoteGetCurrentLatency", argumentList);
 }
 
-inline QDBusReply<uint8> WiimotedevDeviceEvents::dbusWiimoteGetStatus(uint id) {
+inline QDBusReply<uint8_t> WiimotedevDeviceEvents::dbusWiimoteGetStatus(uint32_t id) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	return callWithArgumentList(QDBus::Block, "dbusWiimoteGetStatus", argumentList);
 }
 
-inline QDBusReply<QString> WiimotedevDeviceEvents::dbusWiimoteGetMacAddress(uint id) {
+inline QDBusReply<QString> WiimotedevDeviceEvents::dbusWiimoteGetMacAddress(uint32_t id) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	return callWithArgumentList(QDBus::Block, "dbusWiimoteGetMacAddress", argumentList);
 }
 
-inline QDBusReply<uint8> WiimotedevDeviceEvents::dbusWiimoteGetLedStatus(uint id) {
+inline QDBusReply<uint8_t> WiimotedevDeviceEvents::dbusWiimoteGetLedStatus(uint32_t id) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	return callWithArgumentList(QDBus::Block, "dbusWiimoteGetLedStatus", argumentList);
 }
 
-inline QDBusReply<uint> WiimotedevDeviceEvents::dbusWiimoteGetBatteryLife(uint id) {
+inline QDBusReply<uint> WiimotedevDeviceEvents::dbusWiimoteGetBatteryLife(uint32_t id) {
 	QList<QVariant> argumentList;
 	argumentList << id;
 	return callWithArgumentList(QDBus::Block, "dbusWiimoteGetBatteryLife", argumentList);

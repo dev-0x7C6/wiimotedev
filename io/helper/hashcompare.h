@@ -35,7 +35,7 @@ public:
 		NotEqualCompare
 	};
 
-	bool compare(QHash<typeKey, typeValue> *, QHash<typeKey, typeValue> *, quint8);
+	bool compare(QHash<typeKey, typeValue> *, QHash<typeKey, typeValue> *, uint8_t);
 };
 
 template <class typeKey, class typeValue>
@@ -44,7 +44,7 @@ HashCompare<typeKey, typeValue>::HashCompare(QObject *parent)
 }
 
 template <class typeKey, class typeValue>
-bool HashCompare<typeKey, typeValue>::compare(QHash<typeKey, typeValue> *first, QHash<typeKey, typeValue> *second, quint8 style) {
+bool HashCompare<typeKey, typeValue>::compare(QHash<typeKey, typeValue> *first, QHash<typeKey, typeValue> *second, uint8_t style) {
 	if (first->isEmpty() || second->isEmpty())
 		return false;
 

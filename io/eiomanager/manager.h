@@ -31,7 +31,6 @@
 #include "dbus/uinputservice.h"
 #include "eiobase/eioeventdevice.h"
 #include "eiobase/eiomousedevice.h"
-#include "eiobase/eiotouchscreen.h"
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "linux/usr/include/wiimotedev/deviceevents.h"
 #include "eiokeyboard/eioremotekeyboard.h"
@@ -55,13 +54,13 @@ enum {
 };
 
 struct mouseEmulationStruct {
-	uint8 mode;
-	uint8 alghoritm;
+	uint8_t mode;
+	uint8_t alghoritm;
 };
 
 struct InfraredConfigurationStruct {
-	uint8 mode;
-	uint8 alghoritm;
+	uint8_t mode;
+	uint8_t alghoritm;
 };
 
 namespace profiles {
@@ -120,10 +119,10 @@ private:
 	const static char *keyboardSection;
 
 	struct CommandAction {
-		QHash<uint, uint64> event;
+		QHash<uint32_t, uint64_t> event;
 		QStringList params;
 		bool actived;
-		uint8 alghoritm;
+		uint8_t alghoritm;
 	};
 
 	enum CommandList {
@@ -134,7 +133,7 @@ private:
 	};
 
 	QList<CommandAction *> commandActions;
-	QHash<uint, uint64> lastWiiremoteButtons;
+	QHash<uint32_t, uint64_t> lastWiiremoteButtons;
 
 	QList<EIOClassicJoystick *> EIOClassicJoysticks;
 	QList<EIONunchukJoystick *> EIONunchukJoysticks;
@@ -154,7 +153,7 @@ public:
 	~UInputProfileManager();
 
 private:
-	QHash<uint, uint64> extractDeviceEvent(QString);
+	QHash<uint32_t, uint64_t> extractDeviceEvent(QString);
 	QList<uint> extractScancodes(QStringList);
 
 	QMap<QString, uint> commandIds;
@@ -163,10 +162,10 @@ private:
 
 	void freeKeyboardEvents();
 
-	void setupClassicJoystick(uint assign, const QString &name, QSettings &settings);
-	void setupWiimoteJoystick(uint assign, const QString &name, QSettings &settings);
-	void setupNunchukJoystick(uint assign, const QString &name, QSettings &settings);
-	void setupInfraredMouse(uint assing, const QString &name, QSettings &settings);
+	void setupClassicJoystick(uint32_t assign, const QString &name, QSettings &settings);
+	void setupWiimoteJoystick(uint32_t assign, const QString &name, QSettings &settings);
+	void setupNunchukJoystick(uint32_t assign, const QString &name, QSettings &settings);
+	void setupInfraredMouse(uint32_t assing, const QString &name, QSettings &settings);
 
 	void assignInfraredEvents(const QString &key, QSettings &settings);
 	void assignKeyboardEvents(const QString &key, QSettings &settings);
@@ -188,16 +187,16 @@ private:
 	void deactiveCommandEvent(QStringList &);
 
 private Q_SLOTS:
-	void dbusWiimoteGeneralButtons(uint, uint64);
+	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
 
-	void dbusClassicControllerButtons(uint, uint64);
-	void dbusWiimoteAcc(uint, accdata);
-	void dbusWiimoteButtons(uint, uint64);
-	void dbusNunchukAcc(uint, accdata);
-	void dbusNunchukButtons(uint, uint64);
-	void dbusNunchukStick(uint, stickdata);
-	void dbusClassicControllerLStick(uint, stickdata);
-	void dbusClassicControllerRStick(uint, stickdata);
+	void dbusClassicControllerButtons(uint32_t, uint64_t);
+	void dbusWiimoteAcc(uint32_t, accdata);
+	void dbusWiimoteButtons(uint32_t, uint64_t);
+	void dbusNunchukAcc(uint32_t, accdata);
+	void dbusNunchukButtons(uint32_t, uint64_t);
+	void dbusNunchukStick(uint32_t, stickdata);
+	void dbusClassicControllerLStick(uint32_t, stickdata);
+	void dbusClassicControllerRStick(uint32_t, stickdata);
 
 public Q_SLOTS:
 	inline bool isWiimotedevServiceAvailable() {

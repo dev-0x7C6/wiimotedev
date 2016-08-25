@@ -22,14 +22,14 @@
 
 #include "eiobase/eiouinputobject.h"
 
-const int16 WIIMOTE_PITCH_MAX = 90;
-const int16 WIIMOTE_PITCH_MIN = -90;
-const int16 WIIMOTE_ROLL_MAX = 180;
-const int16 WIIMOTE_ROLL_MIN = -180;
-const int8 WIIMOTE_BUTTON_PUSHED = 1;
-const int8 WIIMOTE_BUTTON_RELEASED = 0;
-const int8 WIIMOTE_DPAD_MAX = 1;
-const int8 WIIMOTE_DPAD_MIN = -1;
+const int16_t WIIMOTE_PITCH_MAX = 90;
+const int16_t WIIMOTE_PITCH_MIN = -90;
+const int16_t WIIMOTE_ROLL_MAX = 180;
+const int16_t WIIMOTE_ROLL_MIN = -180;
+const int8_t WIIMOTE_BUTTON_PUSHED = 1;
+const int8_t WIIMOTE_BUTTON_RELEASED = 0;
+const int8_t WIIMOTE_DPAD_MAX = 1;
+const int8_t WIIMOTE_DPAD_MIN = -1;
 
 const int WIIMOTE_DPAD_LINUX_AXIS_X = ABS_HAT0X;
 const int WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
@@ -74,7 +74,7 @@ private:
 	Position m_horizontal;
 	Mode m_mode;
 	bool m_home_pressed;
-	quint32 m_id;
+	uint32_t m_id;
 	bool m_dpad_invert_x;
 	bool m_dpad_invert_y;
 	bool m_home_switch_position;
@@ -86,7 +86,7 @@ private:
 public:
 	EIOWiimoteJoystick(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
 
-	quint32 assign();
+	uint32_t assign();
 
 	void setDStickInvertX(bool option);
 	void setDStickInvertY(bool option);
@@ -96,7 +96,7 @@ public:
 	void setReportPitch(bool report);
 	void setReportRoll(bool report);
 
-	void setWiimoteButtons(uint64);
+	void setWiimoteButtons(uint64_t);
 	void setWiimoteAcc(double, double);
 
 private:
@@ -104,7 +104,7 @@ private:
 	void syncAxes();
 
 signals:
-	void setLedState(uint, uint);
+	void setLedState(uint32_t, uint32_t);
 
 	// InputDevice interface
 protected:

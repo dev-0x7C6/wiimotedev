@@ -187,7 +187,7 @@ void *status_thread(struct wiimote *wiimote)
 				/* Everything (but MotionPlus) shows up as partial until initialized */
 				buf[0] = 0x55;
 				buf[1] = 0x00;
-				/* Initialize extension register space */
+				/* Initialize extension space */
 				if (cwiid_write(wiimote, CWIID_RW_REG, 0xA400F0, 1, &buf[0])) {
 					cwiid_err(wiimote, "Extension initialization error");
 					status_mesg->ext_type = CWIID_EXT_UNKNOWN;

@@ -49,7 +49,7 @@ EIOClassicJoystick::EIOClassicJoystick(QString deviceName, int id, QObject *pare
 	centerStick(EIOClassicJoystick::DpadStick);
 }
 
-quint32 EIOClassicJoystick::assign() {
+uint32_t EIOClassicJoystick::assign() {
 	return m_id;
 }
 
@@ -96,24 +96,24 @@ void EIOClassicJoystick::setReportRStick(bool report) {
 EIOClassicJoystick::~EIOClassicJoystick() {
 }
 
-void EIOClassicJoystick::setButtons(uint64 buttons) {
+void EIOClassicJoystick::setButtons(uint64_t buttons) {
 	if (m_report_buttons) {
-		sendEvent(EV_KEY, BTN_A, (buttons & CLASSIC_BTN_A) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_B, (buttons & CLASSIC_BTN_B) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_X, (buttons & CLASSIC_BTN_X) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_Y, (buttons & CLASSIC_BTN_Y) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_TL, (buttons & CLASSIC_BTN_L) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_TR, (buttons & CLASSIC_BTN_R) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_TL2, (buttons & CLASSIC_BTN_ZL) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_TR2, (buttons & CLASSIC_BTN_ZR) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_SELECT, (buttons & CLASSIC_BTN_MINUS) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_MODE, (buttons & CLASSIC_BTN_HOME) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_START, (buttons & CLASSIC_BTN_PLUS) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_0, (buttons & CLASSIC_BTN_RIGHT) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_1, (buttons & CLASSIC_BTN_LEFT) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_2, (buttons & CLASSIC_BTN_DOWN) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_3, (buttons & CLASSIC_BTN_UP) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
-		sendEventSync();
+		report(EV_KEY, BTN_A, (buttons & CLASSIC_BTN_A) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_B, (buttons & CLASSIC_BTN_B) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_X, (buttons & CLASSIC_BTN_X) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_Y, (buttons & CLASSIC_BTN_Y) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_TL, (buttons & CLASSIC_BTN_L) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_TR, (buttons & CLASSIC_BTN_R) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_TL2, (buttons & CLASSIC_BTN_ZL) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_TR2, (buttons & CLASSIC_BTN_ZR) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_SELECT, (buttons & CLASSIC_BTN_MINUS) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_MODE, (buttons & CLASSIC_BTN_HOME) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_START, (buttons & CLASSIC_BTN_PLUS) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_0, (buttons & CLASSIC_BTN_RIGHT) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_1, (buttons & CLASSIC_BTN_LEFT) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_2, (buttons & CLASSIC_BTN_DOWN) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		report(EV_KEY, BTN_3, (buttons & CLASSIC_BTN_UP) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
+		sync();
 	}
 
 	if (m_report_dpad) {
@@ -155,7 +155,7 @@ void EIOClassicJoystick::centerStick(Sticks stick) {
 	}
 }
 
-void EIOClassicJoystick::setStick(Sticks stick, int32 x, int32 y) {
+void EIOClassicJoystick::setStick(Sticks stick, int32_t x, int32_t y) {
 	switch (stick) {
 		case EIOClassicJoystick::LeftStick:
 			if (m_left_stick_invert_x) x = 0x41 - x;
@@ -204,21 +204,21 @@ void EIOClassicJoystick::setStick(Sticks stick, int32 x, int32 y) {
 
 void EIOClassicJoystick::syncAxes() {
 	if (m_report_dpad) {
-		sendEvent(EV_ABS, CLASSIC_DPAD_LINUX_AXIS_X, m_last_dpad_x);
-		sendEvent(EV_ABS, CLASSIC_DPAD_LINUX_AXIS_Y, m_last_dpad_y);
+		report(EV_ABS, CLASSIC_DPAD_LINUX_AXIS_X, m_last_dpad_x);
+		report(EV_ABS, CLASSIC_DPAD_LINUX_AXIS_Y, m_last_dpad_y);
 	}
 
 	if (m_report_left_stick) {
-		sendEvent(EV_ABS, CLASSIC_RIGHT_STICK_LINUX_AXIS_X, m_last_r_stick_x);
-		sendEvent(EV_ABS, CLASSIC_RIGHT_STICK_LINUX_AXIS_Y, m_last_r_stick_y);
+		report(EV_ABS, CLASSIC_RIGHT_STICK_LINUX_AXIS_X, m_last_r_stick_x);
+		report(EV_ABS, CLASSIC_RIGHT_STICK_LINUX_AXIS_Y, m_last_r_stick_y);
 	}
 
 	if (m_report_right_stick) {
-		sendEvent(EV_ABS, CLASSIC_LEFT_STICK_LINUX_AXIS_X, m_last_l_stick_x);
-		sendEvent(EV_ABS, CLASSIC_LEFT_STICK_LINUX_AXIS_Y, m_last_l_stick_y);
+		report(EV_ABS, CLASSIC_LEFT_STICK_LINUX_AXIS_X, m_last_l_stick_x);
+		report(EV_ABS, CLASSIC_LEFT_STICK_LINUX_AXIS_Y, m_last_l_stick_y);
 	}
 
-	sendEventSync();
+	sync();
 }
 
 bool EIOClassicJoystick::configure() {

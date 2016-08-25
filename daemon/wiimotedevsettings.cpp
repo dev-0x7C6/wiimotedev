@@ -27,8 +27,8 @@ WiimotedevSettings::WiimotedevSettings(QObject *parent)
 	reload();
 }
 
-uint WiimotedevSettings::registerWiiremote(const QString &mac) {
-	uint id = m_sequence.value(mac, 0);
+uint32_t WiimotedevSettings::registerWiiremote(const QString &mac) {
+	uint32_t id = m_sequence.value(mac, 0);
 
 	if (id)
 		return id;
@@ -63,6 +63,6 @@ QHash<QString, uint> WiimotedevSettings::connectionTable() {
 	return m_sequence;
 }
 
-uint WiimotedevSettings::powerSaveTiemout() {
+uint32_t WiimotedevSettings::powerSaveTiemout() {
 	return m_powersave;
 }

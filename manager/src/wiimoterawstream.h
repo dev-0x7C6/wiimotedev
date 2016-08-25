@@ -48,7 +48,7 @@ private:
 
 	void updateWiimoteComboBox();
 
-	uint m_id;
+	uint32_t m_id;
 	InfraredCameraView *m_mainWindow;
 
 private slots:
@@ -65,27 +65,27 @@ private slots:
 	void pressedClassic();
 	void pressedNunchuk();
 	void pressedCursor();
-	void changeWiimote(uint id);
+	void changeWiimote(uint32_t id);
 
-	void dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle);
-	void dbusVirtualCursorLost(uint id);
-	void dbusVirtualCursorFound(uint id);
-	void dbusWiimoteAcc(uint id, const accdata &acc);
-	void dbusWiimoteBatteryLife(uint id, uint8 life);
-	void dbusWiimoteConnected(uint id);
-	void dbusWiimoteDisconnected(uint id);
-	void dbusWiimoteGeneralButtons(uint id, uint64 value);
-	void dbusWiimoteInfrared(uint id, const QList<struct irpoint> &points);
-	void dbusWiimoteLedStatusChanged(uint, uint8);
-	void dbusWiimoteRumbleStatusChanged(uint, uint8);
-	void dbusNunchukPlugged(uint id);
-	void dbusNunchukUnplugged(uint id);
-	void dbusClassicPlugged(uint id);
-	void dbusClassicUnplugged(uint id);
-	void dbusNunchukAcc(uint id, const accdata &acc);
-	void dbusNunchukStick(uint id, const stickdata &stick);
-	void dbusClassicControllerLStick(uint id, const stickdata &stick);
-	void dbusClassicControllerRStick(uint id, const stickdata &stick);
+	void dbusVirtualCursorPosition(uint32_t id, double x, double y, double size, double angle);
+	void dbusVirtualCursorLost(uint32_t id);
+	void dbusVirtualCursorFound(uint32_t id);
+	void dbusWiimoteAcc(uint32_t id, const accdata &acc);
+	void dbusWiimoteBatteryLife(uint32_t id, uint8_t life);
+	void dbusWiimoteConnected(uint32_t id);
+	void dbusWiimoteDisconnected(uint32_t id);
+	void dbusWiimoteGeneralButtons(uint32_t id, uint64_t value);
+	void dbusWiimoteInfrared(uint32_t id, const QList<struct irpoint> &points);
+	void dbusWiimoteLedStatusChanged(uint32_t, uint8_t);
+	void dbusWiimoteRumbleStatusChanged(uint32_t, uint8_t);
+	void dbusNunchukPlugged(uint32_t id);
+	void dbusNunchukUnplugged(uint32_t id);
+	void dbusClassicPlugged(uint32_t id);
+	void dbusClassicUnplugged(uint32_t id);
+	void dbusNunchukAcc(uint32_t id, const accdata &acc);
+	void dbusNunchukStick(uint32_t id, const stickdata &stick);
+	void dbusClassicControllerLStick(uint32_t id, const stickdata &stick);
+	void dbusClassicControllerRStick(uint32_t id, const stickdata &stick);
 };
 
 #endif // WIIMOTERAWSTREAM_H

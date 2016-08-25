@@ -20,7 +20,7 @@
 #include "wiimotedevconnection.h"
 #include "wiimotedevdevice.h"
 
-void WiimotedevConnection::cwiid_process_motionplus(uint16 angle[], uint8 low_speed[]) {
+void WiimotedevConnection::cwiid_process_motionplus(uint16_t angle[], uint8_t low_speed[]) {
 }
 
 void WiimotedevConnection::cwiid_process_motionplus_status(cwiid_ext_type type) {

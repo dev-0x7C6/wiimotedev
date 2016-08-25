@@ -22,15 +22,15 @@
 
 #include "eiobase/eiouinputobject.h"
 
-const int16 CLASSIC_LEFT_STICK_MAX = 0x3B;
-const int16 CLASSIC_LEFT_STICK_MIN = 0x09;
-const int16 CLASSIC_RIGHT_STICK_MAX = 0x1B;
-const int16 CLASSIC_RIGHT_STICK_MIN = 0x02;
+const int16_t CLASSIC_LEFT_STICK_MAX = 0x3B;
+const int16_t CLASSIC_LEFT_STICK_MIN = 0x09;
+const int16_t CLASSIC_RIGHT_STICK_MAX = 0x1B;
+const int16_t CLASSIC_RIGHT_STICK_MIN = 0x02;
 
-const int8 CLASSIC_BUTTON_PUSHED = 0x01;
-const int8 CLASSIC_BUTTON_RELEASED = 0x00;
-const int8 CLASSIC_DPAD_MAX = 0x01;
-const int8 CLASSIC_DPAD_MIN = -0x01;
+const int8_t CLASSIC_BUTTON_PUSHED = 0x01;
+const int8_t CLASSIC_BUTTON_RELEASED = 0x00;
+const int8_t CLASSIC_DPAD_MAX = 0x01;
+const int8_t CLASSIC_DPAD_MIN = -0x01;
 
 const int CLASSIC_LEFT_STICK_LINUX_AXIS_X = ABS_X;
 const int CLASSIC_LEFT_STICK_LINUX_AXIS_Y = ABS_Y;
@@ -43,13 +43,13 @@ class EIOClassicJoystick : public QObject, public InputDevice {
 	Q_OBJECT
 private:
 	QString m_deviceName;
-	quint32 m_id;
-	int32 m_last_r_stick_x;
-	int32 m_last_r_stick_y;
-	int32 m_last_l_stick_x;
-	int32 m_last_l_stick_y;
-	int32 m_last_dpad_x;
-	int32 m_last_dpad_y;
+	uint32_t m_id;
+	int32_t m_last_r_stick_x;
+	int32_t m_last_r_stick_y;
+	int32_t m_last_l_stick_x;
+	int32_t m_last_l_stick_y;
+	int32_t m_last_dpad_x;
+	int32_t m_last_dpad_y;
 	bool m_dpad_invert_x;
 	bool m_dpad_invert_y;
 	bool m_left_stick_invert_x;
@@ -71,7 +71,7 @@ public:
 		DpadStick
 	};
 
-	quint32 assign();
+	uint32_t assign();
 
 	void setDpadInvertX(bool option);
 	void setDpadInvertY(bool option);
@@ -84,8 +84,8 @@ public:
 	void setReportLStick(bool report);
 	void setReportRStick(bool report);
 
-	void setButtons(uint64 buttons);
-	void setStick(Sticks stick, int32 x, int32 y);
+	void setButtons(uint64_t buttons);
+	void setStick(Sticks stick, int32_t x, int32_t y);
 
 private:
 	void centerStick(Sticks stick);

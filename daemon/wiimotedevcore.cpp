@@ -50,7 +50,7 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 
 	if (!(WiimotedevDBusEvents->isRegistred() &&
 			dbusServiceAdaptor->isRegistred() && registred)) {
-		systemlog::critical("cannot register dbus service, quit...");
+		systemlog::critical("cannot dbus service, quit...");
 		result = EXIT_FAILURE;
 		return;
 	}
@@ -72,7 +72,7 @@ void WiimotedevCore::run() {
 	WiimotedevDevice *dev = new WiimotedevDevice();
 	QElapsedTimer m_bluetoothInertia;
 	QMutex m_bluetoothBlocking;
-	uint id = 0;
+	uint32_t id = 0;
 	m_bluetoothBlocking.lock();
 
 	while (!m_interrupted) {
@@ -141,7 +141,7 @@ void WiimotedevCore::run() {
 	QCoreApplication::quit();
 }
 
-void WiimotedevCore::dbusWiimoteDisconnected(uint id) {
+void WiimotedevCore::dbusWiimoteDisconnected(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id, 0);
 
 	if (!thread)
@@ -172,7 +172,7 @@ QList<uint> WiimotedevCore::dbusGetWiimoteList() {
 	return list;
 }
 
-QList<uint> WiimotedevCore::dbusNunchukGetAccelerometrCalibration(uint id) {
+QList<uint> WiimotedevCore::dbusNunchukGetAccelerometrCalibration(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -181,7 +181,7 @@ QList<uint> WiimotedevCore::dbusNunchukGetAccelerometrCalibration(uint id) {
 	return {};
 }
 
-QList<uint> WiimotedevCore::dbusWiimoteGetAccelerometrCalibration(uint id) {
+QList<uint> WiimotedevCore::dbusWiimoteGetAccelerometrCalibration(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -190,7 +190,7 @@ QList<uint> WiimotedevCore::dbusWiimoteGetAccelerometrCalibration(uint id) {
 	return {};
 }
 
-uint8 WiimotedevCore::dbusWiimoteGetStatus(uint id) {
+uint8_t WiimotedevCore::dbusWiimoteGetStatus(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -199,7 +199,7 @@ uint8 WiimotedevCore::dbusWiimoteGetStatus(uint id) {
 	return 0;
 }
 
-uint8 WiimotedevCore::dbusWiimoteGetLedStatus(uint id) {
+uint8_t WiimotedevCore::dbusWiimoteGetLedStatus(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -208,7 +208,7 @@ uint8 WiimotedevCore::dbusWiimoteGetLedStatus(uint id) {
 	return 0;
 }
 
-bool WiimotedevCore::dbusWiimoteGetRumbleStatus(uint id) {
+bool WiimotedevCore::dbusWiimoteGetRumbleStatus(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -217,7 +217,7 @@ bool WiimotedevCore::dbusWiimoteGetRumbleStatus(uint id) {
 	return false;
 }
 
-bool WiimotedevCore::dbusWiimoteSetLedStatus(uint id, uint status) {
+bool WiimotedevCore::dbusWiimoteSetLedStatus(uint32_t id, uint32_t status) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -226,7 +226,7 @@ bool WiimotedevCore::dbusWiimoteSetLedStatus(uint id, uint status) {
 	return false;
 }
 
-bool WiimotedevCore::dbusWiimoteSetRumbleStatus(uint id, bool status) {
+bool WiimotedevCore::dbusWiimoteSetRumbleStatus(uint32_t id, bool status) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -235,7 +235,7 @@ bool WiimotedevCore::dbusWiimoteSetRumbleStatus(uint id, bool status) {
 	return false;
 }
 
-uint WiimotedevCore::dbusWiimoteGetCurrentLatency(uint id) {
+uint32_t WiimotedevCore::dbusWiimoteGetCurrentLatency(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -244,7 +244,7 @@ uint WiimotedevCore::dbusWiimoteGetCurrentLatency(uint id) {
 	return 0;
 }
 
-uint WiimotedevCore::dbusWiimoteGetAverageLatency(uint id) {
+uint32_t WiimotedevCore::dbusWiimoteGetAverageLatency(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -253,7 +253,7 @@ uint WiimotedevCore::dbusWiimoteGetAverageLatency(uint id) {
 	return 0;
 }
 
-QString WiimotedevCore::dbusWiimoteGetMacAddress(uint id) {
+QString WiimotedevCore::dbusWiimoteGetMacAddress(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -262,7 +262,7 @@ QString WiimotedevCore::dbusWiimoteGetMacAddress(uint id) {
 	return QString();
 }
 
-bool WiimotedevCore::dbusIsClassicConnected(uint id) {
+bool WiimotedevCore::dbusIsClassicConnected(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -271,7 +271,7 @@ bool WiimotedevCore::dbusIsClassicConnected(uint id) {
 	return false;
 }
 
-bool WiimotedevCore::dbusIsNunchukConnected(uint id) {
+bool WiimotedevCore::dbusIsNunchukConnected(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -280,7 +280,7 @@ bool WiimotedevCore::dbusIsNunchukConnected(uint id) {
 	return false;
 }
 
-bool WiimotedevCore::dbusIsWiimoteConnected(uint id) {
+bool WiimotedevCore::dbusIsWiimoteConnected(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)
@@ -289,7 +289,7 @@ bool WiimotedevCore::dbusIsWiimoteConnected(uint id) {
 	return false;
 }
 
-uint WiimotedevCore::dbusWiimoteGetBatteryLife(uint id) {
+uint32_t WiimotedevCore::dbusWiimoteGetBatteryLife(uint32_t id) {
 	WiimotedevConnection *thread = threads.value(id);
 
 	if (thread)

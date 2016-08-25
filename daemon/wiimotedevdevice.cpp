@@ -46,7 +46,7 @@ bool WiimotedevDevice::isDisconnected() {
 	return (device == 0);
 }
 
-bool WiimotedevDevice::connectToDevice(const uint timeout) {
+bool WiimotedevDevice::connectToDevice(const uint32_t timeout) {
 	QMutexLocker locker(&m_mutex);
 	memset(&bdaddr, 0, sizeof(bdaddr_t));
 
@@ -96,7 +96,7 @@ bool WiimotedevDevice::fetchMessage(int *count, union cwiid_mesg *mesg[], timesp
 	return true;
 }
 
-bool WiimotedevDevice::setLedStatus(uint8 led) {
+bool WiimotedevDevice::setLedStatus(uint8_t led) {
 	QMutexLocker locker(&m_mutex);
 
 	if (isDisconnected()) return false;
@@ -114,7 +114,7 @@ bool WiimotedevDevice::setRumbleStatus(bool rumble) {
 	return true;
 }
 
-bool WiimotedevDevice::setReportMode(uint8 mode) {
+bool WiimotedevDevice::setReportMode(uint8_t mode) {
 	QMutexLocker locker(&m_mutex);
 
 	if (isDisconnected()) return false;
@@ -127,7 +127,7 @@ bool WiimotedevDevice::setReportMode(uint8 mode) {
 	return true;
 }
 
-uint8 WiimotedevDevice::getLedStatus() {
+uint8_t WiimotedevDevice::getLedStatus() {
 	if (isDisconnected()) return 0;
 
 	return switchOnLeds;
@@ -140,7 +140,7 @@ bool WiimotedevDevice::getRumbleStatus() {
 	return isRumble;
 }
 
-uint8 WiimotedevDevice::getReportMode() {
+uint8_t WiimotedevDevice::getReportMode() {
 	if (isDisconnected())
 		return 0;
 

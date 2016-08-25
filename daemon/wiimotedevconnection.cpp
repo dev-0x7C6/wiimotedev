@@ -43,7 +43,7 @@ WiimotedevConnection::WiimotedevConnection(WiimotedevDevice *device, int id, QOb
 WiimotedevConnection::~WiimotedevConnection() {
 }
 
-uint WiimotedevConnection::id() const {
+uint32_t WiimotedevConnection::id() const {
 	return m_id;
 }
 
@@ -204,18 +204,18 @@ double WiimotedevConnection::calcVirtualCursorDiff(double c1[], double c2[]) {
 	return (sqrt(pow(abs(c2[0] - c1[0]), 2) + pow(abs(c2[1] - c1[1]), 2)));
 }
 
-void WiimotedevConnection::setPowerSafeTimeout(int64 timeout) {
+void WiimotedevConnection::setPowerSafeTimeout(int64_t timeout) {
 	m_powerSaveTimeout = timeout;
 }
 
-int64 WiimotedevConnection::powerSafeTimeout() {
+int64_t WiimotedevConnection::powerSafeTimeout() {
 	return m_powerSaveTimeout;
 }
 
-void WiimotedevConnection::calcAccelerometerValues(uint8 acc[3], acc_cal &cal, accdata &out) {
-	register double x = double((out.x = acc[0]) - cal.zero[0]) / double(cal.one[0] - cal.zero[0]);
-	register double y = double((out.y = acc[1]) - cal.zero[1]) / double(cal.one[1] - cal.zero[1]);
-	register double z = double((out.z = acc[2]) - cal.zero[2]) / double(cal.one[2] - cal.zero[2]);
+void WiimotedevConnection::calcAccelerometerValues(uint8_t acc[3], acc_cal &cal, accdata &out) {
+	double x = double((out.x = acc[0]) - cal.zero[0]) / double(cal.one[0] - cal.zero[0]);
+	double y = double((out.y = acc[1]) - cal.zero[1]) / double(cal.one[1] - cal.zero[1]);
+	double z = double((out.z = acc[2]) - cal.zero[2]) / double(cal.one[2] - cal.zero[2]);
 
 	if (z != 0.0) {
 		out.roll = atan(x / z);
@@ -262,15 +262,15 @@ QList<uint> WiimotedevConnection::dbusWiimoteGetAccelerometrCalibration() {
 	return params;
 }
 
-uint WiimotedevConnection::dbusWiimoteGetAverageLatency() {
+uint32_t WiimotedevConnection::dbusWiimoteGetAverageLatency() {
 	return m_averageLatency;
 }
 
-uint WiimotedevConnection::dbusWiimoteGetBatteryLife() {
+uint32_t WiimotedevConnection::dbusWiimoteGetBatteryLife() {
 	return m_batteryLife;
 }
 
-uint WiimotedevConnection::dbusWiimoteGetCurrentLatency() {
+uint32_t WiimotedevConnection::dbusWiimoteGetCurrentLatency() {
 	return m_currentLatency;
 }
 
@@ -278,7 +278,7 @@ QString WiimotedevConnection::dbusWiimoteGetMacAddress() {
 	return m_device->getWiimoteSAddr();
 }
 
-uint8 WiimotedevConnection::dbusWiimoteGetLedStatus() {
+uint8_t WiimotedevConnection::dbusWiimoteGetLedStatus() {
 	return m_device->getLedStatus();
 }
 
@@ -286,7 +286,7 @@ bool WiimotedevConnection::dbusWiimoteGetRumbleStatus() {
 	return m_device->getRumbleStatus();
 }
 
-uint8 WiimotedevConnection::dbusWiimoteGetStatus() {
+uint8_t WiimotedevConnection::dbusWiimoteGetStatus() {
 	bool result = 0;
 
 	if (m_available[ix_wiimote_device])
@@ -301,7 +301,7 @@ uint8 WiimotedevConnection::dbusWiimoteGetStatus() {
 	return result;
 }
 
-bool WiimotedevConnection::dbusWiimoteSetLedStatus(uint status) {
+bool WiimotedevConnection::dbusWiimoteSetLedStatus(uint32_t status) {
 	return m_device->setLedStatus(status);
 }
 

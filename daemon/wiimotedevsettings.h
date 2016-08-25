@@ -31,7 +31,7 @@ class WiimotedevSettings : public QObject {
 private:
 	QHash<QString, uint> m_sequence;
 	QSettings *m_settings;
-	uint m_powersave;
+	uint32_t m_powersave;
 
 	QSettings *m_connections;
 
@@ -41,9 +41,9 @@ public:
 public:
 	void reload();
 
-	uint powerSaveTiemout();
+	uint32_t powerSaveTiemout();
 
-	uint registerWiiremote(const QString &mac);
+	uint32_t registerWiiremote(const QString &mac);
 
 	QHash<QString, uint> connectionTable();
 };

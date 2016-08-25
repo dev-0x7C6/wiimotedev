@@ -34,7 +34,7 @@ EIONunchukJoystick::EIONunchukJoystick(QString deviceName, int id, QObject *pare
 {
 }
 
-quint32 EIONunchukJoystick::assign() {
+uint32_t EIONunchukJoystick::assign() {
 	return m_id;
 }
 
@@ -62,13 +62,13 @@ void EIONunchukJoystick::setReportRoll(bool report) {
 	m_report_roll = report;
 }
 
-void EIONunchukJoystick::setNunchukButtons(uint64 buttons) {
+void EIONunchukJoystick::setNunchukButtons(uint64_t buttons) {
 	if (!m_report_buttons)
 		return;
 
-	sendEvent(EV_KEY, BTN_A, (buttons & NUNCHUK_BTN_C) ? NUNCHUK_BUTTON_PUSHED : NUNCHUK_BUTTON_RELEASED);
-	sendEvent(EV_KEY, BTN_B, (buttons & NUNCHUK_BTN_Z) ? NUNCHUK_BUTTON_PUSHED : NUNCHUK_BUTTON_RELEASED);
-	sendEventSync();
+	report(EV_KEY, BTN_A, (buttons & NUNCHUK_BTN_C) ? NUNCHUK_BUTTON_PUSHED : NUNCHUK_BUTTON_RELEASED);
+	report(EV_KEY, BTN_B, (buttons & NUNCHUK_BTN_Z) ? NUNCHUK_BUTTON_PUSHED : NUNCHUK_BUTTON_RELEASED);
+	sync();
 }
 
 void EIONunchukJoystick::centerStick(Stick id) {
@@ -97,17 +97,17 @@ void EIONunchukJoystick::centerStick(Stick id) {
 
 void EIONunchukJoystick::syncAxes() {
 	if (m_report_stick) {
-		sendEvent(EV_ABS, NUNCHUK_STICK_LINUX_AXIS_X, m_last_stick_x);
-		sendEvent(EV_ABS, NUNCHUK_STICK_LINUX_AXIS_Y, m_last_stick_y);
+		report(EV_ABS, NUNCHUK_STICK_LINUX_AXIS_X, m_last_stick_x);
+		report(EV_ABS, NUNCHUK_STICK_LINUX_AXIS_Y, m_last_stick_y);
 	}
 
 	if (m_report_pitch)
-		sendEvent(EV_ABS, NUNCHUK_PITCH_LINUX_AXIS, m_last_nunchuk_acc_pitch);
+		report(EV_ABS, NUNCHUK_PITCH_LINUX_AXIS, m_last_nunchuk_acc_pitch);
 
 	if (m_report_roll)
-		sendEvent(EV_ABS, NUNCHUK_ROLL_LINUX_AXIS, m_last_nunchuk_acc_roll);
+		report(EV_ABS, NUNCHUK_ROLL_LINUX_AXIS, m_last_nunchuk_acc_roll);
 
-	sendEventSync();
+	sync();
 }
 
 bool EIONunchukJoystick::configure() {
@@ -138,7 +138,7 @@ bool EIONunchukJoystick::configure() {
 	}
 }
 
-void EIONunchukJoystick::setNunchukStick(int32 x, int32 y) {
+void EIONunchukJoystick::setNunchukStick(int32_t x, int32_t y) {
 	m_last_stick_x = x;
 	m_last_stick_y = y;
 	syncAxes();

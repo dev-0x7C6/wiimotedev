@@ -36,13 +36,13 @@ EIOInfraredMouse::EIOInfraredMouse(EIOEventDevice &device, QObject *parent)
 		, m_mode(Relative) {
 }
 
-void EIOInfraredMouse::dbusVirtualCursorPosition(uint id, double x, double y, double distance, double angle) {
+void EIOInfraredMouse::dbusVirtualCursorPosition(uint32_t id, double x, double y, double distance, double angle) {
 	if (id != m_id) return;
 
 	setCursor({x, y, distance, angle});
 }
 
-void EIOInfraredMouse::dbusVirtualCursorLost(uint id) {
+void EIOInfraredMouse::dbusVirtualCursorLost(uint32_t id) {
 	if (id != m_id) return;
 
 	m_mutex.lock();

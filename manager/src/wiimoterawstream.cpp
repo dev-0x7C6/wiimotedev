@@ -15,25 +15,25 @@ WiimoteRawStream::WiimoteRawStream(WiimotedevDeviceEvents *iface, InfraredCamera
 		, m_mainWindow(graphics) {
 	ui->setupUi(this);
 	QLabel *label;
-	QObject::connect(iface, SIGNAL(dbusClassicControllerPlugged(uint)), this, SLOT(dbusClassicPlugged(uint)));
-	QObject::connect(iface, SIGNAL(dbusClassicControllerUnplugged(uint)), this, SLOT(dbusClassicUnplugged(uint)));
-	QObject::connect(iface, SIGNAL(dbusClassicControllerRStick(uint, const stickdata &)), this, SLOT(dbusClassicControllerRStick(uint, const stickdata &)));
-	QObject::connect(iface, SIGNAL(dbusClassicControllerLStick(uint, const stickdata &)), this, SLOT(dbusClassicControllerLStick(uint, const stickdata &)));
-	QObject::connect(iface, SIGNAL(dbusNunchukAcc(uint, const accdata &)), this, SLOT(dbusNunchukAcc(uint, const accdata &)));
-	QObject::connect(iface, SIGNAL(dbusNunchukPlugged(uint)), this, SLOT(dbusNunchukPlugged(uint)));
-	QObject::connect(iface, SIGNAL(dbusNunchukUnplugged(uint)), this, SLOT(dbusNunchukUnplugged(uint)));
-	QObject::connect(iface, SIGNAL(dbusNunchukStick(uint, const stickdata &)), this, SLOT(dbusNunchukStick(uint, const stickdata &)));
-	QObject::connect(iface, SIGNAL(dbusVirtualCursorPosition(uint, double, double, double, double)), this, SLOT(dbusVirtualCursorPosition(uint, double, double, double, double)));
-	QObject::connect(iface, SIGNAL(dbusVirtualCursorFound(uint)), this, SLOT(dbusVirtualCursorFound(uint)));
-	QObject::connect(iface, SIGNAL(dbusVirtualCursorLost(uint)), this, SLOT(dbusVirtualCursorLost(uint)));
-	QObject::connect(iface, SIGNAL(dbusWiimoteConnected(uint)), this, SLOT(dbusWiimoteConnected(uint)));
-	QObject::connect(iface, SIGNAL(dbusWiimoteDisconnected(uint)), this, SLOT(dbusWiimoteDisconnected(uint)));
-	QObject::connect(iface, SIGNAL(dbusWiimoteAcc(uint, const accdata &)), this, SLOT(dbusWiimoteAcc(uint, const accdata &)));
-	QObject::connect(iface, SIGNAL(dbusWiimoteBatteryLife(uint, uint8)), this, SLOT(dbusWiimoteBatteryLife(uint, uint8)));
-	QObject::connect(iface, SIGNAL(dbusWiimoteGeneralButtons(uint, uint64)), this, SLOT(dbusWiimoteGeneralButtons(uint, uint64)));
-	QObject::connect(iface, SIGNAL(dbusWiimoteInfrared(uint, const QList<irpoint> &)), this, SLOT(dbusWiimoteInfrared(uint, const QList<struct irpoint> &)));
-	QObject::connect(iface, SIGNAL(dbusWiimoteLedStatusChanged(uint, uint8)), this, SLOT(dbusWiimoteLedStatusChanged(uint, uint8)));
-	QObject::connect(iface, SIGNAL(dbusWiimoteRumbleStatusChanged(uint, uint8)), this, SLOT(dbusWiimoteRumbleStatusChanged(uint, uint8)));
+	QObject::connect(iface, SIGNAL(dbusClassicControllerPlugged(uint32_t)), this, SLOT(dbusClassicPlugged(uint32_t)));
+	QObject::connect(iface, SIGNAL(dbusClassicControllerUnplugged(uint32_t)), this, SLOT(dbusClassicUnplugged(uint32_t)));
+	QObject::connect(iface, SIGNAL(dbusClassicControllerRStick(uint32_t, const stickdata &)), this, SLOT(dbusClassicControllerRStick(uint32_t, const stickdata &)));
+	QObject::connect(iface, SIGNAL(dbusClassicControllerLStick(uint32_t, const stickdata &)), this, SLOT(dbusClassicControllerLStick(uint32_t, const stickdata &)));
+	QObject::connect(iface, SIGNAL(dbusNunchukAcc(uint32_t, const accdata &)), this, SLOT(dbusNunchukAcc(uint32_t, const accdata &)));
+	QObject::connect(iface, SIGNAL(dbusNunchukPlugged(uint32_t)), this, SLOT(dbusNunchukPlugged(uint32_t)));
+	QObject::connect(iface, SIGNAL(dbusNunchukUnplugged(uint32_t)), this, SLOT(dbusNunchukUnplugged(uint32_t)));
+	QObject::connect(iface, SIGNAL(dbusNunchukStick(uint32_t, const stickdata &)), this, SLOT(dbusNunchukStick(uint32_t, const stickdata &)));
+	QObject::connect(iface, SIGNAL(dbusVirtualCursorPosition(uint32_t, double, double, double, double)), this, SLOT(dbusVirtualCursorPosition(uint32_t, double, double, double, double)));
+	QObject::connect(iface, SIGNAL(dbusVirtualCursorFound(uint32_t)), this, SLOT(dbusVirtualCursorFound(uint32_t)));
+	QObject::connect(iface, SIGNAL(dbusVirtualCursorLost(uint32_t)), this, SLOT(dbusVirtualCursorLost(uint32_t)));
+	QObject::connect(iface, SIGNAL(dbusWiimoteConnected(uint32_t)), this, SLOT(dbusWiimoteConnected(uint32_t)));
+	QObject::connect(iface, SIGNAL(dbusWiimoteDisconnected(uint32_t)), this, SLOT(dbusWiimoteDisconnected(uint32_t)));
+	QObject::connect(iface, SIGNAL(dbusWiimoteAcc(uint32_t, const accdata &)), this, SLOT(dbusWiimoteAcc(uint32_t, const accdata &)));
+	QObject::connect(iface, SIGNAL(dbusWiimoteBatteryLife(uint32_t, uint8_t)), this, SLOT(dbusWiimoteBatteryLife(uint32_t, uint8_t)));
+	QObject::connect(iface, SIGNAL(dbusWiimoteGeneralButtons(uint32_t, uint64_t)), this, SLOT(dbusWiimoteGeneralButtons(uint32_t, uint64_t)));
+	QObject::connect(iface, SIGNAL(dbusWiimoteInfrared(uint32_t, const QList<irpoint> &)), this, SLOT(dbusWiimoteInfrared(uint32_t, const QList<struct irpoint> &)));
+	QObject::connect(iface, SIGNAL(dbusWiimoteLedStatusChanged(uint32_t, uint8_t)), this, SLOT(dbusWiimoteLedStatusChanged(uint32_t, uint8_t)));
+	QObject::connect(iface, SIGNAL(dbusWiimoteRumbleStatusChanged(uint32_t, uint8_t)), this, SLOT(dbusWiimoteRumbleStatusChanged(uint32_t, uint8_t)));
 	QFont font("Monospace", 8);
 	font.setStyleHint(QFont::TypeWriter);
 	ui->treeWidget->setFont(font);
@@ -290,7 +290,7 @@ void WiimoteRawStream::pressedCursor() {
 
 void WiimoteRawStream::updateWiimoteComboBox() {
 	m_wiimoteComboBox->clear();
-	foreach (const uint &id, m_interface->dbusGetWiimoteList().value()) {
+	foreach (const uint32_t &id, m_interface->dbusGetWiimoteList().value()) {
 		m_wiimoteComboBox->addItem("[" + QString::number(id) + "]-" + m_interface->dbusWiimoteGetMacAddress(id).value(), id);
 		m_wiimoteComboBox->setItemData(m_wiimoteComboBox->count() - 1, id);
 	}
@@ -303,7 +303,7 @@ void WiimoteRawStream::updateWiimoteComboBox() {
 	}
 }
 
-void WiimoteRawStream::changeWiimote(uint id) {
+void WiimoteRawStream::changeWiimote(uint32_t id) {
 	m_id = id;
 	m_mainWindow->setWiimoteId(id);
 
@@ -363,7 +363,7 @@ void WiimoteRawStream::toggleRumble() {
 }
 
 void WiimoteRawStream::toggleLed1() {
-	quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
+	uint8_t status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
 
 	if (status & 0b0001)
 		m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b1110);
@@ -372,7 +372,7 @@ void WiimoteRawStream::toggleLed1() {
 }
 
 void WiimoteRawStream::toggleLed2() {
-	quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
+	uint8_t status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
 
 	if (status & 0b0010)
 		m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b1101);
@@ -381,7 +381,7 @@ void WiimoteRawStream::toggleLed2() {
 }
 
 void WiimoteRawStream::toggleLed3() {
-	quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
+	uint8_t status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
 
 	if (status & 0b0100)
 		m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b1011);
@@ -390,7 +390,7 @@ void WiimoteRawStream::toggleLed3() {
 }
 
 void WiimoteRawStream::toggleLed4() {
-	quint8 status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
+	uint8_t status = m_interface->dbusWiimoteGetLedStatus(m_id).value();
 
 	if (status & 0b1000)
 		m_interface->dbusWiimoteSetLedStatus(m_id, status & 0b0111);
@@ -398,7 +398,7 @@ void WiimoteRawStream::toggleLed4() {
 		m_interface->dbusWiimoteSetLedStatus(m_id, status | 0b1000);
 }
 
-void WiimoteRawStream::dbusWiimoteConnected(uint id) {
+void WiimoteRawStream::dbusWiimoteConnected(uint32_t id) {
 	updateWiimoteComboBox();
 
 	if (m_id == 0)
@@ -418,7 +418,7 @@ void WiimoteRawStream::dbusWiimoteConnected(uint id) {
 		m_wiimoteStatusItems[5]->setText(1, "none");
 }
 
-void WiimoteRawStream::dbusWiimoteDisconnected(uint id) {
+void WiimoteRawStream::dbusWiimoteDisconnected(uint32_t id) {
 	updateWiimoteComboBox();
 
 	if (m_id != id)
@@ -433,7 +433,7 @@ void WiimoteRawStream::dbusWiimoteDisconnected(uint id) {
 		changeWiimote(ids.first());
 }
 
-void WiimoteRawStream::dbusNunchukPlugged(uint id) {
+void WiimoteRawStream::dbusNunchukPlugged(uint32_t id) {
 	if (m_id != id)
 		return;
 
@@ -442,7 +442,7 @@ void WiimoteRawStream::dbusNunchukPlugged(uint id) {
 	m_nunchukConnected->setIcon(QIcon(":/nunchuk_active.png"));
 }
 
-void WiimoteRawStream::dbusNunchukUnplugged(uint id) {
+void WiimoteRawStream::dbusNunchukUnplugged(uint32_t id) {
 	if (m_id != id)
 		return;
 
@@ -457,7 +457,7 @@ void WiimoteRawStream::dbusNunchukUnplugged(uint id) {
 	dbusNunchukAcc(m_id, acc);
 }
 
-void WiimoteRawStream::dbusClassicPlugged(uint id) {
+void WiimoteRawStream::dbusClassicPlugged(uint32_t id) {
 	if (m_id != id)
 		return;
 
@@ -466,7 +466,7 @@ void WiimoteRawStream::dbusClassicPlugged(uint id) {
 	m_classicConnected->setIcon(QIcon(":/controller_active.png"));
 }
 
-void WiimoteRawStream::dbusClassicUnplugged(uint id) {
+void WiimoteRawStream::dbusClassicUnplugged(uint32_t id) {
 	if (m_id != id)
 		return;
 
@@ -479,7 +479,7 @@ void WiimoteRawStream::dbusClassicUnplugged(uint id) {
 	dbusClassicControllerRStick(m_id, stick);
 }
 
-void WiimoteRawStream::dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle) {
+void WiimoteRawStream::dbusVirtualCursorPosition(uint32_t id, double x, double y, double size, double angle) {
 	if (m_id != id)
 		return;
 
@@ -490,7 +490,7 @@ void WiimoteRawStream::dbusVirtualCursorPosition(uint id, double x, double y, do
 	ui->treeWidget->setUpdatesEnabled(true);
 }
 
-void WiimoteRawStream::dbusVirtualCursorLost(uint id) {
+void WiimoteRawStream::dbusVirtualCursorLost(uint32_t id) {
 	if (m_id != id)
 		return;
 
@@ -500,7 +500,7 @@ void WiimoteRawStream::dbusVirtualCursorLost(uint id) {
 	dbusWiimoteInfrared(m_id, QList<irpoint>());
 }
 
-void WiimoteRawStream::dbusVirtualCursorFound(uint id) {
+void WiimoteRawStream::dbusVirtualCursorFound(uint32_t id) {
 	if (m_id != id)
 		return;
 
@@ -509,7 +509,7 @@ void WiimoteRawStream::dbusVirtualCursorFound(uint id) {
 	m_cursorVisible->setText("Cursor[*]");
 }
 
-void WiimoteRawStream::dbusWiimoteAcc(uint id, const accdata &acc) {
+void WiimoteRawStream::dbusWiimoteAcc(uint32_t id, const accdata &acc) {
 	if (m_id != id)
 		return;
 
@@ -522,7 +522,7 @@ void WiimoteRawStream::dbusWiimoteAcc(uint id, const accdata &acc) {
 	ui->treeWidget->setUpdatesEnabled(true);
 }
 
-void WiimoteRawStream::dbusNunchukAcc(uint id, const accdata &acc) {
+void WiimoteRawStream::dbusNunchukAcc(uint32_t id, const accdata &acc) {
 	if (m_id != id)
 		return;
 
@@ -535,7 +535,7 @@ void WiimoteRawStream::dbusNunchukAcc(uint id, const accdata &acc) {
 	ui->treeWidget->setUpdatesEnabled(true);
 }
 
-void WiimoteRawStream::dbusWiimoteBatteryLife(uint id, uint8 life) {
+void WiimoteRawStream::dbusWiimoteBatteryLife(uint32_t id, uint8_t life) {
 	if (m_id != id)
 		return;
 
@@ -545,14 +545,14 @@ void WiimoteRawStream::dbusWiimoteBatteryLife(uint id, uint8 life) {
 	m_wiimoteStatusItems[2]->setText(1, QString::number(life) + "%");
 }
 
-void WiimoteRawStream::dbusWiimoteGeneralButtons(uint id, uint64 value) {
+void WiimoteRawStream::dbusWiimoteGeneralButtons(uint32_t id, uint64_t value) {
 	if (m_id != id)
 		return;
 
 	ui->treeWidget->setUpdatesEnabled(false);
 
 	for (int i = 0; i < 60; ++i) {
-		if (value & (uint64(1) << i)) {
+		if (value & (uint64_t(1) << i)) {
 			if (!m_wiimoteButtonItems[i]->data(0, Qt::UserRole).toBool()) {
 				m_wiimoteButtonItems[i]->setText(1, "[*]");
 				m_wiimoteButtonItems[i]->setData(0, Qt::UserRole, true);
@@ -568,12 +568,12 @@ void WiimoteRawStream::dbusWiimoteGeneralButtons(uint id, uint64 value) {
 	ui->treeWidget->setUpdatesEnabled(true);
 }
 
-void WiimoteRawStream::dbusWiimoteInfrared(uint id, const QList<struct irpoint> &points) {
+void WiimoteRawStream::dbusWiimoteInfrared(uint32_t id, const QList<struct irpoint> &points) {
 	if (m_id != id)
 		return;
 
 	ui->treeWidget->setUpdatesEnabled(false);
-	register int i = 0;
+	int i = 0;
 	QString str;
 
 	for (; i < points.count(); ++i) {
@@ -603,7 +603,7 @@ void WiimoteRawStream::dbusWiimoteInfrared(uint id, const QList<struct irpoint> 
 	ui->treeWidget->setUpdatesEnabled(true);
 }
 
-void WiimoteRawStream::dbusWiimoteLedStatusChanged(uint id, uint8 status) {
+void WiimoteRawStream::dbusWiimoteLedStatusChanged(uint32_t id, uint8_t status) {
 	if (m_id != id)
 		return;
 
@@ -617,7 +617,7 @@ void WiimoteRawStream::dbusWiimoteLedStatusChanged(uint id, uint8 status) {
 		}
 }
 
-void WiimoteRawStream::dbusWiimoteRumbleStatusChanged(uint id, uint8 status) {
+void WiimoteRawStream::dbusWiimoteRumbleStatusChanged(uint32_t id, uint8_t status) {
 	if (m_id != id)
 		return;
 
@@ -632,21 +632,21 @@ void WiimoteRawStream::dbusWiimoteRumbleStatusChanged(uint id, uint8 status) {
 	}
 }
 
-void WiimoteRawStream::dbusNunchukStick(uint id, const stickdata &stick) {
+void WiimoteRawStream::dbusNunchukStick(uint32_t id, const stickdata &stick) {
 	if (m_id != id)
 		return;
 
 	m_stickItems[0]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 
-void WiimoteRawStream::dbusClassicControllerLStick(uint id, const stickdata &stick) {
+void WiimoteRawStream::dbusClassicControllerLStick(uint32_t id, const stickdata &stick) {
 	if (m_id != id)
 		return;
 
 	m_stickItems[1]->setText(1, QString::number(stick.x) + "x" + QString::number(stick.y));
 }
 
-void WiimoteRawStream::dbusClassicControllerRStick(uint id, const stickdata &stick) {
+void WiimoteRawStream::dbusClassicControllerRStick(uint32_t id, const stickdata &stick) {
 	if (m_id != id)
 		return;
 

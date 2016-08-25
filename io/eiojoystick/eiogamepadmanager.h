@@ -37,8 +37,8 @@ public:
 		WiimoteGamepadVariant
 	};
 
-	//uint32 create(EIOGamepadVariants variant, uint32 assign, QList< QPair< QString, QVariant> > arguments);
-	bool destroy(uint32 id);
+	//uint32_t create(EIOGamepadVariants variant, uint32_t assign, QList< QPair< QString, QVariant> > arguments);
+	bool destroy(uint32_t id);
 
 signals:
 

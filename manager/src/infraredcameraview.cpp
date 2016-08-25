@@ -27,7 +27,7 @@
 
 #define PI M_PI
 
-InfraredCameraView::InfraredCameraView(WiimotedevDeviceEvents *iface, uint id, QWidget *parent)
+InfraredCameraView::InfraredCameraView(WiimotedevDeviceEvents *iface, uint32_t id, QWidget *parent)
 		: QGraphicsView(parent)
 		, cursor(new QGraphicsPixmapItem(QPixmap(":/cursor.png")))
 		, iface(iface)
@@ -72,12 +72,12 @@ InfraredCameraView::InfraredCameraView(WiimotedevDeviceEvents *iface, uint id, Q
 	scene.addItem(line);
 }
 
-void InfraredCameraView::dbusWiimoteConnected(uint id) {
+void InfraredCameraView::dbusWiimoteConnected(uint32_t id) {
 	if (wiimoteId != id)
 		return;
 }
 
-void InfraredCameraView::dbusWiimoteDisconnected(uint id) {
+void InfraredCameraView::dbusWiimoteDisconnected(uint32_t id) {
 	if (wiimoteId != id)
 		return;
 
@@ -85,7 +85,7 @@ void InfraredCameraView::dbusWiimoteDisconnected(uint id) {
 	dbusWiimoteInfrared(id, QList<irpoint>());
 }
 
-void InfraredCameraView::setWiimoteId(uint id) {
+void InfraredCameraView::setWiimoteId(uint32_t id) {
 	wiimoteId = id;
 }
 
@@ -106,7 +106,7 @@ void InfraredCameraView::infraredCleanup() {
 		infraredPoints[i]->hide();
 }
 
-void InfraredCameraView::dbusWiimoteInfrared(uint id, const QList<irpoint> &points) {
+void InfraredCameraView::dbusWiimoteInfrared(uint32_t id, const QList<irpoint> &points) {
 	if (id != wiimoteId)
 		return;
 
@@ -121,7 +121,7 @@ void InfraredCameraView::dbusWiimoteInfrared(uint id, const QList<irpoint> &poin
 
 	for (int i = 0; i < 4; ++i) {
 		if (i < points.count()) {
-			register int size = points.at(i).size * 2;
+			int size = points.at(i).size * 2;
 			infraredPoints[i]->setRect(-size / 2, -size / 2, size, size);
 
 			if (!infraredPoints[i]->isVisible())
@@ -184,21 +184,21 @@ void InfraredCameraView::dbusWiimoteInfrared(uint id, const QList<irpoint> &poin
 	}
 }
 
-void InfraredCameraView::dbusVirtualCursorFound(uint id) {
+void InfraredCameraView::dbusVirtualCursorFound(uint32_t id) {
 	if (id != wiimoteId)
 		return;
 
 	cursor->setVisible(true);
 }
 
-void InfraredCameraView::dbusVirtualCursorLost(uint id) {
+void InfraredCameraView::dbusVirtualCursorLost(uint32_t id) {
 	if (id != wiimoteId)
 		return;
 
 	cursor->setVisible(false);
 }
 
-void InfraredCameraView::dbusVirtualCursorPosition(uint id, double x, double y, double size, double angle) {
+void InfraredCameraView::dbusVirtualCursorPosition(uint32_t id, double x, double y, double size, double angle) {
 	if (id != wiimoteId)
 		return;
 
@@ -211,7 +211,7 @@ void InfraredCameraView::dbusVirtualCursorPosition(uint id, double x, double y, 
 	cursor->setRotation(-angle * 180 / M_PI);
 }
 
-void InfraredCameraView::dbusWiimoteAcc(uint id, const accdata &table) {
+void InfraredCameraView::dbusWiimoteAcc(uint32_t id, const accdata &table) {
 	if (id != wiimoteId)
 		return;
 

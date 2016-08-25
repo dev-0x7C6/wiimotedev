@@ -33,13 +33,13 @@ private:
 	int m_index;
 	double m_distance;
 	double m_angle[2];
-	int16 m_ctable[2][2];
-	int16 m_ltable[2][2];
+	int16_t m_ctable[2][2];
+	int16_t m_ltable[2][2];
 	int m_calibrationPoint[2];
 
 private:
 	double angleDiff(double a, double b);
-	double _distance(int16 p[2], int16 q[2]);
+	double _distance(int16_t p[2], int16_t q[2]);
 
 public:
 	VirtualCursor();

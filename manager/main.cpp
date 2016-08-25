@@ -38,12 +38,12 @@ int main(int argc, char *argv[]) {
 	}
 
 	InfraredCameraView *infrared = new InfraredCameraView(&interface, 0);
-	QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(uint, double, double, double, double)), infrared, SLOT(dbusVirtualCursorPosition(uint, double, double, double, double)));
-	QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(uint)), infrared, SLOT(dbusVirtualCursorFound(uint)));
-	QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(uint)), infrared, SLOT(dbusVirtualCursorLost(uint)));
-	QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(uint, const accdata &)), infrared, SLOT(dbusWiimoteAcc(uint, const accdata &)));
-	QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(uint, const QList<irpoint> &)), infrared, SLOT(dbusWiimoteInfrared(uint, const QList<struct irpoint> &)));
-	QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(uint)), infrared, SLOT(dbusWiimoteDisconnected(uint)));
+	QObject::connect(&interface, SIGNAL(dbusVirtualCursorPosition(uint32_t, double, double, double, double)), infrared, SLOT(dbusVirtualCursorPosition(uint32_t, double, double, double, double)));
+	QObject::connect(&interface, SIGNAL(dbusVirtualCursorFound(uint32_t)), infrared, SLOT(dbusVirtualCursorFound(uint32_t)));
+	QObject::connect(&interface, SIGNAL(dbusVirtualCursorLost(uint32_t)), infrared, SLOT(dbusVirtualCursorLost(uint32_t)));
+	QObject::connect(&interface, SIGNAL(dbusWiimoteAcc(uint32_t, const accdata &)), infrared, SLOT(dbusWiimoteAcc(uint32_t, const accdata &)));
+	QObject::connect(&interface, SIGNAL(dbusWiimoteInfrared(uint32_t, const QList<irpoint> &)), infrared, SLOT(dbusWiimoteInfrared(uint32_t, const QList<struct irpoint> &)));
+	QObject::connect(&interface, SIGNAL(dbusWiimoteDisconnected(uint32_t)), infrared, SLOT(dbusWiimoteDisconnected(uint32_t)));
 	WiimoteRawStream *toolkit = new WiimoteRawStream(&interface, infrared);
 	MainWindow window(toolkit);
 	window.show();

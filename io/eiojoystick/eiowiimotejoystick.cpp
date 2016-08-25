@@ -40,7 +40,7 @@ EIOWiimoteJoystick::EIOWiimoteJoystick(QString deviceName, int id, Mode mode, Po
 	centerStick(EIOWiimoteJoystick::NunchukAccelerometer);
 }
 
-quint32 EIOWiimoteJoystick::assign() {
+uint32_t EIOWiimoteJoystick::assign() {
 	return m_id;
 }
 
@@ -72,23 +72,23 @@ void EIOWiimoteJoystick::setReportRoll(bool report) {
 	m_report_roll = report;
 }
 
-void EIOWiimoteJoystick::setWiimoteButtons(uint64 buttons) {
+void EIOWiimoteJoystick::setWiimoteButtons(uint64_t buttons) {
 	if (m_report_buttons) {
-		sendEvent(EV_KEY, BTN_A, (buttons & WIIMOTE_BTN_A) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_B, (buttons & WIIMOTE_BTN_B) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_X, (buttons & WIIMOTE_BTN_1) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_Y, (buttons & WIIMOTE_BTN_2) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_START, (buttons & WIIMOTE_BTN_PLUS) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_SELECT, (buttons & WIIMOTE_BTN_MINUS) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_0, (buttons & WIIMOTE_BTN_RIGHT) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_1, (buttons & WIIMOTE_BTN_LEFT) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_2, (buttons & WIIMOTE_BTN_DOWN) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
-		sendEvent(EV_KEY, BTN_3, (buttons & WIIMOTE_BTN_UP) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+		report(EV_KEY, BTN_A, (buttons & WIIMOTE_BTN_A) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+		report(EV_KEY, BTN_B, (buttons & WIIMOTE_BTN_B) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+		report(EV_KEY, BTN_X, (buttons & WIIMOTE_BTN_1) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+		report(EV_KEY, BTN_Y, (buttons & WIIMOTE_BTN_2) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+		report(EV_KEY, BTN_START, (buttons & WIIMOTE_BTN_PLUS) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+		report(EV_KEY, BTN_SELECT, (buttons & WIIMOTE_BTN_MINUS) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+		report(EV_KEY, BTN_0, (buttons & WIIMOTE_BTN_RIGHT) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+		report(EV_KEY, BTN_1, (buttons & WIIMOTE_BTN_LEFT) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+		report(EV_KEY, BTN_2, (buttons & WIIMOTE_BTN_DOWN) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+		report(EV_KEY, BTN_3, (buttons & WIIMOTE_BTN_UP) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
 
 		if (!m_home_switch_position)
-			sendEvent(EV_KEY, BTN_MODE, (buttons & WIIMOTE_BTN_HOME) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
+			report(EV_KEY, BTN_MODE, (buttons & WIIMOTE_BTN_HOME) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
 
-		sendEventSync();
+		sync();
 	}
 
 	if (m_home_switch_position && m_report_buttons) {
@@ -158,24 +158,24 @@ void EIOWiimoteJoystick::syncAxes() {
 	if (m_report_dstick) {
 		switch (m_horizontal) {
 			case EIOWiimoteJoystick::GamepadHorizontal:
-				sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_X, m_last_dpad_y);
-				sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_Y, m_last_dpad_x * -0x01);
+				report(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_X, m_last_dpad_y);
+				report(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_Y, m_last_dpad_x * -0x01);
 				break;
 
 			case EIOWiimoteJoystick::GamepadVertical:
-				sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_X, m_last_dpad_x);
-				sendEvent(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_Y, m_last_dpad_y);
+				report(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_X, m_last_dpad_x);
+				report(EV_ABS, WIIMOTE_DPAD_LINUX_AXIS_Y, m_last_dpad_y);
 				break;
 		}
 	}
 
 	if (m_report_pitch)
-		sendEvent(EV_ABS, WIIMOTE_PITCH_LINUX_AXIS, m_last_wiimote_acc_pitch);
+		report(EV_ABS, WIIMOTE_PITCH_LINUX_AXIS, m_last_wiimote_acc_pitch);
 
 	if (m_report_roll)
-		sendEvent(EV_ABS, WIIMOTE_ROLL_LINUX_AXIS, m_last_wiimote_acc_roll);
+		report(EV_ABS, WIIMOTE_ROLL_LINUX_AXIS, m_last_wiimote_acc_roll);
 
-	sendEventSync();
+	sync();
 }
 
 bool EIOWiimoteJoystick::configure() {

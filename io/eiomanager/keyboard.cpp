@@ -44,7 +44,7 @@ void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &s
 		action.pushed = false;
 		device->addKeyboardAction(action);
 	}
-	connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint, uint64)), device, SLOT(dbusWiimoteGeneralButtons(uint, uint64)));
+	connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint32_t, uint64_t)), device, SLOT(dbusWiimoteGeneralButtons(uint32_t, uint64_t)));
 	settings.endGroup();
 	EIORemoteKeyboards << device;
 }

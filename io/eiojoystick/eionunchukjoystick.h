@@ -22,14 +22,14 @@
 
 #include "eiobase/eiouinputobject.h"
 
-const int16 NUNCHUK_STICK_MAX = 0xFF - 0x15;
-const int16 NUNCHUK_STICK_MIN = 0x00 + 0x15;
-const int16 NUNCHUK_PITCH_MAX = 90;
-const int16 NUNCHUK_PITCH_MIN = -90;
-const int16 NUNCHUK_ROLL_MAX = 180;
-const int16 NUNCHUK_ROLL_MIN = -180;
-const int8 NUNCHUK_BUTTON_PUSHED = 1;
-const int8 NUNCHUK_BUTTON_RELEASED = 0;
+const int16_t NUNCHUK_STICK_MAX = 0xFF - 0x15;
+const int16_t NUNCHUK_STICK_MIN = 0x00 + 0x15;
+const int16_t NUNCHUK_PITCH_MAX = 90;
+const int16_t NUNCHUK_PITCH_MIN = -90;
+const int16_t NUNCHUK_ROLL_MAX = 180;
+const int16_t NUNCHUK_ROLL_MIN = -180;
+const int8_t NUNCHUK_BUTTON_PUSHED = 1;
+const int8_t NUNCHUK_BUTTON_RELEASED = 0;
 
 const int NUNCHUK_STICK_LINUX_AXIS_X = ABS_X;
 const int NUNCHUK_STICK_LINUX_AXIS_Y = ABS_Y;
@@ -71,7 +71,7 @@ private:
 	int m_last_nunchuk_acc_roll;
 	int m_last_wiimote_acc_pitch;
 	int m_last_wiimote_acc_roll;
-	quint32 m_id;
+	uint32_t m_id;
 	bool m_stick_invert_x;
 	bool m_stick_invert_y;
 	bool m_report_buttons;
@@ -82,7 +82,7 @@ private:
 public:
 	EIONunchukJoystick(QString deviceName, int id, QObject *parent = 0);
 
-	quint32 assign();
+	uint32_t assign();
 	void setStickInvertX(bool option);
 	void setStickInvertY(bool option);
 	void setReportButtons(bool report);
@@ -90,8 +90,8 @@ public:
 	void setReportPitch(bool report);
 	void setReportRoll(bool report);
 
-	void setNunchukButtons(uint64);
-	void setNunchukStick(int32, int32);
+	void setNunchukButtons(uint64_t);
+	void setNunchukStick(int32_t, int32_t);
 	void setNunchukAcc(double, double);
 
 private:
@@ -99,7 +99,7 @@ private:
 	void syncAxes();
 
 signals:
-	void setLedState(uint, uint);
+	void setLedState(uint32_t, uint32_t);
 
 	// InputDevice interface
 protected:

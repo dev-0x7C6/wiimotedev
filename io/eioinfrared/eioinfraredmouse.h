@@ -46,8 +46,8 @@ public:
 
 	EIOInfraredMouse(EIOEventDevice &device, QObject *parent = nullptr);
 
-	void dbusVirtualCursorPosition(uint, double, double, double, double);
-	void dbusVirtualCursorLost(uint);
+	void dbusVirtualCursorPosition(uint32_t, double, double, double, double);
+	void dbusVirtualCursorLost(uint32_t);
 
 	uint32_t id() const;
 	void setId(const uint32_t id);

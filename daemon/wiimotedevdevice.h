@@ -42,15 +42,15 @@ class WiimotedevDevice : public QObject {
 private:
 	bdaddr_t bdaddr;
 	std::atomic<cwiid_wiimote_t *> device;
-	int32 id;
+	int32_t id;
 	std::atomic<bool> haveWiimoteCallibration;
 	std::atomic<bool> haveNunchukCallibration;
 	QMutex m_mutex;
 
 private:
 	std::atomic<bool> isRumble;
-	std::atomic<uint8> switchOnLeds;
-	std::atomic<uint8> reportMode;
+	std::atomic<uint8_t> switchOnLeds;
+	std::atomic<uint8_t> reportMode;
 	acc_cal wiimote_acc_cal;
 	acc_cal nunchuk_acc_cal;
 
@@ -58,7 +58,7 @@ public:
 	explicit WiimotedevDevice(QObject *parent = 0);
 	virtual ~WiimotedevDevice();
 
-	bool connectToDevice(const uint timeout = 3);
+	bool connectToDevice(const uint32_t timeout = 3);
 	bool disconnectFromDevice(const bool switchOfReport = true);
 
 	bool fetchMessage(int *count, union cwiid_mesg *mesg[], timespec *time);
@@ -66,15 +66,15 @@ public:
 	bool isConnected();
 	bool isDisconnected();
 
-	bool setLedStatus(uint8 led);
+	bool setLedStatus(uint8_t led);
 	bool setRumbleStatus(bool rumble);
-	bool setReportMode(uint8 mode = defaultReportFlags);
+	bool setReportMode(uint8_t mode = defaultReportFlags);
 
 	void requestStatus();
 
-	uint8 getLedStatus();
+	uint8_t getLedStatus();
 	bool getRumbleStatus();
-	uint8 getReportMode();
+	uint8_t getReportMode();
 	bool getWiimoteState(cwiid_state &state);
 
 	bool requestCallibration(enum cwiid_ext_type ext_type, acc_cal *acc_cal);

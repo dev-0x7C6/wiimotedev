@@ -20,12 +20,12 @@
 #include "eiomanager/manager.h"
 #include <iostream>
 
-void UInputProfileManager::setupInfraredMouse(uint assing, const QString &name, QSettings &settings) {
+void UInputProfileManager::setupInfraredMouse(uint32_t assing, const QString &name, QSettings &settings) {
 }
 
 void UInputProfileManager::assignInfraredEvents(const QString &key, QSettings &settings) {
 	settings.beginGroup(key);
-	uint assign = settings.value("assign").toULongLong();
+	uint32_t assign = settings.value("assign").toULongLong();
 	QString name = settings.value("name").toString();
 	setupClassicJoystick(assign, name, settings);
 	settings.endGroup();

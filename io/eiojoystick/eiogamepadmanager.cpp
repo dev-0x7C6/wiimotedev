@@ -23,11 +23,11 @@ EIOGamepadManager::EIOGamepadManager(QObject *parent)
 		: QObject(parent) {
 }
 
-//uint32 EIOGamepadManager::create(EIOGamepadVariants variant, uint32 assign, QList< QPair< QString, QVariant> > arguments) {
+//uint32_t EIOGamepadManager::create(EIOGamepadVariants variant, uint32_t assign, QList< QPair< QString, QVariant> > arguments) {
 
 //}
 
-bool EIOGamepadManager::destroy(uint32 id) {
+bool EIOGamepadManager::destroy(uint32_t id) {
 	Q_UNUSED(id)
 	return false;
 }

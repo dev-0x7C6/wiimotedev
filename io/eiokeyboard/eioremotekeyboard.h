@@ -30,7 +30,7 @@
 #include <QMap>
 
 struct KeyboardAction {
-	QHash<uint, uint64> event;
+	QHash<uint32_t, uint64_t> event;
 	QList<uint> keys;
 	bool pushed;
 };
@@ -39,10 +39,10 @@ class EIORemoteKeyboard : public QObject {
 	Q_OBJECT
 	//general
 	EIOEventDevice *device;
-	uint id;
-	uint compareType;
+	uint32_t id;
+	uint32_t compareType;
 
-	QHash<uint, uint64> buttons;
+	QHash<uint32_t, uint64_t> buttons;
 
 	QList<KeyboardAction *> keyboardActions;
 
@@ -55,12 +55,12 @@ public:
 	void setCompareType(QString);
 
 public Q_SLOTS:
-	void dbusWiimoteGeneralButtons(uint, uint64);
+	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
 
 private:
 	void pressKeyboardButtons(QList<uint> &);
 	void releaseKeyboardButtons(QList<uint> &);
-	void pressKeyboardExtendedButton(uint);
-	void releaseKeyboardExtendedButton(uint);
+	void pressKeyboardExtendedButton(uint32_t);
+	void releaseKeyboardExtendedButton(uint32_t);
 };
 #endif // EVENT_VIRTUAL_KEYBOARD_H
