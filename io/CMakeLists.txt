@@ -20,7 +20,6 @@ set(sources
   functionals/uinput-helper.cpp
 
   eiobase/eiouinputobject.cpp
-  eiobase/eiomousedevice.cpp
   eiobase/eioeventdevice.cpp
 
   eiojoystick/eioclassicjoystick.cpp
@@ -49,7 +48,6 @@ set(headers
   container/infrared-config.h
   container/infrared-cursor.h
   eiobase/eiouinputobject.h
-  eiobase/eiomousedevice.h
   eiobase/eioeventdevice.h
   helper/hashcompare.h
 )
