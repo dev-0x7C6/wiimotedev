@@ -47,7 +47,7 @@ UInputProfileManager::UInputProfileManager(QObject *parent)
 		, disableKeyboardModule(true)
 		, enableWiiremoteInfraredMouse(false)
 		, rumbleStatus(false)
-		, m_eventDevice("event device", 0) {
+		, m_eventDevice("Virtual mouse and keyboard", 0) {
 	connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint32_t, uint64_t)), this, SLOT(dbusWiimoteGeneralButtons(uint32_t, uint64_t)), Qt::DirectConnection);
 	connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteButtons(uint32_t, uint64_t)), this, SLOT(dbusWiimoteButtons(uint32_t, uint64_t)), Qt::DirectConnection);
 	connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(uint32_t, accdata)), this, SLOT(dbusWiimoteAcc(uint32_t, accdata)), Qt::DirectConnection);
@@ -60,6 +60,9 @@ UInputProfileManager::UInputProfileManager(QObject *parent)
 	initializeCommandEvents();
 	QDBusConnection::systemBus().registerService("org.wiimotedev.io");
 	dbusWiimoteGeneralButtons(1, 0);
+	m_eventDevice.open();
+	m_eventDevice.configure();
+	m_eventDevice.create();
 }
 
 QHash<uint32_t, uint64_t> UInputProfileManager::extractDeviceEvent(QString input) {

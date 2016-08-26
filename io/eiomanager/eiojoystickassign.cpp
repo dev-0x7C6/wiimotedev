@@ -20,7 +20,7 @@
 #include "manager.h"
 
 void UInputProfileManager::setupClassicJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	EIOClassicJoystick *device = new EIOClassicJoystick(name.toStdString(), assign);
+	auto device = std::make_unique<EIOClassicJoystick>(name.toStdString(), assign);
 	device->setDpadInvertX(settings.value("DStickInvertX", 0x00).toBool());
 	device->setDpadInvertY(settings.value("DStickInvertY", 0x00).toBool());
 	device->setLStickInvertX(settings.value("LStickInvertX", 0x00).toBool());
@@ -31,15 +31,15 @@ void UInputProfileManager::setupClassicJoystick(uint32_t assign, const QString &
 	device->setReportDStick(settings.value("ReportDStick", 0x01).toBool());
 	device->setReportLStick(settings.value("ReportLStick", 0x01).toBool());
 	device->setReportRStick(settings.value("ReportRStick", 0x01).toBool());
+	device->open();
+	device->configure();
 
 	if (device->create())
-		EIOClassicJoysticks << device;
-	else
-		delete device;
+		m_gamepads.emplace_back(std::move(device));
 }
 
 void UInputProfileManager::setupWiimoteJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	EIOWiimoteJoystick *device = new EIOWiimoteJoystick(name.toStdString(), assign,
+	auto device = std::make_unique<EIOWiimoteJoystick>(name.toStdString(), assign,
 		EIOWiimoteJoystick::DPadPositionSwitchable,
 		EIOWiimoteJoystick::GamepadVertical);
 	device->setDStickInvertX(settings.value("DStickInvertX", 0x00).toBool());
@@ -49,11 +49,11 @@ void UInputProfileManager::setupWiimoteJoystick(uint32_t assign, const QString &
 	device->setReportDStick(settings.value("ReportDStick", 0x01).toBool());
 	device->setReportPitch(settings.value("ReportPitch", 0x01).toBool());
 	device->setReportRoll(settings.value("ReportRoll", 0x01).toBool());
+	device->open();
+	device->configure();
 
 	if (device->create())
-		EIOWiimoteJoysticks << device;
-	else
-		delete device;
+		m_gamepads.emplace_back(std::move(device));
 }
 
 void UInputProfileManager::setupNunchukJoystick(uint32_t assign, const QString &name, QSettings &settings) {
@@ -64,11 +64,11 @@ void UInputProfileManager::setupNunchukJoystick(uint32_t assign, const QString &
 	device->setReportStick(settings.value("ReportDStick", 0x01).toBool());
 	device->setReportPitch(settings.value("ReportPitch", 0x01).toBool());
 	device->setReportRoll(settings.value("ReportRoll", 0x01).toBool());
+	device->open();
+	device->configure();
 
 	if (device->create())
-		EIONunchukJoysticks << device;
-	else
-		delete device;
+		m_gamepads.emplace_back(std::move(device));
 }
 
 void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &settings) {
@@ -87,20 +87,7 @@ void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &s
 	settings.endGroup();
 }
 
-void UInputProfileManager::freeJoystickEvents() {
-	foreach (EIOClassicJoystick *device, EIOClassicJoysticks) {
-		delete device;
-	}
-	foreach (EIONunchukJoystick *device, EIONunchukJoysticks) {
-		delete device;
-	}
-	foreach (EIOWiimoteJoystick *device, EIOWiimoteJoysticks) {
-		delete device;
-	}
-	EIOClassicJoysticks.clear();
-	EIONunchukJoysticks.clear();
-	EIOWiimoteJoysticks.clear();
-}
+void UInputProfileManager::freeJoystickEvents() { m_gamepads.clear(); }
 
 void UInputProfileManager::dbusWiimoteAcc(uint32_t id, struct accdata acc) {
 	for (int i = 0; i < EIOWiimoteJoysticks.count(); ++i)

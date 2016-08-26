@@ -57,8 +57,6 @@ protected:
 	bool sync();
 
 private:
-	const std::string m_name;
-	FILE *m_file;
 	int m_fd;
 	struct uinput_user_dev m_dev;
 	bool m_isCreated;

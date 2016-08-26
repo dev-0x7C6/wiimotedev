@@ -39,6 +39,9 @@
 #include "eiojoystick/eionunchukjoystick.h"
 #include "eiojoystick/eiowiimotejoystick.h"
 
+#include <memory>
+#include <list>
+
 enum {
 	mouseEmulationModeNone = 0,
 	mouseEmulationModeAbs,
@@ -133,6 +136,8 @@ private:
 
 	QList<CommandAction *> commandActions;
 	QHash<uint32_t, uint64_t> lastWiiremoteButtons;
+
+	std::list<std::unique_ptr<IInputDevice>> m_gamepads;
 
 	QList<EIOClassicJoystick *> EIOClassicJoysticks;
 	QList<EIONunchukJoystick *> EIONunchukJoysticks;

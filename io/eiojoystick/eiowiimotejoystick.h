@@ -75,15 +75,14 @@ public:
 	void setWiimoteButtons(uint64_t);
 	void setWiimoteAcc(double, double);
 
+	virtual bool configure() override;
+
 private:
 	void centerStick(Stick id);
 	void syncAxes();
 
 signals:
 	void setLedState(uint32_t, uint32_t);
-
-protected:
-	virtual bool configure() override;
 
 private:
 	int m_last_stick_x;

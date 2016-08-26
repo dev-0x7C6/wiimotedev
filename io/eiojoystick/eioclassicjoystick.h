@@ -65,13 +65,11 @@ public:
 
 	void setButtons(uint64_t buttons);
 	void setStick(Sticks stick, int32_t x, int32_t y);
+	virtual bool configure() override;
 
 private:
 	void centerStick(Sticks stick);
 	void syncAxes();
-
-protected:
-	virtual bool configure() override;
 
 private:
 	int32_t m_last_r_stick_x;
