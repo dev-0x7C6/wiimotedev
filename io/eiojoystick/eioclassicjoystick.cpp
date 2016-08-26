@@ -19,31 +19,26 @@
 
 #include "eioclassicjoystick.h"
 
-EIOClassicJoystick::EIOClassicJoystick(QString deviceName, int id, QObject *parent)
-		: QObject(parent)
-		, InputDevice(deviceName.toStdString())
-		, m_deviceName(deviceName)
-		, m_id(id)
-		, m_last_r_stick_x(0x00)
-		, m_last_r_stick_y(0x00)
-		, m_last_l_stick_x(0x00)
-		, m_last_l_stick_y(0x00)
-		, m_last_dpad_x(0x00)
-		, m_last_dpad_y(0x00)
-		, m_dpad_invert_x(0x00)
-		, m_dpad_invert_y(0x00)
-		, m_left_stick_invert_x(0x00)
-		, m_left_stick_invert_y(0x00)
-		, m_right_stick_invert_x(0x00)
-		, m_right_stick_invert_y(0x00)
-		, m_report_buttons(0x01)
-		, m_report_dpad(0x01)
-		, m_report_left_stick(0x01)
-		, m_report_right_stick(0x01)
+EIOClassicJoystick::EIOClassicJoystick(const std::string& name, const uint32_t id)
+		: InputDevice(name, id)
+		, m_last_r_stick_x(0)
+		, m_last_r_stick_y(0)
+		, m_last_l_stick_x(0)
+		, m_last_l_stick_y(0)
+		, m_last_dpad_x(0)
+		, m_last_dpad_y(0)
+		, m_dpad_invert_x(0)
+		, m_dpad_invert_y(0)
+		, m_left_stick_invert_x(0)
+		, m_left_stick_invert_y(0)
+		, m_right_stick_invert_x(0)
+		, m_right_stick_invert_y(0)
+		, m_report_buttons(1)
+		, m_report_dpad(1)
+		, m_report_left_stick(1)
+		, m_report_right_stick(1)
 
 {
-	if (m_deviceName.isEmpty())
-		m_deviceName = QString::fromUtf8("Noname classic joystick");
 	centerStick(EIOClassicJoystick::LeftStick);
 	centerStick(EIOClassicJoystick::RightStick);
 	centerStick(EIOClassicJoystick::DpadStick);
@@ -129,9 +124,9 @@ void EIOClassicJoystick::setButtons(uint64_t buttons) {
 		else if (buttons & CLASSIC_BTN_UP)
 			m_last_dpad_y = CLASSIC_DPAD_MIN;
 
-		if (m_dpad_invert_x) m_last_dpad_x *= -0x01;
+		if (m_dpad_invert_x) m_last_dpad_x *= -1;
 
-		if (m_dpad_invert_y) m_last_dpad_y *= -0x01;
+		if (m_dpad_invert_y) m_last_dpad_y *= -1;
 
 		syncAxes();
 	}
@@ -204,18 +199,18 @@ void EIOClassicJoystick::setStick(Sticks stick, int32_t x, int32_t y) {
 
 void EIOClassicJoystick::syncAxes() {
 	if (m_report_dpad) {
-		report(EV_ABS, CLASSIC_DPAD_LINUX_AXIS_X, m_last_dpad_x);
-		report(EV_ABS, CLASSIC_DPAD_LINUX_AXIS_Y, m_last_dpad_y);
+		report(EV_ABS, CLASSIC_DPAD_AXIS_X, m_last_dpad_x);
+		report(EV_ABS, CLASSIC_DPAD_AXIS_Y, m_last_dpad_y);
 	}
 
 	if (m_report_left_stick) {
-		report(EV_ABS, CLASSIC_RIGHT_STICK_LINUX_AXIS_X, m_last_r_stick_x);
-		report(EV_ABS, CLASSIC_RIGHT_STICK_LINUX_AXIS_Y, m_last_r_stick_y);
+		report(EV_ABS, CLASSIC_RIGHT_STICK_AXIS_X, m_last_r_stick_x);
+		report(EV_ABS, CLASSIC_RIGHT_STICK_AXIS_Y, m_last_r_stick_y);
 	}
 
 	if (m_report_right_stick) {
-		report(EV_ABS, CLASSIC_LEFT_STICK_LINUX_AXIS_X, m_last_l_stick_x);
-		report(EV_ABS, CLASSIC_LEFT_STICK_LINUX_AXIS_Y, m_last_l_stick_y);
+		report(EV_ABS, CLASSIC_LEFT_STICK_AXIS_X, m_last_l_stick_x);
+		report(EV_ABS, CLASSIC_LEFT_STICK_AXIS_Y, m_last_l_stick_y);
 	}
 
 	sync();
@@ -246,24 +241,24 @@ bool EIOClassicJoystick::configure() {
 	}
 
 	if (m_report_left_stick) {
-		isValid &= set_abs_bit(CLASSIC_LEFT_STICK_LINUX_AXIS_X) == 0;
-		isValid &= set_abs_bit(CLASSIC_LEFT_STICK_LINUX_AXIS_Y) == 0;
-		set_range(CLASSIC_LEFT_STICK_LINUX_AXIS_X, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
-		set_range(CLASSIC_LEFT_STICK_LINUX_AXIS_Y, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
+		isValid &= set_abs_bit(CLASSIC_LEFT_STICK_AXIS_X) == 0;
+		isValid &= set_abs_bit(CLASSIC_LEFT_STICK_AXIS_Y) == 0;
+		set_range(CLASSIC_LEFT_STICK_AXIS_X, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
+		set_range(CLASSIC_LEFT_STICK_AXIS_Y, CLASSIC_LEFT_STICK_MAX, CLASSIC_LEFT_STICK_MIN);
 	}
 
 	if (m_report_right_stick) {
-		isValid &= set_abs_bit(CLASSIC_RIGHT_STICK_LINUX_AXIS_X) == 0;
-		isValid &= set_abs_bit(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y) == 0;
-		set_range(CLASSIC_RIGHT_STICK_LINUX_AXIS_X, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
-		set_range(CLASSIC_RIGHT_STICK_LINUX_AXIS_Y, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
+		isValid &= set_abs_bit(CLASSIC_RIGHT_STICK_AXIS_X) == 0;
+		isValid &= set_abs_bit(CLASSIC_RIGHT_STICK_AXIS_Y) == 0;
+		set_range(CLASSIC_RIGHT_STICK_AXIS_X, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
+		set_range(CLASSIC_RIGHT_STICK_AXIS_Y, CLASSIC_RIGHT_STICK_MAX, CLASSIC_RIGHT_STICK_MIN);
 	}
 
 	if (m_report_dpad) {
-		isValid &= set_abs_bit(CLASSIC_DPAD_LINUX_AXIS_X) == 0;
-		isValid &= set_abs_bit(CLASSIC_DPAD_LINUX_AXIS_Y) == 0;
-		set_range(CLASSIC_DPAD_LINUX_AXIS_X, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
-		set_range(CLASSIC_DPAD_LINUX_AXIS_Y, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
+		isValid &= set_abs_bit(CLASSIC_DPAD_AXIS_X) == 0;
+		isValid &= set_abs_bit(CLASSIC_DPAD_AXIS_Y) == 0;
+		set_range(CLASSIC_DPAD_AXIS_X, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
+		set_range(CLASSIC_DPAD_AXIS_Y, CLASSIC_DPAD_MAX, CLASSIC_DPAD_MIN);
 	}
 
 	return isValid;

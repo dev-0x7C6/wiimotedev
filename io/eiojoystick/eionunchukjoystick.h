@@ -36,8 +36,7 @@ constexpr auto NUNCHUK_STICK_LINUX_AXIS_Y = ABS_Y;
 constexpr auto NUNCHUK_ROLL_LINUX_AXIS = ABS_TILT_X;
 constexpr auto NUNCHUK_PITCH_LINUX_AXIS = ABS_TILT_Y;
 
-class EIONunchukJoystick : public QObject, public InputDevice {
-	Q_OBJECT
+class EIONunchukJoystick : public InputDevice {
 public:
 	enum Position {
 		GamepadHorizontal,
@@ -61,26 +60,8 @@ public:
 		Wiimote
 	};
 
-private:
-	QString m_deviceName;
-	int m_last_stick_x;
-	int m_last_stick_y;
-	int m_last_dpad_x;
-	int m_last_dpad_y;
-	int m_last_nunchuk_acc_pitch;
-	int m_last_nunchuk_acc_roll;
-	int m_last_wiimote_acc_pitch;
-	int m_last_wiimote_acc_roll;
-	uint32_t m_id;
-	bool m_stick_invert_x;
-	bool m_stick_invert_y;
-	bool m_report_buttons;
-	bool m_report_stick;
-	bool m_report_pitch;
-	bool m_report_roll;
-
 public:
-	EIONunchukJoystick(QString deviceName, int id, QObject *parent = 0);
+	explicit EIONunchukJoystick(const std::string &name, const uint32_t id, QObject *parent = 0);
 
 	uint32_t assign();
 	void setStickInvertX(bool option);
@@ -104,4 +85,20 @@ signals:
 	// InputDevice interface
 protected:
 	virtual bool configure() override;
+
+private:
+	int m_last_stick_x;
+	int m_last_stick_y;
+	int m_last_dpad_x;
+	int m_last_dpad_y;
+	int m_last_nunchuk_acc_pitch;
+	int m_last_nunchuk_acc_roll;
+	int m_last_wiimote_acc_pitch;
+	int m_last_wiimote_acc_roll;
+	bool m_stick_invert_x;
+	bool m_stick_invert_y;
+	bool m_report_buttons;
+	bool m_report_stick;
+	bool m_report_pitch;
+	bool m_report_roll;
 };

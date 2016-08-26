@@ -20,7 +20,7 @@
 #include "manager.h"
 
 void UInputProfileManager::setupClassicJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	EIOClassicJoystick *device = new EIOClassicJoystick(name, assign);
+	EIOClassicJoystick *device = new EIOClassicJoystick(name.toStdString(), assign);
 	device->setDpadInvertX(settings.value("DStickInvertX", 0x00).toBool());
 	device->setDpadInvertY(settings.value("DStickInvertY", 0x00).toBool());
 	device->setLStickInvertX(settings.value("LStickInvertX", 0x00).toBool());
@@ -39,7 +39,7 @@ void UInputProfileManager::setupClassicJoystick(uint32_t assign, const QString &
 }
 
 void UInputProfileManager::setupWiimoteJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	EIOWiimoteJoystick *device = new EIOWiimoteJoystick(name, assign,
+	EIOWiimoteJoystick *device = new EIOWiimoteJoystick(name.toStdString(), assign,
 		EIOWiimoteJoystick::DPadPositionSwitchable,
 		EIOWiimoteJoystick::GamepadVertical);
 	device->setDStickInvertX(settings.value("DStickInvertX", 0x00).toBool());
@@ -57,7 +57,7 @@ void UInputProfileManager::setupWiimoteJoystick(uint32_t assign, const QString &
 }
 
 void UInputProfileManager::setupNunchukJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	EIONunchukJoystick *device = new EIONunchukJoystick(name, assign);
+	EIONunchukJoystick *device = new EIONunchukJoystick(name.toStdString(), assign);
 	device->setStickInvertX(settings.value("DStickInvertX", 0x00).toBool());
 	device->setStickInvertY(settings.value("DStickInvertY", 0x00).toBool());
 	device->setReportButtons(settings.value("ReportButtons", 0x01).toBool());

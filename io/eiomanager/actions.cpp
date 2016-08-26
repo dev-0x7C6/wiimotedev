@@ -101,11 +101,11 @@ void UInputProfileManager::activeCommandEvent(QStringList &params) {
 			break;
 
 		case hwheelAction:
-			virtualEvent->moveMouseHWheel(QString(params.value(1, "0")).toInt());
+			m_eventDevice.moveMouseHWheel(QString(params.value(1, "0")).toInt());
 			break;
 
 		case vwheelAction:
-			virtualEvent->moveMouseVWheel(QString(params.value(1, "0")).toInt());
+			m_eventDevice.moveMouseVWheel(QString(params.value(1, "0")).toInt());
 			break;
 	}
 }

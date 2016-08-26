@@ -32,12 +32,9 @@ constexpr auto WIIMOTE_BUTTON_RELEASED = 0;
 constexpr auto WIIMOTE_DPAD_MAX = 1;
 constexpr auto WIIMOTE_DPAD_MIN = -1;
 
-constexpr auto WIIMOTE_DPAD_LINUX_AXIS_X = ABS_HAT0X;
-constexpr auto WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
-constexpr auto WIIMOTE_PITCH_LINUX_AXIS = ABS_X;
-constexpr auto WIIMOTE_ROLL_LINUX_AXIS = ABS_RX;
 
-class EIOWiimoteJoystick : public QObject, public InputDevice {
+
+class EIOWiimoteJoystick : public InputDevice {
 	Q_OBJECT
 public:
 	enum Position {
@@ -62,30 +59,8 @@ public:
 		Wiimote
 	};
 
-private:
-	QString m_deviceName;
-	int m_last_stick_x;
-	int m_last_stick_y;
-	int m_last_dpad_x;
-	int m_last_dpad_y;
-	int m_last_nunchuk_acc_pitch;
-	int m_last_nunchuk_acc_roll;
-	int m_last_wiimote_acc_pitch;
-	int m_last_wiimote_acc_roll;
-	Position m_horizontal;
-	Mode m_mode;
-	bool m_home_pressed;
-	uint32_t m_id;
-	bool m_dpad_invert_x;
-	bool m_dpad_invert_y;
-	bool m_home_switch_position;
-	bool m_report_buttons;
-	bool m_report_dstick;
-	bool m_report_pitch;
-	bool m_report_roll;
-
 public:
-	EIOWiimoteJoystick(QString deviceName, int id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
+	EIOWiimoteJoystick(const std::string &name, const uint32_t id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
 
 	uint32_t assign();
 
@@ -109,4 +84,24 @@ signals:
 
 protected:
 	virtual bool configure() override;
+
+private:
+	int m_last_stick_x;
+	int m_last_stick_y;
+	int m_last_dpad_x;
+	int m_last_dpad_y;
+	int m_last_nunchuk_acc_pitch;
+	int m_last_nunchuk_acc_roll;
+	int m_last_wiimote_acc_pitch;
+	int m_last_wiimote_acc_roll;
+	Position m_horizontal;
+	Mode m_mode;
+	bool m_home_pressed;
+	bool m_dpad_invert_x;
+	bool m_dpad_invert_y;
+	bool m_home_switch_position;
+	bool m_report_buttons;
+	bool m_report_dstick;
+	bool m_report_pitch;
+	bool m_report_roll;
 };

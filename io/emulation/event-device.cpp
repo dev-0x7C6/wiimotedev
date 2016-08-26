@@ -19,21 +19,30 @@
 
 #include <io/emulation/event-device.h>
 
-void EventDevice::pressKeyboardButton(uint16_t button) { report(EV_KEY, button, 1, true); }
-void EventDevice::releaseKeyboardButton(uint16_t button) { report(EV_KEY, button, 0, true); }
+EventDevice::EventDevice(const std::string &name, const uint32_t id)
+	: InputDevice(name, id)
+{
 
-void EventDevice::pressKeyboardButtonOnce(uint16_t button) {
-	report(EV_KEY, button, 1, true);
-	report(EV_KEY, button, 0, true);
 }
 
-void EventDevice::moveMouseVWheel(int32_t direction) { report(EV_REL, REL_WHEEL, direction, true); }
-void EventDevice::moveMouseHWheel(int32_t direction) { report(EV_REL, REL_HWHEEL, direction, true); }
+bool EventDevice::pressKey(const uint16_t key) { return report(EV_KEY, key, 1, true); }
+bool EventDevice::releaseKey(const uint16_t key) { return report(EV_KEY, key, 0, true); }
+bool EventDevice::tapKey(const uint16_t key) {
+	bool isValid = true;
+	isValid &= report(EV_KEY, key, 1, true);
+	isValid &= report(EV_KEY, key, 0, true);
+	return isValid;
+}
 
-void EventDevice::moveMousePointerRel(int32_t x, int32_t y) {
-	report(EV_REL, REL_X, x);
-	report(EV_REL, REL_Y, y);
-	sync();
+bool EventDevice::moveMouseVWheel(const int32_t delta) { return report(EV_REL, REL_WHEEL, delta, true); }
+bool EventDevice::moveMouseHWheel(const int32_t delta) { return report(EV_REL, REL_HWHEEL, delta, true); }
+
+bool EventDevice::moveMousePointer(const int32_t x, const int32_t y) {
+	bool isValid = true;
+	isValid &= report(EV_REL, REL_X, x);
+	isValid &= report(EV_REL, REL_Y, y);
+	isValid &= sync();
+	return isValid;
 }
 
 bool EventDevice::configure() {

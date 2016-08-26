@@ -21,6 +21,7 @@ set(sources
 
   emulation/event-device.cpp
   emulation/input-device.cpp
+  emulation/iinput-device.cpp
 
   eiojoystick/eioclassicjoystick.cpp
   eiojoystick/eionunchukjoystick.cpp
@@ -49,6 +50,7 @@ set(headers
   container/infrared-cursor.h
   emulation/event-device.h
   emulation/input-device.h
+  emulation/iinput-device.cpp
 )
 
 set(headers_wrap

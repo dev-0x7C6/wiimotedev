@@ -21,18 +21,16 @@
 
 #include <io/emulation/input-device.h>
 
-class EventDevice : public InputDevice {
+class EventDevice final : public InputDevice {
 public:
-	explicit EventDevice() : InputDevice("Virtual Event Device") {}
-	virtual ~EventDevice() = default;
+	explicit EventDevice(const std::string &name, const uint32_t id);
 
-	void pressKeyboardButton(uint16_t);
-	void pressKeyboardButtonOnce(uint16_t);
-	void releaseKeyboardButton(uint16_t);
-
-	void moveMouseVWheel(int32_t);
-	void moveMouseHWheel(int32_t);
-	void moveMousePointerRel(int32_t, int32_t);
+	bool pressKey(const uint16_t key);
+	bool releaseKey(const uint16_t key);
+	bool tapKey(const uint16_t key);
+	bool moveMousePointer(const int32_t x, const int32_t y);
+	bool moveMouseVWheel(const int32_t delta);
+	bool moveMouseHWheel(const int32_t delta);
 
 	virtual bool configure() override;
 };

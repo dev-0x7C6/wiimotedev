@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <QObject>
 #include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
@@ -29,29 +30,36 @@
 #include <functional>
 
 #include "linux/usr/include/wiimotedev/consts.h"
+#include <io/emulation/iinput-device.h>
 
-class InputDevice {
+class InputDevice : public QObject, public IInputDevice {
 public:
-	explicit InputDevice(std::string name);
+	explicit InputDevice(const std::string &name, uint32_t id);
 	virtual ~InputDevice();
 
+	virtual bool open() override;
+	virtual bool configure() override = 0;
+	virtual bool create() override;
+	virtual bool destroy() override;
+	virtual bool close() override;
+
+	virtual bool isOpen() const override;
+	virtual bool isCreated() const override;
+
+protected:
 	int set_ev_bit(int bit);
 	int set_key_bit(int bit);
 	int set_rel_bit(int bit);
 	int set_abs_bit(int bit);
 	void set_range(int abs, int max, int min);
 
-	void report(uint16_t type, uint16_t code, int32_t value, bool triggerSync = false);
-	void sync();
-
-	bool isValid() const;
-
-	virtual bool configure() = 0;
-	virtual bool create();
-	virtual bool destroy();
+	bool report(uint16_t type, uint16_t code, int32_t value, bool triggerSync = false);
+	bool sync();
 
 private:
+	const std::string m_name;
 	FILE *m_file;
 	int m_fd;
 	struct uinput_user_dev m_dev;
+	bool m_isCreated;
 };

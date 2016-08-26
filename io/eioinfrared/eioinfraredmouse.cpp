@@ -139,7 +139,7 @@ void EIOInfraredMouse::processRelativeMouse() {
 	y -= calc(YAxis);
 
 	if (x != 0 || y != 0)
-		m_device.moveMousePointerRel(x, y);
+		m_device.moveMousePointer(x, y);
 }
 
 void EIOInfraredMouse::setCursor(InfraredCursor &&cursor) {

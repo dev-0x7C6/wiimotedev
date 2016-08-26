@@ -25,7 +25,7 @@ extern QMap<QString, uint> scancodes;
 void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &settings) {
 	freeKeyboardEvents();
 	settings.beginGroup(key);
-	EIORemoteKeyboard *device = new EIORemoteKeyboard(virtualEvent);
+	EIORemoteKeyboard *device = new EIORemoteKeyboard(m_eventDevice);
 	foreach (const QString &string, settings.allKeys()) {
 		if (string.toLower() == "module")
 			continue;

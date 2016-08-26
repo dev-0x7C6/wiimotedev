@@ -19,17 +19,14 @@
 
 #include "eionunchukjoystick.h"
 
-EIONunchukJoystick::EIONunchukJoystick(QString deviceName, int id, QObject *parent)
-		: QObject(parent)
-		, InputDevice("Joystick")
-		, m_deviceName(deviceName)
-		, m_id(id)
-		, m_stick_invert_x(0x00)
-		, m_stick_invert_y(0x00)
-		, m_report_buttons(0x01)
-		, m_report_stick(0x01)
-		, m_report_pitch(0x01)
-		, m_report_roll(0x01)
+EIONunchukJoystick::EIONunchukJoystick(const std::string &name, const uint32_t id, QObject *parent)
+		: InputDevice(name, id)
+		, m_stick_invert_x(0)
+		, m_stick_invert_y(0)
+		, m_report_buttons(1)
+		, m_report_stick(1)
+		, m_report_pitch(1)
+		, m_report_roll(1)
 
 {
 }
@@ -79,18 +76,18 @@ void EIONunchukJoystick::centerStick(Stick id) {
 			break;
 
 		case EIONunchukJoystick::DpadStick:
-			m_last_dpad_x = 0x00;
-			m_last_dpad_y = 0x00;
+			m_last_dpad_x = 0;
+			m_last_dpad_y = 0;
 			break;
 
 		case EIONunchukJoystick::NunchukAccelerometer:
-			m_last_nunchuk_acc_pitch = 0x00;
-			m_last_nunchuk_acc_roll = 0x00;
+			m_last_nunchuk_acc_pitch = 0;
+			m_last_nunchuk_acc_roll = 0;
 			break;
 
 		case EIONunchukJoystick::WiimoteAccelerometer:
-			m_last_wiimote_acc_pitch = 0x00;
-			m_last_wiimote_acc_roll = 0x00;
+			m_last_wiimote_acc_pitch = 0;
+			m_last_wiimote_acc_roll = 0;
 			break;
 	}
 }

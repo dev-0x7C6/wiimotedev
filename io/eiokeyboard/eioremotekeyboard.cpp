@@ -29,8 +29,8 @@ enum KeyboardExtension {
 	keyboardExtMouseWheelDown
 };
 
-EIORemoteKeyboard::EIORemoteKeyboard(EventDevice *device)
-		: device(device) {
+EIORemoteKeyboard::EIORemoteKeyboard(EventDevice &device)
+		: m_device(device) {
 	compareType = HashCompare<uint32_t, uint64_t>::BitCompare;
 }
 
@@ -93,19 +93,19 @@ void EIORemoteKeyboard::dbusWiimoteGeneralButtons(uint32_t id, uint64_t value) {
 void EIORemoteKeyboard::pressKeyboardExtendedButton(uint32_t key) {
 	switch (key) {
 		case keyboardExtMouseWheelLeft:
-			device->moveMouseHWheel(-1);
+			m_device.moveMouseHWheel(-1);
 			break;
 
 		case keyboardExtMouseWheelRight:
-			device->moveMouseHWheel(1);
+			m_device.moveMouseHWheel(1);
 			break;
 
 		case keyboardExtMouseWheelUp:
-			device->moveMouseVWheel(1);
+			m_device.moveMouseVWheel(1);
 			break;
 
 		case keyboardExtMouseWheelDown:
-			device->moveMouseVWheel(-1);
+			m_device.moveMouseVWheel(-1);
 			break;
 	}
 }
@@ -120,7 +120,7 @@ void EIORemoteKeyboard::pressKeyboardButtons(QList<uint> &list) {
 
 	foreach (const uint32_t key, list) {
 		if (key <= keyboardExt)
-			device->pressKeyboardButton(key);
+			m_device.pressKey(key);
 		else
 			pressKeyboardExtendedButton(key);
 	}
@@ -133,7 +133,7 @@ void EIORemoteKeyboard::releaseKeyboardButtons(QList<uint> &list) {
 	foreach (const uint32_t key, list)
 
 		if (key <= keyboardExt)
-			device->releaseKeyboardButton(key);
+			m_device.releaseKey(key);
 		else
 			releaseKeyboardExtendedButton(key);
 }
