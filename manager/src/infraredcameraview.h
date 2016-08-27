@@ -17,8 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef INFRAREDCAMERAVIEW_H
-#define INFRAREDCAMERAVIEW_H
+#pragma once
 
 #include <QGraphicsView>
 #include <QGraphicsScene>
@@ -87,9 +86,9 @@ private:
 
 	QString getReadableWiiremoteSequence(uint64_t);
 
-private slots:
 	void infraredCleanup();
 
+public:
 	void dbusVirtualCursorPosition(uint32_t id, double x, double y, double size, double angle);
 	void dbusVirtualCursorLost(uint32_t id);
 	void dbusVirtualCursorFound(uint32_t id);
@@ -99,5 +98,3 @@ private slots:
 	void dbusWiimoteDisconnected(uint32_t id);
 	void dbusWiimoteInfrared(uint32_t id, const QList<struct irpoint> &points);
 };
-
-#endif // INFRAREDCAMERAVIEW_H

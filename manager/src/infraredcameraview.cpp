@@ -40,7 +40,7 @@ InfraredCameraView::InfraredCameraView(WiimotedevDeviceEvents *iface, uint32_t i
 	widthMultiplier = 0.5;
 	heightMultiplier = 0.5;
 	dotSizeMultiplier = 4;
-	connect(&infraredTimeout, SIGNAL(timeout()), this, SLOT(infraredCleanup()));
+	connect(&infraredTimeout, &QTimer::timeout, this, &InfraredCameraView::infraredCleanup);
 	infraredTimeout.setInterval(30);
 	scene.setBackgroundBrush(QBrush(QColor(0x00, 0x00, 0x00, 0xFF), Qt::SolidPattern));
 	scene.setSceneRect(0, 0, geometry().width(), geometry().height());

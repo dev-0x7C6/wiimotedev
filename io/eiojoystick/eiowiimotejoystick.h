@@ -33,8 +33,6 @@ constexpr auto WIIMOTE_BUTTON_RELEASED = 0;
 constexpr auto WIIMOTE_DPAD_MAX = 1;
 constexpr auto WIIMOTE_DPAD_MIN = -1;
 
-
-
 class EIOWiimoteJoystick final : public IGamepad {
 	Q_OBJECT
 public:
@@ -56,7 +54,7 @@ public:
 public:
 	explicit EIOWiimoteJoystick(const std::string &name, const uint32_t id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical);
 
-		virtual Type type() const override;
+	virtual Type type() const override;
 
 	void setDStickInvertX(bool option);
 	void setDStickInvertY(bool option);

@@ -26,6 +26,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+constexpr auto UINPUT_PRINT_VALID_EVENTS = false;
+
 InputDevice::InputDevice(const std::string &name, uint32_t id)
 		: IInputDevice(name, id)
 		, m_fd(-1)
@@ -88,7 +90,7 @@ bool InputDevice::create() {
 		return false;
 	}
 
-	std::cout << "ok: successfully write device header."  << std::endl;
+	std::cout << "ok: successfully write device header." << std::endl;
 
 	if (ioctl(m_fd, UI_DEV_CREATE)) {
 		std::cerr << "fail: unable create virtual device." << std::endl;
@@ -112,7 +114,7 @@ bool InputDevice::destroy() {
 bool InputDevice::close() { return ::close(m_fd) == 0; }
 
 bool InputDevice::isOpen() const { return m_fd != -1; }
-bool InputDevice::isCreated() const { return m_isCreated && isOpen(); }
+bool InputDevice::isCreated() const { return m_isCreated; }
 
 int InputDevice::set_ev_bit(int bit) { return UInputHelper::set_ev_bit(m_fd, bit); }
 int InputDevice::set_key_bit(int bit) { return UInputHelper::set_key_bit(m_fd, bit); }
@@ -131,21 +133,23 @@ bool InputDevice::report(uint16_t type, uint16_t code, int32_t value, bool trigg
 	event.value = value;
 	auto result = write(m_fd, &event, sizeof(event));
 
-	if (result != sizeof(m_dev)) {
+	if (result != sizeof(event)) {
 		std::cerr << "fail: unable to write event." << std::endl;
 		std::cerr << "  code   : " << code << std::endl;
-		std::cerr << "  type   : " << type<< std::endl;
+		std::cerr << "  type   : " << type << std::endl;
 		std::cerr << "  value  : " << value << std::endl;
 		std::cerr << std::endl;
 		m_isCreated = false;
 		return false;
 	}
 
-	std::cout << "ok: event written." << std::endl;
-	std::cout << "  code   : " << code << std::endl;
-	std::cout << "  type   : " << type<< std::endl;
-	std::cout << "  value  : " << value << std::endl;
-	std::cout << std::endl;
+	if (UINPUT_PRINT_VALID_EVENTS) {
+		std::cout << "ok: event written." << std::endl;
+		std::cout << "  code   : " << code << std::endl;
+		std::cout << "  type   : " << type << std::endl;
+		std::cout << "  value  : " << value << std::endl;
+		std::cout << std::endl;
+	}
 
 	if (triggerSync)
 		sync();

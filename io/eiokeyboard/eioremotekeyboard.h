@@ -44,7 +44,7 @@ public:
 	void clearKeyboardActions();
 	void setCompareType(QString);
 
-public Q_SLOTS:
+public slots:
 	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
 
 private:

@@ -21,30 +21,18 @@
 
 #include <atomic>
 
-#include <QThread>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QThread>
 
-#include "dbus/deviceevents.h"
 #include "dbus/daemonservice.h"
+#include "dbus/deviceevents.h"
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "wiimotedevconnection.h"
 #include "wiimotedevsettings.h"
 
 class WiimotedevCore : public QThread {
 	Q_OBJECT
-private:
-	// Adaptor section ------------------------------------------ /
-	WiimotedevDBusEventsWrapper *WiimotedevDBusEvents;
-	DBusServiceAdaptorWrapper *dbusServiceAdaptor;
-
-	// Settings ------------------------------------------------- /
-	WiimotedevSettings *settings;
-	QHash<QString, uint> sequence;
-	QMutex m_mutex;
-
-	std::atomic<bool> m_interrupted;
-
 public:
 	WiimotedevCore(QObject *parent = 0);
 	~WiimotedevCore();
@@ -58,30 +46,42 @@ public:
 
 	QHash<uint32_t, WiimotedevConnection *> threads;
 
-protected:
-	void run();
-
-private Q_SLOTS:
-	void dbusWiimoteDisconnected(uint32_t);
-
-public Q_SLOTS:
-	bool dbusIsClassicConnected(uint32_t id);
-	bool dbusIsNunchukConnected(uint32_t id);
-	bool dbusIsWiimoteConnected(uint32_t id);
-	QList<uint> dbusNunchukGetAccelerometrCalibration(uint32_t id);
-	QList<uint> dbusWiimoteGetAccelerometrCalibration(uint32_t id);
-	uint32_t dbusWiimoteGetAverageLatency(uint32_t id);
-	uint32_t dbusWiimoteGetBatteryLife(uint32_t id);
-	uint32_t dbusWiimoteGetCurrentLatency(uint32_t id);
-	QString dbusWiimoteGetMacAddress(uint32_t id);
-	bool dbusWiimoteGetRumbleStatus(uint32_t id);
-	bool dbusWiimoteSetLedStatus(uint32_t id, uint32_t status);
-	bool dbusWiimoteSetRumbleStatus(uint32_t id, bool status);
-	uint8_t dbusWiimoteGetLedStatus(uint32_t id);
-	uint8_t dbusWiimoteGetStatus(uint32_t id);
+public slots:
+	bool dbusIsClassicConnected(quint32 id);
+	bool dbusIsNunchukConnected(quint32 id);
+	bool dbusIsWiimoteConnected(quint32 id);
+	QList<uint> dbusNunchukGetAccelerometrCalibration(quint32 id);
+	QList<uint> dbusWiimoteGetAccelerometrCalibration(quint32 id);
+	quint32 dbusWiimoteGetAverageLatency(quint32 id);
+	quint32 dbusWiimoteGetBatteryLife(quint32 id);
+	quint32 dbusWiimoteGetCurrentLatency(quint32 id);
+	QString dbusWiimoteGetMacAddress(quint32 id);
+	bool dbusWiimoteGetRumbleStatus(quint32 id);
+	bool dbusWiimoteSetLedStatus(quint32 id, quint32 status);
+	bool dbusWiimoteSetRumbleStatus(quint32 id, bool status);
+	uint8_t dbusWiimoteGetLedStatus(quint32 id);
+	uint8_t dbusWiimoteGetStatus(quint32 id);
 	QList<uint> dbusGetWiimoteList();
 	bool dbusReloadSequenceList();
 
-Q_SIGNALS:
+protected:
+	void run();
+
+private slots:
+	void dbusWiimoteDisconnected(quint32);
+
+private:
+	// Adaptor section ------------------------------------------ /
+	WiimotedevDBusEventsWrapper *WiimotedevDBusEvents;
+	DBusServiceAdaptorWrapper *dbusServiceAdaptor;
+
+	// Settings ------------------------------------------------- /
+	WiimotedevSettings *settings;
+	QHash<QString, uint> sequence;
+	QMutex m_mutex;
+
+	std::atomic<bool> m_interrupted;
+
+signals:
 	void dbusReportUnregistredWiimote(QString);
 };

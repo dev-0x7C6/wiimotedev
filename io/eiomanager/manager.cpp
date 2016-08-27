@@ -48,15 +48,15 @@ UInputProfileManager::UInputProfileManager(QObject *parent)
 		, enableWiiremoteInfraredMouse(false)
 		, rumbleStatus(false)
 		, m_eventDevice("Virtual mouse and keyboard", 0) {
-	connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteGeneralButtons(uint32_t, uint64_t)), this, SLOT(dbusWiimoteGeneralButtons(uint32_t, uint64_t)), Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteButtons(uint32_t, uint64_t)), this, SLOT(dbusWiimoteButtons(uint32_t, uint64_t)), Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, SIGNAL(dbusWiimoteAcc(uint32_t, accdata)), this, SLOT(dbusWiimoteAcc(uint32_t, accdata)), Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukButtons(uint32_t, uint64_t)), this, SLOT(dbusNunchukButtons(uint32_t, uint64_t)), Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukStick(uint32_t, stickdata)), this, SLOT(dbusNunchukStick(uint32_t, stickdata)), Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, SIGNAL(dbusNunchukAcc(uint32_t, accdata)), this, SLOT(dbusNunchukAcc(uint32_t, accdata)), Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerButtons(uint32_t, uint64_t)), this, SLOT(dbusClassicControllerButtons(uint32_t, uint64_t)), Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerLStick(uint32_t, stickdata)), this, SLOT(dbusClassicControllerLStick(uint32_t, stickdata)), Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, SIGNAL(dbusClassicControllerRStick(uint32_t, stickdata)), this, SLOT(dbusClassicControllerRStick(uint32_t, stickdata)), Qt::DirectConnection);
+	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, this, &UInputProfileManager::dbusWiimoteGeneralButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusWiimoteButtons, this, &UInputProfileManager::dbusWiimoteButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusWiimoteAcc, this, &UInputProfileManager::dbusWiimoteAcc, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusNunchukButtons, this, &UInputProfileManager::dbusNunchukButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusNunchukStick, this, &UInputProfileManager::dbusNunchukStick, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusNunchukAcc, this, &UInputProfileManager::dbusNunchukAcc, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusClassicControllerButtons, this, &UInputProfileManager::dbusClassicControllerButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusClassicControllerLStick, this, &UInputProfileManager::dbusClassicControllerLStick, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusClassicControllerRStick, this, &UInputProfileManager::dbusClassicControllerRStick, Qt::DirectConnection);
 	initializeCommandEvents();
 	QDBusConnection::systemBus().registerService("org.wiimotedev.io");
 	dbusWiimoteGeneralButtons(1, 0);

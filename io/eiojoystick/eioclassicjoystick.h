@@ -43,7 +43,7 @@ constexpr auto CLASSIC_DPAD_AXIS_Y = ABS_HAT0Y;
 
 class EIOClassicJoystick final : public IGamepad {
 public:
-	explicit EIOClassicJoystick(const std::string& name, const uint32_t id);
+	explicit EIOClassicJoystick(const std::string &name, const uint32_t id);
 
 	enum Sticks {
 		LeftStick,

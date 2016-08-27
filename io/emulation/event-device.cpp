@@ -20,9 +20,7 @@
 #include <io/emulation/event-device.h>
 
 EventDevice::EventDevice(const std::string &name, const uint32_t id)
-	: InputDevice(name, id)
-{
-
+		: InputDevice(name, id) {
 }
 
 bool EventDevice::pressKey(const uint16_t key) { return report(EV_KEY, key, 1, true); }
