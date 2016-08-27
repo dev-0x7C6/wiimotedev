@@ -2,6 +2,6 @@
 # Copyright (C) 2014 Bartłomiej Burdukiewicz
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
-if(INSTALL_SYSTEMD)
+if(WIIMOTEDEV_INSTALL_SYSTEMD)
   add_subdirectory(systemd)
 endif()

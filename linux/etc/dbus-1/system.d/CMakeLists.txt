@@ -2,10 +2,10 @@
 # Copyright (C) 2008 Bartłomiej Burdukiewicz
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
-if(BUILD_DAEMON)
+if(WIIMOTEDEV_BUILD_DAEMON)
   install(FILES org.wiimotedev-daemon.conf DESTINATION ${WIIMOTEDEV_DBUS_DIR})
-endif(BUILD_DAEMON)
+endif(WIIMOTEDEV_BUILD_DAEMON)
 
-if(BUILD_IO)
+if(WIIMOTEDEV_BUILD_IO)
   install(FILES org.wiimotedev-io.conf DESTINATION ${WIIMOTEDEV_DBUS_DIR})
-endif(BUILD_IO)
+endif(WIIMOTEDEV_BUILD_IO)

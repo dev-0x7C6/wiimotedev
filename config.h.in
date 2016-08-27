@@ -17,8 +17,7 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
-#ifndef CONFIG_H_IN
-#define CONFIG_H_IN
+#pragma once
 
 #define CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}"
 
@@ -28,5 +27,3 @@
 #define WIIMOTEDEV_VERSION_MINOR ${WIIMOTEDEV_VERSION_MINOR}
 #define WIIMOTEDEV_VERSION_PATCH ${WIIMOTEDEV_VERSION_PATCH}
 #define WIIMOTEDEV_PROJECT_SOURCE
-
-#endif // CONFIG_H

@@ -1,10 +1,17 @@
 Wiimotedev-project is a collection of wiimotedev sub-projects, for more information go
-to wiimotedev-project webside (http://code.google.com/p/wiimotedev/)
+to wiimotedev-project website (https://github.com/dev-0x7C6)
 
-In oder to compile, run:
+Requirement:
+	Linux
+	Qt5
+	Bluez
 
-# cmake . -DDISTRO=yourdistro -DCMAKE_INSTALL_PREFIX=/usr
-# make all
-# make install
+Optional:
+	Uinput (kernel with uinput support, this allow to emulate mouse, keyboard and gamepads)
 
-Requirement: Qt5 Libraries, Bluez
+In order to compile and install, run:
+
+	$ cd source_directory
+	$ cmake .
+	$ make all
+	$ make install

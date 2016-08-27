@@ -3,7 +3,4 @@
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
 add_subdirectory(dbus-1)
-if(INSTALL_INITD)
-  add_subdirectory(init.d)
-endif()
 add_subdirectory(wiimotedev)

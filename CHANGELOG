@@ -1,99 +1,97 @@
-Wiimotedev Project Changelog
+Wiimotedev project changelog
 ============================
 
+3.0.0 (working)
+	code: improved large amount of code (use of unique_ptrs, std::move, create interfaces and etc)
+	code: moved to c++14
+	fixed: compilation error on double_t (use proper double instead)
+	fixed: compilation on arm architecture (do not force -march=native)
+	removed: init.d scripts
+
+
+2.0.2
+	fixed: fixed small bug
+
 2.0.1
-General:
-- Fixed dependency in systemd services
-- Wiimotedev-daemon now depends on bluetooth.target
+	fixed: Fixed dependency in systemd services
+	fixed: Wiimotedev-daemon now depends on bluetooth.target
+
 
 2.0.0
-General:
-- Run on top Qt5
-- Micro scheduler optimalization
-- Multithreading optimializations
-
-Bug-fixes:
-- Shifts now are back.
+	code: Micro scheduler optimalization
+	code: Multithreading optimializations
+	feature: Run on top Qt5
+	fixed: shifts now are back
 
 1.4.5
-General:
-- Systemd support
+	feature: Systemd support
 
-1.4.4
-General:
-- Fixed CORE BUG that assign 0 id for every wiiremote that is connected first time!
-- Fixed unacceptable long locking on 1 core platform (this should latency
-provided by wiimotedev interface!)
-- Many source managment cleanups
 
-1.4.3
-General:
-- Fixed CORE BUG that assign 0 id for every wiiremote that is connected first time!
+v1.4.4
+	fix: fixed CORE BUG that assign 0 id for every wiiremote that is connected first time!
+	fix: fixed unacceptable long locking on 1 core platform (this should latency provided by wiimotedev interface!)
+	core: many source managment cleanups
 
-1.4.2
-General:
-- Many bug fixes, wiimotedev-toolkit get major upgrade.
 
-Features:
-- Added support for absolute axes in infrared module.
-- Many improvements in wiimotedev-toolkit
-- Auto update state like battery state every minute.
+v1.4.3
+	fix: Fixed CORE BUG that assign 0 id for every wiiremote that is connected first time!
 
-Bug-Fixed:
-- Fixed bug that don't report nunchuk/classic signals when wiiremote is 
-connected with equiped nunchuk/classic extension
-- Fixed stick buttons for nunchuk extension
-- Fixed tilt buttons for nunchuk extension 
-- Fixed distance parameter in dbusVirtualCursorPosition
-- Fixed dbusWiimoteConnected signal (now it works)
-- Fixed dbusWiimoteDisconnected signal (now it works)
-- Corrected wrong values for pitch/roll in dbusNunchukAcc
-- dbusNunchukGetAccelerometrCalibration now store correct calibration data for nunchuk
-- Fixed dbusWiimoteGetAverageLatency and dbusWiimoteGetCurrentLatency in
-client side!
-- Fixed wrong return type for dbusWiimoteAverageLatency and 
-dbusWiimoteCurrentLatency.
-- Fixed dbusWiimoteBatteryLife signal, now it should be emitted.
-- Fixed wrong status in dbusWiimoteGetRumbleStatus.
 
-1.4.1
-General: 
-- some cleanups since 1.4.0, but nothing new
-- should work in userspace without adding to group "wiimotedev"
+v1.4.2
+	code: many bug fixes, wiimotedev-toolkit get major upgrade
+	feature: added support for absolute axes in infrared module
+	feature: auto update state like battery state every minute
+	feature: many improvements in wiimotedev-toolkit
+	fix: corrected wrong values for pitch/roll in dbusNunchukAcc
+	fix: dbusNunchukGetAccelerometrCalibration now store correct calibration data for nunchuk
+	fix: fixed bug that don't report nunchuk/classic signals when wiiremote is connected with equiped nunchuk/classic extension
+	fix: fixed dbusWiimoteBatteryLife signal, now it should be emitted.
+	fix: fixed dbusWiimoteConnected signal (now it works)
+	fix: fixed dbusWiimoteDisconnected signal (now it works)
+	fix: fixed dbusWiimoteGetAverageLatency and dbusWiimoteGetCurrentLatency in client side!
+	fix: fixed distance parameter in dbusVirtualCursorPosition
+	fix: fixed stick buttons for nunchuk extension
+	fix: fixed tilt buttons for nunchuk extension
+	fix: fixed wrong return type for dbusWiimoteAverageLatency and dbusWiimoteCurrentLatency.
+	fix: fixed wrong status in dbusWiimoteGetRumbleStatus.
 
-Features:
-- Store connection settings in /etc/wiimotedev/connections.conf
 
-Bug-Fixed:
-- Fixed dbusVirtualCursorFound, dbusVirtualCursorLost signal
-- Fixed dbusNunchukUnplugged signal
-- Fixed bug that assign same id to every wiiremote device
-- Fixed virtual cursor correction when only one infrared point is visible
-- Fixed registration of wiimotedev-io dbus interface
-- Fixed installation of wiimotedev-io service
-- Fixed location for pid file for wiimotedev-io
-- Fixed some old references in init.d scripts for wiimotedev-io
+v1.4.1
+	code: some cleanups since 1.4.0, but nothing new
+	feature: should work in userspace without adding to group "wiimotedev"
+	feature: Store connection settings in /etc/wiimotedev/connections.conf
+	fix: Fixed bug that assign same id to every wiiremote device
+	fix: Fixed dbusNunchukUnplugged signal
+	fix: Fixed dbusVirtualCursorFound, dbusVirtualCursorLost signal
+	fix: Fixed installation of wiimotedev-io service
+	fix: Fixed location for pid file for wiimotedev-io
+	fix: Fixed registration of wiimotedev-io dbus interface
+	fix: Fixed some old references in init.d scripts for wiimotedev-io
+	fix: Fixed virtual cursor correction when only one infrared point is visible
 
-1.4.0
-- auto calibration (it' using wiiremote accelerometer and sensorbar data to define angle)
-- X/Y axis translation on the fly (it's using wiiremote angle to translate x/y axis)
-- extended X axis area (when two points is lost, algorithm make use of 1 point date in other to extend X axis )
-- hot corners
-- timeout alghoritm (cut down scrolling when timer hit timeout value, this only will happen when wiiremote lose track of points)
-- special AIM algorithm (very useful for fps games)
 
-1.3.0 
-- added auto-registration feaure
-- added powersave mode feature
-- added init.d script for archlinux
-- improved wiimotedev-client
-- improved quality of init.d scripts
-- integration with other wiimotedev sub-projects
-- fixed various bugs
+v1.4.0
+	feature: auto calibration (it' using wiiremote accelerometer and sensorbar data to define angle)
+	feature: x/y axis translation on the fly (it's using wiiremote angle to translate x/y axis)
+	feature: extended X axis area (when two points is lost, algorithm make use of 1 point date in other to extend X axis )
+	feature: hot corners
+	feature: timeout alghoritm (cut down scrolling when timer hit timeout value, this only will happen when wiiremote lose track of points)
+	feature: special AIM algorithm (very useful for fps games)
 
-1.2.0
-- First public release
-- Support for streaming wiiremote events by network
-- Support for local dbus interface (org.wiimotedev.daemon)
-- Added init.d script for debian, gentoo, slackware, ubuntu
-- Added to org.wiimotedev.deviceEvents
+
+v1.3.0
+	code: improved quality of init.d scripts
+	code: improved wiimotedev-client
+	feature: added auto-registration feaure
+	feature: added init.d script for archlinux
+	feature: added powersave mode feature
+	feature: fixed various bugs
+	feature: integration with other wiimotedev sub-projects
+
+
+v1.2.0
+	code: first public release
+	feature: support for streaming wiiremote events by network
+	feature: support for local dbus interface (org.wiimotedev.daemon)
+	feature: added init.d script for debian, gentoo, slackware, ubuntu
+	feature: added to org.wiimotedev.deviceEvents
