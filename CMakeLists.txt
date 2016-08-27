@@ -20,7 +20,9 @@ set (wiimotedev_project_files
 	${CMAKE_SOURCE_DIR}/linux/etc/dbus-1/system.d/org.wiimotedev-io.conf
 	${CMAKE_SOURCE_DIR}/linux/usr/lib/systemd/system/wiimotedev-daemon.service
 	${CMAKE_SOURCE_DIR}/linux/usr/lib/systemd/system/wiimotedev-io.service
+	${CMAKE_SOURCE_DIR}/AUTHORS
 	${CMAKE_SOURCE_DIR}/CHANGELOG
+	${CMAKE_SOURCE_DIR}/COPYING
 	${CMAKE_SOURCE_DIR}/README
 )
 
