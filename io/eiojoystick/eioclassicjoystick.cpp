@@ -19,8 +19,8 @@
 
 #include "eioclassicjoystick.h"
 
-EIOClassicJoystick::EIOClassicJoystick(const std::string& name, const uint32_t id)
-		: InputDevice(name, id)
+EIOClassicJoystick::EIOClassicJoystick(const std::string &name, const uint32_t id)
+		: IGamepad(name, id)
 		, m_last_r_stick_x(0)
 		, m_last_r_stick_y(0)
 		, m_last_l_stick_x(0)
@@ -44,9 +44,7 @@ EIOClassicJoystick::EIOClassicJoystick(const std::string& name, const uint32_t i
 	centerStick(EIOClassicJoystick::DpadStick);
 }
 
-uint32_t EIOClassicJoystick::assign() {
-	return m_id;
-}
+IGamepad::Type EIOClassicJoystick::type() const { return Type::ClassicController; }
 
 void EIOClassicJoystick::setDpadInvertX(bool option) {
 	m_dpad_invert_x = option;
@@ -88,10 +86,7 @@ void EIOClassicJoystick::setReportRStick(bool report) {
 	m_report_right_stick = report;
 }
 
-EIOClassicJoystick::~EIOClassicJoystick() {
-}
-
-void EIOClassicJoystick::setButtons(uint64_t buttons) {
+bool EIOClassicJoystick::inputButtons(const uint64_t buttons) {
 	if (m_report_buttons) {
 		report(EV_KEY, BTN_A, (buttons & CLASSIC_BTN_A) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
 		report(EV_KEY, BTN_B, (buttons & CLASSIC_BTN_B) ? CLASSIC_BUTTON_PUSHED : CLASSIC_BUTTON_RELEASED);
@@ -128,8 +123,62 @@ void EIOClassicJoystick::setButtons(uint64_t buttons) {
 
 		if (m_dpad_invert_y) m_last_dpad_y *= -1;
 
-		syncAxes();
+		syncSticks();
 	}
+}
+
+bool EIOClassicJoystick::inputStick(const IGamepad::Stick stick, const int32_t x, const int32_t y) {
+	auto tx = x;
+	auto ty = y;
+	switch (stick) {
+		case Stick::ClassicControllerLStick:
+			if (m_left_stick_invert_x) tx = 0x41 - tx;
+
+			if (!m_left_stick_invert_y) ty = 0x41 - ty;
+
+			if (CLASSIC_LEFT_STICK_MAX < tx)
+				tx = CLASSIC_LEFT_STICK_MAX;
+			else if (CLASSIC_LEFT_STICK_MIN > tx)
+				tx = CLASSIC_LEFT_STICK_MIN;
+
+			if (CLASSIC_LEFT_STICK_MAX < ty)
+				ty = CLASSIC_LEFT_STICK_MAX;
+			else if (CLASSIC_LEFT_STICK_MIN > ty)
+				ty = CLASSIC_LEFT_STICK_MIN;
+
+			m_last_l_stick_x = tx;
+			m_last_l_stick_y = ty;
+			break;
+
+		case Stick::ClassicControllerRStick:
+			if (m_left_stick_invert_x) tx = 0x1F - tx;
+
+			if (!m_left_stick_invert_y) ty = 0x1F - ty;
+
+			if (CLASSIC_RIGHT_STICK_MAX < tx)
+				tx = CLASSIC_RIGHT_STICK_MAX;
+			else if (CLASSIC_RIGHT_STICK_MIN > tx)
+				tx = CLASSIC_RIGHT_STICK_MIN;
+
+			if (CLASSIC_RIGHT_STICK_MAX < ty)
+				ty = CLASSIC_RIGHT_STICK_MAX;
+			else if (CLASSIC_RIGHT_STICK_MIN > ty)
+				ty = CLASSIC_RIGHT_STICK_MIN;
+
+			m_last_r_stick_x = x;
+			m_last_r_stick_y = y;
+			break;
+		default:
+			break;
+	}
+
+	syncSticks();
+}
+
+bool EIOClassicJoystick::inputAccelerometer(const double pitch, const double roll) {
+	static_cast<void>(pitch);
+	static_cast<void>(roll);
+	return false;
 }
 
 void EIOClassicJoystick::centerStick(Sticks stick) {
@@ -150,54 +199,7 @@ void EIOClassicJoystick::centerStick(Sticks stick) {
 	}
 }
 
-void EIOClassicJoystick::setStick(Sticks stick, int32_t x, int32_t y) {
-	switch (stick) {
-		case EIOClassicJoystick::LeftStick:
-			if (m_left_stick_invert_x) x = 0x41 - x;
-
-			if (!m_left_stick_invert_y) y = 0x41 - y;
-
-			if (CLASSIC_LEFT_STICK_MAX < x)
-				x = CLASSIC_LEFT_STICK_MAX;
-			else if (CLASSIC_LEFT_STICK_MIN > x)
-				x = CLASSIC_LEFT_STICK_MIN;
-
-			if (CLASSIC_LEFT_STICK_MAX < y)
-				y = CLASSIC_LEFT_STICK_MAX;
-			else if (CLASSIC_LEFT_STICK_MIN > y)
-				y = CLASSIC_LEFT_STICK_MIN;
-
-			m_last_l_stick_x = x;
-			m_last_l_stick_y = y;
-			break;
-
-		case EIOClassicJoystick::RightStick:
-			if (m_left_stick_invert_x) x = 0x1F - x;
-
-			if (!m_left_stick_invert_y) y = 0x1F - y;
-
-			if (CLASSIC_RIGHT_STICK_MAX < x)
-				x = CLASSIC_RIGHT_STICK_MAX;
-			else if (CLASSIC_RIGHT_STICK_MIN > x)
-				x = CLASSIC_RIGHT_STICK_MIN;
-
-			if (CLASSIC_RIGHT_STICK_MAX < y)
-				y = CLASSIC_RIGHT_STICK_MAX;
-			else if (CLASSIC_RIGHT_STICK_MIN > y)
-				y = CLASSIC_RIGHT_STICK_MIN;
-
-			m_last_r_stick_x = x;
-			m_last_r_stick_y = y;
-			break;
-
-		case EIOClassicJoystick::DpadStick:
-			break;
-	}
-
-	syncAxes();
-}
-
-void EIOClassicJoystick::syncAxes() {
+void EIOClassicJoystick::syncSticks() {
 	if (m_report_dpad) {
 		report(EV_ABS, CLASSIC_DPAD_AXIS_X, m_last_dpad_x);
 		report(EV_ABS, CLASSIC_DPAD_AXIS_Y, m_last_dpad_y);

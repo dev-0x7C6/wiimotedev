@@ -19,7 +19,8 @@
 
 #pragma once
 
-#include <io/emulation/input-device.h>
+#include <emulation/input-device.h>
+#include <interfaces/igamepad.h>
 
 #include <QObject>
 
@@ -34,7 +35,7 @@ constexpr auto WIIMOTE_DPAD_MIN = -1;
 
 
 
-class EIOWiimoteJoystick : public InputDevice {
+class EIOWiimoteJoystick final : public IGamepad {
 	Q_OBJECT
 public:
 	enum Position {
@@ -47,22 +48,15 @@ public:
 		DPadPositionSwitchable
 	};
 
-	enum Stick {
-		NunchukStick,
-		DpadStick,
-		WiimoteAccelerometer,
-		NunchukAccelerometer
-	};
-
 	enum Device {
 		Nunchuk,
 		Wiimote
 	};
 
 public:
-	EIOWiimoteJoystick(const std::string &name, const uint32_t id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical, QObject *parent = 0);
+	explicit EIOWiimoteJoystick(const std::string &name, const uint32_t id, Mode mode = DPadPositionConstant, Position horizontal = GamepadVertical);
 
-	uint32_t assign();
+		virtual Type type() const override;
 
 	void setDStickInvertX(bool option);
 	void setDStickInvertY(bool option);
@@ -72,6 +66,10 @@ public:
 	void setReportPitch(bool report);
 	void setReportRoll(bool report);
 
+	virtual bool inputButtons(const uint64_t buttons) override;
+	virtual bool inputStick(const Stick stick, const int32_t x, const int32_t y) override;
+	virtual bool inputAccelerometer(const double pitch, const double roll) override;
+
 	void setWiimoteButtons(uint64_t);
 	void setWiimoteAcc(double, double);
 
@@ -79,7 +77,7 @@ public:
 
 private:
 	void centerStick(Stick id);
-	void syncAxes();
+	void syncSticks();
 
 signals:
 	void setLedState(uint32_t, uint32_t);

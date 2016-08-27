@@ -29,7 +29,8 @@
 #include "dbus/customjobs.h"
 #include "dbus/profilemanager.h"
 #include "dbus/uinputservice.h"
-#include <io/emulation/event-device.h>
+#include <emulation/event-device.h>
+#include <interfaces/igamepad.h>
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "linux/usr/include/wiimotedev/deviceevents.h"
 #include "eiokeyboard/eioremotekeyboard.h"
@@ -137,11 +138,8 @@ private:
 	QList<CommandAction *> commandActions;
 	QHash<uint32_t, uint64_t> lastWiiremoteButtons;
 
-	std::list<std::unique_ptr<IInputDevice>> m_gamepads;
+	std::list<std::unique_ptr<IGamepad>> m_gamepads;
 
-	QList<EIOClassicJoystick *> EIOClassicJoysticks;
-	QList<EIONunchukJoystick *> EIONunchukJoysticks;
-	QList<EIOWiimoteJoystick *> EIOWiimoteJoysticks;
 	QList<EIORemoteKeyboard *> EIORemoteKeyboards;
 	QList<EIOInfraredMouse *> EIOInfraredMouses;
 
@@ -190,6 +188,9 @@ private:
 	void activeCommandEvent(QStringList &);
 	void deactiveCommandEvent(QStringList &);
 
+private:
+	void gamepad_iterator(const IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<IGamepad> &)> &&function);
+
 private Q_SLOTS:
 	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
 
@@ -203,10 +204,6 @@ private Q_SLOTS:
 	void dbusClassicControllerRStick(uint32_t, stickdata);
 
 public Q_SLOTS:
-	inline bool isWiimotedevServiceAvailable() {
-		return dbusDeviceEventsIface->isValid();
-	}
-
 	bool loadProfile(QString);
 	bool unloadProfile();
 

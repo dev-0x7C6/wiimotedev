@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include <io/emulation/input-device.h>
-#include <QObject>
+#include <emulation/input-device.h>
+#include <interfaces/igamepad.h>
 
 constexpr auto NUNCHUK_STICK_MAX = 0xFF - 0x15;
 constexpr auto NUNCHUK_STICK_MIN = 0x00 + 0x15;
@@ -36,7 +36,7 @@ constexpr auto NUNCHUK_STICK_LINUX_AXIS_Y = ABS_Y;
 constexpr auto NUNCHUK_ROLL_LINUX_AXIS = ABS_TILT_X;
 constexpr auto NUNCHUK_PITCH_LINUX_AXIS = ABS_TILT_Y;
 
-class EIONunchukJoystick : public InputDevice {
+class EIONunchukJoystick final : public IGamepad {
 public:
 	enum Position {
 		GamepadHorizontal,
@@ -48,22 +48,15 @@ public:
 		DPadPositionSwitchable
 	};
 
-	enum Stick {
-		NunchukStick,
-		DpadStick,
-		WiimoteAccelerometer,
-		NunchukAccelerometer
-	};
-
 	enum Device {
 		Nunchuk,
 		Wiimote
 	};
 
 public:
-	explicit EIONunchukJoystick(const std::string &name, const uint32_t id, QObject *parent = 0);
+	explicit EIONunchukJoystick(const std::string &name, const uint32_t id);
+	virtual Type type() const override;
 
-	uint32_t assign();
 	void setStickInvertX(bool option);
 	void setStickInvertY(bool option);
 	void setReportButtons(bool report);
@@ -71,15 +64,15 @@ public:
 	void setReportPitch(bool report);
 	void setReportRoll(bool report);
 
-	void setNunchukButtons(uint64_t);
-	void setNunchukStick(int32_t, int32_t);
-	void setNunchukAcc(double, double);
+	virtual bool inputButtons(const uint64_t buttons) override;
+	virtual bool inputStick(const Stick stick, const int32_t x, const int32_t y) override;
+	virtual bool inputAccelerometer(const double pitch, const double roll) override;
 
 	virtual bool configure() override;
 
 private:
-	void centerStick(Stick id);
-	void syncAxes();
+	bool centerStick(Stick id);
+	bool syncSticks();
 
 signals:
 	void setLedState(uint32_t, uint32_t);
@@ -87,12 +80,8 @@ signals:
 private:
 	int m_last_stick_x;
 	int m_last_stick_y;
-	int m_last_dpad_x;
-	int m_last_dpad_y;
 	int m_last_nunchuk_acc_pitch;
 	int m_last_nunchuk_acc_roll;
-	int m_last_wiimote_acc_pitch;
-	int m_last_wiimote_acc_roll;
 	bool m_stick_invert_x;
 	bool m_stick_invert_y;
 	bool m_report_buttons;

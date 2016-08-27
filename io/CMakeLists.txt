@@ -22,6 +22,7 @@ set(sources
   emulation/event-device.cpp
   emulation/input-device.cpp
   emulation/iinput-device.cpp
+  interfaces/igamepad.cpp
 
   eiojoystick/eioclassicjoystick.cpp
   eiojoystick/eionunchukjoystick.cpp
@@ -63,6 +64,7 @@ set(headers_wrap
   eiojoystick/eioclassicjoystick.h
   eiojoystick/eionunchukjoystick.h
   eiojoystick/eiowiimotejoystick.h
+  interfaces/igamepad.h
 
   eiomanager/manager.h
   eiokeyboard/eioremotekeyboard.h

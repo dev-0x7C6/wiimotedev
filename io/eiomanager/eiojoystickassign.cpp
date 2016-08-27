@@ -57,7 +57,7 @@ void UInputProfileManager::setupWiimoteJoystick(uint32_t assign, const QString &
 }
 
 void UInputProfileManager::setupNunchukJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	EIONunchukJoystick *device = new EIONunchukJoystick(name.toStdString(), assign);
+	auto device = std::make_unique<EIONunchukJoystick>(name.toStdString(), assign);
 	device->setStickInvertX(settings.value("DStickInvertX", 0x00).toBool());
 	device->setStickInvertY(settings.value("DStickInvertY", 0x00).toBool());
 	device->setReportButtons(settings.value("ReportButtons", 0x01).toBool());
@@ -89,66 +89,51 @@ void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &s
 
 void UInputProfileManager::freeJoystickEvents() { m_gamepads.clear(); }
 
+void UInputProfileManager::gamepad_iterator(const IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<IGamepad> &)> &&function) {
+	for (const auto &gamepad : m_gamepads) {
+		if (gamepad->id() != id && gamepad->type() != type && !gamepad->isCreated())
+			continue;
+
+		function(gamepad);
+	}
+}
+
 void UInputProfileManager::dbusWiimoteAcc(uint32_t id, struct accdata acc) {
-	for (int i = 0; i < EIOWiimoteJoysticks.count(); ++i)
-		if (EIOWiimoteJoysticks[i]->assign() == id) {
-			EIOWiimoteJoysticks[i]->setWiimoteAcc(acc.pitch, acc.roll);
-			return;
-		}
+	gamepad_iterator(IGamepad::Type::Wiimote, id,
+		[&acc](const auto &gamepad) { gamepad->inputAccelerometer(acc.pitch, acc.roll); });
 }
 
 void UInputProfileManager::dbusWiimoteButtons(uint32_t id, uint64_t buttons) {
-	for (int i = 0; i < EIOWiimoteJoysticks.count(); ++i)
-		if (EIOWiimoteJoysticks[i]->assign() == id) {
-			EIOWiimoteJoysticks[i]->setWiimoteButtons(buttons);
-			return;
-		}
+	gamepad_iterator(IGamepad::Type::Wiimote, id,
+		[&buttons](const auto &gamepad) { gamepad->inputButtons(buttons); });
 }
 
 void UInputProfileManager::dbusNunchukAcc(uint32_t id, struct accdata acc) {
-	for (int i = 0; i < EIONunchukJoysticks.count(); ++i)
-		if (EIONunchukJoysticks[i]->assign() == id) {
-			EIONunchukJoysticks[i]->setNunchukAcc(acc.pitch, acc.roll);
-			return;
-		}
+	gamepad_iterator(IGamepad::Type::Nunchuk, id,
+		[&acc](const auto &gamepad) { gamepad->inputAccelerometer(acc.pitch, acc.roll); });
 }
 
 void UInputProfileManager::dbusNunchukButtons(uint32_t id, uint64_t buttons) {
-	for (int i = 0; i < EIONunchukJoysticks.count(); ++i)
-		if (EIONunchukJoysticks[i]->assign() == id) {
-			EIONunchukJoysticks[i]->setNunchukButtons(buttons);
-			return;
-		}
+	gamepad_iterator(IGamepad::Type::Nunchuk, id,
+		[&buttons](const auto &gamepad) { gamepad->inputButtons(buttons); });
 }
 
 void UInputProfileManager::dbusNunchukStick(uint32_t id, struct stickdata stick) {
-	for (int i = 0; i < EIONunchukJoysticks.count(); ++i)
-		if (EIONunchukJoysticks[i]->assign() == id) {
-			EIONunchukJoysticks[i]->setNunchukStick(stick.x, 0xFF - stick.y);
-			return;
-		}
+	gamepad_iterator(IGamepad::Type::Nunchuk, id,
+		[&stick](const auto &gamepad) { gamepad->inputStick(IGamepad::Stick::NunchukStick, stick.x, stick.y); });
 }
 
 void UInputProfileManager::dbusClassicControllerButtons(uint32_t id, uint64_t buttons) {
-	for (int i = 0; i < EIOClassicJoysticks.count(); ++i)
-		if (EIOClassicJoysticks[i]->assign() == id) {
-			EIOClassicJoysticks[i]->setButtons(buttons);
-			return;
-		}
+	gamepad_iterator(IGamepad::Type::ClassicController, id,
+		[&buttons](const auto &gamepad) { gamepad->inputButtons(buttons); });
 }
 
 void UInputProfileManager::dbusClassicControllerLStick(uint32_t id, struct stickdata stick) {
-	for (int i = 0; i < EIOClassicJoysticks.count(); ++i)
-		if (EIOClassicJoysticks[i]->assign() == id) {
-			EIOClassicJoysticks[i]->setStick(EIOClassicJoystick::LeftStick, stick.x, stick.y);
-			return;
-		}
+	gamepad_iterator(IGamepad::Type::ClassicController, id,
+		[&stick](const auto &gamepad) { gamepad->inputStick(IGamepad::Stick::ClassicControllerLStick, stick.x, stick.y); });
 }
 
 void UInputProfileManager::dbusClassicControllerRStick(uint32_t id, struct stickdata stick) {
-	for (int i = 0; i < EIOClassicJoysticks.count(); ++i)
-		if (EIOClassicJoysticks[i]->assign() == id) {
-			EIOClassicJoysticks[i]->setStick(EIOClassicJoystick::RightStick, stick.x, stick.y);
-			return;
-		}
+	gamepad_iterator(IGamepad::Type::ClassicController, id,
+		[&stick](const auto &gamepad) { gamepad->inputStick(IGamepad::Stick::ClassicControllerRStick, stick.x, stick.y); });
 }

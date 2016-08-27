@@ -19,8 +19,8 @@
 
 #include "eiowiimotejoystick.h"
 
-EIOWiimoteJoystick::EIOWiimoteJoystick(const std::string &name, const uint32_t id, Mode mode, Position horizontal, QObject *parent)
-		: InputDevice(name, id)
+EIOWiimoteJoystick::EIOWiimoteJoystick(const std::string &name, const uint32_t id, Mode mode, Position horizontal)
+		: IGamepad(name, id)
 		, m_horizontal(horizontal)
 		, m_mode(mode)
 		, m_dpad_invert_x(0)
@@ -31,14 +31,12 @@ EIOWiimoteJoystick::EIOWiimoteJoystick(const std::string &name, const uint32_t i
 		, m_report_pitch(1)
 		, m_report_roll(1) {
 
-	centerStick(EIOWiimoteJoystick::DpadStick);
-	centerStick(EIOWiimoteJoystick::WiimoteAccelerometer);
-	centerStick(EIOWiimoteJoystick::NunchukAccelerometer);
+	centerStick(Stick::WiimoteDPad);
+	centerStick(Stick::WiimoteAccelerometer);
+	centerStick(Stick::NunchukAccelerometer);
 }
 
-uint32_t EIOWiimoteJoystick::assign() {
-	return m_id;
-}
+IGamepad::Type EIOWiimoteJoystick::type() const { return Type::Wiimote; }
 
 void EIOWiimoteJoystick::setDStickInvertX(bool option) {
 	m_dpad_invert_x = option;
@@ -80,7 +78,7 @@ constexpr auto WIIMOTE_DPAD_LINUX_AXIS_Y = ABS_HAT0Y;
 constexpr auto WIIMOTE_PITCH_LINUX_AXIS = ABS_X;
 constexpr auto WIIMOTE_ROLL_LINUX_AXIS = ABS_RX;
 
-void EIOWiimoteJoystick::setWiimoteButtons(uint64_t buttons) {
+bool EIOWiimoteJoystick::inputButtons(const uint64_t buttons) {
 	if (m_report_buttons) {
 		report(EV_KEY, UINPUT_WIIMOTE_BTN_A, (buttons & WIIMOTE_BTN_A) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
 		report(EV_KEY, UINPUT_WIIMOTE_BTN_B, (buttons & WIIMOTE_BTN_B) ? WIIMOTE_BUTTON_PUSHED : WIIMOTE_BUTTON_RELEASED);
@@ -137,22 +135,32 @@ void EIOWiimoteJoystick::setWiimoteButtons(uint64_t buttons) {
 		if (m_dpad_invert_y) m_last_dpad_y *= -1;
 	}
 
-	syncAxes();
+	syncSticks();
+	return true;
+}
+
+bool EIOWiimoteJoystick::inputStick(const Stick stick, const int32_t x, const int32_t y) {
+}
+
+bool EIOWiimoteJoystick::inputAccelerometer(const double pitch, const double roll) {
+	m_last_wiimote_acc_pitch = pitch;
+	m_last_wiimote_acc_roll = roll;
+	syncSticks();
 }
 
 void EIOWiimoteJoystick::centerStick(Stick id) {
 	switch (id) {
-		case EIOWiimoteJoystick::DpadStick:
+		case Stick::WiimoteDPad:
 			m_last_dpad_x = 0;
 			m_last_dpad_y = 0;
 			break;
 
-		case EIOWiimoteJoystick::NunchukAccelerometer:
+		case Stick::NunchukAccelerometer:
 			m_last_nunchuk_acc_pitch = 0;
 			m_last_nunchuk_acc_roll = 0;
 			break;
 
-		case EIOWiimoteJoystick::WiimoteAccelerometer:
+		case Stick::WiimoteAccelerometer:
 			m_last_wiimote_acc_pitch = 0;
 			m_last_wiimote_acc_roll = 0;
 			break;
@@ -162,7 +170,7 @@ void EIOWiimoteJoystick::centerStick(Stick id) {
 	}
 }
 
-void EIOWiimoteJoystick::syncAxes() {
+void EIOWiimoteJoystick::syncSticks() {
 	if (m_report_dstick) {
 		switch (m_horizontal) {
 			case EIOWiimoteJoystick::GamepadHorizontal:
@@ -223,10 +231,4 @@ bool EIOWiimoteJoystick::configure() {
 		set_abs_bit(WIIMOTE_ROLL_LINUX_AXIS);
 		set_range(WIIMOTE_ROLL_LINUX_AXIS, WIIMOTE_ROLL_MAX, WIIMOTE_ROLL_MIN);
 	}
-}
-
-void EIOWiimoteJoystick::setWiimoteAcc(double pitch, double roll) {
-	m_last_wiimote_acc_pitch = pitch;
-	m_last_wiimote_acc_roll = roll;
-	syncAxes();
 }

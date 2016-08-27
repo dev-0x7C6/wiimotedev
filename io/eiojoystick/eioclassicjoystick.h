@@ -39,10 +39,11 @@ constexpr auto CLASSIC_RIGHT_STICK_AXIS_Y = ABS_RY;
 constexpr auto CLASSIC_DPAD_AXIS_X = ABS_HAT0X;
 constexpr auto CLASSIC_DPAD_AXIS_Y = ABS_HAT0Y;
 
-class EIOClassicJoystick : public InputDevice {
+#include <interfaces/igamepad.h>
+
+class EIOClassicJoystick final : public IGamepad {
 public:
 	explicit EIOClassicJoystick(const std::string& name, const uint32_t id);
-	virtual ~EIOClassicJoystick();
 
 	enum Sticks {
 		LeftStick,
@@ -50,7 +51,7 @@ public:
 		DpadStick
 	};
 
-	uint32_t assign();
+	virtual Type type() const override;
 
 	void setDpadInvertX(bool option);
 	void setDpadInvertY(bool option);
@@ -63,13 +64,15 @@ public:
 	void setReportLStick(bool report);
 	void setReportRStick(bool report);
 
-	void setButtons(uint64_t buttons);
-	void setStick(Sticks stick, int32_t x, int32_t y);
+	virtual bool inputButtons(const uint64_t buttons) override;
+	virtual bool inputStick(const Stick stick, const int32_t x, const int32_t y) override;
+	virtual bool inputAccelerometer(const double pitch, const double roll) override;
+
 	virtual bool configure() override;
 
 private:
 	void centerStick(Sticks stick);
-	void syncAxes();
+	void syncSticks();
 
 private:
 	int32_t m_last_r_stick_x;
