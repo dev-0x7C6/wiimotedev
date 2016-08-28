@@ -24,9 +24,9 @@ set(sources
   emulation/iinput-device.cpp
   interfaces/igamepad.cpp
 
-  eiojoystick/eioclassicjoystick.cpp
-  eiojoystick/eionunchukjoystick.cpp
-  eiojoystick/eiowiimotejoystick.cpp
+  emulation/gamepads/classic-gamepad.cpp
+  emulation/gamepads/nunchuk-gamepad.cpp
+  emulation/gamepads/wiimote-gamepad.cpp
  
   eiomanager/infrared.cpp
   eiomanager/keyboard.cpp
@@ -61,10 +61,11 @@ set(headers_wrap
   dbus/profilemanager.h
   dbus/uinputservice.h
 
-  eiojoystick/eioclassicjoystick.h
-  eiojoystick/eionunchukjoystick.h
-  eiojoystick/eiowiimotejoystick.h
   interfaces/igamepad.h
+  emulation/gamepads/classic-gamepad.h
+  emulation/gamepads/nunchuk-gamepad.h
+  emulation/gamepads/wiimote-gamepad.h
+
 
   eiomanager/manager.h
   eiokeyboard/eioremotekeyboard.h

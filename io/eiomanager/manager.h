@@ -36,10 +36,6 @@
 #include "eiokeyboard/eioremotekeyboard.h"
 #include "eioinfrared/eioinfraredmouse.h"
 
-#include "eiojoystick/eioclassicjoystick.h"
-#include "eiojoystick/eionunchukjoystick.h"
-#include "eiojoystick/eiowiimotejoystick.h"
-
 #include <memory>
 #include <list>
 

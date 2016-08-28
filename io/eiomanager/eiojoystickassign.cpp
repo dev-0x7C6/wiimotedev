@@ -19,18 +19,14 @@
 
 #include "manager.h"
 
+#include "emulation/gamepads/classic-gamepad.h"
+#include "emulation/gamepads/nunchuk-gamepad.h"
+#include "emulation/gamepads/wiimote-gamepad.h"
+
+using namespace io::emulation::gamepad;
+
 void UInputProfileManager::setupClassicJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	auto device = std::make_unique<EIOClassicJoystick>(name.toStdString(), assign);
-	device->setDpadInvertX(settings.value("DStickInvertX", 0x00).toBool());
-	device->setDpadInvertY(settings.value("DStickInvertY", 0x00).toBool());
-	device->setLStickInvertX(settings.value("LStickInvertX", 0x00).toBool());
-	device->setLStickInvertY(settings.value("LStickInvertY", 0x00).toBool());
-	device->setRStickInvertX(settings.value("RStickInvertX", 0x00).toBool());
-	device->setRStickInvertY(settings.value("RStickInvertY", 0x00).toBool());
-	device->setReportButtons(settings.value("ReportButtons", 0x01).toBool());
-	device->setReportDStick(settings.value("ReportDStick", 0x01).toBool());
-	device->setReportLStick(settings.value("ReportLStick", 0x01).toBool());
-	device->setReportRStick(settings.value("ReportRStick", 0x01).toBool());
+	auto device = std::make_unique<ClassicGamepad>(name.toStdString(), assign);
 	device->open();
 	device->configure();
 
@@ -39,16 +35,10 @@ void UInputProfileManager::setupClassicJoystick(uint32_t assign, const QString &
 }
 
 void UInputProfileManager::setupWiimoteJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	auto device = std::make_unique<EIOWiimoteJoystick>(name.toStdString(), assign,
-		EIOWiimoteJoystick::DPadPositionSwitchable,
-		EIOWiimoteJoystick::GamepadVertical);
-	device->setDStickInvertX(settings.value("DStickInvertX", 0x00).toBool());
-	device->setDStickInvertY(settings.value("DStickInvertY", 0x00).toBool());
+	auto device = std::make_unique<WiimoteGamepad>(name.toStdString(), assign,
+		WiimoteGamepad::DPadPositionSwitchable,
+		WiimoteGamepad::GamepadVertical);
 	device->setHomeSwitchPosition(settings.value("PositionSwitchable", 0x01).toBool());
-	device->setReportButtons(settings.value("ReportButtons", 0x01).toBool());
-	device->setReportDStick(settings.value("ReportDStick", 0x01).toBool());
-	device->setReportPitch(settings.value("ReportPitch", 0x01).toBool());
-	device->setReportRoll(settings.value("ReportRoll", 0x01).toBool());
 	device->open();
 	device->configure();
 
@@ -57,13 +47,7 @@ void UInputProfileManager::setupWiimoteJoystick(uint32_t assign, const QString &
 }
 
 void UInputProfileManager::setupNunchukJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	auto device = std::make_unique<EIONunchukJoystick>(name.toStdString(), assign);
-	device->setStickInvertX(settings.value("DStickInvertX", 0x00).toBool());
-	device->setStickInvertY(settings.value("DStickInvertY", 0x00).toBool());
-	device->setReportButtons(settings.value("ReportButtons", 0x01).toBool());
-	device->setReportStick(settings.value("ReportDStick", 0x01).toBool());
-	device->setReportPitch(settings.value("ReportPitch", 0x01).toBool());
-	device->setReportRoll(settings.value("ReportRoll", 0x01).toBool());
+	auto device = std::make_unique<NunchukGamepad>(name.toStdString(), assign);
 	device->open();
 	device->configure();
 
