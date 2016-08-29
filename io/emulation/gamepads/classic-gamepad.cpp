@@ -40,14 +40,11 @@ ClassicGamepad::ClassicGamepad(const std::string &name, const uint32_t id)
 		, m_last_dpad_y(0)
 
 {
-	centerStick(ClassicGamepad::LeftStick);
-	centerStick(ClassicGamepad::RightStick);
-	centerStick(ClassicGamepad::DpadStick);
 }
 
-IGamepad::Type ClassicGamepad::type() const { return Type::ClassicController; }
+IGamepad::Type ClassicGamepad::type() const { return Type::Classic; }
 
-bool ClassicGamepad::inputButtons(const uint64_t buttons) {
+bool ClassicGamepad::input(const uint64_t buttons) {
 	report(EV_KEY, UINPUT_CLASSIC_BTN_DPAD_UP, (buttons & CLASSIC_BTN_UP) ? 1 : 0);
 	report(EV_KEY, UINPUT_CLASSIC_BTN_DPAD_DOWN, (buttons & CLASSIC_BTN_DOWN) ? 1 : 0);
 	report(EV_KEY, UINPUT_CLASSIC_BTN_DPAD_LEFT, (buttons & CLASSIC_BTN_LEFT) ? 1 : 0);
@@ -65,7 +62,7 @@ bool ClassicGamepad::inputButtons(const uint64_t buttons) {
 	report(EV_KEY, UINPUT_CLASSIC_BTN_START, (buttons & CLASSIC_BTN_PLUS) ? 1 : 0);
 	sync();
 
-	centerStick(ClassicGamepad::DpadStick);
+	centerStick(Stick::ClassicDPad);
 	m_last_dpad_x = (buttons & CLASSIC_BTN_RIGHT) ? UINPUT_CLASSIC_DPAD_MAX : m_last_dpad_x;
 	m_last_dpad_x = (buttons & CLASSIC_BTN_LEFT) ? UINPUT_CLASSIC_DPAD_MIN : m_last_dpad_x;
 	m_last_dpad_y = (buttons & CLASSIC_BTN_DOWN) ? UINPUT_CLASSIC_DPAD_MAX : m_last_dpad_y;
@@ -73,14 +70,14 @@ bool ClassicGamepad::inputButtons(const uint64_t buttons) {
 	syncSticks();
 }
 
-bool ClassicGamepad::inputStick(const IGamepad::Stick stick, const int32_t x, const int32_t y) {
+bool ClassicGamepad::input(const IGamepad::Stick stick, const int32_t x, const int32_t y) {
 	switch (stick) {
-		case Stick::ClassicControllerLStick:
+		case Stick::ClassicLStick:
 			m_last_l_stick_x = std::max(UINPUT_CLASSIC_LSTICK_MIN, std::min(x, UINPUT_CLASSIC_LSTICK_MAX));
 			m_last_l_stick_y = std::max(UINPUT_CLASSIC_LSTICK_MIN, std::min(0x41 - y, UINPUT_CLASSIC_LSTICK_MAX));
 			break;
 
-		case Stick::ClassicControllerRStick:
+		case Stick::ClassicRStick:
 			m_last_r_stick_x = std::max(UINPUT_CLASSIC_RSTICK_MIN, std::min(x, UINPUT_CLASSIC_RSTICK_MAX));
 			m_last_r_stick_y = std::max(UINPUT_CLASSIC_RSTICK_MIN, std::min(0x1F - y, UINPUT_CLASSIC_RSTICK_MAX));
 			break;
@@ -91,25 +88,19 @@ bool ClassicGamepad::inputStick(const IGamepad::Stick stick, const int32_t x, co
 	syncSticks();
 }
 
-bool ClassicGamepad::inputAccelerometer(const double pitch, const double roll) {
-	static_cast<void>(pitch);
-	static_cast<void>(roll);
-	return false;
-}
-
-void ClassicGamepad::centerStick(Sticks stick) {
+void ClassicGamepad::centerStick(Stick stick) {
 	switch (stick) {
-		case ClassicGamepad::LeftStick:
+		case Stick::ClassicLStick:
 			m_last_l_stick_x = (UINPUT_CLASSIC_LSTICK_MIN + UINPUT_CLASSIC_LSTICK_MAX) / 2;
 			m_last_l_stick_y = (UINPUT_CLASSIC_LSTICK_MIN + UINPUT_CLASSIC_LSTICK_MAX) / 2;
 			break;
 
-		case ClassicGamepad::RightStick:
+		case Stick::ClassicRStick:
 			m_last_r_stick_x = (UINPUT_CLASSIC_RSTICK_MIN + UINPUT_CLASSIC_RSTICK_MAX) / 2;
 			m_last_r_stick_y = (UINPUT_CLASSIC_RSTICK_MIN + UINPUT_CLASSIC_RSTICK_MAX) / 2;
 			break;
 
-		case ClassicGamepad::DpadStick:
+		case Stick::ClassicDPad:
 			m_last_dpad_x = 0;
 			m_last_dpad_y = 0;
 			break;
@@ -129,7 +120,6 @@ void ClassicGamepad::syncSticks() {
 bool ClassicGamepad::configure() {
 	bool isValid = true;
 	isValid &= set_ev_bit(EV_KEY) == 0;
-	isValid &= set_ev_bit(EV_MSC) == 0;
 	isValid &= set_ev_bit(EV_ABS) == 0;
 
 	static_assert(BTN_A == BTN_GAMEPAD, "BTN_A should be equal with BTN_GAMEPAD.");
@@ -152,18 +142,25 @@ bool ClassicGamepad::configure() {
 
 	isValid &= set_abs_bit(UINPUT_CLASSIC_LSTICK_AXIS_X) == 0;
 	isValid &= set_abs_bit(UINPUT_CLASSIC_LSTICK_AXIS_Y) == 0;
-	set_range(UINPUT_CLASSIC_LSTICK_AXIS_X, UINPUT_CLASSIC_LSTICK_MAX, UINPUT_CLASSIC_LSTICK_MIN);
-	set_range(UINPUT_CLASSIC_LSTICK_AXIS_Y, UINPUT_CLASSIC_LSTICK_MAX, UINPUT_CLASSIC_LSTICK_MIN);
-
 	isValid &= set_abs_bit(UINPUT_CLASSIC_RSTICK_AXIS_X) == 0;
 	isValid &= set_abs_bit(UINPUT_CLASSIC_RSTICK_AXIS_Y) == 0;
-	set_range(UINPUT_CLASSIC_RSTICK_AXIS_X, UINPUT_CLASSIC_RSTICK_MAX, UINPUT_CLASSIC_RSTICK_MIN);
-	set_range(UINPUT_CLASSIC_RSTICK_AXIS_Y, UINPUT_CLASSIC_RSTICK_MAX, UINPUT_CLASSIC_RSTICK_MIN);
-
 	isValid &= set_abs_bit(UINPUT_CLASSIC_DPAD_AXIS_X) == 0;
 	isValid &= set_abs_bit(UINPUT_CLASSIC_DPAD_AXIS_Y) == 0;
+
+	set_range(UINPUT_CLASSIC_LSTICK_AXIS_X, UINPUT_CLASSIC_LSTICK_MAX, UINPUT_CLASSIC_LSTICK_MIN);
+	set_range(UINPUT_CLASSIC_LSTICK_AXIS_Y, UINPUT_CLASSIC_LSTICK_MAX, UINPUT_CLASSIC_LSTICK_MIN);
+	set_range(UINPUT_CLASSIC_RSTICK_AXIS_X, UINPUT_CLASSIC_RSTICK_MAX, UINPUT_CLASSIC_RSTICK_MIN);
+	set_range(UINPUT_CLASSIC_RSTICK_AXIS_Y, UINPUT_CLASSIC_RSTICK_MAX, UINPUT_CLASSIC_RSTICK_MIN);
 	set_range(UINPUT_CLASSIC_DPAD_AXIS_X, UINPUT_CLASSIC_DPAD_MAX, UINPUT_CLASSIC_DPAD_MIN);
 	set_range(UINPUT_CLASSIC_DPAD_AXIS_Y, UINPUT_CLASSIC_DPAD_MAX, UINPUT_CLASSIC_DPAD_MIN);
 
 	return isValid;
+}
+
+bool ClassicGamepad::centerAllAxis() {
+	centerStick(Stick::ClassicDPad);
+	centerStick(Stick::ClassicRStick);
+	centerStick(Stick::ClassicLStick);
+	syncSticks();
+	return true;
 }

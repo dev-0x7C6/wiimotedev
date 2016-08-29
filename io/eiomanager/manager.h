@@ -191,9 +191,7 @@ private Q_SLOTS:
 	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
 
 	void dbusClassicControllerButtons(uint32_t, uint64_t);
-	void dbusWiimoteAcc(uint32_t, accdata);
 	void dbusWiimoteButtons(uint32_t, uint64_t);
-	void dbusNunchukAcc(uint32_t, accdata);
 	void dbusNunchukButtons(uint32_t, uint64_t);
 	void dbusNunchukStick(uint32_t, stickdata);
 	void dbusClassicControllerLStick(uint32_t, stickdata);

@@ -15,7 +15,7 @@ NunchukGamepad::NunchukGamepad(const std::string &name, const uint32_t id)
 
 IGamepad::Type NunchukGamepad::type() const { return Type::Nunchuk; }
 
-bool NunchukGamepad::inputButtons(const uint64_t buttons) {
+bool NunchukGamepad::input(const uint64_t buttons) {
 	bool isValid = true;
 	isValid &= report(EV_KEY, UINPUT_NUNCHUK_BTN_C, (buttons & NUNCHUK_BTN_C) ? 1 : 0);
 	isValid &= report(EV_KEY, UINPUT_NUNCHUK_BTN_Z, (buttons & NUNCHUK_BTN_Z) ? 1 : 0);
@@ -23,18 +23,12 @@ bool NunchukGamepad::inputButtons(const uint64_t buttons) {
 	return isValid;
 }
 
-bool NunchukGamepad::inputStick(const NunchukGamepad::Stick stick, const int32_t x, const int32_t y) {
+bool NunchukGamepad::input(const NunchukGamepad::Stick stick, const int32_t x, const int32_t y) {
 	if (Stick::NunchukStick == stick) {
 		m_last_stick_x = std::max(UINPUT_NUNCHUK_STICK_MIN, std::min(x, UINPUT_NUNCHUK_STICK_MAX));
 		m_last_stick_y = std::max(UINPUT_NUNCHUK_STICK_MIN, std::min(0xFF - y, UINPUT_NUNCHUK_STICK_MAX));
 	}
 	return syncSticks();
-}
-
-bool NunchukGamepad::inputAccelerometer(const double pitch, const double roll) {
-	static_cast<void>(pitch);
-	static_cast<void>(roll);
-	return false;
 }
 
 bool NunchukGamepad::centerStick(Stick id) {
@@ -73,5 +67,10 @@ bool NunchukGamepad::configure() {
 	set_range(UINPUT_NUNCHUK_STICK_AXIS_X, UINPUT_NUNCHUK_STICK_MAX, UINPUT_NUNCHUK_STICK_MIN);
 	set_range(UINPUT_NUNCHUK_STICK_AXIS_Y, UINPUT_NUNCHUK_STICK_MAX, UINPUT_NUNCHUK_STICK_MIN);
 
-	return false;
+	return isValid;
+}
+
+bool NunchukGamepad::centerAllAxis() {
+	centerStick(Stick::NunchukStick);
+	syncSticks();
 }

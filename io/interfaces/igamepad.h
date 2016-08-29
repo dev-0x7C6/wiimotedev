@@ -8,23 +8,23 @@ public:
 	explicit IGamepad(const std::string &name, uint32_t id);
 
 	enum class Type {
-		ClassicController,
+		Classic,
 		Nunchuk,
 		Wiimote
 	};
 
 	enum class Stick {
-		ClassicControllerLStick,
-		ClassicControllerRStick,
+		ClassicDPad,
+		ClassicLStick,
+		ClassicRStick,
 		NunchukStick,
 		WiimoteDPad,
-		WiimoteAccelerometer,
-		NunchukAccelerometer,
 	};
 
 	virtual Type type() const = 0;
 
-	virtual bool inputButtons(const uint64_t buttons) = 0;
-	virtual bool inputStick(const Stick stick, const int32_t x, const int32_t y) = 0;
-	virtual bool inputAccelerometer(const double pitch, const double roll) = 0;
+	virtual bool input(const uint64_t buttons) = 0;
+	virtual bool input(const Stick stick, const int32_t x, const int32_t y) = 0;
+
+	virtual bool centerAllAxis() = 0;
 };

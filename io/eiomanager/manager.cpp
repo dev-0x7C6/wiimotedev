@@ -50,10 +50,8 @@ UInputProfileManager::UInputProfileManager(QObject *parent)
 		, m_eventDevice("Virtual mouse and keyboard", 0) {
 	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, this, &UInputProfileManager::dbusWiimoteGeneralButtons, Qt::DirectConnection);
 	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusWiimoteButtons, this, &UInputProfileManager::dbusWiimoteButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusWiimoteAcc, this, &UInputProfileManager::dbusWiimoteAcc, Qt::DirectConnection);
 	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusNunchukButtons, this, &UInputProfileManager::dbusNunchukButtons, Qt::DirectConnection);
 	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusNunchukStick, this, &UInputProfileManager::dbusNunchukStick, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusNunchukAcc, this, &UInputProfileManager::dbusNunchukAcc, Qt::DirectConnection);
 	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusClassicControllerButtons, this, &UInputProfileManager::dbusClassicControllerButtons, Qt::DirectConnection);
 	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusClassicControllerLStick, this, &UInputProfileManager::dbusClassicControllerLStick, Qt::DirectConnection);
 	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusClassicControllerRStick, this, &UInputProfileManager::dbusClassicControllerRStick, Qt::DirectConnection);

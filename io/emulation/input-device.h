@@ -56,8 +56,10 @@ protected:
 	bool report(uint16_t type, uint16_t code, int32_t value, bool triggerSync = false);
 	bool sync();
 
+protected:
+	struct uinput_user_dev m_dev;
+
 private:
 	int m_fd;
-	struct uinput_user_dev m_dev;
 	bool m_isCreated;
 };

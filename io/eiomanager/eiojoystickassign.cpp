@@ -30,8 +30,10 @@ void UInputProfileManager::setupClassicJoystick(uint32_t assign, const QString &
 	device->open();
 	device->configure();
 
-	if (device->create())
+	if (device->create()) {
+		device->centerAllAxis();
 		m_gamepads.emplace_back(std::move(device));
+	}
 }
 
 void UInputProfileManager::setupWiimoteJoystick(uint32_t assign, const QString &name, QSettings &settings) {
@@ -42,8 +44,10 @@ void UInputProfileManager::setupWiimoteJoystick(uint32_t assign, const QString &
 	device->open();
 	device->configure();
 
-	if (device->create())
+	if (device->create()) {
+		device->centerAllAxis();
 		m_gamepads.emplace_back(std::move(device));
+	}
 }
 
 void UInputProfileManager::setupNunchukJoystick(uint32_t assign, const QString &name, QSettings &settings) {
@@ -51,8 +55,10 @@ void UInputProfileManager::setupNunchukJoystick(uint32_t assign, const QString &
 	device->open();
 	device->configure();
 
-	if (device->create())
+	if (device->create()) {
+		device->centerAllAxis();
 		m_gamepads.emplace_back(std::move(device));
+	}
 }
 
 void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &settings) {
@@ -81,42 +87,32 @@ void UInputProfileManager::gamepad_iterator(const IGamepad::Type type, const uin
 	}
 }
 
-void UInputProfileManager::dbusWiimoteAcc(uint32_t id, struct accdata acc) {
-	gamepad_iterator(IGamepad::Type::Wiimote, id,
-		[&acc](const auto &gamepad) { gamepad->inputAccelerometer(acc.pitch, acc.roll); });
-}
-
 void UInputProfileManager::dbusWiimoteButtons(uint32_t id, uint64_t buttons) {
 	gamepad_iterator(IGamepad::Type::Wiimote, id,
-		[&buttons](const auto &gamepad) { gamepad->inputButtons(buttons); });
-}
-
-void UInputProfileManager::dbusNunchukAcc(uint32_t id, struct accdata acc) {
-	gamepad_iterator(IGamepad::Type::Nunchuk, id,
-		[&acc](const auto &gamepad) { gamepad->inputAccelerometer(acc.pitch, acc.roll); });
+		[&buttons](const auto &gamepad) { gamepad->input(buttons); });
 }
 
 void UInputProfileManager::dbusNunchukButtons(uint32_t id, uint64_t buttons) {
 	gamepad_iterator(IGamepad::Type::Nunchuk, id,
-		[&buttons](const auto &gamepad) { gamepad->inputButtons(buttons); });
+		[&buttons](const auto &gamepad) { gamepad->input(buttons); });
 }
 
 void UInputProfileManager::dbusNunchukStick(uint32_t id, struct stickdata stick) {
 	gamepad_iterator(IGamepad::Type::Nunchuk, id,
-		[&stick](const auto &gamepad) { gamepad->inputStick(IGamepad::Stick::NunchukStick, stick.x, stick.y); });
+		[&stick](const auto &gamepad) { gamepad->input(IGamepad::Stick::NunchukStick, stick.x, stick.y); });
 }
 
 void UInputProfileManager::dbusClassicControllerButtons(uint32_t id, uint64_t buttons) {
-	gamepad_iterator(IGamepad::Type::ClassicController, id,
-		[&buttons](const auto &gamepad) { gamepad->inputButtons(buttons); });
+	gamepad_iterator(IGamepad::Type::Classic, id,
+		[&buttons](const auto &gamepad) { gamepad->input(buttons); });
 }
 
 void UInputProfileManager::dbusClassicControllerLStick(uint32_t id, struct stickdata stick) {
-	gamepad_iterator(IGamepad::Type::ClassicController, id,
-		[&stick](const auto &gamepad) { gamepad->inputStick(IGamepad::Stick::ClassicControllerLStick, stick.x, stick.y); });
+	gamepad_iterator(IGamepad::Type::Classic, id,
+		[&stick](const auto &gamepad) { gamepad->input(IGamepad::Stick::ClassicLStick, stick.x, stick.y); });
 }
 
 void UInputProfileManager::dbusClassicControllerRStick(uint32_t id, struct stickdata stick) {
-	gamepad_iterator(IGamepad::Type::ClassicController, id,
-		[&stick](const auto &gamepad) { gamepad->inputStick(IGamepad::Stick::ClassicControllerRStick, stick.x, stick.y); });
+	gamepad_iterator(IGamepad::Type::Classic, id,
+		[&stick](const auto &gamepad) { gamepad->input(IGamepad::Stick::ClassicRStick, stick.x, stick.y); });
 }

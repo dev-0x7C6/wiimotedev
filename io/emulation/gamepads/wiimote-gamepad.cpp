@@ -26,16 +26,13 @@ WiimoteGamepad::WiimoteGamepad(const std::string &name, const uint32_t id, Mode 
 		, m_home_switch_position(1)
 
 {
-	centerStick(Stick::WiimoteDPad);
-	centerStick(Stick::WiimoteAccelerometer);
-	centerStick(Stick::NunchukAccelerometer);
 }
 
 IGamepad::Type WiimoteGamepad::type() const { return Type::Wiimote; }
 
 void WiimoteGamepad::setHomeSwitchPosition(bool option) { m_home_switch_position = option; }
 
-bool WiimoteGamepad::inputButtons(const uint64_t buttons) {
+bool WiimoteGamepad::input(const uint64_t buttons) {
 	report(EV_KEY, UINPUT_WIIMOTE_BTN_A, (buttons & WIIMOTE_BTN_A) ? 1 : 0);
 	report(EV_KEY, UINPUT_WIIMOTE_BTN_B, (buttons & WIIMOTE_BTN_B) ? 1 : 0);
 	report(EV_KEY, UINPUT_WIIMOTE_BTN_1, (buttons & WIIMOTE_BTN_1) ? 1 : 0);
@@ -86,15 +83,6 @@ bool WiimoteGamepad::inputButtons(const uint64_t buttons) {
 
 	syncSticks();
 	return true;
-}
-
-bool WiimoteGamepad::inputStick(const Stick stick, const int32_t x, const int32_t y) {
-}
-
-bool WiimoteGamepad::inputAccelerometer(const double pitch, const double roll) {
-	static_cast<void>(pitch);
-	static_cast<void>(roll);
-	return false;
 }
 
 void WiimoteGamepad::centerStick(Stick id) {
@@ -148,4 +136,10 @@ bool WiimoteGamepad::configure() {
 	set_abs_bit(UINPUT_WIIMOTE_DPAD_AXIS_Y);
 	set_range(UINPUT_WIIMOTE_DPAD_AXIS_X, UINPUT_WIIMOTE_DPAD_MAX, UINPUT_WIIMOTE_DPAD_MIN);
 	set_range(UINPUT_WIIMOTE_DPAD_AXIS_Y, UINPUT_WIIMOTE_DPAD_MAX, UINPUT_WIIMOTE_DPAD_MIN);
+}
+
+bool WiimoteGamepad::centerAllAxis() {
+	centerStick(Stick::WiimoteDPad);
+	syncSticks();
+	return true;
 }

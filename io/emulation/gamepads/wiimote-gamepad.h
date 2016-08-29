@@ -31,14 +31,11 @@ public:
 
 	void setHomeSwitchPosition(bool option);
 
-	virtual bool inputButtons(const uint64_t buttons) override;
-	virtual bool inputStick(const Stick stick, const int32_t x, const int32_t y) override;
-	virtual bool inputAccelerometer(const double pitch, const double roll) override;
-
-	void setWiimoteButtons(uint64_t);
-	void setWiimoteAcc(double, double);
+	virtual bool input(const uint64_t buttons) override;
+	virtual bool input(const Stick stick, const int32_t x, const int32_t y) override { return false; };
 
 	virtual bool configure() override;
+	virtual bool centerAllAxis() override;
 
 private:
 	void centerStick(Stick id);
