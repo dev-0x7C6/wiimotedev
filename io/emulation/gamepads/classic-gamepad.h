@@ -23,12 +23,7 @@ private:
 	void syncSticks();
 
 private:
-	int32_t m_last_r_stick_x;
-	int32_t m_last_r_stick_y;
-	int32_t m_last_l_stick_x;
-	int32_t m_last_l_stick_y;
-	int32_t m_last_dpad_x;
-	int32_t m_last_dpad_y;
+	std::array<int16_t, 6> m_axis;
 };
 }
 }

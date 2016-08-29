@@ -7,7 +7,6 @@ namespace emulation {
 namespace gamepad {
 
 class WiimoteGamepad final : public IGamepad {
-	Q_OBJECT
 public:
 	enum Position {
 		GamepadHorizontal,
@@ -17,11 +16,6 @@ public:
 	enum Mode {
 		DPadPositionConstant,
 		DPadPositionSwitchable
-	};
-
-	enum Device {
-		Nunchuk,
-		Wiimote
 	};
 
 public:
@@ -40,9 +34,6 @@ public:
 private:
 	void centerStick(Stick id);
 	void syncSticks();
-
-signals:
-	void setLedState(uint32_t, uint32_t);
 
 private:
 	int m_last_stick_x;

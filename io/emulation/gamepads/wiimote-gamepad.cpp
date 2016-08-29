@@ -50,19 +50,14 @@ bool WiimoteGamepad::input(const uint64_t buttons) {
 	sync();
 
 	if (m_home_switch_position) {
-		if (((buttons & WIIMOTE_BTN_HOME) != WIIMOTE_BTN_HOME) && (m_home_pressed == true))
-			emit setLedState(m_id, m_id);
-
 		if (((buttons & WIIMOTE_BTN_HOME) == WIIMOTE_BTN_HOME) && (m_home_pressed == false))
 			switch (m_horizontal) {
 				case WiimoteGamepad::GamepadHorizontal:
 					m_horizontal = WiimoteGamepad::GamepadVertical;
-					emit setLedState(m_id, 1 + 2);
 					break;
 
 				case WiimoteGamepad::GamepadVertical:
 					m_horizontal = WiimoteGamepad::GamepadHorizontal;
-					emit setLedState(m_id, 4 + 8);
 					break;
 			}
 	}
