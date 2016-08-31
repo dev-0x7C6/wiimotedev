@@ -23,7 +23,7 @@ private:
 	void syncSticks();
 
 private:
-	std::array<int16_t, 6> m_axis;
+	std::array<int32_t, 6> m_axis;
 };
 }
 }
