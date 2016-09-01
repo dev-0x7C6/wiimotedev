@@ -56,11 +56,11 @@ bool WiimoteGamepad::input(const uint64_t buttons) {
 	}
 
 	m_home_pressed = ((buttons & WIIMOTE_BTN_HOME) == WIIMOTE_BTN_HOME);
-	centerStick(Stick::ClassicDPad);
-	m_last_dpad_x = (buttons & CLASSIC_BTN_RIGHT) ? AXISES[0].max : m_last_dpad_x;
-	m_last_dpad_x = (buttons & CLASSIC_BTN_LEFT) ? AXISES[0].min : m_last_dpad_x;
-	m_last_dpad_y = (buttons & CLASSIC_BTN_DOWN) ? AXISES[1].max : m_last_dpad_y;
-	m_last_dpad_y = (buttons & CLASSIC_BTN_UP) ? AXISES[1].min : m_last_dpad_y;
+	centerStick(Stick::WiimoteDPad);
+	m_last_dpad_x = (buttons & WIIMOTE_BTN_RIGHT) ? AXISES[0].max : m_last_dpad_x;
+	m_last_dpad_x = (buttons & WIIMOTE_BTN_LEFT) ? AXISES[0].min : m_last_dpad_x;
+	m_last_dpad_y = (buttons & WIIMOTE_BTN_DOWN) ? AXISES[1].max : m_last_dpad_y;
+	m_last_dpad_y = (buttons & WIIMOTE_BTN_UP) ? AXISES[1].min : m_last_dpad_y;
 	syncSticks();
 	return true;
 }
