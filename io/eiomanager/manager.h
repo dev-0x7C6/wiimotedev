@@ -134,7 +134,7 @@ private:
 	QList<CommandAction *> commandActions;
 	QHash<uint32_t, uint64_t> lastWiiremoteButtons;
 
-	std::list<std::unique_ptr<IGamepad>> m_gamepads;
+	std::list<std::unique_ptr<io::emulation::gamepad::IGamepad>> m_gamepads;
 
 	QList<EIORemoteKeyboard *> EIORemoteKeyboards;
 	QList<EIOInfraredMouse *> EIOInfraredMouses;
@@ -185,7 +185,7 @@ private:
 	void deactiveCommandEvent(QStringList &);
 
 private:
-	void gamepad_iterator(const IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<IGamepad> &)> &&function);
+	void gamepad_iterator(const io::emulation::gamepad::IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<io::emulation::gamepad::IGamepad> &)> &&function);
 
 private Q_SLOTS:
 	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);

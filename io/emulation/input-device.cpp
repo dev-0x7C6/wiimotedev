@@ -28,7 +28,7 @@
 
 constexpr auto UINPUT_PRINT_VALID_EVENTS = false;
 
-InputDevice::InputDevice(const std::string &name, uint32_t id)
+InputDevice::InputDevice(const std::string &name, const uint32_t id)
 		: IInputDevice(name, id)
 		, m_fd(-1)
 		, m_isCreated(false)

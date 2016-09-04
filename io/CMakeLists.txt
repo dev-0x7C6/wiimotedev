@@ -2,42 +2,43 @@
 # Copyright (C) 2008 Bartłomiej Burdukiewicz
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
-include_directories(${CMAKE_CURRENT_BINARY_DIR}
-  ${CMAKE_CURRENT_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}
-  ${CMAKE_SOURCE_DIR}/linux/usr/include/
+include_directories(
+    ${CMAKE_CURRENT_BINARY_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/linux/usr/include/
 )
 
 set(sources
-  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
-  ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
+    ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
+    ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
 
 
-  common/tick-aligned-loop.cpp
-  container/infrared-config.cpp
-  container/infrared-cursor.cpp
+    common/tick-aligned-loop.cpp
+    container/infrared-config.cpp
+    container/infrared-cursor.cpp
+    container/stick-container.cpp
 
-  functionals/uinput-helper.cpp
+    functionals/uinput-helper.cpp
 
-  emulation/event-device.cpp
-  emulation/input-device.cpp
-  emulation/iinput-device.cpp
-  interfaces/igamepad.cpp
+    emulation/event-device.cpp
+    emulation/input-device.cpp
+    emulation/iinput-device.cpp
 
-  emulation/gamepads/classic-gamepad.cpp
-  emulation/gamepads/nunchuk-gamepad.cpp
-  emulation/gamepads/wiimote-gamepad.cpp
- 
-  eiomanager/infrared.cpp
-  eiomanager/keyboard.cpp
-  eiomanager/manager.cpp
-  eiomanager/actions.cpp
-  eiomanager/eiojoystickassign.cpp
+    interfaces/igamepad.cpp
+    emulation/gamepads/classic-gamepad.cpp
+    emulation/gamepads/nunchuk-gamepad.cpp
+    emulation/gamepads/wiimote-gamepad.cpp
 
-  eiokeyboard/eioremotekeyboard.cpp
-  eioinfrared/eioinfraredmouse.cpp
-  uinput.cpp
+    eiomanager/infrared.cpp
+    eiomanager/keyboard.cpp
+    eiomanager/manager.cpp
+    eiomanager/actions.cpp
+    eiomanager/eiojoystickassign.cpp
 
+    eiokeyboard/eioremotekeyboard.cpp
+    eioinfrared/eioinfraredmouse.cpp
+    uinput.cpp
 )
 
 set(headers
@@ -49,9 +50,14 @@ set(headers
   common/tick-aligned-loop.h
   container/infrared-config.h
   container/infrared-cursor.h
+  container/stick-container.h
   emulation/event-device.h
   emulation/input-device.h
   emulation/iinput-device.cpp
+  interfaces/igamepad.h
+  emulation/gamepads/classic-gamepad.h
+  emulation/gamepads/nunchuk-gamepad.h
+  emulation/gamepads/wiimote-gamepad.h
 )
 
 set(headers_wrap
@@ -61,12 +67,6 @@ set(headers_wrap
   dbus/profilemanager.h
   dbus/uinputservice.h
 
-  interfaces/igamepad.h
-  emulation/gamepads/classic-gamepad.h
-  emulation/gamepads/nunchuk-gamepad.h
-  emulation/gamepads/wiimote-gamepad.h
-
-
   eiomanager/manager.h
   eiokeyboard/eioremotekeyboard.h
   eioinfrared/eioinfraredmouse.h
@@ -74,11 +74,12 @@ set(headers_wrap
 
 add_executable(wiimotedev-io ${headers_wrap} ${headers} ${sources})
 
-target_link_libraries(wiimotedev-io
-  Qt5::Core
-  Qt5::DBus
-  Qt5::Network
-  Qt5::Widgets
+target_link_libraries(
+    wiimotedev-io
+    Qt5::Core
+    Qt5::DBus
+    Qt5::Network
+    Qt5::Widgets
 )
 
 install(TARGETS wiimotedev-io DESTINATION ${WIIMOTEDEV_SBIN_DIR})

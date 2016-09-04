@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <QObject>
 #include <cstdio>
 #include <fcntl.h>
 #include <unistd.h>
@@ -32,9 +31,9 @@
 #include "linux/usr/include/wiimotedev/consts.h"
 #include <io/emulation/iinput-device.h>
 
-class InputDevice : public QObject, public IInputDevice {
+class InputDevice : public IInputDevice {
 public:
-	explicit InputDevice(const std::string &name, uint32_t id);
+	explicit InputDevice(const std::string &name, const uint32_t id);
 	virtual ~InputDevice();
 
 	virtual bool open() override;

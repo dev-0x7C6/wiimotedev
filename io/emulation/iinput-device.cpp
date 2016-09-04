@@ -1,6 +1,6 @@
 #include "iinput-device.h"
 
-IInputDevice::IInputDevice(const std::string &name, uint32_t id)
+IInputDevice::IInputDevice(const std::string &name, const uint32_t id)
 		: m_name(name)
 		, m_id(id) {
 }

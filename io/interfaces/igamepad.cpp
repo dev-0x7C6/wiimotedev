@@ -1,5 +1,59 @@
-#include "igamepad.h"
+#include "interfaces/igamepad.h"
 
-IGamepad::IGamepad(const std::string &name, uint32_t id)
-		: InputDevice(name, id) {
+using namespace io::emulation::gamepad;
+
+IGamepad::IGamepad(const std::string &name, const uint32_t id, ButtonMap &&buttons, AxisMap &&axises)
+		: InputDevice(name, id)
+		, m_buttons(buttons)
+		, m_axises(axises)
+
+{
+}
+
+bool IGamepad::configure() {
+	bool isValid = true;
+	isValid &= set_ev_bit(EV_KEY) == 0;
+	isValid &= set_ev_bit(EV_ABS) == 0;
+
+	for (const auto &value : m_buttons)
+		isValid &= set_key_bit(value.output) == 0;
+
+	for (const auto &value : m_axises) {
+		for (const auto &v : value.pair) {
+			isValid &= set_abs_bit(v.axis) == 0;
+			set_range(v.axis, v.max, v.min);
+		}
+	}
+
+	return isValid;
+}
+
+bool IGamepad::input(const uint64_t buttons) {
+	bool isValid = true;
+	int32_t dpad_x = 0;
+	int32_t dpad_y = 0;
+	for (const auto &value : m_buttons) {
+		const auto toggled = (buttons & value.input) ? 1 : 0;
+		isValid &= report(EV_KEY, value.output, toggled);
+		if (toggled && (BTN_DPAD_UP == value.output || BTN_DPAD_DOWN == value.output))
+			dpad_x = (BTN_DPAD_UP == value.output) ? 1 : -1;
+		if (toggled && (BTN_DPAD_RIGHT == value.output || BTN_DPAD_LEFT == value.output))
+			dpad_y = (BTN_DPAD_RIGHT == value.output) ? 1 : -1;
+	}
+	isValid &= input(Stick::Dpad, dpad_x, dpad_y);
+	return isValid;
+}
+
+bool IGamepad::input(const Stick stick, const int32_t x, const int32_t y) {
+	bool isValid = true;
+	for (auto &axises : m_axises) {
+		if (axises.type == stick)
+			axises.setValue(x, y);
+
+		isValid &= report(EV_ABS, axises.pair[X].axis, axises.pair[X].value);
+		isValid &= report(EV_ABS, axises.pair[Y].axis, axises.pair[Y].value);
+	}
+
+	isValid &= sync();
+	return isValid;
 }

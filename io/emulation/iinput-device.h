@@ -5,7 +5,7 @@
 
 class IInputDevice {
 public:
-	explicit IInputDevice(const std::string &name, uint32_t id);
+	explicit IInputDevice(const std::string &name, const uint32_t id);
 	virtual ~IInputDevice() = default;
 
 	virtual bool open() = 0;
