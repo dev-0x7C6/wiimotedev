@@ -6,8 +6,13 @@ void AxisPair::center() {
 }
 
 void AxisPair::setValue(int32_t x, int32_t y) {
-	x = (m_invertXAxis) ? x ^ pair[X].raw_max : x;
-	y = (m_invertYAxis) ? y ^ pair[Y].raw_max : y;
+	if (pair[X].min >= 0 || pair[Y].min >= 0) {
+		x = (m_invertXAxis) ? x ^ pair[X].raw_max : x;
+		y = (m_invertYAxis) ? y ^ pair[Y].raw_max : y;
+	} else {
+		x = (m_invertXAxis) ? x * -1 : x;
+		y = (m_invertYAxis) ? y * -1 : y;
+	}
 	pair[X].value = std::max(pair[X].min, std::min(x, pair[X].max));
 	pair[Y].value = std::max(pair[Y].min, std::min(y, pair[Y].max));
 }

@@ -33,12 +33,12 @@ bool IGamepad::input(const uint64_t buttons) {
 	int32_t dpad_x = 0;
 	int32_t dpad_y = 0;
 	for (const auto &value : m_buttons) {
-		const auto toggled = (buttons & value.input) ? 1 : 0;
+		const bool toggled = (buttons & value.input) ? 1 : 0;
 		isValid &= report(EV_KEY, value.output, toggled);
-		if (toggled && (BTN_DPAD_UP == value.output || BTN_DPAD_DOWN == value.output))
-			dpad_x = (BTN_DPAD_UP == value.output) ? 1 : -1;
-		if (toggled && (BTN_DPAD_RIGHT == value.output || BTN_DPAD_LEFT == value.output))
-			dpad_y = (BTN_DPAD_RIGHT == value.output) ? 1 : -1;
+		dpad_y = (toggled && (BTN_DPAD_UP == value.output)) ? 1 : dpad_y;
+		dpad_y = (toggled && (BTN_DPAD_DOWN == value.output)) ? -1 : dpad_y;
+		dpad_x = (toggled && (BTN_DPAD_RIGHT == value.output)) ? 1 : dpad_x;
+		dpad_x = (toggled && (BTN_DPAD_LEFT == value.output)) ? -1 : dpad_x;
 	}
 	isValid &= input(Stick::Dpad, dpad_x, dpad_y);
 	return isValid;
