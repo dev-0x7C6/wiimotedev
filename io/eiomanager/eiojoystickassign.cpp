@@ -49,8 +49,6 @@ void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &s
 	settings.endGroup();
 }
 
-void UInputProfileManager::freeJoystickEvents() { m_gamepads.clear(); }
-
 void UInputProfileManager::gamepad_iterator(const IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<IGamepad> &)> &&function) {
 	for (const auto &gamepad : m_gamepads) {
 		if (gamepad->id() == id && gamepad->type() == type && gamepad->isCreated()) {

@@ -109,6 +109,7 @@ bool InputDevice::destroy() {
 		return false;
 
 	m_isCreated = status;
+	return true;
 }
 
 bool InputDevice::close() { return ::close(m_fd) == 0; }

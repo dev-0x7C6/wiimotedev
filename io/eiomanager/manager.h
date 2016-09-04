@@ -86,69 +86,9 @@ enum KeyboardActionAlghortim {
 
 class UInputProfileManager : public QObject {
 	Q_OBJECT
-private:
-	//Interfaces
-	WiimotedevDeviceEvents *dbusDeviceEventsIface;
-
-	//Adaptors
-	DBusProfileManagerAdaptorWrapper *dbusProfileManager;
-	DBusServiceAdaptorWrapper *dbusService;
-	DBusCustomJobsAdaptorWrapper *dbusCustomJobs;
-
-	//Profile section
-	QString author;
-	QString email;
-	QString name;
-	QString path;
-	QString version;
-
-	//Settings
-
-	bool disableNunchukExtShift;
-	bool disableNunchukExtShake;
-	bool disableNunchukExtTilt;
-	bool disableWiiremoteShift;
-	bool disableWiiremoteShake;
-	bool disableWiiremoteTilt;
-	bool disableKeyboardModule;
-	bool enableWiiremoteInfraredMouse;
-	bool rumbleStatus;
-
-	//Keyboard section
-	const static char *keyboardSection;
-
-	struct CommandAction {
-		QHash<uint32_t, uint64_t> event;
-		QStringList params;
-		bool actived;
-		uint8_t alghoritm;
-	};
-
-	enum CommandList {
-		executeAction = 1,
-		rumbleAction,
-		hwheelAction,
-		vwheelAction
-	};
-
-	QList<CommandAction *> commandActions;
-	QHash<uint32_t, uint64_t> lastWiiremoteButtons;
-
-	std::list<std::unique_ptr<io::emulation::gamepad::IGamepad>> m_gamepads;
-
-	QList<EIORemoteKeyboard *> EIORemoteKeyboards;
-	QList<EIOInfraredMouse *> EIOInfraredMouses;
-
-	EventDevice m_eventDevice;
-
-	/* General variables --------------------------------------------- */
-
-	QString profileName;
-	QPoint cursor;
-
 public:
-	UInputProfileManager(QObject *parent = 0);
-	~UInputProfileManager();
+	explicit UInputProfileManager(QObject *parent = nullptr);
+	virtual ~UInputProfileManager();
 
 private:
 	QHash<uint32_t, uint64_t> extractDeviceEvent(QString);
@@ -163,15 +103,10 @@ private:
 	void setupClassicJoystick(uint32_t assign, const QString &name, QSettings &settings);
 	void setupWiimoteJoystick(uint32_t assign, const QString &name, QSettings &settings);
 	void setupNunchukJoystick(uint32_t assign, const QString &name, QSettings &settings);
-	void setupInfraredMouse(uint32_t assing, const QString &name, QSettings &settings);
 
 	void assignInfraredEvents(const QString &key, QSettings &settings);
 	void assignKeyboardEvents(const QString &key, QSettings &settings);
 	void assignJoystickEvents(const QString &key, QSettings &settings);
-
-	void freeJoystickEvents();
-
-	//void assignCommandEvents(const QString &key, QSettings &settings);
 
 	void loadCommandEvents(QSettings &);
 	void unloadCommandEvents();
@@ -187,7 +122,7 @@ private:
 private:
 	void gamepad_iterator(const io::emulation::gamepad::IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<io::emulation::gamepad::IGamepad> &)> &&function);
 
-private Q_SLOTS:
+private slots:
 	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
 
 	void dbusClassicControllerButtons(uint32_t, uint64_t);
@@ -197,10 +132,37 @@ private Q_SLOTS:
 	void dbusClassicControllerLStick(uint32_t, stickdata);
 	void dbusClassicControllerRStick(uint32_t, stickdata);
 
-public Q_SLOTS:
+public slots:
 	bool loadProfile(QString);
 	bool unloadProfile();
 
-Q_SIGNALS:
+private:
+	struct CommandAction {
+		QHash<uint32_t, uint64_t> event;
+		QStringList params;
+		bool actived;
+		uint8_t alghoritm;
+	};
+
+	enum CommandList {
+		executeAction = 1,
+		rumbleAction,
+		hwheelAction,
+		vwheelAction
+	};
+
+	std::unique_ptr<WiimotedevDeviceEvents> dbusDeviceEventsIface;
+	std::unique_ptr<DBusProfileManagerAdaptorWrapper> m_dbusProfileManager;
+	std::unique_ptr<DBusServiceAdaptorWrapper> m_dbusService;
+	std::unique_ptr<DBusCustomJobsAdaptorWrapper> m_dbusCustomJobs;
+
+	std::list<std::unique_ptr<io::emulation::gamepad::IGamepad>> m_gamepads;
+	std::list<std::unique_ptr<EIORemoteKeyboard>> m_keyboards;
+	std::list<std::unique_ptr<EIOInfraredMouse>> m_mouses;
+	std::list<std::unique_ptr<CommandAction>> commandActions;
+	QHash<uint32_t, uint64_t> lastWiiremoteButtons;
+	EventDevice m_eventDevice;
+
+signals:
 	void executeRequest(QStringList);
 };

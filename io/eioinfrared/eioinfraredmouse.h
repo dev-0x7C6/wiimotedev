@@ -44,7 +44,8 @@ public:
 		Relative
 	};
 
-	EIOInfraredMouse(EventDevice &device, QObject *parent = nullptr);
+	explicit EIOInfraredMouse(EventDevice &device, QObject *parent = nullptr);
+	virtual ~EIOInfraredMouse();
 
 	void dbusVirtualCursorPosition(uint32_t, double, double, double, double);
 	void dbusVirtualCursorLost(uint32_t);

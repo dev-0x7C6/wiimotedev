@@ -44,20 +44,18 @@ void UInputProfileManager::loadCommandEvents(QSettings &settings) {
 			if (params.count() < 1)
 				continue;
 
-			CommandAction *action = new CommandAction;
+			auto action = std::make_unique<CommandAction>();
 			action->event = extractDeviceEvent(string);
 			action->params = params;
 			action->alghoritm = actionConfigList[map.key()];
 			action->actived = false;
-			commandActions << action;
+			commandActions.emplace_back(std::move(action));
 		}
 		settings.endGroup();
 	}
 }
 
 void UInputProfileManager::unloadCommandEvents() {
-	foreach (CommandAction *action, commandActions)
-		delete action;
 	commandActions.clear();
 }
 
@@ -70,11 +68,11 @@ void UInputProfileManager::initializeCommandEvents() {
 }
 
 void UInputProfileManager::processCommandEvents() {
-	if (commandActions.isEmpty())
+	if (commandActions.empty())
 		return;
 
 	HashCompare<uint32_t, uint64_t> compare;
-	foreach (CommandAction *action, commandActions) {
+	for (const auto &action : commandActions) {
 		if (action->event.isEmpty())
 			continue;
 

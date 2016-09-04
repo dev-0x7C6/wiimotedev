@@ -20,9 +20,6 @@
 #include "eiomanager/manager.h"
 #include <iostream>
 
-void UInputProfileManager::setupInfraredMouse(uint32_t assing, const QString &name, QSettings &settings) {
-}
-
 void UInputProfileManager::assignInfraredEvents(const QString &key, QSettings &settings) {
 	settings.beginGroup(key);
 	uint32_t assign = settings.value("assign").toULongLong();
@@ -37,7 +34,7 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
 		if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "infrared" ||
 			settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "mouse") {
 			settings.beginGroup(key);
-			EIOInfraredMouse *device = new EIOInfraredMouse(m_eventDevice);
+			auto device = std::make_unique<EIOInfraredMouse>(m_eventDevice);
 			device->setId(settings.value("device", uint(1)).toLongLong());
 			std::cout << settings.value("acc", false).toBool() << std::endl;
 			device->config().setAccEnabled(settings.value("acc", false).toBool());
@@ -48,20 +45,15 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
 			device->config().setAccTimeout(settings.value("acc.timeout", 2000).toLongLong());
 			device->config().setDeadzoneX(settings.value("deadzone.x", 30).toULongLong());
 			device->config().setDeadzoneY(settings.value("deadzone.y", 20).toULongLong());
-			connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusVirtualCursorPosition, device, &EIOInfraredMouse::dbusVirtualCursorPosition);
-			connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusVirtualCursorLost, device, &EIOInfraredMouse::dbusVirtualCursorLost);
+			connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusVirtualCursorPosition, device.get(), &EIOInfraredMouse::dbusVirtualCursorPosition);
+			connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusVirtualCursorLost, device.get(), &EIOInfraredMouse::dbusVirtualCursorLost);
 			settings.endGroup();
-			EIOInfraredMouses << device;
 			device->start();
+			m_mouses.emplace_back(std::move(device));
 		}
 	}
 }
 
 void UInputProfileManager::unloadInfraredEvents() {
-	foreach (EIOInfraredMouse *device, EIOInfraredMouses) {
-		device->interrupt();
-		device->wait();
-		delete device;
-	}
-	EIOInfraredMouses.clear();
+	m_mouses.clear();
 }

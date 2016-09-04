@@ -28,3 +28,5 @@ constexpr std::array<AxisPair, 3> AXISES{{
 
 ClassicGamepad::ClassicGamepad(const std::string &name, const uint32_t id)
 		: IGamepad(name, id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
+
+IGamepad::Type ClassicGamepad::type() const { return Type::Classic; }

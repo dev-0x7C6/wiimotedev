@@ -31,30 +31,21 @@ const QRegExp deviceEventRegExp(".*(\\[.*(\\d+)\\])");
 
 UInputProfileManager::UInputProfileManager(QObject *parent)
 		: QObject(parent)
-		, dbusDeviceEventsIface(new WiimotedevDeviceEvents(
+		, dbusDeviceEventsIface(std::make_unique<WiimotedevDeviceEvents>(
 			  WIIMOTEDEV_DBUS_SERVICE_NAME,
 			  WIIMOTEDEV_DBUS_OBJECT_EVENTS,
 			  QDBusConnection::systemBus(), this))
-		, dbusProfileManager(new DBusProfileManagerAdaptorWrapper(this, QDBusConnection::systemBus()))
-		, dbusService(new DBusServiceAdaptorWrapper(this, QDBusConnection::systemBus()))
-		, dbusCustomJobs(new DBusCustomJobsAdaptorWrapper(this, QDBusConnection::systemBus()))
-		, disableNunchukExtShift(false)
-		, disableNunchukExtShake(false)
-		, disableNunchukExtTilt(false)
-		, disableWiiremoteShift(false)
-		, disableWiiremoteShake(false)
-		, disableWiiremoteTilt(false)
-		, disableKeyboardModule(true)
-		, enableWiiremoteInfraredMouse(false)
-		, rumbleStatus(false)
+		, m_dbusProfileManager(std::make_unique<DBusProfileManagerAdaptorWrapper>(this, QDBusConnection::systemBus()))
+		, m_dbusService(std::make_unique<DBusServiceAdaptorWrapper>(this, QDBusConnection::systemBus()))
+		, m_dbusCustomJobs(std::make_unique<DBusCustomJobsAdaptorWrapper>(this, QDBusConnection::systemBus()))
 		, m_eventDevice("Virtual mouse and keyboard", 0) {
-	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, this, &UInputProfileManager::dbusWiimoteGeneralButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusWiimoteButtons, this, &UInputProfileManager::dbusWiimoteButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusNunchukButtons, this, &UInputProfileManager::dbusNunchukButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusNunchukStick, this, &UInputProfileManager::dbusNunchukStick, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusClassicControllerButtons, this, &UInputProfileManager::dbusClassicControllerButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusClassicControllerLStick, this, &UInputProfileManager::dbusClassicControllerLStick, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface, &WiimotedevDeviceEvents::dbusClassicControllerRStick, this, &UInputProfileManager::dbusClassicControllerRStick, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, this, &UInputProfileManager::dbusWiimoteGeneralButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteButtons, this, &UInputProfileManager::dbusWiimoteButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusNunchukButtons, this, &UInputProfileManager::dbusNunchukButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusNunchukStick, this, &UInputProfileManager::dbusNunchukStick, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerButtons, this, &UInputProfileManager::dbusClassicControllerButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerLStick, this, &UInputProfileManager::dbusClassicControllerLStick, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerRStick, this, &UInputProfileManager::dbusClassicControllerRStick, Qt::DirectConnection);
 	initializeCommandEvents();
 	QDBusConnection::systemBus().registerService("org.wiimotedev.io");
 	dbusWiimoteGeneralButtons(1, 0);
@@ -94,18 +85,6 @@ QList<uint> UInputProfileManager::extractScancodes(QStringList list) {
 }
 
 void UInputProfileManager::dbusWiimoteGeneralButtons(uint32_t id, uint64_t buttons) {
-	if (disableNunchukExtShift) buttons &= ~NUNCHUK_SHIFT_MASK;
-
-	if (disableNunchukExtShake) buttons &= ~NUNCHUK_BTN_SHIFT_SHAKE;
-
-	if (disableNunchukExtTilt) buttons &= ~NUNCHUK_TILT_MASK;
-
-	if (disableWiiremoteShift) buttons &= ~WIIMOTE_SHIFT_MASK;
-
-	if (disableWiiremoteShake) buttons &= ~WIIMOTE_BTN_SHIFT_SHAKE;
-
-	if (disableWiiremoteTilt) buttons &= ~WIIMOTE_TILT_MASK;
-
 	if (lastWiiremoteButtons.value(id, -1) == buttons)
 		return;
 
@@ -117,7 +96,6 @@ bool UInputProfileManager::loadProfile(QString file) {
 	if (!QFile::exists(file))
 		return false;
 
-	freeJoystickEvents();
 	QSettings settings(file, QSettings::IniFormat);
 	foreach (const QString &key, settings.childGroups()) {
 		const QString &module = settings.value(key + "/module", QString()).toString();
@@ -135,16 +113,15 @@ bool UInputProfileManager::loadProfile(QString file) {
 			assignInfraredEvents(key, settings);
 	}
 	loadCommandEvents(settings);
-	//  loadGamepadEvents(settings);
 	loadInfraredEvents(settings);
 	return true;
 }
 
 bool UInputProfileManager::unloadProfile() {
 	unloadCommandEvents();
-	freeJoystickEvents();
-	unloadInfraredEvents();
-	freeKeyboardEvents();
+	m_gamepads.clear();
+	m_mouses.clear();
+	m_keyboards.clear();
 	return true;
 }
 

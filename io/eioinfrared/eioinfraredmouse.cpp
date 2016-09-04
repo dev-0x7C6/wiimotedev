@@ -18,12 +18,11 @@
  **********************************************************************************/
 
 #include "eioinfraredmouse.h"
-#include <math.h>
+#include <cmath>
 #include <QCursor>
 #include <QRect>
 #include <QApplication>
 #include <QDesktopWidget>
-#include <QDebug>
 #include <QCursor>
 #include <iostream>
 #include <cassert>
@@ -34,6 +33,11 @@ EIOInfraredMouse::EIOInfraredMouse(EventDevice &device, QObject *parent)
 		, m_id(1)
 		, m_interrupted(false)
 		, m_mode(Relative) {
+}
+
+EIOInfraredMouse::~EIOInfraredMouse() {
+	interrupt();
+	wait();
 }
 
 void EIOInfraredMouse::dbusVirtualCursorPosition(uint32_t id, double x, double y, double distance, double angle) {
