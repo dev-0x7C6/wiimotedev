@@ -1,88 +1,23 @@
-/**********************************************************************************
- * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
- * Copyright (C) 2008-2015  Bartłomiej Burdukiewicz                               *
- * Contact: bartlomiej.burdukiewicz@gmail.com                                     *
- *                                                                                *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU Lesser General Public                     *
- * License as published by the Free Software Foundation; either                   *
- * version 2.1 of the License, or (at your option) any later version.             *
- *                                                                                *
- * This program is distributed in the hope that it will be useful,                *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU              *
- * Lesser General Public License for more details.                                *
- *                                                                                *
- * You should have received a copy of the GNU Lesser General Public               *
- * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
- **********************************************************************************/
-
 #pragma once
 
 #include <QObject>
-#include <QTimer>
 #include <QPoint>
-
-#include <QScopedPointer>
 #include <QSettings>
-
-#include "dbus/customjobs.h"
-#include "dbus/profilemanager.h"
-#include "dbus/uinputservice.h"
-#include <emulation/event-device.h>
-#include <interfaces/igamepad.h>
-#include "linux/usr/include/wiimotedev/consts.h"
-#include "linux/usr/include/wiimotedev/deviceevents.h"
-#include "eiokeyboard/eioremotekeyboard.h"
-#include "eioinfrared/eioinfraredmouse.h"
+#include <QTimer>
 
 #include <memory>
 #include <list>
 
-enum {
-	mouseEmulationModeNone = 0,
-	mouseEmulationModeAbs,
-	mouseEmulationModeAcc
-};
+#include "linux/usr/include/wiimotedev/consts.h"
+#include "linux/usr/include/wiimotedev/deviceevents.h"
 
-enum {
-	mouseEmulationAlghoritm1point = 1,
-	mouseEmulationAlghoritm2points,
-	mouseEmulationAlghoritm3points,
-	mouseEmulationAlghoritm4points
-};
-
-struct mouseEmulationStruct {
-	uint8_t mode;
-	uint8_t alghoritm;
-};
-
-struct InfraredConfigurationStruct {
-	uint8_t mode;
-	uint8_t alghoritm;
-};
-
-namespace profiles {
-namespace infrared {
-const QString section("infrared/");
-const QString wiimoteid("wiimoteid");
-const QString mode("mode");
-const QString alghoritm("alghoritm");
-const QString sensx("sensitivity.x");
-const QString sensy("sensitivity.y");
-const QString freezonex("freezone.x");
-const QString freezoney("freezone.y");
-const QString timeout("timeout");
-const QString latency("latency");
-const QString range("range");
-}
-}
-
-enum KeyboardActionAlghortim {
-	keyboardBitCompare,
-	keyboardEqual,
-	keyboardNotEqual
-};
+#include "dbus/customjobs.h"
+#include "dbus/profilemanager.h"
+#include "dbus/uinputservice.h"
+#include "eioinfrared/eioinfraredmouse.h"
+#include "eiokeyboard/eioremotekeyboard.h"
+#include "emulation/event-device.h"
+#include "interfaces/igamepad.h"
 
 class UInputProfileManager : public QObject {
 	Q_OBJECT
@@ -123,14 +58,13 @@ private:
 	void gamepad_iterator(const io::emulation::gamepad::IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<io::emulation::gamepad::IGamepad> &)> &&function);
 
 private slots:
-	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
-
 	void dbusClassicControllerButtons(uint32_t, uint64_t);
-	void dbusWiimoteButtons(uint32_t, uint64_t);
-	void dbusNunchukButtons(uint32_t, uint64_t);
-	void dbusNunchukStick(uint32_t, stickdata);
 	void dbusClassicControllerLStick(uint32_t, stickdata);
 	void dbusClassicControllerRStick(uint32_t, stickdata);
+	void dbusNunchukButtons(uint32_t, uint64_t);
+	void dbusNunchukStick(uint32_t, stickdata);
+	void dbusWiimoteButtons(uint32_t, uint64_t);
+	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
 
 public slots:
 	bool loadProfile(QString);

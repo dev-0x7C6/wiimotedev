@@ -1,85 +1,64 @@
-# Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
-# Copyright (C) 2008 Bartłomiej Burdukiewicz
-# Contact: bartlomiej.burdukiewicz@gmail.com
-
 include_directories(
-    ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/linux/usr/include/
+	${CMAKE_CURRENT_BINARY_DIR}
+	${CMAKE_CURRENT_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}
+	${CMAKE_SOURCE_DIR}/linux/usr/include/
 )
 
 set(sources
-    ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
-    ${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
-
-
-    common/tick-aligned-loop.cpp
-    container/infrared-config.cpp
-    container/infrared-cursor.cpp
-    container/stick-container.cpp
-
-    functionals/uinput-helper.cpp
-
-    emulation/event-device.cpp
-    emulation/input-device.cpp
-    emulation/iinput-device.cpp
-
-    interfaces/igamepad.cpp
-    emulation/gamepads/classic-gamepad.cpp
-    emulation/gamepads/nunchuk-gamepad.cpp
-    emulation/gamepads/wiimote-gamepad.cpp
-
-    eiomanager/infrared.cpp
-    eiomanager/keyboard.cpp
-    eiomanager/manager.cpp
-    eiomanager/actions.cpp
-    eiomanager/eiojoystickassign.cpp
-
-    eiokeyboard/eioremotekeyboard.cpp
-    eioinfrared/eioinfraredmouse.cpp
-    uinput.cpp
+	${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
+	${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
+	${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
+	${CMAKE_SOURCE_DIR}/syslog/syslog.h
+	common/tick-aligned-loop.cpp
+	common/tick-aligned-loop.h
+	container/infrared-config.cpp
+	container/infrared-config.h
+	container/infrared-cursor.cpp
+	container/infrared-cursor.h
+	container/stick-container.cpp
+	container/stick-container.h
+	dbus/customjobs.h
+	dbus/profilemanager.h
+	dbus/uinputservice.h
+	eioinfrared/eioinfraredmouse.cpp
+	eioinfrared/eioinfraredmouse.h
+	eiokeyboard/eioremotekeyboard.cpp
+	eiokeyboard/eioremotekeyboard.h
+	eiomanager/actions.cpp
+	eiomanager/eiojoystickassign.cpp
+	eiomanager/infrared.cpp
+	eiomanager/keyboard.cpp
+	eiomanager/manager.cpp
+	eiomanager/manager.h
+	emulation/event-device.cpp
+	emulation/event-device.h
+	emulation/gamepads/classic-gamepad.cpp
+	emulation/gamepads/classic-gamepad.h
+	emulation/gamepads/nunchuk-gamepad.cpp
+	emulation/gamepads/nunchuk-gamepad.h
+	emulation/gamepads/wiimote-gamepad.cpp
+	emulation/gamepads/wiimote-gamepad.h
+	emulation/iinput-device.cpp
+	emulation/iinput-device.cpp
+	emulation/input-device.cpp
+	emulation/input-device.h
+	functionals/hash-compare.h
+	functionals/uinput-helper.cpp
+	functionals/uinput-helper.h
+	interfaces/igamepad.cpp
+	interfaces/igamepad.h
+	uinput.cpp
 )
 
-set(headers
-  ${CMAKE_SOURCE_DIR}/syslog/syslog.h
-
-  functionals/hash-compare.h
-  functionals/uinput-helper.h
-
-  common/tick-aligned-loop.h
-  container/infrared-config.h
-  container/infrared-cursor.h
-  container/stick-container.h
-  emulation/event-device.h
-  emulation/input-device.h
-  emulation/iinput-device.cpp
-  interfaces/igamepad.h
-  emulation/gamepads/classic-gamepad.h
-  emulation/gamepads/nunchuk-gamepad.h
-  emulation/gamepads/wiimote-gamepad.h
-)
-
-set(headers_wrap
-  ${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
-  
-  dbus/customjobs.h
-  dbus/profilemanager.h
-  dbus/uinputservice.h
-
-  eiomanager/manager.h
-  eiokeyboard/eioremotekeyboard.h
-  eioinfrared/eioinfraredmouse.h
-)
-
-add_executable(wiimotedev-io ${headers_wrap} ${headers} ${sources})
+add_executable(wiimotedev-io ${sources})
 
 target_link_libraries(
-    wiimotedev-io
-    Qt5::Core
-    Qt5::DBus
-    Qt5::Network
-    Qt5::Widgets
+	wiimotedev-io
+	Qt5::Core
+	Qt5::DBus
+	Qt5::Network
+	Qt5::Widgets
 )
 
 install(TARGETS wiimotedev-io DESTINATION ${WIIMOTEDEV_SBIN_DIR})
