@@ -35,11 +35,8 @@ private:
 
 	void freeKeyboardEvents();
 
-	void setupClassicJoystick(uint32_t assign, const QString &name, QSettings &settings);
-	void setupWiimoteJoystick(uint32_t assign, const QString &name, QSettings &settings);
-	void setupNunchukJoystick(uint32_t assign, const QString &name, QSettings &settings);
+	bool setup(const io::emulation::gamepad::IGamepad::Type type, const std::string &name, uint32_t id);
 
-	void assignInfraredEvents(const QString &key, QSettings &settings);
 	void assignKeyboardEvents(const QString &key, QSettings &settings);
 	void assignJoystickEvents(const QString &key, QSettings &settings);
 

@@ -1,22 +1,3 @@
-/**********************************************************************************
- * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
- * Copyright (C) 2008-2015  Bartłomiej Burdukiewicz                               *
- * Contact: bartlomiej.burdukiewicz@gmail.com                                     *
- *                                                                                *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU Lesser General Public                     *
- * License as published by the Free Software Foundation; either                   *
- * version 2.1 of the License, or (at your option) any later version.             *
- *                                                                                *
- * This program is distributed in the hope that it will be useful,                *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU              *
- * Lesser General Public License for more details.                                *
- *                                                                                *
- * You should have received a copy of the GNU Lesser General Public               *
- * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
- **********************************************************************************/
-
 #include "eioremotekeyboard.h"
 
 extern QMap<QString, uint> scancodes;
@@ -36,10 +17,9 @@ EIORemoteKeyboard::EIORemoteKeyboard(EventDevice &device)
 
 EIORemoteKeyboard::~EIORemoteKeyboard() {
 	disconnect(this, 0, 0, 0);
-	foreach (struct KeyboardAction *action, keyboardActions) {
-		EIORemoteKeyboard::releaseKeyboardButtons(action->keys);
-		delete action;
-	}
+	for (const auto &action : keyboardActions)
+		releaseKeyboardButtons(action->keys);
+
 	keyboardActions.clear();
 }
 
@@ -55,16 +35,14 @@ void EIORemoteKeyboard::setCompareType(QString type) {
 }
 
 void EIORemoteKeyboard::addKeyboardAction(KeyboardAction &action) {
-	KeyboardAction *kbdAction = new KeyboardAction;
+	auto kbdAction = std::make_unique<KeyboardAction>();
 	kbdAction->event = action.event;
 	kbdAction->keys = action.keys;
 	kbdAction->pushed = false;
-	keyboardActions << kbdAction;
+	keyboardActions.emplace_back(std::move(kbdAction));
 }
 
 void EIORemoteKeyboard::clearKeyboardActions() {
-	foreach (KeyboardAction *action, keyboardActions)
-		delete action;
 	keyboardActions.clear();
 }
 
@@ -74,7 +52,7 @@ void EIORemoteKeyboard::dbusWiimoteGeneralButtons(uint32_t id, uint64_t value) {
 
 	buttons[id] = value;
 	HashCompare<uint32_t, uint64_t> compare;
-	foreach (KeyboardAction *action, keyboardActions) {
+	for (const auto &action : keyboardActions) {
 		if (action->event.isEmpty())
 			continue;
 

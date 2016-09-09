@@ -1,5 +1,7 @@
 #include "interfaces/igamepad.h"
 
+#include <map>
+
 using namespace io::emulation::gamepad;
 
 IGamepad::IGamepad(const std::string &name, const uint32_t id, ButtonMap &&buttons, AxisMap &&axises)
@@ -8,6 +10,21 @@ IGamepad::IGamepad(const std::string &name, const uint32_t id, ButtonMap &&butto
 		, m_axises(axises)
 
 {
+}
+
+IGamepad::Type IGamepad::fromString(const std::string &type) {
+	static std::map<std::string, Type> str2type{
+		{"classic", Type::Classic},
+		{"nunchuk", Type::Nunchuk},
+		{"wiimote", Type::Wiimote}};
+
+	try {
+		return str2type.at(type);
+	} catch (std::out_of_range &e) {
+		throw e;
+	}
+
+	return Type::Classic;
 }
 
 bool IGamepad::configure() {

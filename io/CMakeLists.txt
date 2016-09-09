@@ -43,6 +43,8 @@ set(sources
 	emulation/iinput-device.cpp
 	emulation/input-device.cpp
 	emulation/input-device.h
+	factories/gamepad-factory.cpp
+	factories/gamepad-factory.h
 	functionals/hash-compare.h
 	functionals/uinput-helper.cpp
 	functionals/uinput-helper.h

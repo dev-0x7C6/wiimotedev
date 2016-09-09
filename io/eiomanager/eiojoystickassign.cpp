@@ -1,52 +1,31 @@
 #include "manager.h"
+#include "factories/gamepad-factory.h"
 
-#include "emulation/gamepads/classic-gamepad.h"
-#include "emulation/gamepads/nunchuk-gamepad.h"
-#include "emulation/gamepads/wiimote-gamepad.h"
+#include <iostream>
 
+using namespace io::factory;
 using namespace io::emulation::gamepad;
-
-void UInputProfileManager::setupClassicJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	auto device = std::make_unique<ClassicGamepad>(name.toStdString(), assign);
-	device->open();
-	device->configure();
-
-	if (device->create())
-		m_gamepads.emplace_back(std::move(device));
-}
-
-void UInputProfileManager::setupWiimoteJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	auto device = std::make_unique<WiimoteGamepad>(name.toStdString(), assign);
-	device->open();
-	device->configure();
-
-	if (device->create())
-		m_gamepads.emplace_back(std::move(device));
-}
-
-void UInputProfileManager::setupNunchukJoystick(uint32_t assign, const QString &name, QSettings &settings) {
-	auto device = std::make_unique<NunchukGamepad>(name.toStdString(), assign);
-	device->open();
-	device->configure();
-
-	if (device->create())
-		m_gamepads.emplace_back(std::move(device));
-}
 
 void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &settings) {
 	settings.beginGroup(key);
-	uint32_t assign = settings.value("assign").toULongLong();
-	QString device = settings.value("device").toString().toLower();
-	QString name = settings.value("name").toString();
+	auto assign = settings.value("assign").toUInt();
+	auto device = settings.value("device").toString().toLower().toStdString();
+	auto name = settings.value("name").toString().toStdString();
 
-	if (device == QString::fromUtf8("classic"))
-		setupClassicJoystick(assign, name, settings);
-	else if (device == QString::fromUtf8("nunchuk"))
-		setupNunchukJoystick(assign, name, settings);
-	else if (device == QString::fromUtf8("wiimote"))
-		setupWiimoteJoystick(assign, name, settings);
+	try {
+		setup(IGamepad::fromString(device), name, assign);
+	} catch (std::out_of_range &) {
+		std::cout << "unknown gamepad module \"" << device << "\"" << std::endl;
+	}
 
 	settings.endGroup();
+}
+
+bool UInputProfileManager::setup(const io::emulation::gamepad::IGamepad::Type type, const std::__cxx11::string &name, uint32_t id) {
+	auto device = GamepadFactory::create(type, name, id);
+	auto isValid = GamepadFactory::configure(device);
+	m_gamepads.emplace_back(std::move(device));
+	return isValid;
 }
 
 void UInputProfileManager::gamepad_iterator(const IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<IGamepad> &)> &&function) {

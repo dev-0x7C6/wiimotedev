@@ -18,6 +18,8 @@ public:
 		Wiimote
 	};
 
+	static Type fromString(const std::string &type);
+
 	virtual Type type() const = 0;
 	virtual bool configure() override;
 
