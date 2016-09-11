@@ -1,6 +1,7 @@
-#include "emulation/gamepads/nunchuk-gamepad.h"
+#include "nunchuk-gamepad.h"
 
 using namespace io::emulation::gamepad;
+using namespace io::interface;
 
 constexpr std::array<ButtonMapping, 2> BUTTONS{{
 	{NUNCHUK_BTN_Z, BTN_A},

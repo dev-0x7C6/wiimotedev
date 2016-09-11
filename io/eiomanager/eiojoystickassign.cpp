@@ -4,7 +4,7 @@
 #include <iostream>
 
 using namespace io::factory;
-using namespace io::emulation::gamepad;
+using namespace io::interface;
 
 void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &settings) {
 	settings.beginGroup(key);
@@ -21,7 +21,7 @@ void UInputProfileManager::assignJoystickEvents(const QString &key, QSettings &s
 	settings.endGroup();
 }
 
-bool UInputProfileManager::setup(const io::emulation::gamepad::IGamepad::Type type, const std::__cxx11::string &name, uint32_t id) {
+bool UInputProfileManager::setup(const IGamepad::Type type, const std::string &name, uint32_t id) {
 	auto device = GamepadFactory::create(type, name, id);
 	auto isValid = GamepadFactory::configure(device);
 	m_gamepads.emplace_back(std::move(device));

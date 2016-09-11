@@ -1,6 +1,7 @@
 #include "emulation/gamepads/wiimote-gamepad.h"
 
 using namespace io::emulation::gamepad;
+using namespace io::interface;
 
 constexpr std::array<ButtonMapping, 11> BUTTONS{{
 	{WIIMOTE_BTN_A, BTN_A},

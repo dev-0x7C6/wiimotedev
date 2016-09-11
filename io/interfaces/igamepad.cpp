@@ -1,8 +1,7 @@
-#include "interfaces/igamepad.h"
-
+#include "igamepad.h"
 #include <map>
 
-using namespace io::emulation::gamepad;
+using namespace io::interface;
 
 IGamepad::IGamepad(const std::string &name, const uint32_t id, ButtonMap &&buttons, AxisMap &&axises)
 		: InputDevice(name, id)

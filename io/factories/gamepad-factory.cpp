@@ -3,8 +3,9 @@
 #include "emulation/gamepads/nunchuk-gamepad.h"
 #include "emulation/gamepads/wiimote-gamepad.h"
 
-using namespace io::factory;
 using namespace io::emulation::gamepad;
+using namespace io::factory;
+using namespace io::interface;
 
 std::unique_ptr<IGamepad> GamepadFactory::create(const IGamepad::Type type, const std::string &name, const uint32_t id) {
 	switch (type) {

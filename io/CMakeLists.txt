@@ -46,10 +46,14 @@ set(sources
 	factories/gamepad-factory.cpp
 	factories/gamepad-factory.h
 	functionals/hash-compare.h
+	functionals/profile.cpp
+	functionals/profile.h
 	functionals/uinput-helper.cpp
 	functionals/uinput-helper.h
 	interfaces/igamepad.cpp
 	interfaces/igamepad.h
+	interfaces/iprofile.cpp
+	interfaces/iprofile.h
 	uinput.cpp
 )
 

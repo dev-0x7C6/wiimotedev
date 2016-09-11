@@ -1,6 +1,7 @@
 #include "emulation/gamepads/classic-gamepad.h"
 
 using namespace io::emulation::gamepad;
+using namespace io::interface;
 
 constexpr std::array<ButtonMapping, 15> BUTTONS{{
 	{CLASSIC_BTN_UP, BTN_DPAD_UP},

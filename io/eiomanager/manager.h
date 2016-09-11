@@ -33,7 +33,7 @@ private:
 
 	void freeKeyboardEvents();
 
-	bool setup(const io::emulation::gamepad::IGamepad::Type type, const std::string &name, uint32_t id);
+	bool setup(const io::interface::IGamepad::Type type, const std::string &name, uint32_t id);
 
 	void assignKeyboardEvents(const QString &key, QSettings &settings);
 	void assignJoystickEvents(const QString &key, QSettings &settings);
@@ -50,7 +50,7 @@ private:
 	void deactiveCommandEvent(QStringList &);
 
 private:
-	void gamepad_iterator(const io::emulation::gamepad::IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<io::emulation::gamepad::IGamepad> &)> &&function);
+	void gamepad_iterator(const io::interface::IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<io::interface::IGamepad> &)> &&function);
 
 private slots:
 	void dbusClassicControllerButtons(uint32_t, uint64_t);
@@ -85,7 +85,7 @@ private:
 	std::unique_ptr<DBusServiceAdaptorWrapper> m_dbusService;
 	std::unique_ptr<DBusCustomJobsAdaptorWrapper> m_dbusCustomJobs;
 
-	std::list<std::unique_ptr<io::emulation::gamepad::IGamepad>> m_gamepads;
+	std::list<std::unique_ptr<io::interface::IGamepad>> m_gamepads;
 	std::list<std::unique_ptr<EIORemoteKeyboard>> m_keyboards;
 	std::list<std::unique_ptr<EIOInfraredMouse>> m_mouses;
 	std::list<std::unique_ptr<CommandAction>> commandActions;

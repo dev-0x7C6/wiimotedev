@@ -4,8 +4,7 @@
 #include <container/stick-container.h>
 
 namespace io {
-namespace emulation {
-namespace gamepad {
+namespace interface {
 
 class IGamepad : public InputDevice {
 public:
@@ -30,6 +29,5 @@ protected:
 	ButtonMap m_buttons;
 	AxisMap m_axises;
 };
-}
 }
 }
