@@ -1,15 +1,11 @@
 #pragma once
 
 #include <QObject>
-#include <QPoint>
 #include <QSettings>
 #include <QTimer>
 
 #include <memory>
 #include <list>
-
-#include "linux/usr/include/wiimotedev/consts.h"
-#include "linux/usr/include/wiimotedev/deviceevents.h"
 
 #include "dbus/customjobs.h"
 #include "dbus/profilemanager.h"
@@ -18,6 +14,8 @@
 #include "eiokeyboard/eioremotekeyboard.h"
 #include "emulation/event-device.h"
 #include "interfaces/igamepad.h"
+#include "linux/usr/include/wiimotedev/consts.h"
+#include "linux/usr/include/wiimotedev/deviceevents.h"
 
 class UInputProfileManager : public QObject {
 	Q_OBJECT
