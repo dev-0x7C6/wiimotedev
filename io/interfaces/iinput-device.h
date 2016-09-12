@@ -3,6 +3,9 @@
 #include <cstdint>
 #include <string>
 
+namespace io {
+namespace interface {
+
 class IInputDevice {
 public:
 	explicit IInputDevice(const std::string &name, const uint32_t id);
@@ -24,3 +27,5 @@ protected:
 	const std::string m_name;
 	const uint32_t m_id;
 };
+}
+}

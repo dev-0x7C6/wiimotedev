@@ -5,6 +5,9 @@
 #include "eiomanager/manager.h"
 #include "io/functionals/hash-compare.h"
 
+using namespace io::interface;
+using namespace io::functional;
+
 extern QMap<QString, uint64_t> devicebuttons;
 extern QMap<QString, uint> scancodes;
 
@@ -21,12 +24,6 @@ UInputProfileManager::UInputProfileManager(QObject *parent)
 		, m_dbusCustomJobs(std::make_unique<DBusCustomJobsAdaptorWrapper>(this, QDBusConnection::systemBus()))
 		, m_eventDevice("Virtual mouse and keyboard", 0) {
 	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, this, &UInputProfileManager::dbusWiimoteGeneralButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteButtons, this, &UInputProfileManager::dbusWiimoteButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusNunchukButtons, this, &UInputProfileManager::dbusNunchukButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusNunchukStick, this, &UInputProfileManager::dbusNunchukStick, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerButtons, this, &UInputProfileManager::dbusClassicControllerButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerLStick, this, &UInputProfileManager::dbusClassicControllerLStick, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerRStick, this, &UInputProfileManager::dbusClassicControllerRStick, Qt::DirectConnection);
 	initializeCommandEvents();
 	QDBusConnection::systemBus().registerService("org.wiimotedev.io");
 	dbusWiimoteGeneralButtons(1, 0);
@@ -77,6 +74,14 @@ bool UInputProfileManager::loadProfile(QString file) {
 	if (!QFile::exists(file))
 		return false;
 
+	m_profile = std::make_unique<decltype(m_profile)::element_type>(file.toStdString());
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteButtons, m_profile.get(), &Profile::wiimoteButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusNunchukButtons, m_profile.get(), &Profile::nunchukButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusNunchukStick, m_profile.get(), &Profile::nunchukStick, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerButtons, m_profile.get(), &Profile::classicControllerButtons, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerLStick, m_profile.get(), &Profile::classicControllerLStick, Qt::DirectConnection);
+	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerRStick, m_profile.get(), &Profile::classicControllerRStick, Qt::DirectConnection);
+
 	QSettings settings(file, QSettings::IniFormat);
 	foreach (const QString &key, settings.childGroups()) {
 		const QString &module = settings.value(key + "/module", QString()).toString();
@@ -86,9 +91,7 @@ bool UInputProfileManager::loadProfile(QString file) {
 
 		module.toLower();
 
-		if (module == QString::fromUtf8("joystick"))
-			assignJoystickEvents(key, settings);
-		else if (module == QString::fromUtf8("keyboard"))
+		if (module == QString::fromUtf8("keyboard"))
 			assignKeyboardEvents(key, settings);
 	}
 	loadCommandEvents(settings);
@@ -98,7 +101,6 @@ bool UInputProfileManager::loadProfile(QString file) {
 
 bool UInputProfileManager::unloadProfile() {
 	unloadCommandEvents();
-	m_gamepads.clear();
 	m_mouses.clear();
 	m_keyboards.clear();
 	return true;

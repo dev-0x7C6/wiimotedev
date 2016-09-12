@@ -1,5 +1,7 @@
 #include "eioremotekeyboard.h"
 
+using namespace io::emulation;
+
 extern QMap<QString, uint> scancodes;
 
 enum KeyboardExtension {

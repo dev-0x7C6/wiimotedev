@@ -8,6 +8,8 @@
 
 #include "functionals/uinput-helper.h"
 
+using namespace io::emulation;
+
 constexpr auto UINPUT_PRINT_VALID_EVENTS = false;
 
 InputDevice::InputDevice(const std::string &name, const uint32_t id)

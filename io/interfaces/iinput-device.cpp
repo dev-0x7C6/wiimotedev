@@ -1,5 +1,7 @@
 #include "iinput-device.h"
 
+using namespace io::interface;
+
 IInputDevice::IInputDevice(const std::string &name, const uint32_t id)
 		: m_name(name)
 		, m_id(id) {

@@ -6,7 +6,7 @@ namespace io {
 namespace emulation {
 namespace gamepad {
 
-class NunchukGamepad final : public ::io::interface::IGamepad {
+class NunchukGamepad final : public interface::IGamepad {
 public:
 	explicit NunchukGamepad(const std::string &name, const uint32_t id);
 	virtual ~NunchukGamepad() = default;

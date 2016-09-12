@@ -26,7 +26,6 @@ set(sources
 	eiokeyboard/eioremotekeyboard.cpp
 	eiokeyboard/eioremotekeyboard.h
 	eiomanager/actions.cpp
-	eiomanager/eiojoystickassign.cpp
 	eiomanager/infrared.cpp
 	eiomanager/keyboard.cpp
 	eiomanager/manager.cpp
@@ -39,8 +38,6 @@ set(sources
 	emulation/gamepads/nunchuk-gamepad.h
 	emulation/gamepads/wiimote-gamepad.cpp
 	emulation/gamepads/wiimote-gamepad.h
-	emulation/iinput-device.cpp
-	emulation/iinput-device.cpp
 	emulation/input-device.cpp
 	emulation/input-device.h
 	factories/gamepad-factory.cpp
@@ -52,8 +49,12 @@ set(sources
 	functionals/uinput-helper.h
 	interfaces/igamepad.cpp
 	interfaces/igamepad.h
+	interfaces/iinput-device.cpp
+	interfaces/iinput-device.h
 	interfaces/iprofile.cpp
 	interfaces/iprofile.h
+	interfaces/iwiimotedev-event.cpp
+	interfaces/iwiimotedev-event.h
 	uinput.cpp
 )
 

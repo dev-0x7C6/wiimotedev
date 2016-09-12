@@ -13,6 +13,7 @@
 #include "eioinfrared/eioinfraredmouse.h"
 #include "eiokeyboard/eioremotekeyboard.h"
 #include "emulation/event-device.h"
+#include "functionals/profile.h"
 #include "interfaces/igamepad.h"
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "linux/usr/include/wiimotedev/deviceevents.h"
@@ -33,10 +34,7 @@ private:
 
 	void freeKeyboardEvents();
 
-	bool setup(const io::interface::IGamepad::Type type, const std::string &name, uint32_t id);
-
 	void assignKeyboardEvents(const QString &key, QSettings &settings);
-	void assignJoystickEvents(const QString &key, QSettings &settings);
 
 	void loadCommandEvents(QSettings &);
 	void unloadCommandEvents();
@@ -49,16 +47,7 @@ private:
 	void activeCommandEvent(QStringList &);
 	void deactiveCommandEvent(QStringList &);
 
-private:
-	void gamepad_iterator(const io::interface::IGamepad::Type type, const uint32_t id, std::function<void(const std::unique_ptr<io::interface::IGamepad> &)> &&function);
-
 private slots:
-	void dbusClassicControllerButtons(uint32_t, uint64_t);
-	void dbusClassicControllerLStick(uint32_t, stickdata);
-	void dbusClassicControllerRStick(uint32_t, stickdata);
-	void dbusNunchukButtons(uint32_t, uint64_t);
-	void dbusNunchukStick(uint32_t, stickdata);
-	void dbusWiimoteButtons(uint32_t, uint64_t);
 	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
 
 public slots:
@@ -84,13 +73,13 @@ private:
 	std::unique_ptr<DBusProfileManagerAdaptorWrapper> m_dbusProfileManager;
 	std::unique_ptr<DBusServiceAdaptorWrapper> m_dbusService;
 	std::unique_ptr<DBusCustomJobsAdaptorWrapper> m_dbusCustomJobs;
+	std::unique_ptr<io::functional::Profile> m_profile;
 
-	std::list<std::unique_ptr<io::interface::IGamepad>> m_gamepads;
 	std::list<std::unique_ptr<EIORemoteKeyboard>> m_keyboards;
 	std::list<std::unique_ptr<EIOInfraredMouse>> m_mouses;
 	std::list<std::unique_ptr<CommandAction>> commandActions;
 	QHash<uint32_t, uint64_t> lastWiiremoteButtons;
-	EventDevice m_eventDevice;
+	io::emulation::EventDevice m_eventDevice;
 
 signals:
 	void executeRequest(QStringList);

@@ -25,7 +25,7 @@ public:
 		Relative
 	};
 
-	explicit EIOInfraredMouse(EventDevice &device, QObject *parent = nullptr);
+	explicit EIOInfraredMouse(io::emulation::EventDevice &device, QObject *parent = nullptr);
 	virtual ~EIOInfraredMouse();
 
 	void dbusVirtualCursorPosition(uint32_t, double, double, double, double);
@@ -58,7 +58,7 @@ private:
 	InfraredConfigContainer m_config;
 
 private:
-	EventDevice &m_device;
+	io::emulation::EventDevice &m_device;
 	InfraredCursor m_cursor;
 
 	std::atomic<uint32_t> m_id;

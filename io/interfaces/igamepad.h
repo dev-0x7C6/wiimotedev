@@ -1,12 +1,12 @@
 #pragma once
 
-#include <emulation/input-device.h>
-#include <container/stick-container.h>
+#include "emulation/input-device.h"
+#include "container/stick-container.h"
 
 namespace io {
 namespace interface {
 
-class IGamepad : public InputDevice {
+class IGamepad : public emulation::InputDevice {
 public:
 	explicit IGamepad(const std::string &name, const uint32_t id, ButtonMap &&buttons, AxisMap &&axises);
 	virtual ~IGamepad() = default;

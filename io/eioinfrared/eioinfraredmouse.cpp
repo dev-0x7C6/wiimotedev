@@ -8,6 +8,9 @@
 #include <iostream>
 #include <cassert>
 
+using namespace io::interface;
+using namespace io::emulation;
+
 EIOInfraredMouse::EIOInfraredMouse(EventDevice &device, QObject *parent)
 		: QThread(parent)
 		, m_device(device)

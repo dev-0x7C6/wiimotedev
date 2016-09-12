@@ -6,7 +6,7 @@ namespace io {
 namespace emulation {
 namespace gamepad {
 
-class ClassicGamepad final : public ::io::interface::IGamepad {
+class ClassicGamepad final : public interface::IGamepad {
 public:
 	explicit ClassicGamepad(const std::string &name, const uint32_t id);
 	virtual ~ClassicGamepad() = default;

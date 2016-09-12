@@ -10,9 +10,12 @@
 #include <functional>
 
 #include "linux/usr/include/wiimotedev/consts.h"
-#include "emulation/iinput-device.h"
+#include "interfaces/iinput-device.h"
 
-class InputDevice : public IInputDevice {
+namespace io {
+namespace emulation {
+
+class InputDevice : public interface::IInputDevice {
 public:
 	explicit InputDevice(const std::string &name, const uint32_t id);
 	virtual ~InputDevice();
@@ -43,3 +46,5 @@ private:
 	int m_fd;
 	bool m_isCreated;
 };
+}
+}

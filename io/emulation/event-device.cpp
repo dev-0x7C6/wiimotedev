@@ -1,5 +1,7 @@
 #include "event-device.h"
 
+using namespace io::emulation;
+
 EventDevice::EventDevice(const std::string &name, const uint32_t id)
 		: InputDevice(name, id) {
 }

@@ -2,6 +2,9 @@
 
 #include "emulation/input-device.h"
 
+namespace io {
+namespace emulation {
+
 class EventDevice final : public InputDevice {
 public:
 	explicit EventDevice(const std::string &name, const uint32_t id);
@@ -15,3 +18,5 @@ public:
 
 	virtual bool configure() override;
 };
+}
+}
