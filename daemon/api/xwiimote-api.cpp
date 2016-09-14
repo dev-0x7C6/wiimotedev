@@ -1,9 +1,10 @@
 #include "xwiimote-api.h"
 
-#include <cstdlib>
-#include <cstring>
 #include <poll.h>
 #include <xwiimote.h>
+
+#include <cstdlib>
+#include <cstring>
 #include <iostream>
 
 using namespace daemon::api;
@@ -98,7 +99,6 @@ std::string XWiimoteApi::interfaceFilePath() const {
 void XWiimoteApi::reconfigure() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
 	std::cout << flags << std::endl;
-
 	auto ret = xwii_iface_open(m_interface, flags);
 
 	if (ret) {
@@ -117,7 +117,6 @@ int XWiimoteApi::process(xwii_event &event) {
 	fds[0].events = POLLIN;
 	fds[1].fd = m_fd;
 	fds[1].events = POLLIN;
-
 	auto ret = poll(fds, 2, -1);
 
 	if (ret < 0) {

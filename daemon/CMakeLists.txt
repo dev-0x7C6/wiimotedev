@@ -6,8 +6,12 @@ include_directories(
 )
 
 set(sources
+	api/cwiid-api.cpp
+	api/cwiid-api.h
 	api/xwiimote-api.cpp
 	api/xwiimote-api.h
+	api/xwiimote-monitor.cpp
+	api/xwiimote-monitor.h
 	${CMAKE_SOURCE_DIR}/config.h
 	${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
 	${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
