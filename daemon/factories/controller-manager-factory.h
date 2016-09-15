@@ -13,6 +13,5 @@ public:
 
 	static std::unique_ptr<interface::IWiimoteManager> create(const interface::ApiType type);
 };
-
 }
 }

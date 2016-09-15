@@ -17,6 +17,12 @@
  * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
  **********************************************************************************/
 
+#include <iostream>
+#include <chrono>
+#include <thread>
+#include <list>
+#include <memory>
+
 #include <QCoreApplication>
 #include <QElapsedTimer>
 #include <QFile>
@@ -26,7 +32,11 @@
 #include "wiimotedevcore.h"
 #include "wiimotedevdevice.h"
 
-#include <sched.h>
+#include "factories/controller-manager-factory.h"
+
+using namespace daemon::factory;
+using namespace daemon::interface;
+using namespace std::literals;
 
 WiimotedevCore::WiimotedevCore(QObject *parent)
 		: QThread(parent)
@@ -62,82 +72,93 @@ WiimotedevCore::~WiimotedevCore() {
 void WiimotedevCore::interrupt() { m_interrupted = true; }
 
 void WiimotedevCore::run() {
-	if (result == EXIT_FAILURE) {
-		QCoreApplication::quit();
-		return;
-	}
-
-	WiimotedevDevice *dev = new WiimotedevDevice();
-	QElapsedTimer m_bluetoothInertia;
-	QMutex m_bluetoothBlocking;
-	uint32_t id = 0;
-	m_bluetoothBlocking.lock();
+	auto manager = ControllerManagerFactory::create(ApiType::XWiimote);
+	std::list<std::unique_ptr<IWiimote>> devices;
 
 	while (!m_interrupted) {
-		m_bluetoothInertia.start();
+		auto controller = manager->connect();
 
-		if (dev->connectToDevice(1)) {
-			id = sequence.value(dev->getWiimoteSAddr(), 0);
+		if (controller)
+			devices.emplace_back(std::move(controller));
 
-			if (!id)
-				if ((id = settings->registerWiiremote(dev->getWiimoteSAddr()))) {
-					systemlog::information(QString("note: wiiremote %1 registred, id %2").arg(dev->getWiimoteSAddr(), QString::number(id)));
-					sequence = settings->connectionTable();
-				}
-
-			systemlog::information(QString("wiiremote %1 connected, id %2").arg(dev->getWiimoteSAddr(), QString::number(id)));
-			WiimotedevConnection *thread = new WiimotedevConnection(dev, id);
-			thread->setPowerSafeTimeout(settings->powerSaveTiemout() * 60000);
-			connect(thread, &WiimotedevConnection::dbusVirtualCursorPosition, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusVirtualCursorPosition, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusVirtualCursorFound, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusVirtualCursorFound, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusVirtualCursorLost, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusVirtualCursorLost, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusWiimoteGeneralButtons, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteGeneralButtons, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusWiimoteConnected, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteConnected, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusWiimoteDisconnected, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteDisconnected, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusWiimoteBatteryLife, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteBatteryLife, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusWiimoteButtons, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteButtons, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusWiimoteInfrared, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteInfrared, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusWiimoteAcc, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteAcc, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusNunchukPlugged, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusNunchukPlugged, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusNunchukUnplugged, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusNunchukUnplugged, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusNunchukStick, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusNunchukStick, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusNunchukButtons, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusNunchukButtons, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusNunchukAcc, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusNunchukAcc, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusClassicControllerPlugged, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusClassicControllerPlugged, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusClassicControllerUnplugged, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusClassicControllerUnplugged, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusClassicControllerButtons, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusClassicControllerButtons, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusClassicControllerLStick, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusClassicControllerLStick, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusClassicControllerRStick, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusClassicControllerRStick, Qt::QueuedConnection);
-			connect(thread, &WiimotedevConnection::dbusWiimoteDisconnected, this, &WiimotedevCore::dbusWiimoteDisconnected, Qt::QueuedConnection);
-			threads.insert(id, thread);
-			thread->start();
-			dev = new WiimotedevDevice();
-		}
-
-		if (m_bluetoothInertia.elapsed() < WiimotedevCore::BluetoothFlood && !m_interrupted) {
-			for (int i = 0; i < 100; ++i) {
-				m_bluetoothBlocking.tryLock(WiimotedevCore::WaitForBluetooth / 100);
-
-				if (m_interrupted)
-					break;
-			}
-		}
-
-		sched_yield();
+		std::this_thread::sleep_for(1s);
 	}
-
-	m_bluetoothBlocking.unlock();
-	dev->disconnectFromDevice();
-	delete dev;
-	foreach (WiimotedevConnection *thread, threads.values()) {
-		systemlog::information(QString("wiiremote %1 disconnecting..., id %2").arg(thread->dbusWiimoteGetMacAddress(), QString::number(id)));
-		thread->interrupt();
-		thread->wait();
-		delete thread;
-	}
-	threads.clear();
-	QCoreApplication::quit();
 }
+//	if (result == EXIT_FAILURE) {
+//		QCoreApplication::quit();
+//		return;
+//	}
+
+//	WiimotedevDevice *dev = new WiimotedevDevice();
+//	QElapsedTimer m_bluetoothInertia;
+//	QMutex m_bluetoothBlocking;
+//	uint32_t id = 0;
+//	m_bluetoothBlocking.lock();
+
+//	while (!m_interrupted) {
+//		m_bluetoothInertia.start();
+
+//		if (dev->connectToDevice(1)) {
+//			id = sequence.value(dev->getWiimoteSAddr(), 0);
+
+//			if (!id)
+//				if ((id = settings->registerWiiremote(dev->getWiimoteSAddr()))) {
+//					systemlog::information(QString("note: wiiremote %1 registred, id %2").arg(dev->getWiimoteSAddr(), QString::number(id)));
+//					sequence = settings->connectionTable();
+//				}
+
+//			systemlog::information(QString("wiiremote %1 connected, id %2").arg(dev->getWiimoteSAddr(), QString::number(id)));
+//			WiimotedevConnection *thread = new WiimotedevConnection(dev, id);
+//			thread->setPowerSafeTimeout(settings->powerSaveTiemout() * 60000);
+//			connect(thread, &WiimotedevConnection::dbusVirtualCursorPosition, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusVirtualCursorPosition, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusVirtualCursorFound, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusVirtualCursorFound, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusVirtualCursorLost, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusVirtualCursorLost, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusWiimoteGeneralButtons, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteGeneralButtons, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusWiimoteConnected, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteConnected, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusWiimoteDisconnected, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteDisconnected, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusWiimoteBatteryLife, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteBatteryLife, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusWiimoteButtons, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteButtons, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusWiimoteInfrared, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteInfrared, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusWiimoteAcc, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusWiimoteAcc, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusNunchukPlugged, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusNunchukPlugged, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusNunchukUnplugged, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusNunchukUnplugged, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusNunchukStick, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusNunchukStick, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusNunchukButtons, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusNunchukButtons, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusNunchukAcc, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusNunchukAcc, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusClassicControllerPlugged, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusClassicControllerPlugged, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusClassicControllerUnplugged, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusClassicControllerUnplugged, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusClassicControllerButtons, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusClassicControllerButtons, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusClassicControllerLStick, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusClassicControllerLStick, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusClassicControllerRStick, WiimotedevDBusEvents, &WiimotedevDBusEventsWrapper::dbusClassicControllerRStick, Qt::QueuedConnection);
+//			connect(thread, &WiimotedevConnection::dbusWiimoteDisconnected, this, &WiimotedevCore::dbusWiimoteDisconnected, Qt::QueuedConnection);
+//			threads.insert(id, thread);
+//			thread->start();
+//			dev = new WiimotedevDevice();
+//		}
+
+//		if (m_bluetoothInertia.elapsed() < WiimotedevCore::BluetoothFlood && !m_interrupted) {
+//			for (int i = 0; i < 100; ++i) {
+//				m_bluetoothBlocking.tryLock(WiimotedevCore::WaitForBluetooth / 100);
+
+//				if (m_interrupted)
+//					break;
+//			}
+//		}
+
+//		sched_yield();
+//	}
+
+//	m_bluetoothBlocking.unlock();
+//	dev->disconnectFromDevice();
+//	delete dev;
+//	foreach (WiimotedevConnection *thread, threads.values()) {
+//		systemlog::information(QString("wiiremote %1 disconnecting..., id %2").arg(thread->dbusWiimoteGetMacAddress(), QString::number(id)));
+//		thread->interrupt();
+//		thread->wait();
+//		delete thread;
+//	}
+//	threads.clear();
+//	QCoreApplication::quit();
 
 void WiimotedevCore::dbusWiimoteDisconnected(quint32 id) {
 	WiimotedevConnection *thread = threads.value(id, 0);

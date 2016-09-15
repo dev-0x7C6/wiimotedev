@@ -13,7 +13,7 @@ XWiimoteMonitor::~XWiimoteMonitor() {
 }
 
 bool XWiimoteMonitor::isValid() const {
-	return m_monitor == nullptr;
+	return m_monitor != nullptr;
 }
 
 std::string XWiimoteMonitor::dequeue() {
