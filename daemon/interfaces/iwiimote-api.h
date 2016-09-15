@@ -6,6 +6,11 @@
 namespace daemon {
 namespace interface {
 
+enum class ApiType {
+	Cwiid,
+	XWiimote
+};
+
 class IWiimote {
 public:
 	explicit IWiimote() = default;
@@ -16,6 +21,8 @@ public:
 		BalanceBoard,
 		ProController
 	};
+
+	virtual ApiType type() const = 0;
 
 	virtual bool isRumbleSupported() = 0;
 	virtual bool isLedSupported() = 0;

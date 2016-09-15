@@ -16,6 +16,8 @@ public:
 	explicit XWiimoteController(const std::string &interfaceFilePath);
 	virtual ~XWiimoteController();
 
+	virtual interface::ApiType type() const override { return interface::ApiType::XWiimote; }
+
 	virtual bool isRumbleSupported() override;
 	virtual bool isLedSupported() override;
 	virtual bool isInfraredSupported() override;

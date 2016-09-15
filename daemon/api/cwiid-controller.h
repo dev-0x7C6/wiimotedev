@@ -10,6 +10,8 @@ public:
 	explicit CwiidController() = default;
 	virtual ~CwiidController() = default;
 
+	virtual interface::ApiType type() const override { return interface::ApiType::Cwiid; }
+
 	virtual bool isRumbleSupported() override;
 	virtual bool isLedSupported() override;
 	virtual bool isInfraredSupported() override;

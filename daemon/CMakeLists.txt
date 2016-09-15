@@ -16,6 +16,8 @@ set(sources
 	api/xwiimote-manager.h
 	api/xwiimote-monitor.cpp
 	api/xwiimote-monitor.h
+	factories/controller-manager-factory.cpp
+	factories/controller-manager-factory.h
 	${CMAKE_SOURCE_DIR}/config.h
 	${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
 	${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
