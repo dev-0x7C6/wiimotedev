@@ -6,10 +6,14 @@ include_directories(
 )
 
 set(sources
-	api/cwiid-api.cpp
-	api/cwiid-api.h
-	api/xwiimote-api.cpp
-	api/xwiimote-api.h
+	api/cwiid-controller.cpp
+	api/cwiid-controller.h
+	api/cwiid-manager.cpp
+	api/cwiid-manager.h
+	api/xwiimote-controller.cpp
+	api/xwiimote-controller.h
+	api/xwiimote-manager.cpp
+	api/xwiimote-manager.h
 	api/xwiimote-monitor.cpp
 	api/xwiimote-monitor.h
 	${CMAKE_SOURCE_DIR}/config.h
@@ -22,6 +26,8 @@ set(sources
 	fancy/fancy.cpp
 	interfaces/iwiimote-api.cpp
 	interfaces/iwiimote-api.h
+	interfaces/iwiimote-manager.cpp
+	interfaces/iwiimote-manager.h
 	messages/classicmessages.cpp
 	messages/motionplusmessages.cpp
 	messages/nunchukmessages.cpp
@@ -36,6 +42,7 @@ set(sources
 	wiimotedevdevice.h
 	wiimotedevsettings.cpp
 	wiimotedevsettings.h
+
 )
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})

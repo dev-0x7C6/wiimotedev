@@ -1,6 +1,8 @@
 #pragma once
 
+#include <memory>
 #include <string>
+
 #include "interfaces/iwiimote-api.h"
 
 struct xwii_iface;
@@ -9,10 +11,10 @@ struct xwii_event;
 namespace daemon {
 namespace api {
 
-class XWiimoteApi final : public interface::IWiimoteApi {
+class XWiimoteController final : public interface::IWiimote {
 public:
-	explicit XWiimoteApi(const std::string &interfaceFilePath);
-	virtual ~XWiimoteApi();
+	explicit XWiimoteController(const std::string &interfaceFilePath);
+	virtual ~XWiimoteController();
 
 	virtual bool isRumbleSupported() override;
 	virtual bool isLedSupported() override;
@@ -38,7 +40,6 @@ private:
 
 private:
 	const std::string m_interfaceFilePath;
-
 	xwii_iface *m_interface;
 	int m_fd;
 };

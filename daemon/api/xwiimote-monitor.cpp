@@ -2,7 +2,7 @@
 
 #include <xwiimote.h>
 
-using namespace daemon::api;
+using namespace daemon::api::helper;
 
 XWiimoteMonitor::XWiimoteMonitor() {
 	m_monitor = xwii_monitor_new(true, true);
@@ -16,7 +16,7 @@ bool XWiimoteMonitor::isValid() const {
 	return m_monitor == nullptr;
 }
 
-std::string XWiimoteMonitor::get() {
+std::string XWiimoteMonitor::dequeue() {
 	auto cstring = xwii_monitor_poll(m_monitor);
 
 	if (cstring == nullptr)

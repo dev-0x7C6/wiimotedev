@@ -1,4 +1,4 @@
-#include "xwiimote-api.h"
+#include "xwiimote-controller.h"
 
 #include <poll.h>
 #include <xwiimote.h>
@@ -9,7 +9,7 @@
 
 using namespace daemon::api;
 
-XWiimoteApi::XWiimoteApi(const std::string &interfaceFilePath)
+XWiimoteController::XWiimoteController(const std::string &interfaceFilePath)
 		: m_interfaceFilePath(interfaceFilePath) {
 	auto ret = xwii_iface_new(&m_interface, m_interfaceFilePath.c_str());
 
@@ -35,68 +35,68 @@ XWiimoteApi::XWiimoteApi(const std::string &interfaceFilePath)
 	reconfigure();
 }
 
-XWiimoteApi::~XWiimoteApi() {
+XWiimoteController::~XWiimoteController() {
 	xwii_iface_close(m_interface, XWII_IFACE_ALL | XWII_IFACE_WRITABLE);
 	xwii_iface_unref(m_interface);
 }
 
-bool XWiimoteApi::isRumbleSupported() {
+bool XWiimoteController::isRumbleSupported() {
 	return true;
 }
 
-bool XWiimoteApi::isLedSupported() {
+bool XWiimoteController::isLedSupported() {
 	return true;
 }
 
-bool XWiimoteApi::isInfraredSupported() {
+bool XWiimoteController::isInfraredSupported() {
 	const auto flags = xwii_iface_available(m_interface);
 	return (flags & XWII_IFACE_IR) == XWII_IFACE_IR;
 }
 
-uint8_t XWiimoteApi::batteryStatus() {
+uint8_t XWiimoteController::batteryStatus() {
 	uint8_t capacity = 0;
 	xwii_iface_get_battery(m_interface, &capacity);
 	return capacity;
 }
 
-bool XWiimoteApi::ledStatus(const uint32_t id) {
+bool XWiimoteController::ledStatus(const uint32_t id) {
 	bool state = false;
 	xwii_iface_get_led(m_interface, id, &state);
 	return state;
 }
 
-bool XWiimoteApi::rumbleStatus() {
+bool XWiimoteController::rumbleStatus() {
 	return true;
 }
 
-bool XWiimoteApi::setLedStatus(const uint32_t id, const bool status) {
+bool XWiimoteController::setLedStatus(const uint32_t id, const bool status) {
 	return xwii_iface_set_led(m_interface, id, status) == 0;
 }
 
-bool XWiimoteApi::setRumbleStatus(const bool rumble) {
+bool XWiimoteController::setRumbleStatus(const bool rumble) {
 	return xwii_iface_rumble(m_interface, rumble) == 0;
 }
 
-bool XWiimoteApi::hasClassicExtension() {
+bool XWiimoteController::hasClassicExtension() {
 	const auto flags = xwii_iface_available(m_interface);
 	return (flags & XWII_IFACE_CLASSIC_CONTROLLER) == XWII_IFACE_CLASSIC_CONTROLLER;
 }
 
-bool XWiimoteApi::hasMotionPlusExtension() {
+bool XWiimoteController::hasMotionPlusExtension() {
 	const auto flags = xwii_iface_available(m_interface);
 	return (flags & XWII_IFACE_MOTION_PLUS) == XWII_IFACE_MOTION_PLUS;
 }
 
-bool XWiimoteApi::hasNunchukExtension() {
+bool XWiimoteController::hasNunchukExtension() {
 	const auto flags = xwii_iface_available(m_interface);
 	return (flags & XWII_IFACE_NUNCHUK) == XWII_IFACE_NUNCHUK;
 }
 
-std::string XWiimoteApi::interfaceFilePath() const {
+std::string XWiimoteController::interfaceFilePath() const {
 	return m_interfaceFilePath;
 }
 
-void XWiimoteApi::reconfigure() {
+void XWiimoteController::reconfigure() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
 	std::cout << flags << std::endl;
 	auto ret = xwii_iface_open(m_interface, flags);
@@ -110,7 +110,7 @@ void XWiimoteApi::reconfigure() {
 	}
 }
 
-int XWiimoteApi::process(xwii_event &event) {
+int XWiimoteController::process(xwii_event &event) {
 	static pollfd fds[2];
 	memset(fds, 0, sizeof(fds));
 	fds[0].fd = 0;

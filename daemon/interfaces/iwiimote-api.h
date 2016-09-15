@@ -6,10 +6,10 @@
 namespace daemon {
 namespace interface {
 
-class IWiimoteApi {
+class IWiimote {
 public:
-	explicit IWiimoteApi() = default;
-	virtual ~IWiimoteApi() = default;
+	explicit IWiimote() = default;
+	virtual ~IWiimote() = default;
 
 	enum class Device {
 		Wiimote,

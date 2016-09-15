@@ -5,10 +5,10 @@
 namespace daemon {
 namespace api {
 
-class CwiidApi final : public interface::IWiimoteApi {
+class CwiidController final : public interface::IWiimote {
 public:
-	explicit CwiidApi() = default;
-	virtual ~CwiidApi() = default;
+	explicit CwiidController() = default;
+	virtual ~CwiidController() = default;
 
 	virtual bool isRumbleSupported() override;
 	virtual bool isLedSupported() override;
