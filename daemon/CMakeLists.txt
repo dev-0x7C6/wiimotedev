@@ -16,8 +16,6 @@ set(sources
 	api/xwiimote-manager.h
 	api/xwiimote-monitor.cpp
 	api/xwiimote-monitor.h
-	factories/controller-manager-factory.cpp
-	factories/controller-manager-factory.h
 	${CMAKE_SOURCE_DIR}/config.h
 	${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
 	${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
@@ -25,7 +23,10 @@ set(sources
 	daemon.cpp
 	dbus/daemonservice.h
 	dbus/deviceevents.h
+	factories/controller-manager-factory.cpp
+	factories/controller-manager-factory.h
 	fancy/fancy.cpp
+	functionals/unique-id.h
 	interfaces/iwiimote-api.cpp
 	interfaces/iwiimote-api.h
 	interfaces/iwiimote-manager.cpp

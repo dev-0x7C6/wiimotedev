@@ -1,27 +1,8 @@
-/**********************************************************************************
- * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
- * Copyright (C) 2008-2015  Bartłomiej Burdukiewicz                               *
- * Contact: bartlomiej.burdukiewicz@gmail.com                                     *
- *                                                                                *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU Lesser General Public                     *
- * License as published by the Free Software Foundation; either                   *
- * version 2.1 of the License, or (at your option) any later version.             *
- *                                                                                *
- * This program is distributed in the hope that it will be useful,                *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU              *
- * Lesser General Public License for more details.                                *
- *                                                                                *
- * You should have received a copy of the GNU Lesser General Public               *
- * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
- **********************************************************************************/
-
-#include <iostream>
 #include <chrono>
-#include <thread>
+#include <iostream>
 #include <list>
 #include <memory>
+#include <thread>
 
 #include <QCoreApplication>
 #include <QElapsedTimer>
@@ -33,8 +14,10 @@
 #include "wiimotedevdevice.h"
 
 #include "factories/controller-manager-factory.h"
+#include "functionals/unique-id.h"
 
 using namespace daemon::factory;
+using namespace daemon::functional;
 using namespace daemon::interface;
 using namespace std::literals;
 
@@ -72,14 +55,18 @@ WiimotedevCore::~WiimotedevCore() {
 void WiimotedevCore::interrupt() { m_interrupted = true; }
 
 void WiimotedevCore::run() {
+	UniqueId<256> unique;
+
 	auto manager = ControllerManagerFactory::create(ApiType::XWiimote);
 	std::list<std::unique_ptr<IWiimote>> devices;
 
 	while (!m_interrupted) {
 		auto controller = manager->connect();
 
-		if (controller)
+		if (controller) {
+			const auto id = unique.take();
 			devices.emplace_back(std::move(controller));
+		}
 
 		std::this_thread::sleep_for(1s);
 	}
