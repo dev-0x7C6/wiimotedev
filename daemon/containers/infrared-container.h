@@ -5,6 +5,8 @@
 
 #include "interfaces/icontainer.h"
 
+struct xwii_event;
+
 namespace daemon {
 namespace container {
 namespace structs {
@@ -20,12 +22,13 @@ using IrPoints = std::array<structs::ir, 4>; // max 4 ir
 
 class InfraredContainer final : public interface::IContainer {
 public:
-	using IContainer::IContainer;
+	explicit InfraredContainer(const IrPoints &points);
+	explicit InfraredContainer(const xwii_event &event);
 
-	virtual Type type() const override { return Type::Infrared; }
+	virtual Type type() const override;
+	virtual Source source() const override;
 
 	const IrPoints &points() const;
-	void setPoints(const IrPoints &points);
 
 private:
 	IrPoints m_points;

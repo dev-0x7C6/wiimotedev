@@ -2,6 +2,9 @@
 
 #include <cstdint>
 #include <array>
+#include <memory>
+
+#include "interfaces/icontainer.h"
 
 namespace daemon {
 namespace interface {
@@ -23,6 +26,8 @@ public:
 	};
 
 	virtual ApiType type() const = 0;
+
+	virtual std::unique_ptr<IContainer> process() = 0;
 
 	virtual bool isRumbleSupported() = 0;
 	virtual bool isLedSupported() = 0;

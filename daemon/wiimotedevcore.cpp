@@ -15,7 +15,10 @@
 
 #include "factories/controller-manager-factory.h"
 #include "functionals/unique-id.h"
+#include "containers/infrared-container.h"
+#include "interfaces/icontainer.h"
 
+using namespace daemon::container;
 using namespace daemon::factory;
 using namespace daemon::functional;
 using namespace daemon::interface;
@@ -68,7 +71,30 @@ void WiimotedevCore::run() {
 			devices.emplace_back(std::move(controller));
 		}
 
-		std::this_thread::sleep_for(1s);
+		for (const auto &device : devices) {
+			const auto event = device->process();
+			if (!event)
+				continue;
+
+			switch (event->type()) {
+				case IContainer::Type::Infrared: {
+					const auto &points = static_cast<InfraredContainer *>(event.get())->points();
+
+					QList<struct irpoint> ir;
+					for (std::size_t i = 0; i < points.size(); ++i) {
+						struct irpoint t;
+						t.x = points[i].x;
+						t.y = points[i].y;
+						t.size = points[i].size;
+						ir.append(t);
+					}
+
+					WiimotedevDBusEvents->dbusWiimoteInfrared(1, ir);
+				} break;
+			}
+		}
+
+		std::this_thread::sleep_for(2ms);
 	}
 }
 //	if (result == EXIT_FAILURE) {

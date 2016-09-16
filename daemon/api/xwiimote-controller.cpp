@@ -7,7 +7,10 @@
 #include <cstring>
 #include <iostream>
 
+#include "containers/infrared-container.h"
+
 using namespace daemon::api;
+using namespace daemon::container;
 
 XWiimoteController::XWiimoteController(const std::string &interfaceFilePath)
 		: m_interfaceFilePath(interfaceFilePath) {
@@ -38,6 +41,37 @@ XWiimoteController::XWiimoteController(const std::string &interfaceFilePath)
 XWiimoteController::~XWiimoteController() {
 	xwii_iface_close(m_interface, XWII_IFACE_ALL | XWII_IFACE_WRITABLE);
 	xwii_iface_unref(m_interface);
+}
+
+std::unique_ptr<daemon::interface::IContainer> XWiimoteController::process() {
+	struct xwii_event event;
+	static pollfd fds[2];
+	memset(fds, 0, sizeof(fds));
+	fds[0].fd = 0;
+	fds[0].events = POLLIN;
+	fds[1].fd = m_fd;
+	fds[1].events = POLLIN;
+	auto ret = poll(fds, 2, -1);
+
+	if (ret < 0) {
+		if (errno != EINTR) {
+			ret = -errno;
+			std::cerr << "Error: Cannot poll fds:" << ret << std::endl;
+		}
+	}
+
+	ret = xwii_iface_dispatch(m_interface, &event, sizeof(event));
+
+	if (ret)
+		return nullptr;
+
+	switch (event.type) {
+		case XWII_EVENT_IR: return std::make_unique<InfraredContainer>(event);
+		default:
+			break;
+	}
+
+	return nullptr;
 }
 
 bool XWiimoteController::isRumbleSupported() {
@@ -108,23 +142,4 @@ void XWiimoteController::reconfigure() {
 		m_interface = nullptr;
 		return;
 	}
-}
-
-int XWiimoteController::process(xwii_event &event) {
-	static pollfd fds[2];
-	memset(fds, 0, sizeof(fds));
-	fds[0].fd = 0;
-	fds[0].events = POLLIN;
-	fds[1].fd = m_fd;
-	fds[1].events = POLLIN;
-	auto ret = poll(fds, 2, -1);
-
-	if (ret < 0) {
-		if (errno != EINTR) {
-			ret = -errno;
-			std::cerr << "Error: Cannot poll fds:" << ret << std::endl;
-		}
-	}
-
-	return xwii_iface_dispatch(m_interface, &event, sizeof(event));
 }

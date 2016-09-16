@@ -23,14 +23,11 @@ public:
 		ProController,
 	};
 
-	explicit IContainer(const Source source);
+	explicit IContainer() = default;
 	virtual ~IContainer() = default;
 
 	virtual Type type() const = 0;
-	virtual Source source() const;
-
-private:
-	const Source m_source;
+	virtual Source source() const = 0;
 };
 }
 }

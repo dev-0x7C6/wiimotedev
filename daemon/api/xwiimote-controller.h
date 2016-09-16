@@ -18,6 +18,8 @@ public:
 
 	virtual interface::ApiType type() const override { return interface::ApiType::XWiimote; }
 
+	virtual std::unique_ptr<interface::IContainer> process() override;
+
 	virtual bool isRumbleSupported() override;
 	virtual bool isLedSupported() override;
 	virtual bool isInfraredSupported() override;
@@ -37,8 +39,6 @@ private:
 	std::string interfaceFilePath() const;
 
 	void reconfigure();
-
-	int process(xwii_event &event);
 
 private:
 	const std::string m_interfaceFilePath;
