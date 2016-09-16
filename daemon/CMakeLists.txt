@@ -10,6 +10,8 @@ set(sources
 	api/cwiid-controller.h
 	api/cwiid-manager.cpp
 	api/cwiid-manager.h
+	containers/infrared-container.cpp
+	containers/infrared-container.h
 	api/xwiimote-controller.cpp
 	api/xwiimote-controller.h
 	api/xwiimote-manager.cpp
@@ -31,6 +33,7 @@ set(sources
 	interfaces/iwiimote-api.h
 	interfaces/iwiimote-manager.cpp
 	interfaces/iwiimote-manager.h
+	interfaces/icontainer.h
 	messages/classicmessages.cpp
 	messages/motionplusmessages.cpp
 	messages/nunchukmessages.cpp
@@ -45,7 +48,6 @@ set(sources
 	wiimotedevdevice.h
 	wiimotedevsettings.cpp
 	wiimotedevsettings.h
-
 )
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
