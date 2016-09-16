@@ -8,7 +8,7 @@ namespace functional {
 template <std::size_t size>
 class UniqueId final {
 public:
-	explicit UniqueId() = default;
+	explicit UniqueId() { m_table.fill(false); }
 	virtual ~UniqueId() = default;
 
 	decltype(size) take() {
