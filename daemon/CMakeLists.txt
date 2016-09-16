@@ -10,8 +10,6 @@ set(sources
 	api/cwiid-controller.h
 	api/cwiid-manager.cpp
 	api/cwiid-manager.h
-	containers/infrared-container.cpp
-	containers/infrared-container.h
 	api/xwiimote-controller.cpp
 	api/xwiimote-controller.h
 	api/xwiimote-manager.cpp
@@ -22,6 +20,10 @@ set(sources
 	${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
 	${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
 	${CMAKE_SOURCE_DIR}/syslog/syslog.h
+	containers/accelerometer-container.cpp
+	containers/accelerometer-container.h
+	containers/infrared-container.cpp
+	containers/infrared-container.h
 	daemon.cpp
 	dbus/daemonservice.h
 	dbus/deviceevents.h
@@ -29,11 +31,11 @@ set(sources
 	factories/controller-manager-factory.h
 	fancy/fancy.cpp
 	functionals/unique-id.h
+	interfaces/icontainer.h
 	interfaces/iwiimote-api.cpp
 	interfaces/iwiimote-api.h
 	interfaces/iwiimote-manager.cpp
 	interfaces/iwiimote-manager.h
-	interfaces/icontainer.h
 	messages/classicmessages.cpp
 	messages/motionplusmessages.cpp
 	messages/nunchukmessages.cpp

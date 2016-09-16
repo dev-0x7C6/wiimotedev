@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "containers/infrared-container.h"
+#include "containers/accelerometer-container.h"
 
 using namespace daemon::api;
 using namespace daemon::container;
@@ -67,6 +68,7 @@ std::unique_ptr<daemon::interface::IContainer> XWiimoteController::process() {
 
 	switch (event.type) {
 		case XWII_EVENT_IR: return std::make_unique<InfraredContainer>(event);
+		case XWII_EVENT_ACCEL: return std::make_unique<AccelerometerContainer>(AccelerometerContainer::Source::Wiimote, event);
 		default:
 			break;
 	}

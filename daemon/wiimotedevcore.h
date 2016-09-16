@@ -72,7 +72,7 @@ private slots:
 
 private:
 	// Adaptor section ------------------------------------------ /
-	WiimotedevDBusEventsWrapper *WiimotedevDBusEvents;
+	WiimotedevDBusEventsWrapper *m_events;
 	DBusServiceAdaptorWrapper *dbusServiceAdaptor;
 
 	// Settings ------------------------------------------------- /

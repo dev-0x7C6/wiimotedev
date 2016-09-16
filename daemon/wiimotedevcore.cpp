@@ -13,9 +13,10 @@
 #include "wiimotedevcore.h"
 #include "wiimotedevdevice.h"
 
+#include "containers/accelerometer-container.h"
+#include "containers/infrared-container.h"
 #include "factories/controller-manager-factory.h"
 #include "functionals/unique-id.h"
-#include "containers/infrared-container.h"
 #include "interfaces/icontainer.h"
 
 using namespace daemon::container;
@@ -26,7 +27,7 @@ using namespace std::literals;
 
 WiimotedevCore::WiimotedevCore(QObject *parent)
 		: QThread(parent)
-		, WiimotedevDBusEvents(0)
+		, m_events(0)
 		, dbusServiceAdaptor(0)
 		, m_interrupted(false)
 		, result(EXIT_SUCCESS) {
@@ -40,11 +41,11 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 	settings = new WiimotedevSettings(this);
 	sequence = settings->connectionTable();
 	QDBusConnection connection = QDBusConnection::systemBus();
-	WiimotedevDBusEvents = new WiimotedevDBusEventsWrapper(this, connection);
+	m_events = new WiimotedevDBusEventsWrapper(this, connection);
 	dbusServiceAdaptor = new DBusServiceAdaptorWrapper(this, connection);
 	bool registred = connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
 
-	if (!(WiimotedevDBusEvents->isRegistred() &&
+	if (!(m_events->isRegistred() &&
 			dbusServiceAdaptor->isRegistred() && registred)) {
 		systemlog::critical("cannot dbus service, quit...");
 		result = EXIT_FAILURE;
@@ -89,7 +90,12 @@ void WiimotedevCore::run() {
 						ir.append(t);
 					}
 
-					WiimotedevDBusEvents->dbusWiimoteInfrared(1, ir);
+					m_events->dbusWiimoteInfrared(1, ir);
+				} break;
+
+				case IContainer::Type::Accelerometer: {
+					const auto &data = static_cast<AccelerometerContainer *>(event.get())->data();
+					m_events->dbusWiimoteAcc(1, data);
 				} break;
 			}
 		}
