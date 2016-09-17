@@ -45,6 +45,22 @@ struct irpoint {
 	uint16_t y;
 };
 
+struct gyrodata {
+	int32_t x;
+	int32_t y;
+	int32_t z;
+	int32_t lowX;
+	int32_t lowY;
+	int32_t lowZ;
+};
+
+struct pressdata {
+	int32_t tl;
+	int32_t tr;
+	int32_t bl;
+	int32_t br;
+};
+
 struct accdata {
 	uint8_t x;
 	uint8_t y;

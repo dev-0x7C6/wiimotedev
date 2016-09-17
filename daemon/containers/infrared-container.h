@@ -16,10 +16,9 @@ using IrPoints = std::array<irpoint, 4>; // max 4 ir
 class InfraredContainer final : public interface::IContainer {
 public:
 	explicit InfraredContainer(const IrPoints &points);
-	explicit InfraredContainer(const xwii_event &event);
 
-	virtual Type type() const override;
 	virtual Source source() const override;
+	virtual Type type() const override;
 
 	const IrPoints &points() const;
 

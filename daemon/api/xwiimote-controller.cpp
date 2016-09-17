@@ -7,11 +7,15 @@
 #include <cstring>
 #include <iostream>
 
-#include "containers/infrared-container.h"
 #include "containers/accelerometer-container.h"
+#include "containers/infrared-container.h"
+#include "containers/gyroscope-container.h"
+#include "containers/pressure-container.h"
+#include "interfaces/icontainer.h"
 
 using namespace daemon::api;
 using namespace daemon::container;
+using namespace daemon::interface;
 
 XWiimoteController::XWiimoteController(const std::string &interfaceFilePath)
 		: m_interfaceFilePath(interfaceFilePath) {
@@ -46,6 +50,7 @@ XWiimoteController::~XWiimoteController() {
 
 std::unique_ptr<daemon::interface::IContainer> XWiimoteController::process() {
 	struct xwii_event event;
+	memset(&event, 0, sizeof(event));
 	static pollfd fds[2];
 	memset(fds, 0, sizeof(fds));
 	fds[0].fd = 0;
@@ -63,12 +68,58 @@ std::unique_ptr<daemon::interface::IContainer> XWiimoteController::process() {
 
 	ret = xwii_iface_dispatch(m_interface, &event, sizeof(event));
 
+	auto process_ir = [](const xwii_event &event) {
+		IrPoints ir;
+		for (std::size_t i = 0; i < ir.size(); ++i) {
+			ir[i].x = event.v.abs[i].x;
+			ir[i].y = event.v.abs[i].y;
+			ir[i].size = xwii_event_ir_is_valid(&event.v.abs[i]) ? 1 : -1;
+		}
+
+		return std::make_unique<InfraredContainer>(ir);
+	};
+
+	auto process_acc = [](const xwii_event &event, const IContainer::Source source) {
+		struct accdata data;
+		data.x = event.v.abs[0].x;
+		data.y = event.v.abs[0].y;
+		data.z = event.v.abs[0].z;
+		data.roll = 0;
+		data.pitch = 0;
+		return std::make_unique<AccelerometerContainer>(source, data);
+	};
+
+	auto process_gyro = [](const xwii_event &event) {
+		struct gyrodata data;
+		data.x = event.v.abs[0].x;
+		data.y = event.v.abs[0].y;
+		data.z = event.v.abs[0].z;
+		data.lowX = event.v.abs[1].x;
+		data.lowY = event.v.abs[1].y;
+		data.lowZ = event.v.abs[1].z;
+		return std::make_unique<GyroscopeContainer>(data);
+	};
+
+	auto process_press = [](const xwii_event &event) {
+		struct pressdata data;
+		data.tl = event.v.abs[2].x;
+		data.bl = event.v.abs[3].x;
+		data.br = event.v.abs[1].x;
+		data.tr = event.v.abs[0].x;
+		return std::make_unique<PressureContainer>(data);
+	};
+
 	if (ret)
 		return nullptr;
 
 	switch (event.type) {
-		case XWII_EVENT_IR: return std::make_unique<InfraredContainer>(event);
-		case XWII_EVENT_ACCEL: return std::make_unique<AccelerometerContainer>(AccelerometerContainer::Source::Wiimote, event);
+		case XWII_EVENT_IR: return process_ir(event);
+		case XWII_EVENT_ACCEL: return process_acc(event, IContainer::Source::Wiimote);
+		case XWII_EVENT_MOTION_PLUS: return process_gyro(event);
+		case XWII_EVENT_NUNCHUK_MOVE: return process_acc(event, IContainer::Source::Nunchuk);
+		case XWII_EVENT_BALANCE_BOARD:
+			return process_press(event);
+		//case XWII_EVENT_KEY: return process_button(event, IContainer::Source::Wiimote);
 		default:
 			break;
 	}

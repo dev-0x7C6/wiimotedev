@@ -22,8 +22,14 @@ set(sources
 	${CMAKE_SOURCE_DIR}/syslog/syslog.h
 	containers/accelerometer-container.cpp
 	containers/accelerometer-container.h
+	containers/button-container.cpp
+	containers/button-container.h
+	containers/gyroscope-container.cpp
+	containers/gyroscope-container.h
 	containers/infrared-container.cpp
 	containers/infrared-container.h
+	containers/pressure-container.cpp
+	containers/pressure-container.h
 	daemon.cpp
 	dbus/daemonservice.h
 	dbus/deviceevents.h
