@@ -48,6 +48,18 @@ XWiimoteController::~XWiimoteController() {
 	xwii_iface_unref(m_interface);
 }
 
+IWiimote::Type XWiimoteController::type() const {
+	const auto flags = xwii_iface_available(m_interface);
+
+	if (flags & XWII_IFACE_BALANCE_BOARD)
+		return Type::BalanceBoard;
+
+	if (flags & XWII_IFACE_PRO_CONTROLLER)
+		return Type::ProController;
+
+	return Type::Wiimote;
+}
+
 std::unique_ptr<daemon::interface::IContainer> XWiimoteController::process() {
 	struct xwii_event event;
 	memset(&event, 0, sizeof(event));

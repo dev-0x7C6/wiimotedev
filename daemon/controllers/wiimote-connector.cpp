@@ -15,7 +15,8 @@ void WiimoteConnector::process() {
 		auto controller = m_manager->connect();
 
 		if (controller) {
-			//controller->
+			const auto id = m_uniqueId.at(static_cast<std::size_t>(controller->type())).take();
+			controller->setId(id);
 			m_controllers.emplace_back(std::move(controller));
 		}
 	}
