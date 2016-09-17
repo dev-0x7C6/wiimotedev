@@ -7,10 +7,9 @@ namespace api {
 
 class CwiidController final : public interface::IWiimote {
 public:
-	explicit CwiidController() = default;
-	virtual ~CwiidController() = default;
+	using interface::IWiimote::IWiimote;
 
-	virtual interface::ApiType type() const override { return interface::ApiType::Cwiid; }
+	virtual interface::IWiimote::Api api() const override { return interface::IWiimote::Api::Cwiid; }
 
 	virtual bool isRumbleSupported() override;
 	virtual bool isLedSupported() override;

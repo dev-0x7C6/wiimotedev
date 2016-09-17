@@ -10,7 +10,7 @@ public:
 	explicit CwiidManager() = default;
 	virtual ~CwiidManager() = default;
 
-	virtual interface::ApiType api() const override { return interface::ApiType::Cwiid; }
+	virtual interface::IWiimote::Api api() const override { return interface::IWiimote::Api::Cwiid; }
 	virtual std::unique_ptr<interface::IWiimote> connect() override;
 };
 }

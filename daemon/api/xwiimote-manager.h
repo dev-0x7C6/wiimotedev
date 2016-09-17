@@ -15,7 +15,7 @@ public:
 	explicit XWiimoteManager();
 	virtual ~XWiimoteManager() = default;
 
-	virtual interface::ApiType api() const override { return interface::ApiType::XWiimote; }
+	virtual interface::IWiimote::Api api() const override { return interface::IWiimote::Api::XWiimote; }
 	virtual std::unique_ptr<interface::IWiimote> connect() override;
 
 private:

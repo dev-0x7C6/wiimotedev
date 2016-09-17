@@ -11,7 +11,7 @@ public:
 	explicit ControllerManagerFactory() = delete;
 	virtual ~ControllerManagerFactory() = delete;
 
-	static std::unique_ptr<interface::IWiimoteManager> create(const interface::ApiType type);
+	static std::unique_ptr<interface::IWiimoteManager> create(const interface::IWiimote::Api type);
 };
 }
 }

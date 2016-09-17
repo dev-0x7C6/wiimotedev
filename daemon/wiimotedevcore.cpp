@@ -30,7 +30,9 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 		, m_events(0)
 		, dbusServiceAdaptor(0)
 		, m_interrupted(false)
-		, result(EXIT_SUCCESS) {
+		, result(EXIT_SUCCESS)
+
+{
 	if (!QFile::exists(WIIMOTEDEV_SETTINGS_FILE)) {
 		systemlog::critical(QString("missing configuration file %1").arg(WIIMOTEDEV_SETTINGS_FILE));
 		result = EXIT_FAILURE;
@@ -61,7 +63,7 @@ void WiimotedevCore::interrupt() { m_interrupted = true; }
 void WiimotedevCore::run() {
 	UniqueId<256> unique;
 
-	auto manager = ControllerManagerFactory::create(ApiType::XWiimote);
+	auto manager = ControllerManagerFactory::create(IWiimote::Api::XWiimote);
 	std::list<std::unique_ptr<IWiimote>> devices;
 
 	while (!m_interrupted) {
@@ -69,6 +71,7 @@ void WiimotedevCore::run() {
 
 		if (controller) {
 			const auto id = unique.take();
+			controller->setId(id);
 			devices.emplace_back(std::move(controller));
 		}
 
@@ -90,17 +93,17 @@ void WiimotedevCore::run() {
 						ir.append(t);
 					}
 
-					m_events->dbusWiimoteInfrared(1, ir);
+					m_events->dbusWiimoteInfrared(device->id(), ir);
 				} break;
 
 				case IContainer::Type::Accelerometer: {
 					const auto &data = static_cast<AccelerometerContainer *>(event.get())->data();
-					m_events->dbusWiimoteAcc(1, data);
+					m_events->dbusWiimoteAcc(device->id(), data);
 				} break;
 			}
 		}
 
-		std::this_thread::sleep_for(2ms);
+		std::this_thread::sleep_for(1ms);
 	}
 }
 //	if (result == EXIT_FAILURE) {

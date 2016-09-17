@@ -16,7 +16,7 @@ public:
 	explicit XWiimoteController(const std::string &interfaceFilePath);
 	virtual ~XWiimoteController();
 
-	virtual interface::ApiType type() const override { return interface::ApiType::XWiimote; }
+	virtual Api api() const override { return Api::XWiimote; }
 
 	virtual std::unique_ptr<interface::IContainer> process() override;
 

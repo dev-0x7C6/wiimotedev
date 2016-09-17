@@ -9,23 +9,23 @@
 namespace daemon {
 namespace interface {
 
-enum class ApiType {
-	Cwiid,
-	XWiimote
-};
-
 class IWiimote {
 public:
 	explicit IWiimote() = default;
 	virtual ~IWiimote() = default;
 
-	enum class Device {
+	enum class Type {
 		Wiimote,
 		BalanceBoard,
 		ProController
 	};
 
-	virtual ApiType type() const = 0;
+	enum class Api {
+		Cwiid,
+		XWiimote
+	};
+
+	virtual Api api() const = 0;
 
 	virtual std::unique_ptr<IContainer> process() = 0;
 
@@ -44,7 +44,11 @@ public:
 	virtual bool hasMotionPlusExtension() = 0;
 	virtual bool hasNunchukExtension() = 0;
 
-protected:
+	uint32_t id() const;
+	void setId(const uint32_t &id);
+
+private:
+	uint32_t m_id = 0u;
 };
 }
 }

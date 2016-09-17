@@ -30,6 +30,8 @@ set(sources
 	containers/infrared-container.h
 	containers/pressure-container.cpp
 	containers/pressure-container.h
+	controllers/wiimote-connector.cpp
+	controllers/wiimote-connector.h
 	daemon.cpp
 	dbus/daemonservice.h
 	dbus/deviceevents.h
