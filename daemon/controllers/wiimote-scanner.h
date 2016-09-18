@@ -6,19 +6,18 @@
 #include "interfaces/iwiimote-api.h"
 #include "interfaces/iwiimote-manager.h"
 
-namespace daemon {
+namespace service {
 namespace controller {
 
-class WiimoteConnector {
+class WiimoteScanner {
 public:
-	explicit WiimoteConnector(const interface::IWiimote::Api api);
-	virtual ~WiimoteConnector() = default;
+	explicit WiimoteScanner(const interface::IWiimote::Api api);
+	virtual ~WiimoteScanner() = default;
 
-	void process();
+	std::unique_ptr<interface::IWiimote> process();
 
 private:
 	std::unique_ptr<interface::IWiimoteManager> m_manager;
-	std::list<std::unique_ptr<interface::IWiimote>> m_controllers;
 	std::array<functional::UniqueId<128>, 3> m_uniqueId;
 };
 }

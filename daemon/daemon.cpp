@@ -18,6 +18,8 @@
 #include "syslog/syslog.h"
 #include "wiimotedevcore.h"
 
+using namespace service::core;
+
 void signal_handler(int sig) {
 	switch (sig) {
 		case SIGHUP:
@@ -95,10 +97,7 @@ int main(int argc, char *argv[]) {
 	systemlog::open(DAEMON_NAME);
 	systemlog::information("service started");
 	std::unique_ptr<WiimotedevCore> core = std::make_unique<WiimotedevCore>();
-	core->start();
 	application.exec();
-	core->interrupt();
-	core->wait();
 	systemlog::information("service quited");
 	systemlog::close();
 

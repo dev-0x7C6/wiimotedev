@@ -2,7 +2,7 @@
 
 #include "interfaces/iwiimote-manager.h"
 
-namespace daemon {
+namespace service {
 namespace api {
 
 class CwiidManager final : public interface::IWiimoteManager {

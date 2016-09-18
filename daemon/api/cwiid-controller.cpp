@@ -2,7 +2,7 @@
 
 #include "static/libcwiid/cwiid.h"
 
-using namespace daemon::api;
+using namespace service::api;
 
 bool CwiidController::isRumbleSupported() {
 	return true;

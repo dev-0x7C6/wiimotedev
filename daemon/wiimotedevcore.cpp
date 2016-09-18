@@ -16,20 +16,20 @@
 #include "containers/accelerometer-container.h"
 #include "containers/infrared-container.h"
 #include "factories/controller-manager-factory.h"
-#include "functionals/unique-id.h"
 #include "interfaces/icontainer.h"
 
-using namespace daemon::container;
-using namespace daemon::factory;
-using namespace daemon::functional;
-using namespace daemon::interface;
+using namespace service::container;
+using namespace service::controller;
+using namespace service::core;
+using namespace service::factory;
+using namespace service::interface;
 using namespace std::literals;
 
 WiimotedevCore::WiimotedevCore(QObject *parent)
-		: QThread(parent)
+		: QObject(parent)
 		, m_events(0)
 		, dbusServiceAdaptor(0)
-		, m_interrupted(false)
+		, m_scanner(IWiimote::Api::XWiimote)
 		, result(EXIT_SUCCESS)
 
 {
@@ -53,59 +53,45 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 		result = EXIT_FAILURE;
 		return;
 	}
+
+	startTimer(1, Qt::PreciseTimer);
 }
 
 WiimotedevCore::~WiimotedevCore() {
 }
 
-void WiimotedevCore::interrupt() { m_interrupted = true; }
+void WiimotedevCore::timerEvent(QTimerEvent *event) {
+	static_cast<void>(event);
 
-void WiimotedevCore::run() {
-	UniqueId<256> unique;
+	for (const auto &device : m_devices) {
+		const auto event = device->process();
+		if (!event)
+			continue;
 
-	auto manager = ControllerManagerFactory::create(IWiimote::Api::XWiimote);
-	std::list<std::unique_ptr<IWiimote>> devices;
+		switch (event->type()) {
+			case IContainer::Type::Infrared: {
+				const auto &points = static_cast<InfraredContainer *>(event.get())->points();
 
-	while (!m_interrupted) {
-		auto controller = manager->connect();
+				QList<struct irpoint> ir;
+				for (std::size_t i = 0; i < points.size(); ++i) {
+					struct irpoint t;
+					t.x = points[i].x;
+					t.y = points[i].y;
+					t.size = points[i].size;
+					ir.append(t);
+				}
 
-		if (controller) {
-			const auto id = unique.take();
-			controller->setId(id);
-			devices.emplace_back(std::move(controller));
+				m_events->dbusWiimoteInfrared(device->id(), ir);
+			} break;
+
+			case IContainer::Type::Accelerometer: {
+				const auto &data = static_cast<AccelerometerContainer *>(event.get())->data();
+				m_events->dbusWiimoteAcc(device->id(), data);
+			} break;
 		}
-
-		for (const auto &device : devices) {
-			const auto event = device->process();
-			if (!event)
-				continue;
-
-			switch (event->type()) {
-				case IContainer::Type::Infrared: {
-					const auto &points = static_cast<InfraredContainer *>(event.get())->points();
-
-					QList<struct irpoint> ir;
-					for (std::size_t i = 0; i < points.size(); ++i) {
-						struct irpoint t;
-						t.x = points[i].x;
-						t.y = points[i].y;
-						t.size = points[i].size;
-						ir.append(t);
-					}
-
-					m_events->dbusWiimoteInfrared(device->id(), ir);
-				} break;
-
-				case IContainer::Type::Accelerometer: {
-					const auto &data = static_cast<AccelerometerContainer *>(event.get())->data();
-					m_events->dbusWiimoteAcc(device->id(), data);
-				} break;
-			}
-		}
-
-		std::this_thread::sleep_for(1ms);
 	}
 }
+
 //	if (result == EXIT_FAILURE) {
 //		QCoreApplication::quit();
 //		return;

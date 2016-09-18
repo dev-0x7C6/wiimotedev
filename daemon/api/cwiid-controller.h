@@ -2,7 +2,7 @@
 
 #include "interfaces/iwiimote-api.h"
 
-namespace daemon {
+namespace service {
 namespace api {
 
 class CwiidController final : public interface::IWiimote {

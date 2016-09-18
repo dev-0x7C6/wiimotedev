@@ -1,7 +1,7 @@
 #include "pressure-container.h"
 
-using namespace daemon::interface;
-using namespace daemon::container;
+using namespace service::interface;
+using namespace service::container;
 
 PressureContainer::PressureContainer(const pressdata &data)
 		: m_data(data) {

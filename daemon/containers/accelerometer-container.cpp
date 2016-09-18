@@ -1,7 +1,7 @@
 #include "accelerometer-container.h"
 
-using namespace daemon::container;
-using namespace daemon::interface;
+using namespace service::container;
+using namespace service::interface;
 
 AccelerometerContainer::AccelerometerContainer(const Source source, const accdata &data)
 		: m_source(source)

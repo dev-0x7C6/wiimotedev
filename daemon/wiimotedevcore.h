@@ -1,22 +1,3 @@
-/**********************************************************************************
- * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
- * Copyright (C) 2008-2015  Bartłomiej Burdukiewicz                               *
- * Contact: bartlomiej.burdukiewicz@gmail.com                                     *
- *                                                                                *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU Lesser General Public                     *
- * License as published by the Free Software Foundation; either                   *
- * version 2.1 of the License, or (at your option) any later version.             *
- *                                                                                *
- * This program is distributed in the hope that it will be useful,                *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU              *
- * Lesser General Public License for more details.                                *
- *                                                                                *
- * You should have received a copy of the GNU Lesser General Public               *
- * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
- **********************************************************************************/
-
 #pragma once
 
 #include <atomic>
@@ -25,26 +6,28 @@
 #include <QMutexLocker>
 #include <QThread>
 
+#include "controllers/wiimote-scanner-thread.h"
 #include "dbus/daemonservice.h"
 #include "dbus/deviceevents.h"
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "wiimotedevconnection.h"
 #include "wiimotedevsettings.h"
 
-class WiimotedevCore : public QThread {
+namespace service {
+namespace core {
+
+class WiimotedevCore final : public QObject {
 	Q_OBJECT
 public:
-	WiimotedevCore(QObject *parent = 0);
-	~WiimotedevCore();
+	explicit WiimotedevCore(QObject *parent = nullptr);
+	virtual ~WiimotedevCore();
 
 	uint32_t result;
 
-	void interrupt();
-
-	static const int BluetoothFlood = 100;
-	static const int WaitForBluetooth = 3000;
-
 	QHash<uint32_t, WiimotedevConnection *> threads;
+
+protected:
+	virtual void timerEvent(QTimerEvent *event) override;
 
 public slots:
 	bool dbusIsClassicConnected(quint32 id);
@@ -78,10 +61,12 @@ private:
 	// Settings ------------------------------------------------- /
 	WiimotedevSettings *settings;
 	QHash<QString, uint> sequence;
-	QMutex m_mutex;
 
-	std::atomic<bool> m_interrupted;
+	service::controller::WiimoteScannerThread m_scanner;
+	std::list<std::unique_ptr<service::interface::IWiimote>> m_devices;
 
 signals:
 	void dbusReportUnregistredWiimote(QString);
 };
+}
+}

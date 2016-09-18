@@ -2,7 +2,7 @@
 
 #include <array>
 
-namespace daemon {
+namespace service {
 namespace functional {
 
 template <std::size_t size>

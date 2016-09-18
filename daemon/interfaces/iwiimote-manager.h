@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace daemon {
+namespace service {
 namespace interface {
 
 class IWiimote;

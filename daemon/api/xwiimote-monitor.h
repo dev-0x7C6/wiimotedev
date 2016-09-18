@@ -4,7 +4,7 @@
 
 struct xwii_monitor;
 
-namespace daemon {
+namespace service {
 namespace api {
 namespace helper {
 

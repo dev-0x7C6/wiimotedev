@@ -6,7 +6,7 @@
 
 #include "interfaces/icontainer.h"
 
-namespace daemon {
+namespace service {
 namespace interface {
 
 class IWiimote {

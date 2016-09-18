@@ -13,9 +13,9 @@
 #include "containers/pressure-container.h"
 #include "interfaces/icontainer.h"
 
-using namespace daemon::api;
-using namespace daemon::container;
-using namespace daemon::interface;
+using namespace service::api;
+using namespace service::container;
+using namespace service::interface;
 
 XWiimoteController::XWiimoteController(const std::string &interfaceFilePath)
 		: m_interfaceFilePath(interfaceFilePath) {
@@ -60,7 +60,7 @@ IWiimote::Type XWiimoteController::type() const {
 	return Type::Wiimote;
 }
 
-std::unique_ptr<daemon::interface::IContainer> XWiimoteController::process() {
+std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 	struct xwii_event event;
 	memset(&event, 0, sizeof(event));
 	static pollfd fds[2];

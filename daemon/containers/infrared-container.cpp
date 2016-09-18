@@ -1,13 +1,13 @@
 #include "infrared-container.h"
 #include <xwiimote.h>
 
-using namespace daemon::container;
+using namespace service::container;
 
 InfraredContainer::InfraredContainer(const IrPoints &points)
 		: m_points(points) {}
 
-daemon::interface::IContainer::Type InfraredContainer::type() const { return Type::Infrared; }
+service::interface::IContainer::Type InfraredContainer::type() const { return Type::Infrared; }
 
-daemon::interface::IContainer::Source InfraredContainer::source() const { return Source::Wiimote; }
+service::interface::IContainer::Source InfraredContainer::source() const { return Source::Wiimote; }
 
 const IrPoints &InfraredContainer::points() const { return m_points; }

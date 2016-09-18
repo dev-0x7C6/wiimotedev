@@ -1,7 +1,7 @@
 #include "gyroscope-container.h"
 
-using namespace daemon::container;
-using namespace daemon::interface;
+using namespace service::container;
+using namespace service::interface;
 
 GyroscopeContainer::GyroscopeContainer(const gyrodata &data)
 		: m_data(data) {}

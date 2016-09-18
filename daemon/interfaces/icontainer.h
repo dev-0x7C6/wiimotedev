@@ -1,6 +1,6 @@
 #pragma once
 
-namespace daemon {
+namespace service {
 namespace interface {
 
 class IContainer {

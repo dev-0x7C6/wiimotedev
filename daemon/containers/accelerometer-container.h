@@ -3,7 +3,7 @@
 #include "interfaces/icontainer.h"
 #include "linux/usr/include/wiimotedev/consts.h"
 
-namespace daemon {
+namespace service {
 namespace container {
 
 class AccelerometerContainer final : public interface::IContainer {

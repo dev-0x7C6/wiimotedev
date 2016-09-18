@@ -2,9 +2,9 @@
 #include "api/xwiimote-controller.h"
 #include "api/xwiimote-monitor.h"
 
-using namespace daemon::api;
-using namespace daemon::api::helper;
-using namespace daemon::interface;
+using namespace service::api;
+using namespace service::api::helper;
+using namespace service::interface;
 
 XWiimoteManager::XWiimoteManager()
 		: m_monitor(std::make_unique<XWiimoteMonitor>()) {

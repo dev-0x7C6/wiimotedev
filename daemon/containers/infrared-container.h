@@ -8,7 +8,7 @@
 
 struct xwii_event;
 
-namespace daemon {
+namespace service {
 namespace container {
 
 using IrPoints = std::array<irpoint, 4>; // max 4 ir

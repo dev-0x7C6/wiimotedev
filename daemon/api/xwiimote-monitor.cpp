@@ -2,7 +2,7 @@
 
 #include <xwiimote.h>
 
-using namespace daemon::api::helper;
+using namespace service::api::helper;
 
 XWiimoteMonitor::XWiimoteMonitor() {
 	m_monitor = xwii_monitor_new(true, true);

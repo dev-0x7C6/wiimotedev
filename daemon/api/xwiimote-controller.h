@@ -8,7 +8,7 @@
 struct xwii_iface;
 struct xwii_event;
 
-namespace daemon {
+namespace service {
 namespace api {
 
 class XWiimoteController final : public interface::IWiimote {

@@ -1,3 +1,3 @@
 #include "iwiimote-manager.h"
 
-using namespace daemon::interface;
+using namespace service::interface;

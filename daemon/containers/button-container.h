@@ -2,7 +2,7 @@
 
 #include "interfaces/icontainer.h"
 
-namespace daemon {
+namespace service {
 namespace container {
 
 class ButtonContainer final : public interface::IContainer {
