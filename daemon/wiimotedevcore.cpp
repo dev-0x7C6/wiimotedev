@@ -39,14 +39,7 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 		return;
 	}
 
-#define WIIMOTEDEV_DBUS_SERVICE_NAME "org.wiimotedev.daemon"
-#define WIIMOTEDEV_DBUS_IFACE_EVENTS "org.wiimotedev.deviceEvents"
-#define WIIMOTEDEV_DBUS_IFACE_SERVICE "org.wiimotedev.service"
-#define WIIMOTEDEV_DBUS_OBJECT_EVENTS "/deviceEvents"
-#define WIIMOTEDEV_DBUS_OBJECT_SERVICE "/service"
-
-	auto test = new DeviceEventsAdaptor(this);
-	connect(this, &WiimotedevCore::dbusWiimoteInfrared, test, &DeviceEventsAdaptor::dbusWiimoteInfrared);
+	new DeviceEventsAdaptor(this);
 	QDBusConnection connection = QDBusConnection::systemBus();
 	connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_EVENTS, this);
 	connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
