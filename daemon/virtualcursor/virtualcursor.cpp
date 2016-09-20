@@ -18,6 +18,7 @@
  **********************************************************************************/
 
 #include "virtualcursor.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 
 VirtualCursor::VirtualCursor() {
 	for (uint32_t i = 0; i < 2; ++i) {

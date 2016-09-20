@@ -17,6 +17,7 @@
 #include "containers/infrared-container.h"
 #include "factories/controller-manager-factory.h"
 #include "interfaces/icontainer.h"
+#include "deviceeventsadaptor.h"
 
 using namespace service::container;
 using namespace service::controller;
@@ -27,7 +28,6 @@ using namespace std::literals;
 
 WiimotedevCore::WiimotedevCore(QObject *parent)
 		: QObject(parent)
-		, m_events(0)
 		, dbusServiceAdaptor(0)
 		, m_scanner(IWiimote::Api::XWiimote)
 		, result(EXIT_SUCCESS)
@@ -39,20 +39,32 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 		return;
 	}
 
-	systemlog::notice(QString("config: %1").arg(WIIMOTEDEV_SETTINGS_FILE));
-	settings = new WiimotedevSettings(this);
-	sequence = settings->connectionTable();
-	QDBusConnection connection = QDBusConnection::systemBus();
-	m_events = new WiimotedevDBusEventsWrapper(this, connection);
-	dbusServiceAdaptor = new DBusServiceAdaptorWrapper(this, connection);
-	bool registred = connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
+#define WIIMOTEDEV_DBUS_SERVICE_NAME "org.wiimotedev.daemon"
+#define WIIMOTEDEV_DBUS_IFACE_EVENTS "org.wiimotedev.deviceEvents"
+#define WIIMOTEDEV_DBUS_IFACE_SERVICE "org.wiimotedev.service"
+#define WIIMOTEDEV_DBUS_OBJECT_EVENTS "/deviceEvents"
+#define WIIMOTEDEV_DBUS_OBJECT_SERVICE "/service"
 
-	if (!(m_events->isRegistred() &&
-			dbusServiceAdaptor->isRegistred() && registred)) {
-		systemlog::critical("cannot dbus service, quit...");
-		result = EXIT_FAILURE;
-		return;
-	}
+	auto test = new DeviceEventsAdaptor(this);
+	connect(this, &WiimotedevCore::dbusWiimoteInfrared, test, &DeviceEventsAdaptor::dbusWiimoteInfrared);
+	QDBusConnection connection = QDBusConnection::systemBus();
+	connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_EVENTS, this);
+	connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
+
+	//	systemlog::notice(QString("config: %1").arg(WIIMOTEDEV_SETTINGS_FILE));
+	//	settings = new WiimotedevSettings(this);
+	//	sequence = settings->connectionTable();
+	//	QDBusConnection connection = QDBusConnection::systemBus();
+	//	m_events = new WiimotedevDBusEventsWrapper(this, connection);
+	//	dbusServiceAdaptor = new DBusServiceAdaptorWrapper(this, connection);
+	//	bool registred = connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
+
+	//	if (!(m_events->isRegistred() &&
+	//			dbusServiceAdaptor->isRegistred() && registred)) {
+	//		systemlog::critical("cannot dbus service, quit...");
+	//		result = EXIT_FAILURE;
+	//		return;
+	//	}
 
 	startTimer(1, Qt::PreciseTimer);
 }
@@ -63,6 +75,8 @@ WiimotedevCore::~WiimotedevCore() {
 void WiimotedevCore::timerEvent(QTimerEvent *event) {
 	static_cast<void>(event);
 
+	m_scanner.merge(m_devices);
+
 	for (const auto &device : m_devices) {
 		const auto event = device->process();
 		if (!event)
@@ -71,22 +85,16 @@ void WiimotedevCore::timerEvent(QTimerEvent *event) {
 		switch (event->type()) {
 			case IContainer::Type::Infrared: {
 				const auto &points = static_cast<InfraredContainer *>(event.get())->points();
-
-				QList<struct irpoint> ir;
-				for (std::size_t i = 0; i < points.size(); ++i) {
-					struct irpoint t;
-					t.x = points[i].x;
-					t.y = points[i].y;
-					t.size = points[i].size;
-					ir.append(t);
-				}
-
-				m_events->dbusWiimoteInfrared(device->id(), ir);
+				emit dbusWiimoteInfrared(device->id(),
+					points[0].x, points[0].y,
+					points[1].x, points[1].y,
+					points[2].x, points[2].y,
+					points[3].x, points[3].y);
 			} break;
 
 			case IContainer::Type::Accelerometer: {
 				const auto &data = static_cast<AccelerometerContainer *>(event.get())->data();
-				m_events->dbusWiimoteAcc(device->id(), data);
+				//				m_events->dbusWiimoteAcc(device->id(), data);
 			} break;
 		}
 	}
@@ -184,8 +192,8 @@ void WiimotedevCore::dbusWiimoteDisconnected(quint32 id) {
 
 bool WiimotedevCore::dbusReloadSequenceList() {
 	systemlog::notice(QString("loading sequences from %1").arg(WIIMOTEDEV_SETTINGS_FILE));
-	settings->reload();
-	sequence = settings->connectionTable();
+	//	settings->reload();
+	//	sequence = settings->connectionTable();
 	return true;
 }
 

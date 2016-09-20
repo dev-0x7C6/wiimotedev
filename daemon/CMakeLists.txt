@@ -36,7 +36,6 @@ set(sources
 	controllers/wiimote-scanner-thread.h
 	daemon.cpp
 	dbus/daemonservice.h
-	dbus/deviceevents.h
 	factories/controller-manager-factory.cpp
 	factories/controller-manager-factory.h
 	fancy/fancy.cpp
@@ -50,6 +49,7 @@ set(sources
 	messages/motionplusmessages.cpp
 	messages/nunchukmessages.cpp
 	messages/wiimotemessages.cpp
+	dbus/deviceevents.h
 	virtualcursor/virtualcursor.cpp
 	virtualcursor/virtualcursor.h
 	wiimotedevconnection.cpp
@@ -61,6 +61,8 @@ set(sources
 	wiimotedevsettings.cpp
 	wiimotedevsettings.h
 )
+
+qt5_add_dbus_adaptor(sources dbus/deviceevents.xml wiimotedevcore.h service::core::WiimotedevCore)
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
 

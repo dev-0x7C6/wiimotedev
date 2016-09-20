@@ -23,9 +23,9 @@
 #include <atomic>
 #include <memory>
 
-#include "dbus/deviceevents.h"
 #include "static/libcwiid/cwiid.h"
 #include "virtualcursor/virtualcursor.h"
+#include "linux/usr/include/wiimotedev/consts.h"
 
 class QElapsedTimer;
 class WiimotedevDevice;
