@@ -25,6 +25,18 @@ public:
 	uint32_t result;
 
 	QHash<uint32_t, WiimotedevConnection *> threads;
+	// balance board
+	bool isBalanceBoardSupported();
+
+	// motion plus
+	bool isMotionPlusEnabled(uint id);
+	bool isMotionPlusSupported();
+	bool setMotionPlusEnabled(uint id);
+
+	// infrared
+	bool isInfraredEnabled(uint id);
+	bool isInfraredSupported();
+	bool setInfraredEnabled(uint id);
 
 protected:
 	virtual void timerEvent(QTimerEvent *event) override;
@@ -87,6 +99,12 @@ signals:
 	void dbusWiimoteLedStatusChanged(uint id, uchar value);
 	void dbusWiimoteRumbleStatusChanged(uint id, uchar value);
 	void dbusWiimoteStatus(uint id, uchar status);
+	// balance board
+	void balanceBoardDataChanged(uint id, int top_left, int top_right, int bottom_left, int bottom_right);
+	// motion plus
+	void motionPlusDataChanged(uint id, int x, int y, int z, int lowX, int lowY, int lowZ);
+	// infrared
+	void infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
 };
 }
 }

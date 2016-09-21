@@ -14,6 +14,8 @@ public:
 	virtual Source source() const override;
 	virtual Type type() const override;
 
+	gyrodata data() const;
+
 private:
 	const gyrodata m_data;
 };

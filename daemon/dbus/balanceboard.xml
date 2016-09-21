@@ -1,0 +1,15 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+	<interface name="org.wiimotedev.balanceboard">
+		<method name="isBalanceBoardSupported">
+			<arg name="value" type="b" direction="out" />
+		</method>
+		<signal name="balanceBoardDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="top_left" type="i" direction="out" />
+			<arg name="top_right" type="i" direction="out" />
+			<arg name="bottom_left" type="i" direction="out" />
+			<arg name="bottom_right" type="i" direction="out" />
+		</signal>
+	</interface>
+</node>

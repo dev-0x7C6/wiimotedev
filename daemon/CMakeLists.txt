@@ -63,6 +63,9 @@ set(sources
 )
 
 qt5_add_dbus_adaptor(sources dbus/deviceevents.xml wiimotedevcore.h service::core::WiimotedevCore)
+qt5_add_dbus_adaptor(sources dbus/infrared.xml wiimotedevcore.h service::core::WiimotedevCore)
+qt5_add_dbus_adaptor(sources dbus/motionplus.xml wiimotedevcore.h service::core::WiimotedevCore)
+qt5_add_dbus_adaptor(sources dbus/balanceboard.xml wiimotedevcore.h service::core::WiimotedevCore)
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
 

@@ -15,9 +15,14 @@
 
 #include "containers/accelerometer-container.h"
 #include "containers/infrared-container.h"
+#include "containers/gyroscope-container.h"
+#include "containers/pressure-container.h"
 #include "factories/controller-manager-factory.h"
 #include "interfaces/icontainer.h"
 #include "deviceeventsadaptor.h"
+#include "infraredadaptor.h"
+#include "motionplusadaptor.h"
+#include "balanceboardadaptor.h"
 
 using namespace service::container;
 using namespace service::controller;
@@ -40,9 +45,13 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 	}
 
 	new DeviceEventsAdaptor(this);
+	new InfraredAdaptor(this);
+	new MotionplusAdaptor(this);
+	new BalanceboardAdaptor(this);
 	QDBusConnection connection = QDBusConnection::systemBus();
-	connection.registerObject(WIIMOTEDEV_DBUS_OBJECT_EVENTS, this);
-	connection.registerService(WIIMOTEDEV_DBUS_SERVICE_NAME);
+	connection.registerObject("/interfaces", this);
+	connection.registerService("org.wiimotedev.daemon");
+	//connection.registerObject("/infrared")
 
 	//	systemlog::notice(QString("config: %1").arg(WIIMOTEDEV_SETTINGS_FILE));
 	//	settings = new WiimotedevSettings(this);
@@ -65,6 +74,36 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 WiimotedevCore::~WiimotedevCore() {
 }
 
+bool WiimotedevCore::isBalanceBoardSupported() {
+	return true;
+}
+
+bool WiimotedevCore::isMotionPlusEnabled(uint id) {
+	return id;
+}
+
+bool WiimotedevCore::isMotionPlusSupported() {
+	return true;
+}
+
+bool WiimotedevCore::setMotionPlusEnabled(uint id) {
+	return id;
+}
+
+bool WiimotedevCore::isInfraredEnabled(uint id) {
+	static_cast<void>(id);
+	return true;
+}
+
+bool WiimotedevCore::isInfraredSupported() {
+	return true;
+}
+
+bool WiimotedevCore::setInfraredEnabled(uint id) {
+	static_cast<void>(id);
+	return true;
+}
+
 void WiimotedevCore::timerEvent(QTimerEvent *event) {
 	static_cast<void>(event);
 
@@ -72,17 +111,29 @@ void WiimotedevCore::timerEvent(QTimerEvent *event) {
 
 	for (const auto &device : m_devices) {
 		const auto event = device->process();
+
 		if (!event)
 			continue;
 
 		switch (event->type()) {
 			case IContainer::Type::Infrared: {
 				const auto &points = static_cast<InfraredContainer *>(event.get())->points();
-				emit dbusWiimoteInfrared(device->id(),
+				emit infraredDataChanged(device->id(),
 					points[0].x, points[0].y,
 					points[1].x, points[1].y,
 					points[2].x, points[2].y,
 					points[3].x, points[3].y);
+			} break;
+
+			case IContainer::Type::Pressure: {
+				std::cout << "spin: " << m_devices.size() << std::endl;
+				const auto &data = static_cast<PressureContainer *>(event.get())->data();
+				emit balanceBoardDataChanged(device->id(), data.tl, data.tr, data.bl, data.br);
+			} break;
+
+			case IContainer::Type::Gyroscope: {
+				const auto &data = static_cast<GyroscopeContainer *>(event.get())->data();
+				emit motionPlusDataChanged(device->id(), data.x, data.y, data.z, data.lowX, data.lowY, data.lowZ);
 			} break;
 
 			case IContainer::Type::Accelerometer: {

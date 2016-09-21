@@ -8,4 +8,6 @@ GyroscopeContainer::GyroscopeContainer(const gyrodata &data)
 
 IContainer::Type GyroscopeContainer::type() const { return Type::Gyroscope; }
 
+gyrodata GyroscopeContainer::data() const { return m_data; }
+
 IContainer::Source GyroscopeContainer::source() const { return Source::Wiimote; }
