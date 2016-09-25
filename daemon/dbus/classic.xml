@@ -1,0 +1,26 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+	<interface name="org.wiimotedev.classic">
+		<method name="classicList">
+			<annotation value="QList&lt;uint>" name="org.qtproject.QtDBus.QtTypeName.Out0"/>
+			<arg name="list" type="au" direction="out"/>
+		</method>
+		<signal name="classicConnected">
+			<arg name="id" type="u" direction="out" />
+		</signal>
+		<signal name="classicDisconnected">
+			<arg name="id" type="u" direction="out" />
+		</signal>
+		<signal name="classicButtonDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="mask" type="t" direction="out" />
+		</signal>
+		<signal name="classicStickDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="lx" type="i" direction="out" />
+			<arg name="ly" type="i" direction="out" />
+			<arg name="rx" type="i" direction="out" />
+			<arg name="ry" type="i" direction="out" />
+		</signal>
+	</interface>
+</node>

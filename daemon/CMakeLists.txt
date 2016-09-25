@@ -36,11 +36,16 @@ set(sources
 	controllers/wiimote-scanner-thread.h
 	daemon.cpp
 	dbus/daemonservice.h
+	dbus/deviceevents.h
+	dbus/wiimote.cpp
+	dbus/wiimote.h
 	factories/controller-manager-factory.cpp
 	factories/controller-manager-factory.h
 	fancy/fancy.cpp
 	functionals/unique-id.h
 	interfaces/icontainer.h
+	interfaces/icontainer-processor.cpp
+	interfaces/icontainer-processor.h
 	interfaces/iwiimote-api.cpp
 	interfaces/iwiimote-api.h
 	interfaces/iwiimote-manager.cpp
@@ -49,7 +54,6 @@ set(sources
 	messages/motionplusmessages.cpp
 	messages/nunchukmessages.cpp
 	messages/wiimotemessages.cpp
-	dbus/deviceevents.h
 	virtualcursor/virtualcursor.cpp
 	virtualcursor/virtualcursor.h
 	wiimotedevconnection.cpp
@@ -62,10 +66,13 @@ set(sources
 	wiimotedevsettings.h
 )
 
-qt5_add_dbus_adaptor(sources dbus/deviceevents.xml wiimotedevcore.h service::core::WiimotedevCore)
-qt5_add_dbus_adaptor(sources dbus/infrared.xml wiimotedevcore.h service::core::WiimotedevCore)
-qt5_add_dbus_adaptor(sources dbus/motionplus.xml wiimotedevcore.h service::core::WiimotedevCore)
+#qt5_add_dbus_adaptor(sources dbus/deviceevents.xml wiimotedevcore.h service::core::WiimotedevCore)
 qt5_add_dbus_adaptor(sources dbus/balanceboard.xml wiimotedevcore.h service::core::WiimotedevCore)
+qt5_add_dbus_adaptor(sources dbus/wiimote.xml dbus/wiimote.h service::dbus::Wiimote)
+qt5_add_dbus_adaptor(sources dbus/motionplus.xml wiimotedevcore.h service::core::WiimotedevCore)
+qt5_add_dbus_adaptor(sources dbus/nunchuk.xml wiimotedevcore.h service::core::WiimotedevCore)
+#qt5_add_dbus_adaptor(sources dbus/wiimote.xml wiimotedevcore.h service::core::WiimotedevCore)
+
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
 

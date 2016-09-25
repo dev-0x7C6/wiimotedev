@@ -1,0 +1,47 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+	<interface name="org.wiimotedev.wiimote">
+		<method name="wiimoteList">
+			<annotation value="QList&lt;uint>" name="org.qtproject.QtDBus.QtTypeName.Out0"/>
+			<arg name="list" type="au" direction="out"/>
+		</method>
+		<signal name="wiimoteConnected">
+			<arg name="id" type="u" direction="out" />
+		</signal>
+		<signal name="wiimoteDisconnected">
+			<arg name="id" type="u" direction="out" />
+		</signal>
+		<signal name="wiimoteAccelerometerDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="x" type="i" direction="out" />
+			<arg name="y" type="i" direction="out" />
+			<arg name="z" type="i" direction="out" />
+			<arg name="pitch" type="i" direction="out" />
+			<arg name="roll" type="i" direction="out" />
+		</signal>
+		<signal name="wiimoteButtonDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="mask" type="t" direction="out" />
+		</signal>
+		<signal name="wiimoteInfraredDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="x1" type="i" direction="out" />
+			<arg name="y1" type="i" direction="out" />
+			<arg name="x2" type="i" direction="out" />
+			<arg name="y2" type="i" direction="out" />
+			<arg name="x3" type="i" direction="out" />
+			<arg name="y3" type="i" direction="out" />
+			<arg name="x4" type="i" direction="out" />
+			<arg name="y4" type="i" direction="out" />
+		</signal>
+		<signal name="wiimoteGyroscopeDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="x" type="i" direction="out" />
+			<arg name="y" type="i" direction="out" />
+			<arg name="z" type="i" direction="out" />
+			<arg name="lowX" type="i" direction="out" />
+			<arg name="lowY" type="i" direction="out" />
+			<arg name="lowZ" type="i" direction="out" />
+		</signal>
+	</interface>
+</node>

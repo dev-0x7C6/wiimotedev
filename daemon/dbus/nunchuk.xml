@@ -1,0 +1,32 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+	<interface name="org.wiimotedev.nunchuk">
+		<method name="nunchukList">
+			<annotation value="QList&lt;uint>" name="org.qtproject.QtDBus.QtTypeName.Out0"/>
+			<arg name="list" type="au" direction="out"/>
+		</method>
+		<signal name="nunchukConnected">
+			<arg name="id" type="u" direction="out" />
+		</signal>
+		<signal name="nunchukDisconnected">
+			<arg name="id" type="u" direction="out" />
+		</signal>
+		<signal name="nunchukAccelerometerDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="x" type="i" direction="out" />
+			<arg name="y" type="i" direction="out" />
+			<arg name="z" type="i" direction="out" />
+			<arg name="pitch" type="i" direction="out" />
+			<arg name="roll" type="i" direction="out" />
+		</signal>
+		<signal name="nunchukButtonDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="mask" type="t" direction="out" />
+		</signal>
+		<signal name="nunchukStickDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="x" type="i" direction="out" />
+			<arg name="y" type="i" direction="out" />
+		</signal>
+	</interface>
+</node>
