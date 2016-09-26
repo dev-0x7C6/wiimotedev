@@ -8,7 +8,6 @@ Wiimotedev project changelog
 	fixed: compilation on arm architecture (do not force -march=native)
 	removed: init.d scripts
 
-
 2.0.2
 	fixed: fixed small bug
 

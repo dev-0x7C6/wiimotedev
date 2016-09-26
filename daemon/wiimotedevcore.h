@@ -7,7 +7,6 @@
 #include <QThread>
 
 #include "controllers/wiimote-scanner-thread.h"
-#include "dbus/daemonservice.h"
 //#include "dbus/deviceevents.h"
 #include "linux/usr/include/wiimotedev/consts.h"
 #include "wiimotedevconnection.h"
@@ -39,9 +38,6 @@ protected:
 	void run();
 
 private:
-	// Adaptor section ------------------------------------------ /
-	DBusServiceAdaptorWrapper *dbusServiceAdaptor;
-
 	service::controller::WiimoteScannerThread m_scanner;
 	std::list<std::unique_ptr<service::interface::IWiimote>> m_devices;
 	std::list<std::unique_ptr<service::interface::IContainerProcessor>> m_adaptors;

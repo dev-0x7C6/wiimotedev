@@ -1,21 +1,27 @@
-#include "wiimote.h"
-#include "wiimoteadaptor.h"
+#include "wiimote-dispatcher.h"
+
+#include <QDBusConnection>
 
 #include "containers/accelerometer-container.h"
 #include "containers/gyroscope-container.h"
 #include "containers/infrared-container.h"
-#include <QDBusConnection>
+#include "wiimoteadaptor.h"
 
 using namespace service::container;
 using namespace service::dbus;
 using namespace service::interface;
 
-Wiimote::Wiimote(QObject *parent)
+WiimoteDispatcher::WiimoteDispatcher(QObject *parent)
 		: IContainerProcessor(parent) {
 
 	new WiimoteAdaptor(this);
 }
-void Wiimote::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
+
+IContainerProcessor::Type WiimoteDispatcher::type() const {
+	return Type::Wiimote;
+}
+
+void WiimoteDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
 	auto process_ir = [this, id, &container]() -> void {
 		const auto &ir = static_cast<InfraredContainer *>(container.get())->points();
 		emit wiimoteInfraredDataChanged(id, ir[0].x, ir[0].y, ir[1].x, ir[1].y, ir[2].x, ir[2].y, ir[3].x, ir[3].y);
@@ -38,6 +44,6 @@ void Wiimote::process(const uint32_t id, const std::unique_ptr<IContainer> &cont
 	}
 }
 
-QList<uint> Wiimote::wiimoteList() const {
+QList<uint> WiimoteDispatcher::wiimoteList() const {
 	return {};
 }

@@ -5,6 +5,7 @@
 #include <thread>
 
 #include <QCoreApplication>
+#include <QDBusConnection>
 #include <QElapsedTimer>
 #include <QFile>
 
@@ -17,21 +18,19 @@
 #include "containers/infrared-container.h"
 #include "containers/gyroscope-container.h"
 #include "containers/pressure-container.h"
-#include "dbus/wiimote.h"
 #include "factories/controller-manager-factory.h"
 #include "interfaces/icontainer.h"
+#include "factories/dispatcher-factory.h"
 
 using namespace service::container;
 using namespace service::controller;
 using namespace service::core;
-using namespace service::dbus;
 using namespace service::factory;
 using namespace service::interface;
 using namespace std::literals;
 
 WiimotedevCore::WiimotedevCore(QObject *parent)
 		: QObject(parent)
-		, dbusServiceAdaptor(0)
 		, m_scanner(IWiimote::Api::XWiimote)
 		, result(EXIT_SUCCESS)
 
@@ -42,11 +41,13 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 		return;
 	}
 
-	m_adaptors.emplace_back(std::make_unique<Wiimote>());
+	m_adaptors.emplace_back(DispatcherFactory::create(IContainerProcessor::Classic));
+	m_adaptors.emplace_back(DispatcherFactory::create(IContainerProcessor::Nunchuk));
+	m_adaptors.emplace_back(DispatcherFactory::create(IContainerProcessor::Wiimote));
 
 	QDBusConnection connection = QDBusConnection::systemBus();
 	for (const auto &adaptor : m_adaptors)
-		connection.registerObject("/interfaces", adaptor.get());
+		connection.registerObject("/" + QString::fromStdString(adaptor->interface()), adaptor.get());
 
 	connection.registerService("org.wiimotedev.daemon");
 
