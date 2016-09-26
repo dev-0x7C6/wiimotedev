@@ -35,6 +35,8 @@ set(sources
 	controllers/wiimote-scanner-thread.cpp
 	controllers/wiimote-scanner-thread.h
 	daemon.cpp
+	dbus/balance-board-dispatcher.cpp
+	dbus/balance-board-dispatcher.h
 	dbus/classic-dispatcher.cpp
 	dbus/classic-dispatcher.h
 	dbus/deviceevents.h
@@ -42,10 +44,10 @@ set(sources
 	dbus/nunchuk-dispatcher.h
 	dbus/wiimote-dispatcher.cpp
 	dbus/wiimote-dispatcher.h
-	factories/dispatcher-factory.cpp
-	factories/dispatcher-factory.h
 	factories/controller-manager-factory.cpp
 	factories/controller-manager-factory.h
+	factories/dispatcher-factory.cpp
+	factories/dispatcher-factory.h
 	fancy/fancy.cpp
 	functionals/unique-id.h
 	interfaces/icontainer.h
@@ -72,7 +74,7 @@ set(sources
 )
 
 #qt5_add_dbus_adaptor(sources dbus/deviceevents.xml wiimotedevcore.h service::core::WiimotedevCore)
-qt5_add_dbus_adaptor(sources dbus/balanceboard.xml wiimotedevcore.h service::core::WiimotedevCore)
+qt5_add_dbus_adaptor(sources dbus/balanceboard.xml dbus/balance-board-dispatcher.h service::dbus::BalanceBoardDispatcher)
 qt5_add_dbus_adaptor(sources dbus/classic.xml dbus/classic-dispatcher.h service::dbus::ClassicDispatcher)
 qt5_add_dbus_adaptor(sources dbus/nunchuk.xml dbus/nunchuk-dispatcher.h service::dbus::NunchukDispatcher)
 qt5_add_dbus_adaptor(sources dbus/wiimote.xml dbus/wiimote-dispatcher.h service::dbus::WiimoteDispatcher)

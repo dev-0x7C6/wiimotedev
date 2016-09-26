@@ -13,9 +13,11 @@ public:
 	virtual ~IContainerProcessor() = default;
 
 	enum Type {
-		Wiimote,
+		BalanceBoard,
 		Classic,
 		Nunchuk,
+		ProController,
+		Wiimote,
 	};
 
 	virtual Type type() const = 0;

@@ -41,9 +41,15 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 		return;
 	}
 
-	m_adaptors.emplace_back(DispatcherFactory::create(IContainerProcessor::Classic));
-	m_adaptors.emplace_back(DispatcherFactory::create(IContainerProcessor::Nunchuk));
-	m_adaptors.emplace_back(DispatcherFactory::create(IContainerProcessor::Wiimote));
+	const auto processors = {
+		IContainerProcessor::BalanceBoard,
+		IContainerProcessor::Classic,
+		IContainerProcessor::Nunchuk,
+		IContainerProcessor::Wiimote,
+	};
+
+	for (const auto &processor : processors)
+		m_adaptors.emplace_back(DispatcherFactory::create(processor));
 
 	QDBusConnection connection = QDBusConnection::systemBus();
 	for (const auto &adaptor : m_adaptors)

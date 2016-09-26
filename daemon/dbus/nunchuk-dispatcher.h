@@ -14,6 +14,5 @@ public:
 	virtual Type type() const;
 	virtual void process(const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
 };
-
 }
 }
