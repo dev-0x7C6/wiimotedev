@@ -14,8 +14,7 @@ using namespace service::interface;
 
 WiimotedevCore::WiimotedevCore(QObject *parent)
 		: QObject(parent)
-		, m_scanner(IWiimote::Api::XWiimote)
-{
+		, m_scanner(IWiimote::Api::XWiimote) {
 	const auto processors = {
 		IContainerProcessor::BalanceBoard,
 		IContainerProcessor::Classic,
