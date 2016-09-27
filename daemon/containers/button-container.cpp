@@ -18,4 +18,4 @@ ButtonContainer::ButtonContainer(const IContainer::Source source, const uint64_t
 		, m_source(source) {
 }
 
-IContainer::Source ButtonContainer::source() const { return Source::Wiimote; };
+IContainer::Source ButtonContainer::source() const { return m_source; };
