@@ -19,6 +19,7 @@ public:
 	virtual Type type() const override;
 	virtual Api api() const override { return Api::XWiimote; }
 
+	virtual bool isValid() const override;
 	virtual std::unique_ptr<interface::IContainer> process() override;
 
 	virtual bool isRumbleSupported() override;
@@ -44,6 +45,7 @@ private:
 private:
 	const std::string m_interfaceFilePath;
 	xwii_iface *m_interface;
+	bool m_connected;
 	int m_fd;
 };
 }

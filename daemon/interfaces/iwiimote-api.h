@@ -28,6 +28,7 @@ public:
 	virtual Type type() const = 0;
 	virtual Api api() const = 0;
 
+	virtual bool isValid() const = 0;
 	virtual std::unique_ptr<IContainer> process() = 0;
 
 	virtual bool isRumbleSupported() = 0;

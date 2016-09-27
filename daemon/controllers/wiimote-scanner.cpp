@@ -16,6 +16,9 @@ std::unique_ptr<IWiimote> WiimoteScanner::process() {
 	if (controller) {
 		const auto id = m_uniqueId.at(static_cast<std::size_t>(controller->type())).take();
 		controller->setId(id);
+		for (uint i = 0; i < 4; ++i)
+			controller->setLedStatus(i + 1, (((id % 16) >> i) & 1) == 1);
+
 		return controller;
 	}
 

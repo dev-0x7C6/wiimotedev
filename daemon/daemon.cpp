@@ -104,5 +104,5 @@ int main(int argc, char *argv[]) {
 	if (getpid() == pid)
 		unlink(PID_FILE);
 
-	exit(core->result);
+	return 0;
 }

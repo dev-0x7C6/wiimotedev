@@ -10,7 +10,7 @@ class WiimoteDispatcher final : public interface::IContainerProcessor {
 public:
 	explicit WiimoteDispatcher(QObject *parent = nullptr);
 
-	virtual Type type() const;
+	virtual Type type() const override;
 	virtual void process(const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
 
 	QList<uint> wiimoteList() const;

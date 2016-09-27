@@ -9,7 +9,11 @@ class CwiidController final : public interface::IWiimote {
 public:
 	using interface::IWiimote::IWiimote;
 
-	virtual interface::IWiimote::Api api() const override { return interface::IWiimote::Api::Cwiid; }
+	virtual Type type() const override;
+	virtual interface::IWiimote::Api api() const override;
+
+	virtual bool isValid() const override;
+	virtual std::unique_ptr<interface::IContainer> process() override;
 
 	virtual bool isRumbleSupported() override;
 	virtual bool isLedSupported() override;

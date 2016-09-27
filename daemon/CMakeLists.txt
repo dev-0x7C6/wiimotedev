@@ -41,6 +41,8 @@ set(sources
 	dbus/classic-dispatcher.h
 	dbus/deviceevents.h
 	dbus/nunchuk-dispatcher.cpp
+	dbus/pro-controller-dispatcher.cpp
+	dbus/pro-controller-dispatcher.h
 	dbus/nunchuk-dispatcher.h
 	dbus/wiimote-dispatcher.cpp
 	dbus/wiimote-dispatcher.h

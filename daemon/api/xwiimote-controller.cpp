@@ -5,12 +5,14 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <iomanip>
 #include <iostream>
 
 #include "containers/accelerometer-container.h"
 #include "containers/infrared-container.h"
 #include "containers/gyroscope-container.h"
 #include "containers/pressure-container.h"
+#include "containers/button-container.h"
 #include "interfaces/icontainer.h"
 
 using namespace service::api;
@@ -41,6 +43,8 @@ XWiimoteController::XWiimoteController(const std::string &interfaceFilePath)
 	}
 
 	reconfigure();
+
+	m_connected = true;
 }
 
 XWiimoteController::~XWiimoteController() {
@@ -60,26 +64,9 @@ IWiimote::Type XWiimoteController::type() const {
 	return Type::Wiimote;
 }
 
+bool XWiimoteController::isValid() const { return m_connected; }
+
 std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
-	struct xwii_event event;
-	memset(&event, 0, sizeof(event));
-	static pollfd fds[2];
-	memset(fds, 0, sizeof(fds));
-	fds[0].fd = 0;
-	fds[0].events = POLLIN;
-	fds[1].fd = m_fd;
-	fds[1].events = POLLIN;
-	auto ret = poll(fds, 2, -1);
-
-	if (ret < 0) {
-		if (errno != EINTR) {
-			ret = -errno;
-			std::cerr << "Error: Cannot poll fds:" << ret << std::endl;
-		}
-	}
-
-	ret = xwii_iface_dispatch(m_interface, &event, sizeof(event));
-
 	auto process_ir = [](const xwii_event &event) {
 		IrPoints ir;
 		for (std::size_t i = 0; i < ir.size(); ++i) {
@@ -121,19 +108,41 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		return std::make_unique<PressureContainer>(data);
 	};
 
-	if (ret)
+	auto process_key = [](const IContainer::Source source, const xwii_event &event) {
+		std::cout << "key from: " << static_cast<int>(source) << std::endl;
+		return std::make_unique<ButtonContainer>(source, event.v.key.code);
+	};
+
+	auto process_gone = [this]() {
+		m_connected = false;
 		return nullptr;
+	};
+
+	auto process_watch = [this]() {
+		std::cout << "hotplug" << std::endl;
+		reconfigure();
+		return nullptr;
+	};
+
+	struct xwii_event event;
+	event.type = XWII_EVENT_NUM;
+	auto ret = xwii_iface_dispatch(m_interface, &event, sizeof(event));
+
+	if (ret || !m_connected) {
+		return nullptr;
+	}
 
 	switch (event.type) {
-		case XWII_EVENT_IR: return process_ir(event);
 		case XWII_EVENT_ACCEL: return process_acc(event, IContainer::Source::Wiimote);
+		case XWII_EVENT_BALANCE_BOARD: return process_press(event);
+		case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return process_key(IContainer::Source::Classic, event);
+		case XWII_EVENT_GONE: return process_gone();
+		case XWII_EVENT_IR: return process_ir(event);
+		case XWII_EVENT_KEY: return process_key(IContainer::Source::Wiimote, event);
 		case XWII_EVENT_MOTION_PLUS: return process_gyro(event);
+		case XWII_EVENT_NUNCHUK_KEY: return process_key(IContainer::Source::Nunchuk, event);
 		case XWII_EVENT_NUNCHUK_MOVE: return process_acc(event, IContainer::Source::Nunchuk);
-		case XWII_EVENT_BALANCE_BOARD:
-			return process_press(event);
-		//case XWII_EVENT_KEY: return process_button(event, IContainer::Source::Wiimote);
-		default:
-			break;
+		case XWII_EVENT_WATCH: return process_watch();
 	}
 
 	return nullptr;
@@ -197,14 +206,31 @@ std::string XWiimoteController::interfaceFilePath() const {
 
 void XWiimoteController::reconfigure() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
-	std::cout << flags << std::endl;
 	auto ret = xwii_iface_open(m_interface, flags);
+
+	constexpr auto space = 25;
+	std::cout << "report mode:" << std::endl;
+	std::cout << std::boolalpha << std::left;
+	std::cout << std::setw(space) << "  core"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_CORE) << std::endl;
+	std::cout << std::setw(space) << "  accelerometer"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_ACCEL) << std::endl;
+	std::cout << std::setw(space) << "  gyroscope"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_MOTION_PLUS) << std::endl;
+	std::cout << std::setw(space) << "  nunchuk"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_NUNCHUK) << std::endl;
+	std::cout << std::setw(space) << "  classic"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_CLASSIC_CONTROLLER) << std::endl;
+	std::cout << std::setw(space) << "  pro controller"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_PRO_CONTROLLER) << std::endl;
+	std::cout << std::noboolalpha;
 
 	if (ret) {
 		std::cerr << "fail: unable to open " << m_interfaceFilePath << " interface." << std::endl;
-		std::cerr << xwii_iface_opened(m_interface) << std::endl;
+		xwii_iface_close(m_interface, 0);
 		xwii_iface_unref(m_interface);
 		m_interface = nullptr;
+		m_connected = false;
 		return;
 	}
 }

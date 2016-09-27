@@ -3,6 +3,21 @@
 #include "static/libcwiid/cwiid.h"
 
 using namespace service::api;
+using namespace service::interface;
+
+IWiimote::Type CwiidController::type() const {
+	return IWiimote::Type::Wiimote;
+}
+
+IWiimote::Api CwiidController::api() const { return interface::IWiimote::Api::Cwiid; }
+
+bool CwiidController::isValid() const {
+	return false;
+}
+
+std::unique_ptr<IContainer> CwiidController::process() {
+	return nullptr;
+}
 
 bool CwiidController::isRumbleSupported() {
 	return true;

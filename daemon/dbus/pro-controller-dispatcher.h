@@ -5,11 +5,10 @@
 namespace service {
 namespace dbus {
 
-class ClassicDispatcher final : public interface::IContainerProcessor {
+class ProControllerDispatcher final : public interface::IContainerProcessor {
+	Q_OBJECT
 public:
-	explicit ClassicDispatcher(QObject *parent = nullptr);
-
-	QList<uint> classicList() const;
+	explicit ProControllerDispatcher(QObject *parent = nullptr);
 
 	virtual Type type() const override;
 	virtual void process(const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
