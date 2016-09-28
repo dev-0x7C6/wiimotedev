@@ -12,6 +12,14 @@ public:
 
 	virtual Type type() const override;
 	virtual void process(const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
+
+	QList<uint> procontrollerList();
+
+signals:
+	void procontrollerButtonDataChanged(uint id, qulonglong mask);
+	void procontrollerConnected(uint id);
+	void procontrollerDisconnected(uint id);
+	void procontrollerStickDataChanged(uint id, int lx, int ly, int rx, int ry);
 };
 }
 }

@@ -136,6 +136,7 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		case XWII_EVENT_ACCEL: return process_acc(event, IContainer::Source::Wiimote);
 		case XWII_EVENT_BALANCE_BOARD: return process_press(event);
 		case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return process_key(IContainer::Source::Classic, event);
+		case XWII_EVENT_PRO_CONTROLLER_KEY: return process_key(IContainer::Source::ProController, event);
 		case XWII_EVENT_GONE: return process_gone();
 		case XWII_EVENT_IR: return process_ir(event);
 		case XWII_EVENT_KEY: return process_key(IContainer::Source::Wiimote, event);
