@@ -21,6 +21,7 @@ using namespace service::interface;
 
 XWiimoteController::XWiimoteController(const std::string &interfaceFilePath)
 		: m_interfaceFilePath(interfaceFilePath) {
+	m_buttons.fill(0);
 	auto ret = xwii_iface_new(&m_interface, m_interfaceFilePath.c_str());
 
 	if (ret) {
@@ -108,8 +109,36 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		return std::make_unique<PressureContainer>(data);
 	};
 
-	auto process_key = [](const IContainer::Source source, const xwii_event &event) {
-		std::cout << "key from: " << static_cast<int>(source) << std::endl;
+	auto process_key = [this](const IContainer::Source source, const xwii_event &event) {
+		auto mask = m_buttons.at(static_cast<std::size_t>(source));
+
+		switch (event.v.key.code) {
+			case XWII_KEY_LEFT:
+			case XWII_KEY_RIGHT:
+			case XWII_KEY_UP:
+			case XWII_KEY_DOWN:
+			case XWII_KEY_A:
+			case XWII_KEY_B:
+			case XWII_KEY_PLUS:
+			case XWII_KEY_MINUS:
+			case XWII_KEY_HOME:
+			case XWII_KEY_ONE:
+			case XWII_KEY_TWO:
+			case XWII_KEY_X:
+			case XWII_KEY_Y:
+			case XWII_KEY_TL:
+			case XWII_KEY_TR:
+			case XWII_KEY_ZL:
+			case XWII_KEY_ZR:
+			case XWII_KEY_THUMBL:
+			case XWII_KEY_THUMBR:
+			case XWII_KEY_C:
+			case XWII_KEY_Z:
+				break;
+		}
+
+		const auto toggled = event.v.key.state == 0 || event.v.key.state == 2;
+
 		return std::make_unique<ButtonContainer>(source, event.v.key.code);
 	};
 

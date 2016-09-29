@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -47,6 +48,7 @@ private:
 	xwii_iface *m_interface;
 	bool m_connected;
 	int m_fd;
+	std::array<uint64_t, 5> m_buttons;
 };
 }
 }
