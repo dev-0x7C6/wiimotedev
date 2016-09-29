@@ -8,11 +8,11 @@ namespace container {
 
 class AccelerometerContainer final : public interface::IContainer {
 public:
-	explicit AccelerometerContainer(const enums::Device deviceType, const accdata &data);
+	explicit AccelerometerContainer(const enums::Device device, const accdata &data);
 	virtual ~AccelerometerContainer() = default;
 
-	virtual enums::Device deviceType() const override;
-	virtual Type type() const override;
+	virtual enums::Device device() const override;
+	virtual enums::Event event() const override;
 
 	const accdata &data() const;
 

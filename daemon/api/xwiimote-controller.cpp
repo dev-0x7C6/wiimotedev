@@ -173,7 +173,18 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		if (!m_connected)
 			return std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected);
 
+		if (!m_messages.empty()) {
+			auto result = std::move(m_messages.front());
+			m_messages.pop();
+			return result;
+		}
 		return nullptr;
+	}
+
+	if (!m_messages.empty()) {
+		auto result = std::move(m_messages.front());
+		m_messages.pop();
+		return result;
 	}
 
 	switch (event.type) {
@@ -182,9 +193,8 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return process_key(Device::Classic, event);
 		case XWII_EVENT_PRO_CONTROLLER_KEY: return process_key(Device::ProController, event);
 		case XWII_EVENT_GONE: return process_gone();
-		case XWII_EVENT_IR:
-			return process_ir(event);
-		//	case XWII_EVENT_KEY: return process_key(Device::Wiimote, event);
+		case XWII_EVENT_IR: return process_ir(event);
+		case XWII_EVENT_KEY: return process_key(Device::Wiimote, event);
 		case XWII_EVENT_MOTION_PLUS: return process_gyro(event);
 		case XWII_EVENT_NUNCHUK_KEY: return process_key(Device::Nunchuk, event);
 		case XWII_EVENT_NUNCHUK_MOVE: return process_acc(event, Device::Nunchuk);
@@ -253,6 +263,36 @@ std::string XWiimoteController::interfaceFilePath() const {
 void XWiimoteController::reconfigure() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
 	auto ret = xwii_iface_open(m_interface, flags);
+
+	if ((flags & XWII_IFACE_CLASSIC_CONTROLLER) && !m_classicControllerConnected) {
+		m_classicControllerConnected = true;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::Classic, StatusContainer::State::Connected));
+	}
+
+	if ((flags & XWII_IFACE_NUNCHUK) && !m_nunchukConnected) {
+		m_nunchukConnected = true;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::Nunchuk, StatusContainer::State::Connected));
+	}
+
+	if ((flags & XWII_IFACE_MOTION_PLUS) && !m_motionPlusConnected) {
+		m_motionPlusConnected = true;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Connected));
+	}
+
+	if (!(flags & XWII_IFACE_CLASSIC_CONTROLLER) && m_classicControllerConnected) {
+		m_classicControllerConnected = false;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::Classic, StatusContainer::State::Disconnected));
+	}
+
+	if (!(flags & XWII_IFACE_NUNCHUK) && m_nunchukConnected) {
+		m_nunchukConnected = false;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::Nunchuk, StatusContainer::State::Disconnected));
+	}
+
+	if (!(flags & XWII_IFACE_MOTION_PLUS) && m_motionPlusConnected) {
+		m_motionPlusConnected = false;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected));
+	}
 
 	constexpr auto space = 25;
 	std::cout << "report mode:" << std::endl;

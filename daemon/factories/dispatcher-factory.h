@@ -10,7 +10,7 @@ public:
 	explicit DispatcherFactory() = delete;
 	virtual ~DispatcherFactory() = delete;
 
-	static std::unique_ptr<interface::IContainerProcessor> create(const interface::IContainerProcessor::Type type);
+	static std::unique_ptr<interface::IContainerProcessor> create(const enums::Device type);
 };
 }
 }

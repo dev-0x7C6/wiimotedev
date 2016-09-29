@@ -1,6 +1,6 @@
 #include "pro-controller-dispatcher.h"
-
 #include "procontrolleradaptor.h"
+
 #include "containers/button-container.h"
 
 using namespace service::container;
@@ -13,19 +13,16 @@ ProControllerDispatcher::ProControllerDispatcher(QObject *parent)
 	new ProcontrollerAdaptor(this);
 }
 
-IContainerProcessor::Type ProControllerDispatcher::type() const { return IContainerProcessor::Type::ProController; }
+Device ProControllerDispatcher::device() const { return Device::ProController; }
 
 void ProControllerDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
-
 	auto process_key = [this, id, &container]() {
-		if (container->deviceType() != Device::ProController)
-			return;
-
-		emit procontrollerButtonDataChanged(id, static_cast<ButtonContainer *>(container.get())->state());
+		const auto state = static_cast<const ButtonContainer *>(container.get())->state();
+		emit procontrollerButtonDataChanged(id, state);
 	};
 
-	switch (container->type()) {
-		case IContainer::Type::Button: return process_key();
+	switch (container->event()) {
+		case Event::Button: return process_key();
 	}
 }
 

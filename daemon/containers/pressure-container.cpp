@@ -8,6 +8,6 @@ PressureContainer::PressureContainer(const pressdata &data)
 		: m_data(data) {
 }
 
-Device PressureContainer::deviceType() const { return enums::Device::BalanceBoard; }
-IContainer::Type PressureContainer::type() const { return Type::Pressure; }
+Device PressureContainer::device() const { return enums::Device::BalanceBoard; }
+Event PressureContainer::event() const { return Event::Pressure; }
 const pressdata &PressureContainer::data() const { return m_data; }

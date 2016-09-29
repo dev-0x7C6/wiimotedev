@@ -9,6 +9,6 @@ StatusContainer::StatusContainer(const enums::Device source, const StatusContain
 		, m_state(state) {
 }
 
-IContainer::Type StatusContainer::type() const { return Type::Status; }
-Device StatusContainer::deviceType() const { return m_source; }
+Event StatusContainer::event() const { return Event::Status; }
+Device StatusContainer::device() const { return m_source; }
 StatusContainer::State StatusContainer::state() const { return m_state; }

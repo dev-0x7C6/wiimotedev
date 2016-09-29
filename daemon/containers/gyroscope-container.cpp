@@ -7,8 +7,8 @@ using namespace service::enums;
 GyroscopeContainer::GyroscopeContainer(const gyrodata &data)
 		: m_data(data) {}
 
-IContainer::Type GyroscopeContainer::type() const { return Type::Gyroscope; }
+Event GyroscopeContainer::event() const { return Event::Gyroscope; }
 
 gyrodata GyroscopeContainer::data() const { return m_data; }
 
-Device GyroscopeContainer::deviceType() const { return Device::Wiimote; }
+Device GyroscopeContainer::device() const { return Device::Wiimote; }

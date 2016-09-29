@@ -50,6 +50,8 @@ set(sources
 	dbus/wiimote-dispatcher.h
 	enums/device-type.cpp
 	enums/device-type.h
+	enums/event.cpp
+	enums/event.h
 	factories/controller-manager-factory.cpp
 	factories/controller-manager-factory.h
 	factories/dispatcher-factory.cpp

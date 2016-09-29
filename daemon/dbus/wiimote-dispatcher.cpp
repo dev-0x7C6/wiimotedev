@@ -5,6 +5,7 @@
 #include "containers/accelerometer-container.h"
 #include "containers/gyroscope-container.h"
 #include "containers/infrared-container.h"
+#include "containers/button-container.h"
 #include "containers/status-container.h"
 #include "wiimoteadaptor.h"
 
@@ -19,9 +20,7 @@ WiimoteDispatcher::WiimoteDispatcher(QObject *parent)
 	new WiimoteAdaptor(this);
 }
 
-IContainerProcessor::Type WiimoteDispatcher::type() const {
-	return Type::Wiimote;
-}
+Device WiimoteDispatcher::device() const { return Device::Wiimote; }
 
 void WiimoteDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
 	auto process_ir = [this, id, &container]() -> void {
@@ -39,10 +38,15 @@ void WiimoteDispatcher::process(const uint32_t id, const std::unique_ptr<IContai
 		emit wiimoteGyroscopeDataChanged(id, data.x, data.y, data.z, data.lowX, data.lowY, data.lowZ);
 	};
 
+	auto process_button = [this, id, &container]() -> void {
+		const auto state = static_cast<const ButtonContainer *>(container.get())->state();
+		emit wiimoteButtonDataChanged(id, state);
+	};
+
 	auto process_status = [this, id, &container]() -> void {
 		const auto state = static_cast<StatusContainer *>(container.get())->state();
 
-		if (container->deviceType() != Device::Wiimote)
+		if (container->device() != Device::Wiimote)
 			return;
 
 		if (state == StatusContainer::State::Connected) {
@@ -56,14 +60,15 @@ void WiimoteDispatcher::process(const uint32_t id, const std::unique_ptr<IContai
 		}
 	};
 
-	switch (container->type()) {
-		case IContainer::Type::Status: return process_status();
-		case IContainer::Type::Infrared: return process_ir();
-		case IContainer::Type::Accelerometer: return process_acc();
-		case IContainer::Type::Gyroscope: return process_gyro();
+	switch (container->event()) {
+		case Event::Accelerometer: return process_acc();
+		case Event::Button: return process_button();
+		case Event::Gyroscope: return process_gyro();
+		case Event::Infrared: return process_ir();
+		case Event::Status: return process_status();
+		default:
+			break;
 	}
 }
 
-QList<uint> WiimoteDispatcher::wiimoteList() const {
-	return m_ids.toList();
-}
+QList<uint> WiimoteDispatcher::wiimoteList() const { return m_ids.toList(); }

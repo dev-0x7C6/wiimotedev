@@ -3,6 +3,7 @@
 #include "classicadaptor.h"
 
 using namespace service::dbus;
+using namespace service::enums;
 using namespace service::interface;
 
 ClassicDispatcher::ClassicDispatcher(QObject *parent)
@@ -14,9 +15,7 @@ QList<uint> ClassicDispatcher::classicList() const {
 	return {};
 }
 
-IContainerProcessor::Type ClassicDispatcher::type() const {
-	return Type::Classic;
-}
+Device ClassicDispatcher::device() const { return Device::Classic; }
 
 void ClassicDispatcher::process(const uint32_t id, const std::unique_ptr<service::interface::IContainer> &container) {
 }

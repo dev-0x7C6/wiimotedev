@@ -10,7 +10,7 @@ class ProControllerDispatcher final : public interface::IContainerProcessor {
 public:
 	explicit ProControllerDispatcher(QObject *parent = nullptr);
 
-	virtual Type type() const override;
+	virtual enums::Device device() const override;
 	virtual void process(const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
 
 	QList<uint> procontrollerList();

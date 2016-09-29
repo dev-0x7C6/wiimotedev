@@ -4,7 +4,7 @@ using namespace service::container;
 using namespace service::interface;
 using namespace service::enums;
 
-IContainer::Type ButtonContainer::type() const { return Type::Button; }
+Event ButtonContainer::event() const { return Event::Button; }
 
 uint64_t ButtonContainer::state() const {
 	return m_state;
@@ -19,4 +19,4 @@ ButtonContainer::ButtonContainer(const Device source, const uint64_t state)
 		, m_source(source) {
 }
 
-Device ButtonContainer::deviceType() const { return m_source; };
+Device ButtonContainer::device() const { return m_source; };

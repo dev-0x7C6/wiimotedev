@@ -3,6 +3,7 @@
 #include <array>
 #include <memory>
 #include <string>
+#include <queue>
 
 #include "interfaces/iwiimote-api.h"
 
@@ -49,7 +50,13 @@ private:
 	bool m_connected;
 	int m_fd;
 	std::array<uint64_t, 5> m_buttons;
+
+	std::queue<std::unique_ptr<interface::IContainer>> m_messages;
+
 	bool m_connectedFlag = false;
+	bool m_motionPlusConnected = false;
+	bool m_classicControllerConnected = false;
+	bool m_nunchukConnected = false;
 };
 }
 }

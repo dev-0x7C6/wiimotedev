@@ -8,6 +8,6 @@ using namespace service::interface;
 InfraredContainer::InfraredContainer(const IrPoints &points)
 		: m_points(points) {}
 
-IContainer::Type InfraredContainer::type() const { return Type::Infrared; }
-Device InfraredContainer::deviceType() const { return Device::Wiimote; }
+Event InfraredContainer::event() const { return Event::Infrared; }
+Device InfraredContainer::device() const { return Device::Wiimote; }
 const IrPoints &InfraredContainer::points() const { return m_points; }

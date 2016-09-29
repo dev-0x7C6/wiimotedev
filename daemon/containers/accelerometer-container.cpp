@@ -9,8 +9,8 @@ AccelerometerContainer::AccelerometerContainer(const enums::Device source, const
 		, m_data(data) {
 }
 
-IContainer::Type AccelerometerContainer::type() const { return Type::Accelerometer; }
+Event AccelerometerContainer::event() const { return Event::Accelerometer; }
 
-Device AccelerometerContainer::deviceType() const { return m_source; }
+Device AccelerometerContainer::device() const { return m_source; }
 
 const accdata &AccelerometerContainer::data() const { return m_data; }

@@ -13,10 +13,10 @@ public:
 		Disconnected
 	};
 
-	explicit StatusContainer(const enums::Device deviceType, const State state);
+	explicit StatusContainer(const enums::Device device, const State state);
 
-	virtual Type type() const override;
-	virtual enums::Device deviceType() const override;
+	virtual enums::Event event() const override;
+	virtual enums::Device device() const override;
 	State state() const;
 
 private:

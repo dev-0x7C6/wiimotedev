@@ -1,8 +1,11 @@
 #include "balance-board-dispatcher.h"
 #include "balanceboardadaptor.h"
+
 #include "containers/pressure-container.h"
+#include "containers/status-container.h"
 
 using namespace service::dbus;
+using namespace service::enums;
 using namespace service::interface;
 using namespace service::container;
 
@@ -11,12 +14,8 @@ BalanceBoardDispatcher::BalanceBoardDispatcher(QObject *parent)
 	new BalanceboardAdaptor(this);
 }
 
-BalanceBoardDispatcher::~BalanceBoardDispatcher() {
-}
-
-IContainerProcessor::Type BalanceBoardDispatcher::type() const {
-	return IContainerProcessor::Type::BalanceBoard;
-}
+Device BalanceBoardDispatcher::device() const { return Device::BalanceBoard; }
+QList<uint> BalanceBoardDispatcher::balanceBoardList() { return m_ids.toList(); }
 
 void BalanceBoardDispatcher::process(const uint32_t id, const std::unique_ptr<service::interface::IContainer> &container) {
 	auto process_pressure = [this, id, &container]() {
@@ -24,11 +23,22 @@ void BalanceBoardDispatcher::process(const uint32_t id, const std::unique_ptr<se
 		emit balanceBoardDataChanged(id, data.tl, data.tr, data.bl, data.br);
 	};
 
-	switch (container->type()) {
-		case IContainer::Type::Pressure: return process_pressure();
-	}
-}
+	auto process_status = [this, id, &container]() {
+		const auto state = static_cast<const StatusContainer *>(container.get())->state();
 
-QList<uint> BalanceBoardDispatcher::balanceBoardList() {
-	return {};
+		if (state == StatusContainer::State::Connected) {
+			m_ids.insert(id);
+			emit balanceBoardConnected(id);
+		}
+
+		if (state == StatusContainer::State::Disconnected) {
+			m_ids.remove(id);
+			emit balanceBoardDisconnected(id);
+		}
+	};
+
+	switch (container->event()) {
+		case Event::Pressure: return process_pressure();
+		case Event::Status: return process_status();
+	}
 }

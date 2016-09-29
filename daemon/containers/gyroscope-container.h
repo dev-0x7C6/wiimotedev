@@ -11,8 +11,8 @@ public:
 	explicit GyroscopeContainer(const struct gyrodata &data);
 	virtual ~GyroscopeContainer() = default;
 
-	virtual enums::Device deviceType() const override;
-	virtual Type type() const override;
+	virtual enums::Device device() const override;
+	virtual enums::Event event() const override;
 
 	gyrodata data() const;
 

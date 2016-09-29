@@ -9,6 +9,7 @@
 
 using namespace service::controller;
 using namespace service::core;
+using namespace service::enums;
 using namespace service::factory;
 using namespace service::interface;
 
@@ -16,11 +17,11 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 		: QObject(parent)
 		, m_scanner(IWiimote::Api::XWiimote) {
 	const auto processors = {
-		IContainerProcessor::BalanceBoard,
-		IContainerProcessor::Classic,
-		IContainerProcessor::Nunchuk,
-		IContainerProcessor::ProController,
-		IContainerProcessor::Wiimote,
+		Device::BalanceBoard,
+		Device::Classic,
+		Device::Nunchuk,
+		Device::ProController,
+		Device::Wiimote,
 	};
 
 	for (const auto &processor : processors)
@@ -45,7 +46,8 @@ void WiimotedevCore::timerEvent(QTimerEvent *event) {
 
 		while ((container = device->process())) {
 			for (const auto &adaptor : m_adaptors)
-				adaptor->process(id, container);
+				if (container->device() == adaptor->device())
+					adaptor->process(id, container);
 
 			if (!device->isValid()) {
 				m_devices.remove_if([&device](const auto &value) { return value.get() == device.get(); });
