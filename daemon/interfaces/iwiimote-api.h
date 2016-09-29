@@ -14,18 +14,12 @@ public:
 	explicit IWiimote() = default;
 	virtual ~IWiimote() = default;
 
-	enum class Type {
-		Wiimote,
-		BalanceBoard,
-		ProController
-	};
-
 	enum class Api {
 		Cwiid,
 		XWiimote
 	};
 
-	virtual Type type() const = 0;
+	virtual enums::Device type() const = 0;
 	virtual Api api() const = 0;
 
 	virtual bool isValid() const = 0;

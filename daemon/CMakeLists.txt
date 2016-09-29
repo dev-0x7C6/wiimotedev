@@ -30,6 +30,8 @@ set(sources
 	containers/infrared-container.h
 	containers/pressure-container.cpp
 	containers/pressure-container.h
+	containers/status-container.cpp
+	containers/status-container.h
 	controllers/wiimote-scanner.cpp
 	controllers/wiimote-scanner.h
 	controllers/wiimote-scanner-thread.cpp
@@ -41,11 +43,13 @@ set(sources
 	dbus/classic-dispatcher.h
 	dbus/deviceevents.h
 	dbus/nunchuk-dispatcher.cpp
+	dbus/nunchuk-dispatcher.h
 	dbus/pro-controller-dispatcher.cpp
 	dbus/pro-controller-dispatcher.h
-	dbus/nunchuk-dispatcher.h
 	dbus/wiimote-dispatcher.cpp
 	dbus/wiimote-dispatcher.h
+	enums/device-type.cpp
+	enums/device-type.h
 	factories/controller-manager-factory.cpp
 	factories/controller-manager-factory.h
 	factories/dispatcher-factory.cpp

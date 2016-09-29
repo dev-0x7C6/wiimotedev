@@ -74,27 +74,30 @@ struct stickdata {
 	uint8_t y;
 };
 
-constexpr auto WIIMOTEDEV_BTN_LEFT = 0x1ull;
-constexpr auto WIIMOTEDEV_BTN_RIGHT = 0x2ull;
-constexpr auto WIIMOTEDEV_BTN_UP = 0x4ull;
-constexpr auto WIIMOTEDEV_BTN_DOWN = 0x8ull;
-constexpr auto WIIMOTEDEV_BTN_A = 0x10ull;
-constexpr auto WIIMOTEDEV_BTN_B = 0x20ull;
-constexpr auto WIIMOTEDEV_BTN_PLUS = 0x40ull;
-constexpr auto WIIMOTEDEV_BTN_MINUS = 0x80ull;
-constexpr auto WIIMOTEDEV_BTN_HOME = 0x100ull;
-constexpr auto WIIMOTEDEV_BTN_ONE = 0x200ull;
-constexpr auto WIIMOTEDEV_BTN_TWO = 0x400ull;
-constexpr auto WIIMOTEDEV_BTN_X = 0x800ull;
-constexpr auto WIIMOTEDEV_BTN_Y = 0x1000ull;
-constexpr auto WIIMOTEDEV_BTN_TL = 0x2000ull;
-constexpr auto WIIMOTEDEV_BTN_TR = 0x4000ull;
-constexpr auto WIIMOTEDEV_BTN_ZL = 0x8000ull;
-constexpr auto WIIMOTEDEV_BTN_ZR = 0x10000ull;
-constexpr auto WIIMOTEDEV_BTN_THUMBL = 0x20000;
-constexpr auto WIIMOTEDEV_BTN_THUMBR = 0x40000;
-constexpr auto WIIMOTEDEV_BTN_C = 0x80000;
-constexpr auto WIIMOTEDEV_BTN_Z = 0x100000;
+namespace wiimotedev {
+
+constexpr auto WIIMOTEDEV_BTN_LEFT = 1ull << 0;
+constexpr auto WIIMOTEDEV_BTN_RIGHT = 1ull << 1;
+constexpr auto WIIMOTEDEV_BTN_UP = 1ull << 2;
+constexpr auto WIIMOTEDEV_BTN_DOWN = 1ull << 3;
+constexpr auto WIIMOTEDEV_BTN_A = 1ull << 4;
+constexpr auto WIIMOTEDEV_BTN_B = 1ull << 5;
+constexpr auto WIIMOTEDEV_BTN_PLUS = 1ull << 6;
+constexpr auto WIIMOTEDEV_BTN_MINUS = 1ull << 7;
+constexpr auto WIIMOTEDEV_BTN_HOME = 1ull << 8;
+constexpr auto WIIMOTEDEV_BTN_ONE = 1ull << 9;
+constexpr auto WIIMOTEDEV_BTN_TWO = 1ull << 10;
+constexpr auto WIIMOTEDEV_BTN_X = 1ull << 11;
+constexpr auto WIIMOTEDEV_BTN_Y = 1ull << 12;
+constexpr auto WIIMOTEDEV_BTN_TL = 1ull << 13;
+constexpr auto WIIMOTEDEV_BTN_TR = 1ull << 14;
+constexpr auto WIIMOTEDEV_BTN_ZL = 1ull << 15;
+constexpr auto WIIMOTEDEV_BTN_ZR = 1ull << 16;
+constexpr auto WIIMOTEDEV_BTN_THUMBL = 1ull << 17;
+constexpr auto WIIMOTEDEV_BTN_THUMBR = 1ull << 18;
+constexpr auto WIIMOTEDEV_BTN_C = 1ull << 19;
+constexpr auto WIIMOTEDEV_BTN_Z = 1ull << 20;
+}
 
 enum GENERAL_BUTTONS {
 	// 1.0 API

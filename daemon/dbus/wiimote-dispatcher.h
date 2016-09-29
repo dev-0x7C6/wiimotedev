@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QSet>
 #include "interfaces/icontainer-processor.h"
 
 namespace service {
@@ -23,6 +24,9 @@ signals:
 	void wiimoteButtonDataChanged(uint id, qulonglong mask);
 	void wiimoteGyroscopeDataChanged(uint id, int x, int y, int z, int lowX, int lowY, int lowZ);
 	void wiimoteInfraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
+
+private:
+	QSet<uint> m_ids;
 };
 }
 }

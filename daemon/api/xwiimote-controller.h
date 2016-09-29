@@ -17,7 +17,7 @@ public:
 	explicit XWiimoteController(const std::string &interfaceFilePath);
 	virtual ~XWiimoteController();
 
-	virtual Type type() const override;
+	virtual enums::Device type() const override;
 	virtual Api api() const override { return Api::XWiimote; }
 
 	virtual bool isValid() const override;
@@ -49,6 +49,7 @@ private:
 	bool m_connected;
 	int m_fd;
 	std::array<uint64_t, 5> m_buttons;
+	bool m_connectedFlag = false;
 };
 }
 }

@@ -9,7 +9,7 @@ class CwiidController final : public interface::IWiimote {
 public:
 	using interface::IWiimote::IWiimote;
 
-	virtual Type type() const override;
+	virtual enums::Device type() const override;
 	virtual interface::IWiimote::Api api() const override;
 
 	virtual bool isValid() const override;

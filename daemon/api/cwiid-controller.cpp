@@ -3,10 +3,11 @@
 #include "static/libcwiid/cwiid.h"
 
 using namespace service::api;
+using namespace service::enums;
 using namespace service::interface;
 
-IWiimote::Type CwiidController::type() const {
-	return IWiimote::Type::Wiimote;
+Device CwiidController::type() const {
+	return Device::Wiimote;
 }
 
 IWiimote::Api CwiidController::api() const { return interface::IWiimote::Api::Cwiid; }

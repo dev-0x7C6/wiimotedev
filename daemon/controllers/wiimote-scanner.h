@@ -18,7 +18,7 @@ public:
 
 private:
 	std::unique_ptr<interface::IWiimoteManager> m_manager;
-	std::array<functional::UniqueId<128>, 3> m_uniqueId;
+	std::array<functional::UniqueId<128>, static_cast<int>(enums::Device::Last)> m_uniqueId;
 };
 }
 }

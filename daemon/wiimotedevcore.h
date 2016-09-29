@@ -18,9 +18,6 @@ public:
 protected:
 	virtual void timerEvent(QTimerEvent *event) override;
 
-protected:
-	void run();
-
 private:
 	service::controller::WiimoteScannerThread m_scanner;
 	std::list<std::unique_ptr<service::interface::IWiimote>> m_devices;

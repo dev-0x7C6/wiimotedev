@@ -38,22 +38,19 @@ void WiimotedevCore::timerEvent(QTimerEvent *event) {
 	static_cast<void>(event);
 
 	m_scanner.merge(m_devices);
+	std::unique_ptr<IContainer> container;
 
 	for (const auto &device : m_devices) {
-		const auto container = device->process();
 		const auto id = device->id();
 
-		if (!device->isValid()) {
-			std::cout << "removing device: " << reinterpret_cast<void *>(device.get()) << std::endl;
-			m_devices.remove_if([&device](const auto &value) { return value.get() == device.get(); });
-			std::cout << "device count: " << m_devices.size() << std::endl;
-			return;
+		while ((container = device->process())) {
+			for (const auto &adaptor : m_adaptors)
+				adaptor->process(id, container);
+
+			if (!device->isValid()) {
+				m_devices.remove_if([&device](const auto &value) { return value.get() == device.get(); });
+				return;
+			}
 		}
-
-		if (!container)
-			continue;
-
-		for (const auto &adaptor : m_adaptors)
-			adaptor->process(id, container);
 	}
 }

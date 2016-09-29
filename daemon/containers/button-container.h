@@ -8,10 +8,10 @@ namespace container {
 
 class ButtonContainer final : public interface::IContainer {
 public:
-	explicit ButtonContainer(const Source source, const uint64_t state);
+	explicit ButtonContainer(const enums::Device deviceType, const uint64_t state);
 	virtual ~ButtonContainer() = default;
 
-	virtual Source source() const override;
+	virtual enums::Device deviceType() const override;
 	virtual Type type() const override;
 
 	uint64_t state() const;
@@ -19,7 +19,7 @@ public:
 
 private:
 	uint64_t m_state;
-	Source m_source;
+	enums::Device m_source;
 };
 }
 }

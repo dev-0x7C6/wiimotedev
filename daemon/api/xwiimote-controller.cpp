@@ -14,11 +14,14 @@
 #include "containers/gyroscope-container.h"
 #include "containers/pressure-container.h"
 #include "containers/button-container.h"
+#include "containers/status-container.h"
 #include "interfaces/icontainer.h"
 
 using namespace service::api;
 using namespace service::container;
+using namespace service::enums;
 using namespace service::interface;
+using namespace wiimotedev;
 
 static_assert(1ull << XWII_KEY_LEFT == WIIMOTEDEV_BTN_LEFT, "");
 static_assert(1ull << XWII_KEY_RIGHT == WIIMOTEDEV_BTN_RIGHT, "");
@@ -76,16 +79,16 @@ XWiimoteController::~XWiimoteController() {
 	xwii_iface_unref(m_interface);
 }
 
-IWiimote::Type XWiimoteController::type() const {
+Device XWiimoteController::type() const {
 	const auto flags = xwii_iface_available(m_interface);
 
 	if (flags & XWII_IFACE_BALANCE_BOARD)
-		return Type::BalanceBoard;
+		return Device::BalanceBoard;
 
 	if (flags & XWII_IFACE_PRO_CONTROLLER)
-		return Type::ProController;
+		return Device::ProController;
 
-	return Type::Wiimote;
+	return Device::Wiimote;
 }
 
 bool XWiimoteController::isValid() const { return m_connected; }
@@ -102,7 +105,7 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		return std::make_unique<InfraredContainer>(ir);
 	};
 
-	auto process_acc = [](const xwii_event &event, const IContainer::Source source) {
+	auto process_acc = [](const xwii_event &event, const Device source) {
 		struct accdata data;
 		data.x = event.v.abs[0].x;
 		data.y = event.v.abs[0].y;
@@ -132,7 +135,7 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		return std::make_unique<PressureContainer>(data);
 	};
 
-	auto process_key = [this](const IContainer::Source source, const xwii_event &event) {
+	auto process_key = [this](const Device source, const xwii_event &event) {
 		auto mask = m_buttons.at(static_cast<std::size_t>(source));
 		auto code = 1ull << event.v.key.code;
 		static_assert(sizeof(code) == 8, "");
@@ -148,7 +151,7 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 
 	auto process_gone = [this]() {
 		m_connected = false;
-		return nullptr;
+		return std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected);
 	};
 
 	auto process_watch = [this]() {
@@ -161,21 +164,30 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 	event.type = XWII_EVENT_NUM;
 	auto ret = xwii_iface_dispatch(m_interface, &event, sizeof(event));
 
-	if (ret || !m_connected) {
+	if (!m_connectedFlag && m_connected) {
+		m_connectedFlag = true;
+		return std::make_unique<StatusContainer>(type(), StatusContainer::State::Connected);
+	}
+
+	if (ret) {
+		if (!m_connected)
+			return std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected);
+
 		return nullptr;
 	}
 
 	switch (event.type) {
-		case XWII_EVENT_ACCEL: return process_acc(event, IContainer::Source::Wiimote);
+		case XWII_EVENT_ACCEL: return process_acc(event, Device::Wiimote);
 		case XWII_EVENT_BALANCE_BOARD: return process_press(event);
-		case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return process_key(IContainer::Source::Classic, event);
-		case XWII_EVENT_PRO_CONTROLLER_KEY: return process_key(IContainer::Source::ProController, event);
+		case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return process_key(Device::Classic, event);
+		case XWII_EVENT_PRO_CONTROLLER_KEY: return process_key(Device::ProController, event);
 		case XWII_EVENT_GONE: return process_gone();
-		case XWII_EVENT_IR: return process_ir(event);
-		case XWII_EVENT_KEY: return process_key(IContainer::Source::Wiimote, event);
+		case XWII_EVENT_IR:
+			return process_ir(event);
+		//	case XWII_EVENT_KEY: return process_key(Device::Wiimote, event);
 		case XWII_EVENT_MOTION_PLUS: return process_gyro(event);
-		case XWII_EVENT_NUNCHUK_KEY: return process_key(IContainer::Source::Nunchuk, event);
-		case XWII_EVENT_NUNCHUK_MOVE: return process_acc(event, IContainer::Source::Nunchuk);
+		case XWII_EVENT_NUNCHUK_KEY: return process_key(Device::Nunchuk, event);
+		case XWII_EVENT_NUNCHUK_MOVE: return process_acc(event, Device::Nunchuk);
 		case XWII_EVENT_WATCH: return process_watch();
 	}
 

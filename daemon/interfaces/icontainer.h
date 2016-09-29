@@ -1,5 +1,7 @@
 #pragma once
 
+#include "enums/device-type.h"
+
 namespace service {
 namespace interface {
 
@@ -13,21 +15,14 @@ public:
 		Accelerometer,
 		Gyroscope,
 		Pressure,
-	};
-
-	enum class Source {
-		Wiimote,
-		Nunchuk,
-		Classic,
-		BalanceBoard,
-		ProController,
+		Status,
 	};
 
 	explicit IContainer() = default;
 	virtual ~IContainer() = default;
 
 	virtual Type type() const = 0;
-	virtual Source source() const = 0;
+	virtual enums::Device deviceType() const = 0;
 };
 }
 }

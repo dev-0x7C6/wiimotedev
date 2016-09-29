@@ -11,7 +11,7 @@ public:
 	explicit PressureContainer(const pressdata &data);
 	virtual ~PressureContainer() = default;
 
-	virtual Source source() const override;
+	virtual enums::Device deviceType() const override;
 	virtual Type type() const override;
 
 	const pressdata &data() const;

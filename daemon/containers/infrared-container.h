@@ -17,7 +17,7 @@ class InfraredContainer final : public interface::IContainer {
 public:
 	explicit InfraredContainer(const IrPoints &points);
 
-	virtual Source source() const override;
+	virtual enums::Device deviceType() const override;
 	virtual Type type() const override;
 
 	const IrPoints &points() const;

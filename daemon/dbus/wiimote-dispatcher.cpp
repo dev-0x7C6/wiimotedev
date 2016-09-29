@@ -5,9 +5,11 @@
 #include "containers/accelerometer-container.h"
 #include "containers/gyroscope-container.h"
 #include "containers/infrared-container.h"
+#include "containers/status-container.h"
 #include "wiimoteadaptor.h"
 
 using namespace service::container;
+using namespace service::enums;
 using namespace service::dbus;
 using namespace service::interface;
 
@@ -37,7 +39,25 @@ void WiimoteDispatcher::process(const uint32_t id, const std::unique_ptr<IContai
 		emit wiimoteGyroscopeDataChanged(id, data.x, data.y, data.z, data.lowX, data.lowY, data.lowZ);
 	};
 
+	auto process_status = [this, id, &container]() -> void {
+		const auto state = static_cast<StatusContainer *>(container.get())->state();
+
+		if (container->deviceType() != Device::Wiimote)
+			return;
+
+		if (state == StatusContainer::State::Connected) {
+			m_ids.insert(id);
+			emit wiimoteConnected(id);
+		}
+
+		if (state == StatusContainer::State::Disconnected) {
+			m_ids.remove(id);
+			emit wiimoteDisconnected(id);
+		}
+	};
+
 	switch (container->type()) {
+		case IContainer::Type::Status: return process_status();
 		case IContainer::Type::Infrared: return process_ir();
 		case IContainer::Type::Accelerometer: return process_acc();
 		case IContainer::Type::Gyroscope: return process_gyro();
@@ -45,5 +65,5 @@ void WiimoteDispatcher::process(const uint32_t id, const std::unique_ptr<IContai
 }
 
 QList<uint> WiimoteDispatcher::wiimoteList() const {
-	return {};
+	return m_ids.toList();
 }

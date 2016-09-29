@@ -3,9 +3,10 @@
 #include "procontrolleradaptor.h"
 #include "containers/button-container.h"
 
-using namespace service::dbus;
-using namespace service::interface;
 using namespace service::container;
+using namespace service::dbus;
+using namespace service::enums;
+using namespace service::interface;
 
 ProControllerDispatcher::ProControllerDispatcher(QObject *parent)
 		: IContainerProcessor(parent) {
@@ -17,7 +18,7 @@ IContainerProcessor::Type ProControllerDispatcher::type() const { return IContai
 void ProControllerDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
 
 	auto process_key = [this, id, &container]() {
-		if (container->source() != IContainer::Source::ProController)
+		if (container->deviceType() != Device::ProController)
 			return;
 
 		emit procontrollerButtonDataChanged(id, static_cast<ButtonContainer *>(container.get())->state());
