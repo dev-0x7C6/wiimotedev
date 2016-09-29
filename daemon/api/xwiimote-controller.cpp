@@ -8,6 +8,7 @@
 #include <iomanip>
 #include <iostream>
 
+#include "linux/usr/include/wiimotedev/consts.h"
 #include "containers/accelerometer-container.h"
 #include "containers/infrared-container.h"
 #include "containers/gyroscope-container.h"
@@ -18,6 +19,28 @@
 using namespace service::api;
 using namespace service::container;
 using namespace service::interface;
+
+static_assert(1ull << XWII_KEY_LEFT == WIIMOTEDEV_BTN_LEFT, "");
+static_assert(1ull << XWII_KEY_RIGHT == WIIMOTEDEV_BTN_RIGHT, "");
+static_assert(1ull << XWII_KEY_UP == WIIMOTEDEV_BTN_UP, "");
+static_assert(1ull << XWII_KEY_DOWN == WIIMOTEDEV_BTN_DOWN, "");
+static_assert(1ull << XWII_KEY_A == WIIMOTEDEV_BTN_A, "");
+static_assert(1ull << XWII_KEY_B == WIIMOTEDEV_BTN_B, "");
+static_assert(1ull << XWII_KEY_PLUS == WIIMOTEDEV_BTN_PLUS, "");
+static_assert(1ull << XWII_KEY_MINUS == WIIMOTEDEV_BTN_MINUS, "");
+static_assert(1ull << XWII_KEY_HOME == WIIMOTEDEV_BTN_HOME, "");
+static_assert(1ull << XWII_KEY_ONE == WIIMOTEDEV_BTN_ONE, "");
+static_assert(1ull << XWII_KEY_TWO == WIIMOTEDEV_BTN_TWO, "");
+static_assert(1ull << XWII_KEY_X == WIIMOTEDEV_BTN_X, "");
+static_assert(1ull << XWII_KEY_Y == WIIMOTEDEV_BTN_Y, "");
+static_assert(1ull << XWII_KEY_TL == WIIMOTEDEV_BTN_TL, "");
+static_assert(1ull << XWII_KEY_TR == WIIMOTEDEV_BTN_TR, "");
+static_assert(1ull << XWII_KEY_ZL == WIIMOTEDEV_BTN_ZL, "");
+static_assert(1ull << XWII_KEY_ZR == WIIMOTEDEV_BTN_ZR, "");
+static_assert(1ull << XWII_KEY_THUMBL == WIIMOTEDEV_BTN_THUMBL, "");
+static_assert(1ull << XWII_KEY_THUMBR == WIIMOTEDEV_BTN_THUMBR, "");
+static_assert(1ull << XWII_KEY_C == WIIMOTEDEV_BTN_C, "");
+static_assert(1ull << XWII_KEY_Z == WIIMOTEDEV_BTN_Z, "");
 
 XWiimoteController::XWiimoteController(const std::string &interfaceFilePath)
 		: m_interfaceFilePath(interfaceFilePath) {
@@ -111,35 +134,16 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 
 	auto process_key = [this](const IContainer::Source source, const xwii_event &event) {
 		auto mask = m_buttons.at(static_cast<std::size_t>(source));
+		auto code = 1ull << event.v.key.code;
+		static_assert(sizeof(code) == 8, "");
 
-		switch (event.v.key.code) {
-			case XWII_KEY_LEFT:
-			case XWII_KEY_RIGHT:
-			case XWII_KEY_UP:
-			case XWII_KEY_DOWN:
-			case XWII_KEY_A:
-			case XWII_KEY_B:
-			case XWII_KEY_PLUS:
-			case XWII_KEY_MINUS:
-			case XWII_KEY_HOME:
-			case XWII_KEY_ONE:
-			case XWII_KEY_TWO:
-			case XWII_KEY_X:
-			case XWII_KEY_Y:
-			case XWII_KEY_TL:
-			case XWII_KEY_TR:
-			case XWII_KEY_ZL:
-			case XWII_KEY_ZR:
-			case XWII_KEY_THUMBL:
-			case XWII_KEY_THUMBR:
-			case XWII_KEY_C:
-			case XWII_KEY_Z:
-				break;
-		}
+		if (event.v.key.state)
+			mask |= code;
+		else
+			mask &= ~code;
 
-		const auto toggled = event.v.key.state == 0 || event.v.key.state == 2;
-
-		return std::make_unique<ButtonContainer>(source, event.v.key.code);
+		m_buttons.at(static_cast<std::size_t>(source)) = mask;
+		return std::make_unique<ButtonContainer>(source, mask);
 	};
 
 	auto process_gone = [this]() {
