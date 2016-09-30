@@ -151,7 +151,8 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 
 	auto process_gone = [this]() {
 		m_connected = false;
-		return std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected);
+		return nullptr;
+		//return std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected);
 	};
 
 	auto process_watch = [this]() {
@@ -164,15 +165,7 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 	event.type = XWII_EVENT_NUM;
 	auto ret = xwii_iface_dispatch(m_interface, &event, sizeof(event));
 
-	if (!m_connectedFlag && m_connected) {
-		m_connectedFlag = true;
-		return std::make_unique<StatusContainer>(type(), StatusContainer::State::Connected);
-	}
-
 	if (ret) {
-		if (!m_connected)
-			return std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected);
-
 		if (!m_messages.empty()) {
 			auto result = std::move(m_messages.front());
 			m_messages.pop();
@@ -264,6 +257,11 @@ void XWiimoteController::reconfigure() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
 	auto ret = xwii_iface_open(m_interface, flags);
 
+	if ((flags & XWII_IFACE_CORE) && !m_wiimoteConnected) {
+		m_wiimoteConnected = true;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Connected));
+	}
+
 	if ((flags & XWII_IFACE_CLASSIC_CONTROLLER) && !m_classicControllerConnected) {
 		m_classicControllerConnected = true;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::Classic, StatusContainer::State::Connected));
@@ -276,7 +274,22 @@ void XWiimoteController::reconfigure() {
 
 	if ((flags & XWII_IFACE_MOTION_PLUS) && !m_motionPlusConnected) {
 		m_motionPlusConnected = true;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Connected));
+		//m_messages.emplace(std::make_unique<StatusContainer>(Device::, StatusContainer::State::Connected));
+	}
+
+	if ((flags & XWII_IFACE_BALANCE_BOARD) && !m_balanceBoardConnected) {
+		m_balanceBoardConnected = true;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::BalanceBoard, StatusContainer::State::Connected));
+	}
+
+	if ((flags & XWII_IFACE_PRO_CONTROLLER) && !m_proControllerConnected) {
+		m_proControllerConnected = true;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Connected));
+	}
+
+	if (!(flags & XWII_IFACE_CORE) && m_wiimoteConnected) {
+		m_wiimoteConnected = false;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected));
 	}
 
 	if (!(flags & XWII_IFACE_CLASSIC_CONTROLLER) && m_classicControllerConnected) {
@@ -291,7 +304,17 @@ void XWiimoteController::reconfigure() {
 
 	if (!(flags & XWII_IFACE_MOTION_PLUS) && m_motionPlusConnected) {
 		m_motionPlusConnected = false;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected));
+		//m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected));
+	}
+
+	if (!(flags & XWII_IFACE_BALANCE_BOARD) && m_balanceBoardConnected) {
+		m_balanceBoardConnected = false;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::BalanceBoard, StatusContainer::State::Disconnected));
+	}
+
+	if (!(flags & XWII_IFACE_PRO_CONTROLLER) && m_proControllerConnected) {
+		m_proControllerConnected = false;
+		m_messages.emplace(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Disconnected));
 	}
 
 	constexpr auto space = 25;
@@ -307,6 +330,8 @@ void XWiimoteController::reconfigure() {
 			  << ": " << static_cast<bool>(flags & XWII_IFACE_NUNCHUK) << std::endl;
 	std::cout << std::setw(space) << "  classic"
 			  << ": " << static_cast<bool>(flags & XWII_IFACE_CLASSIC_CONTROLLER) << std::endl;
+	std::cout << std::setw(space) << "  balance board"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_BALANCE_BOARD) << std::endl;
 	std::cout << std::setw(space) << "  pro controller"
 			  << ": " << static_cast<bool>(flags & XWII_IFACE_PRO_CONTROLLER) << std::endl;
 	std::cout << std::noboolalpha;

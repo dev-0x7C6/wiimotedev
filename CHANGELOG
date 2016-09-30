@@ -2,11 +2,16 @@ Wiimotedev project changelog
 ============================
 
 3.0.0 (working)
-	code: improved large amount of code (use of unique_ptrs, std::move, create interfaces and etc)
+    code: improved large amount of code (use of unique_ptrs, std::move, create interfaces and etc)
 	code: moved to c++14
+	core: huge api change
+	feature: support for libxwiimote and wiimote kernel api
+	feature: wii balance board is now supported (xwiimote backend)
+	feature: wii u pro controller is now supported (xwiimote backend)
 	fixed: compilation error on double_t (use proper double instead)
 	fixed: compilation on arm architecture (do not force -march=native)
 	removed: init.d scripts
+
 
 2.0.2
 	fixed: fixed small bug
