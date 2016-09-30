@@ -32,6 +32,8 @@ set(sources
 	containers/pressure-container.h
 	containers/status-container.cpp
 	containers/status-container.h
+	containers/stick-container.cpp
+	containers/stick-container.h
 	controllers/wiimote-scanner.cpp
 	controllers/wiimote-scanner.h
 	controllers/wiimote-scanner-thread.cpp

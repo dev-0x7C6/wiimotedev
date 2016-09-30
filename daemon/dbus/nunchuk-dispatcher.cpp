@@ -4,6 +4,7 @@
 #include "containers/accelerometer-container.h"
 #include "containers/button-container.h"
 #include "containers/status-container.h"
+#include "containers/stick-container.h"
 
 using namespace service::container;
 using namespace service::dbus;
@@ -42,9 +43,16 @@ void NunchukDispatcher::process(const uint32_t id, const std::unique_ptr<IContai
 		}
 	};
 
+	auto process_stick = [this, id, &container]() {
+		const auto lx = static_cast<const StickContainer *>(container.get())->lx();
+		const auto ly = static_cast<const StickContainer *>(container.get())->ly();
+		emit nunchukStickDataChanged(id, lx, ly);
+	};
+
 	switch (container->event()) {
 		case Event::Accelerometer: return process_acc();
 		case Event::Button: return process_key();
 		case Event::Status: return process_status();
+		case Event::Stick: return process_stick();
 	}
 }

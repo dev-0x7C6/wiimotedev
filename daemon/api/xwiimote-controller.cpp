@@ -15,6 +15,7 @@
 #include "containers/pressure-container.h"
 #include "containers/button-container.h"
 #include "containers/status-container.h"
+#include "containers/stick-container.h"
 #include "interfaces/icontainer.h"
 
 using namespace service::api;
@@ -155,6 +156,11 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		//return std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected);
 	};
 
+	auto process_stick = [this](Device device, const xwii_event &event) {
+		return std::make_unique<StickContainer>(device,
+			event.v.abs[0].x, event.v.abs[0].y, event.v.abs[1].x, event.v.abs[1].y);
+	};
+
 	auto process_watch = [this]() {
 		std::cout << "hotplug" << std::endl;
 		reconfigure();
@@ -184,13 +190,15 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		case XWII_EVENT_ACCEL: return process_acc(event, Device::Wiimote);
 		case XWII_EVENT_BALANCE_BOARD: return process_press(event);
 		case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return process_key(Device::Classic, event);
+		case XWII_EVENT_CLASSIC_CONTROLLER_MOVE: return process_stick(Device::Classic, event);
 		case XWII_EVENT_PRO_CONTROLLER_KEY: return process_key(Device::ProController, event);
+		case XWII_EVENT_PRO_CONTROLLER_MOVE: return process_stick(Device::ProController, event);
 		case XWII_EVENT_GONE: return process_gone();
 		case XWII_EVENT_IR: return process_ir(event);
 		case XWII_EVENT_KEY: return process_key(Device::Wiimote, event);
 		case XWII_EVENT_MOTION_PLUS: return process_gyro(event);
 		case XWII_EVENT_NUNCHUK_KEY: return process_key(Device::Nunchuk, event);
-		case XWII_EVENT_NUNCHUK_MOVE: return process_acc(event, Device::Nunchuk);
+		case XWII_EVENT_NUNCHUK_MOVE: return process_stick(Device::Nunchuk, event);
 		case XWII_EVENT_WATCH: return process_watch();
 	}
 

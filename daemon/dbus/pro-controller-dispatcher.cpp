@@ -3,6 +3,7 @@
 
 #include "containers/button-container.h"
 #include "containers/status-container.h"
+#include "containers/stick-container.h"
 
 using namespace service::container;
 using namespace service::dbus;
@@ -37,8 +38,17 @@ void ProControllerDispatcher::process(const uint32_t id, const std::unique_ptr<I
 		}
 	};
 
+	auto process_stick = [this, id, &container]() {
+		const auto lx = static_cast<const StickContainer *>(container.get())->lx();
+		const auto ly = static_cast<const StickContainer *>(container.get())->ly();
+		const auto rx = static_cast<const StickContainer *>(container.get())->rx();
+		const auto ry = static_cast<const StickContainer *>(container.get())->ry();
+		emit procontrollerStickDataChanged(id, lx, ly, rx, ry);
+	};
+
 	switch (container->event()) {
 		case Event::Status: return process_status();
 		case Event::Button: return process_key();
+		case Event::Stick: return process_stick();
 	}
 }
