@@ -11,11 +11,7 @@ ClassicDispatcher::ClassicDispatcher(QObject *parent)
 	new ClassicAdaptor(this);
 }
 
-QList<uint> ClassicDispatcher::classicList() const {
-	return {};
-}
-
 Device ClassicDispatcher::device() const { return Device::Classic; }
+QList<uint> ClassicDispatcher::classicList() const { return m_ids.toList(); }
 
-void ClassicDispatcher::process(const uint32_t id, const std::unique_ptr<service::interface::IContainer> &container) {
-}
+void ClassicDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {}

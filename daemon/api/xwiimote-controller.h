@@ -60,7 +60,6 @@ private:
 	bool m_nunchukConnected = false;
 	bool m_proControllerConnected = false;
 	bool m_wiimoteConnected = false;
-
 };
 }
 }
