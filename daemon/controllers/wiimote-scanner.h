@@ -1,8 +1,5 @@
 #pragma once
 
-#include <list>
-
-#include "functionals/unique-id.h"
 #include "interfaces/iwiimote-api.h"
 #include "interfaces/iwiimote-manager.h"
 
@@ -18,7 +15,6 @@ public:
 
 private:
 	std::unique_ptr<interface::IWiimoteManager> m_manager;
-	std::array<functional::UniqueId<128>, static_cast<int>(enums::Device::Last)> m_uniqueId;
 };
 }
 }

@@ -5,13 +5,14 @@
 #include <memory>
 
 #include "interfaces/icontainer.h"
+#include "interfaces/iid-manager.h"
 
 namespace service {
 namespace interface {
 
 class IWiimote {
 public:
-	explicit IWiimote() = default;
+	explicit IWiimote(IIdManager &manager);
 	virtual ~IWiimote() = default;
 
 	enum class Api {
@@ -42,6 +43,9 @@ public:
 
 	uint32_t id() const;
 	void setId(const uint32_t &id);
+
+protected:
+	IIdManager &m_idManager;
 
 private:
 	uint32_t m_id = 0u;

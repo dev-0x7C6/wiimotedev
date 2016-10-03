@@ -2,6 +2,7 @@
 
 #include <memory>
 #include "interfaces/iwiimote-manager.h"
+#include "controllers/wiimote-id-manager.h"
 
 namespace service {
 namespace api {
@@ -20,6 +21,7 @@ public:
 
 private:
 	std::unique_ptr<helper::XWiimoteMonitor> m_monitor;
+	controller::WiimoteIdManager m_idManager;
 };
 }
 }

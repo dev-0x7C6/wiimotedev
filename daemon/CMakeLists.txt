@@ -39,6 +39,8 @@ set(sources
 	controllers/wiimote-scanner.h
 	controllers/wiimote-scanner-thread.cpp
 	controllers/wiimote-scanner-thread.h
+	controllers/wiimote-id-manager.cpp
+	controllers/wiimote-id-manager.h
 	daemon.cpp
 	dbus/balance-board-dispatcher.cpp
 	dbus/balance-board-dispatcher.h
@@ -64,6 +66,8 @@ set(sources
 	interfaces/icontainer.h
 	interfaces/icontainer-processor.cpp
 	interfaces/icontainer-processor.h
+	interfaces/iid-manager.cpp
+	interfaces/iid-manager.h
 	interfaces/iwiimote-api.cpp
 	interfaces/iwiimote-api.h
 	interfaces/iwiimote-manager.cpp

@@ -19,5 +19,5 @@ std::unique_ptr<IWiimote> XWiimoteManager::connect() {
 	if (device.empty())
 		return nullptr;
 
-	return std::make_unique<XWiimoteController>(device);
+	return std::make_unique<XWiimoteController>(m_idManager, device);
 }

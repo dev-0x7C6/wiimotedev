@@ -15,7 +15,7 @@ namespace api {
 
 class XWiimoteController final : public interface::IWiimote {
 public:
-	explicit XWiimoteController(const std::string &interfaceFilePath);
+	explicit XWiimoteController(interface::IIdManager &manager, const std::string &interfaceFilePath);
 	virtual ~XWiimoteController();
 
 	virtual enums::Device type() const override;

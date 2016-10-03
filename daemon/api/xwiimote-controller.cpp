@@ -46,8 +46,9 @@ static_assert(1ull << XWII_KEY_THUMBR == WIIMOTEDEV_BTN_THUMBR, "");
 static_assert(1ull << XWII_KEY_C == WIIMOTEDEV_BTN_C, "");
 static_assert(1ull << XWII_KEY_Z == WIIMOTEDEV_BTN_Z, "");
 
-XWiimoteController::XWiimoteController(const std::string &interfaceFilePath)
-		: m_interfaceFilePath(interfaceFilePath) {
+XWiimoteController::XWiimoteController(IIdManager &manager, const std::string &interfaceFilePath)
+		: IWiimote(manager)
+		, m_interfaceFilePath(interfaceFilePath) {
 	m_buttons.fill(0);
 	auto ret = xwii_iface_new(&m_interface, m_interfaceFilePath.c_str());
 
@@ -73,11 +74,14 @@ XWiimoteController::XWiimoteController(const std::string &interfaceFilePath)
 	reconfigure();
 
 	m_connected = true;
+
+	setId(m_idManager.take(type()));
 }
 
 XWiimoteController::~XWiimoteController() {
 	xwii_iface_close(m_interface, XWII_IFACE_ALL | XWII_IFACE_WRITABLE);
 	xwii_iface_unref(m_interface);
+	m_idManager.debt(type(), id());
 }
 
 Device XWiimoteController::type() const {
@@ -162,7 +166,6 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 	};
 
 	auto process_watch = [this]() {
-		std::cout << "hotplug" << std::endl;
 		reconfigure();
 		return nullptr;
 	};
@@ -325,24 +328,24 @@ void XWiimoteController::reconfigure() {
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Disconnected));
 	}
 
-	constexpr auto space = 25;
-	std::cout << "report mode:" << std::endl;
-	std::cout << std::boolalpha << std::left;
-	std::cout << std::setw(space) << "  core"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_CORE) << std::endl;
-	std::cout << std::setw(space) << "  accelerometer"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_ACCEL) << std::endl;
-	std::cout << std::setw(space) << "  gyroscope"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_MOTION_PLUS) << std::endl;
-	std::cout << std::setw(space) << "  nunchuk"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_NUNCHUK) << std::endl;
-	std::cout << std::setw(space) << "  classic"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_CLASSIC_CONTROLLER) << std::endl;
-	std::cout << std::setw(space) << "  balance board"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_BALANCE_BOARD) << std::endl;
-	std::cout << std::setw(space) << "  pro controller"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_PRO_CONTROLLER) << std::endl;
-	std::cout << std::noboolalpha;
+	//	constexpr auto space = 25;
+	//	std::cout << "report mode:" << std::endl;
+	//	std::cout << std::boolalpha << std::left;
+	//	std::cout << std::setw(space) << "  core"
+	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_CORE) << std::endl;
+	//	std::cout << std::setw(space) << "  accelerometer"
+	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_ACCEL) << std::endl;
+	//	std::cout << std::setw(space) << "  gyroscope"
+	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_MOTION_PLUS) << std::endl;
+	//	std::cout << std::setw(space) << "  nunchuk"
+	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_NUNCHUK) << std::endl;
+	//	std::cout << std::setw(space) << "  classic"
+	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_CLASSIC_CONTROLLER) << std::endl;
+	//	std::cout << std::setw(space) << "  balance board"
+	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_BALANCE_BOARD) << std::endl;
+	//	std::cout << std::setw(space) << "  pro controller"
+	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_PRO_CONTROLLER) << std::endl;
+	//	std::cout << std::noboolalpha;
 
 	if (ret) {
 		std::cerr << "fail: unable to open " << m_interfaceFilePath << " interface." << std::endl;

@@ -42,17 +42,15 @@ void WiimotedevCore::timerEvent(QTimerEvent *event) {
 	std::unique_ptr<IContainer> container;
 
 	for (const auto &device : m_devices) {
-		const auto id = device->id();
-
 		while ((container = device->process())) {
 			for (const auto &adaptor : m_adaptors)
 				if (container->device() == adaptor->device())
-					adaptor->process(id, container);
+					adaptor->process(device->id(), container);
+		}
 
-			if (!device->isValid()) {
-				m_devices.remove_if([&device](const auto &value) { return value.get() == device.get(); });
-				return;
-			}
+		if (!device->isValid()) {
+			m_devices.remove_if([&device](const auto &value) { return value.get() == device.get(); });
+			return;
 		}
 	}
 }

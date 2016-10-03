@@ -5,10 +5,12 @@
 namespace service {
 namespace functional {
 
-template <std::size_t size>
+template <typename type, std::size_t size>
 class UniqueId final {
 public:
-	explicit UniqueId() { m_table.fill(false); }
+	explicit UniqueId() {
+		for (int i = 0; i < size; ++i) m_table[i] = false;
+	}
 	virtual ~UniqueId() = default;
 
 	decltype(size) take() {
@@ -28,7 +30,7 @@ public:
 	}
 
 private:
-	std::array<bool, size> m_table;
+	std::array<type, size> m_table;
 };
 }
 }
