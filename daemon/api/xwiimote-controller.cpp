@@ -110,11 +110,11 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		return std::make_unique<InfraredContainer>(ir);
 	};
 
-	auto process_acc = [](const xwii_event &event, const Device source) {
+	auto process_acc = [](const Device source, const xwii_event &event, const int axis) {
 		struct accdata data;
-		data.x = event.v.abs[0].x;
-		data.y = event.v.abs[0].y;
-		data.z = event.v.abs[0].z;
+		data.x = event.v.abs[axis].x;
+		data.y = event.v.abs[axis].y;
+		data.z = event.v.abs[axis].z;
 		data.roll = 0;
 		data.pitch = 0;
 		return std::make_unique<AccelerometerContainer>(source, data);
@@ -190,7 +190,7 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 	}
 
 	switch (event.type) {
-		case XWII_EVENT_ACCEL: return process_acc(event, Device::Wiimote);
+		case XWII_EVENT_ACCEL: return process_acc(Device::Wiimote, event, 0);
 		case XWII_EVENT_BALANCE_BOARD: return process_press(event);
 		case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return process_key(Device::Classic, event);
 		case XWII_EVENT_CLASSIC_CONTROLLER_MOVE: return process_stick(Device::Classic, event);
@@ -201,7 +201,9 @@ std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
 		case XWII_EVENT_KEY: return process_key(Device::Wiimote, event);
 		case XWII_EVENT_MOTION_PLUS: return process_gyro(event);
 		case XWII_EVENT_NUNCHUK_KEY: return process_key(Device::Nunchuk, event);
-		case XWII_EVENT_NUNCHUK_MOVE: return process_stick(Device::Nunchuk, event);
+		case XWII_EVENT_NUNCHUK_MOVE:
+			m_messages.emplace(process_acc(Device::Nunchuk, event, 1));
+			return process_stick(Device::Nunchuk, event);
 		case XWII_EVENT_WATCH: return process_watch();
 	}
 
