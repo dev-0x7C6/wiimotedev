@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include "linux/usr/include/wiimotedev/consts.h"
+#include "linux/usr/include/wiimotedev/wiimotedev"
 #include "containers/accelerometer-container.h"
 #include "containers/infrared-container.h"
 #include "containers/gyroscope-container.h"
@@ -20,6 +20,7 @@
 
 using namespace service::api;
 using namespace service::container;
+using namespace service::container::structs;
 using namespace service::enums;
 using namespace service::interface;
 using namespace wiimotedev;

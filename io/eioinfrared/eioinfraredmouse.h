@@ -4,7 +4,7 @@
 #include "common/tick-aligned-loop.h"
 #include "container/infrared-config.h"
 #include "container/infrared-cursor.h"
-#include "linux/usr/include/wiimotedev/consts.h"
+#include "linux/usr/include/wiimotedev/wiimotedev"
 
 #include <QTimer>
 #include <QTime>

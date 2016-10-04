@@ -4,7 +4,7 @@
 
 #include "controllers/wiimote-scanner-thread.h"
 #include "interfaces/icontainer-processor.h"
-#include "linux/usr/include/wiimotedev/consts.h"
+#include "linux/usr/include/wiimotedev/wiimotedev"
 
 namespace service {
 namespace core {

@@ -20,10 +20,10 @@ public:
 	virtual ~Profile();
 
 	virtual void classicControllerButtons(quint32 id, quint64 buttons) override;
-	virtual void classicControllerLStick(quint32 id, stickdata stick) override;
-	virtual void classicControllerRStick(quint32 id, stickdata stick) override;
+//	virtual void classicControllerLStick(quint32 id, stickdata stick) override;
+//	virtual void classicControllerRStick(quint32 id, stickdata stick) override;
 	virtual void nunchukButtons(quint32 id, quint64 buttons) override;
-	virtual void nunchukStick(quint32 id, stickdata stick) override;
+//	virtual void nunchukStick(quint32 id, stickdata stick) override;
 	virtual void wiimoteButtons(quint32 id, quint64 buttons) override;
 	virtual void wiimoteGeneralButtons(quint32 id, quint64 buttons) override;
 

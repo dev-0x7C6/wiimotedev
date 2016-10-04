@@ -7,16 +7,12 @@
 #include <memory>
 #include <list>
 
-#include "dbus/customjobs.h"
-#include "dbus/profilemanager.h"
-#include "dbus/uinputservice.h"
 #include "eioinfrared/eioinfraredmouse.h"
 #include "eiokeyboard/eioremotekeyboard.h"
 #include "emulation/event-device.h"
 #include "functionals/profile.h"
 #include "interfaces/igamepad.h"
-#include "linux/usr/include/wiimotedev/consts.h"
-#include "linux/usr/include/wiimotedev/deviceevents.h"
+#include "linux/usr/include/wiimotedev/wiimotedev"
 
 class UInputProfileManager : public QObject {
 	Q_OBJECT
@@ -69,10 +65,6 @@ private:
 		vwheelAction
 	};
 
-	std::unique_ptr<WiimotedevDeviceEvents> dbusDeviceEventsIface;
-	std::unique_ptr<DBusProfileManagerAdaptorWrapper> m_dbusProfileManager;
-	std::unique_ptr<DBusServiceAdaptorWrapper> m_dbusService;
-	std::unique_ptr<DBusCustomJobsAdaptorWrapper> m_dbusCustomJobs;
 	std::unique_ptr<io::functional::Profile> m_profile;
 
 	std::list<std::unique_ptr<EIORemoteKeyboard>> m_keyboards;

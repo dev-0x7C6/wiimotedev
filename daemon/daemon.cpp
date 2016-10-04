@@ -15,7 +15,6 @@
 #include <QCoreApplication>
 #include <QFileInfo>
 
-#include "syslog/syslog.h"
 #include "wiimotedevcore.h"
 
 using namespace service::core;
@@ -94,12 +93,8 @@ int main(int argc, char *argv[]) {
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, signal_handler);
 	signal(SIGPIPE, signal_handler);
-	systemlog::open(DAEMON_NAME);
-	systemlog::information("service started");
 	std::unique_ptr<WiimotedevCore> core = std::make_unique<WiimotedevCore>();
 	application.exec();
-	systemlog::information("service quited");
-	systemlog::close();
 
 	if (getpid() == pid)
 		unlink(PID_FILE);

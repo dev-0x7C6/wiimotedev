@@ -15,17 +15,13 @@ const QRegExp deviceEventRegExp(".*(\\[.*(\\d+)\\])");
 
 UInputProfileManager::UInputProfileManager(QObject *parent)
 		: QObject(parent)
-		, dbusDeviceEventsIface(std::make_unique<WiimotedevDeviceEvents>(
-			  WIIMOTEDEV_DBUS_SERVICE_NAME,
-			  WIIMOTEDEV_DBUS_OBJECT_EVENTS,
-			  QDBusConnection::systemBus(), this))
-		, m_dbusProfileManager(std::make_unique<DBusProfileManagerAdaptorWrapper>(this, QDBusConnection::systemBus()))
-		, m_dbusService(std::make_unique<DBusServiceAdaptorWrapper>(this, QDBusConnection::systemBus()))
-		, m_dbusCustomJobs(std::make_unique<DBusCustomJobsAdaptorWrapper>(this, QDBusConnection::systemBus()))
+//		, dbusDeviceEventsIface(std::make_unique<WiimotedevDeviceEvents>(
+//			  WIIMOTEDEV_DBUS_SERVICE_NAME,
+//			  WIIMOTEDEV_DBUS_OBJECT_EVENTS,
+//			  QDBusConnection::systemBus(), this))
 		, m_eventDevice("Virtual mouse and keyboard", 0) {
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, this, &UInputProfileManager::dbusWiimoteGeneralButtons, Qt::DirectConnection);
+//	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, this, &UInputProfileManager::dbusWiimoteGeneralButtons, Qt::DirectConnection);
 	initializeCommandEvents();
-	QDBusConnection::systemBus().registerService("org.wiimotedev.io");
 	dbusWiimoteGeneralButtons(1, 0);
 	m_eventDevice.open();
 	m_eventDevice.configure();
@@ -75,12 +71,12 @@ bool UInputProfileManager::loadProfile(QString file) {
 		return false;
 
 	m_profile = std::make_unique<decltype(m_profile)::element_type>(file.toStdString());
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteButtons, m_profile.get(), &Profile::wiimoteButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusNunchukButtons, m_profile.get(), &Profile::nunchukButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusNunchukStick, m_profile.get(), &Profile::nunchukStick, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerButtons, m_profile.get(), &Profile::classicControllerButtons, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerLStick, m_profile.get(), &Profile::classicControllerLStick, Qt::DirectConnection);
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerRStick, m_profile.get(), &Profile::classicControllerRStick, Qt::DirectConnection);
+	//connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteButtons, m_profile.get(), &Profile::wiimoteButtons, Qt::DirectConnection);
+	//connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusNunchukButtons, m_profile.get(), &Profile::nunchukButtons, Qt::DirectConnection);
+	//connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusNunchukStick, m_profile.get(), &Profile::nunchukStick, Qt::DirectConnection);
+	//connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerButtons, m_profile.get(), &Profile::classicControllerButtons, Qt::DirectConnection);
+	//connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerLStick, m_profile.get(), &Profile::classicControllerLStick, Qt::DirectConnection);
+	//connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerRStick, m_profile.get(), &Profile::classicControllerRStick, Qt::DirectConnection);
 
 	QSettings settings(file, QSettings::IniFormat);
 	foreach (const QString &key, settings.childGroups()) {

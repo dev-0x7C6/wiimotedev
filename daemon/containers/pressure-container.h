@@ -1,23 +1,31 @@
 #pragma once
 
 #include "interfaces/icontainer.h"
-#include "linux/usr/include/wiimotedev/consts.h"
+#include "linux/usr/include/wiimotedev/wiimotedev"
 
 namespace service {
 namespace container {
+namespace structs {
+struct pressdata {
+	int32_t tl;
+	int32_t tr;
+	int32_t bl;
+	int32_t br;
+};
+}
 
 class PressureContainer final : public interface::IContainer {
 public:
-	explicit PressureContainer(const pressdata &data);
+	explicit PressureContainer(const structs::pressdata &data);
 	virtual ~PressureContainer() = default;
 
 	virtual enums::Device device() const override;
 	virtual enums::Event event() const override;
 
-	const pressdata &data() const;
+	const structs::pressdata &data() const;
 
 private:
-	const pressdata m_data;
+	const structs::pressdata m_data;
 };
 }
 }

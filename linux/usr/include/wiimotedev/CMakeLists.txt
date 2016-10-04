@@ -3,8 +3,7 @@
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
 set (HEADERS
-  consts.h
-  deviceevents.h
+	wiimotedev
 )
 
 install(FILES ${HEADERS} DESTINATION ${WIIMOTEDEV_INC_DIR}/wiimotedev)

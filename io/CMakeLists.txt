@@ -6,10 +6,7 @@ include_directories(
 )
 
 set(sources
-	${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/consts.h
-	${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/deviceevents.h
-	${CMAKE_SOURCE_DIR}/syslog/syslog.cpp
-	${CMAKE_SOURCE_DIR}/syslog/syslog.h
+	${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/wiimotedev
 	common/tick-aligned-loop.cpp
 	common/tick-aligned-loop.h
 	container/infrared-config.cpp
@@ -18,9 +15,6 @@ set(sources
 	container/infrared-cursor.h
 	container/stick-container.cpp
 	container/stick-container.h
-	dbus/customjobs.h
-	dbus/profilemanager.h
-	dbus/uinputservice.h
 	eioinfrared/eioinfraredmouse.cpp
 	eioinfrared/eioinfraredmouse.h
 	eiokeyboard/eioremotekeyboard.cpp
@@ -57,6 +51,12 @@ set(sources
 	interfaces/iwiimotedev-event.h
 	uinput.cpp
 )
+
+qt5_add_dbus_interface(sources ../dbus/balanceboard.xml dbus/interfaces/balanceboard)
+qt5_add_dbus_interface(sources ../dbus/classic.xml dbus/interfaces/nunchuk)
+qt5_add_dbus_interface(sources ../dbus/nunchuk.xml dbus/interfaces/classic)
+qt5_add_dbus_interface(sources ../dbus/procontroller.xml dbus/interfaces/procontroller)
+qt5_add_dbus_interface(sources ../dbus/wiimote.xml dbus/interfaces/wiimote)
 
 add_executable(wiimotedev-io ${sources})
 

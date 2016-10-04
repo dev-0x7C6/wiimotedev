@@ -2,6 +2,7 @@
 
 using namespace service::interface;
 using namespace service::container;
+using namespace service::container::structs;
 using namespace service::enums;
 
 PressureContainer::PressureContainer(const pressdata &data)

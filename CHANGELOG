@@ -11,6 +11,7 @@ Wiimotedev project changelog
 	fixed: compilation error on double_t (use proper double instead)
 	fixed: compilation on arm architecture (do not force -march=native)
 	removed: init.d scripts
+	removed: diagnostic tool (to rewrite)
 
 
 2.0.2

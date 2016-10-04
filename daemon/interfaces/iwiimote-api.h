@@ -16,7 +16,6 @@ public:
 	virtual ~IWiimote() = default;
 
 	enum class Api {
-		Cwiid,
 		XWiimote
 	};
 

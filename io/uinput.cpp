@@ -9,8 +9,7 @@
 #include <stdlib.h>
 
 #include "eiomanager/manager.h"
-#include "linux/usr/include/wiimotedev/consts.h"
-#include "syslog/syslog.h"
+#include "linux/usr/include/wiimotedev/wiimotedev"
 
 #include <QCoreApplication>
 #include <QCommandLineParser>
@@ -98,8 +97,6 @@ int main(int argc, char *argv[]) {
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, signal_handler);
 	signal(SIGPIPE, signal_handler);
-	systemlog::open(DAEMON_NAME);
-	systemlog::information("system service started");
 	QSettings settings(scancodeFile, QSettings::IniFormat);
 	settings.beginGroup("scancode");
 
@@ -171,7 +168,5 @@ int main(int argc, char *argv[]) {
 	devicebuttons.insert("nunchuk.shift.shake", NUNCHUK_BTN_SHIFT_SHAKE);
 	UInputProfileManager profileManager;
 	application.exec();
-	systemlog::information("system service closed");
-	systemlog::close();
 	exit(EXIT_SUCCESS);
 }

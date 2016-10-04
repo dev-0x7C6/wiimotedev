@@ -2,9 +2,16 @@
 
 #include <iostream>
 #include <QSettings>
+#include <QDBusConnection>
 
 #include "factories/gamepad-factory.h"
 #include "interfaces/igamepad.h"
+
+#include "dbus/interfaces/balanceboard.h"
+#include "dbus/interfaces/classic.h"
+#include "dbus/interfaces/nunchuk.h"
+#include "dbus/interfaces/procontroller.h"
+#include "dbus/interfaces/wiimote.h"
 
 using namespace io::factory;
 using namespace io::interface;
@@ -15,6 +22,8 @@ Profile::Profile(const std::string &configurationFilePath)
 		, IProfile(configurationFilePath)
 
 {
+	org::wiimotedev::balanceboard balanceboard("org.wiimotedev.daemon", "/balanceboard", QDBusConnection::systemBus(), this);
+
 	QSettings settings(QString::fromStdString(configurationFilePath), QSettings::IniFormat);
 	for (const auto &group : settings.childGroups()) {
 		if (settings.value(group + "/module", {}).toString() != "gamepad")
@@ -52,25 +61,25 @@ void Profile::classicControllerButtons(quint32 id, quint64 buttons) {
 		[&buttons](const auto &gamepad) { gamepad->input(buttons); });
 }
 
-void Profile::classicControllerLStick(quint32 id, stickdata stick) {
-	gamepad_iterator(IGamepad::Type::Classic, id,
-		[&stick](const auto &gamepad) { gamepad->input(Stick::LStick, stick.x, stick.y); });
-}
+//void Profile::classicControllerLStick(quint32 id, stickdata stick) {
+//	gamepad_iterator(IGamepad::Type::Classic, id,
+//		[&stick](const auto &gamepad) { gamepad->input(Stick::LStick, stick.x, stick.y); });
+//}
 
-void Profile::classicControllerRStick(quint32 id, stickdata stick) {
-	gamepad_iterator(IGamepad::Type::Classic, id,
-		[&stick](const auto &gamepad) { gamepad->input(Stick::RStick, stick.x, stick.y); });
-}
+//void Profile::classicControllerRStick(quint32 id, stickdata stick) {
+//	gamepad_iterator(IGamepad::Type::Classic, id,
+//		[&stick](const auto &gamepad) { gamepad->input(Stick::RStick, stick.x, stick.y); });
+//}
 
 void Profile::nunchukButtons(quint32 id, quint64 buttons) {
 	gamepad_iterator(IGamepad::Type::Nunchuk, id,
 		[&buttons](const auto &gamepad) { gamepad->input(buttons); });
 }
 
-void Profile::nunchukStick(quint32 id, stickdata stick) {
-	gamepad_iterator(IGamepad::Type::Nunchuk, id,
-		[&stick](const auto &gamepad) { gamepad->input(Stick::Stick, stick.x, stick.y); });
-}
+//void Profile::nunchukStick(quint32 id, stickdata stick) {
+//	gamepad_iterator(IGamepad::Type::Nunchuk, id,
+//		[&stick](const auto &gamepad) { gamepad->input(Stick::Stick, stick.x, stick.y); });
+//}
 
 void Profile::wiimoteButtons(quint32 id, quint64 buttons) {
 	gamepad_iterator(IGamepad::Type::Wiimote, id,

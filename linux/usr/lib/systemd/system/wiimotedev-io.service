@@ -4,7 +4,7 @@ After=wiimotedev-daemon.service
 
 [Service]
 Type=forking
-PIDFile=/var/run/wiimotedev-io.pid 
+PIDFile=/var/run/wiimotedev-io.pid
 ExecStart=/usr/sbin/wiimotedev-io
 
 [Install]

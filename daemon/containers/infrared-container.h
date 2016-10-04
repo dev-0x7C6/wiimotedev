@@ -4,14 +4,21 @@
 #include <array>
 
 #include "interfaces/icontainer.h"
-#include "linux/usr/include/wiimotedev/consts.h"
+#include "linux/usr/include/wiimotedev/wiimotedev"
 
 struct xwii_event;
 
 namespace service {
 namespace container {
+namespace structs {
+struct irpoint {
+	int16_t size;
+	uint16_t x;
+	uint16_t y;
+};
+}
 
-using IrPoints = std::array<irpoint, 4>; // max 4 ir
+using IrPoints = std::array<structs::irpoint, 4>; // max 4 ir
 
 class InfraredContainer final : public interface::IContainer {
 public:

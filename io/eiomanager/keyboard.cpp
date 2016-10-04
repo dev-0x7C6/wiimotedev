@@ -27,7 +27,8 @@ void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &s
 		action.pushed = false;
 		device->addKeyboardAction(action);
 	}
-	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, device.get(), &EIORemoteKeyboard::dbusWiimoteGeneralButtons);
+	// FIXME: removed dbusDeviceEventsIface
+	// connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, device.get(), &EIORemoteKeyboard::dbusWiimoteGeneralButtons);
 	settings.endGroup();
 
 	m_keyboards.emplace_back(std::move(device));

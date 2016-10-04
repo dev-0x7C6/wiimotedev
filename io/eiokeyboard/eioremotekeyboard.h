@@ -8,7 +8,7 @@
 
 #include "io/emulation/event-device.h"
 #include "io/functionals/hash-compare.h"
-#include "linux/usr/include/wiimotedev/consts.h"
+#include "linux/usr/include/wiimotedev/wiimotedev"
 
 struct KeyboardAction {
 	QHash<uint32_t, uint64_t> event;

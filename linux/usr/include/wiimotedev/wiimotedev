@@ -1,78 +1,10 @@
-/**********************************************************************************
- * Wiimotedev Project - http://code.google.com/p/wiimotedev/ -                    *
- * Copyright (C) 2008-2015  Bartłomiej Burdukiewicz                               *
- * Contact: bartlomiej.burdukiewicz@gmail.com                                     *
- *                                                                                *
- * This program is free software; you can redistribute it and/or                  *
- * modify it under the terms of the GNU Lesser General Public                     *
- * License as published by the Free Software Foundation; either                   *
- * version 2.1 of the License, or (at your option) any later version.             *
- *                                                                                *
- * This program is distributed in the hope that it will be useful,                *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of                 *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU              *
- * Lesser General Public License for more details.                                *
- *                                                                                *
- * You should have received a copy of the GNU Lesser General Public               *
- * License along with this program; if not, see <http://www.gnu.org/licences/>.   *
- **********************************************************************************/
-
 #pragma once
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-variable"
 
 #include <cstdint>
 
-#define WIIMOTEDEV_DBUS_SERVICE_NAME "org.wiimotedev.daemon"
-#define WIIMOTEDEV_DBUS_IFACE_EVENTS "org.wiimotedev.deviceEvents"
-#define WIIMOTEDEV_DBUS_IFACE_SERVICE "org.wiimotedev.service"
-#define WIIMOTEDEV_DBUS_OBJECT_EVENTS "/deviceEvents"
-#define WIIMOTEDEV_DBUS_OBJECT_SERVICE "/service"
-
-/* Wiiremote status  --------------------------------------------- */
-
-const uint8_t STATUS_WIIMOTE_DISCONNECTED = 0x00;
-const uint8_t STATUS_WIIMOTE_CONNECTED = 0x01;
-const uint8_t STATUS_WIIMOTE_NUNCHUK_CONNECTED = 0x02;
-const uint8_t STATUS_WIIMOTE_CLASSIC_CONNECTED = 0x04;
-
-#define STATUS_NUNCHUK_CONNECTED STATUS_WIIMOTE_NUNCHUK_CONNECTED
-#define STATUS_CLASSIC_CONNECTED STATUS_WIIMOTE_CLASSIC_CONNECTED
-
-/* Structs  --------------------------------------------- */
-
-struct irpoint {
-	int16_t size;
-	uint16_t x;
-	uint16_t y;
-};
-
-struct gyrodata {
-	int32_t x;
-	int32_t y;
-	int32_t z;
-	int32_t lowX;
-	int32_t lowY;
-	int32_t lowZ;
-};
-
-struct pressdata {
-	int32_t tl;
-	int32_t tr;
-	int32_t bl;
-	int32_t br;
-};
-
-struct accdata {
-	uint8_t x;
-	uint8_t y;
-	uint8_t z;
-	double pitch;
-	double roll;
-};
-
-struct stickdata {
-	uint8_t x;
-	uint8_t y;
-};
+constexpr auto WIIMOTEDEV_DBUS_SERVICE_NAME = "org.wiimotedev.daemon";
 
 namespace wiimotedev {
 
@@ -97,10 +29,10 @@ constexpr auto WIIMOTEDEV_BTN_THUMBL = 1ull << 17;
 constexpr auto WIIMOTEDEV_BTN_THUMBR = 1ull << 18;
 constexpr auto WIIMOTEDEV_BTN_C = 1ull << 19;
 constexpr auto WIIMOTEDEV_BTN_Z = 1ull << 20;
+
 }
 
 enum GENERAL_BUTTONS {
-	// 1.0 API
 	GENERAL_WIIMOTE_BTN_1 = 0,
 	GENERAL_WIIMOTE_BTN_2,
 	GENERAL_WIIMOTE_BTN_A,
@@ -326,3 +258,5 @@ const uint64_t NUNCHUK_TILT_NOTMASK = ~NUNCHUK_TILT_MASK;
 const uint64_t CLASSIC_BUTTON_NOTMASK = ~CLASSIC_BUTTON_MASK;
 const uint64_t CLASSIC_LSTICK_NOTMASK = ~CLASSIC_LSTICK_MASK;
 const uint64_t CLASSIC_RSTICK_NOTMASK = ~CLASSIC_RSTICK_MASK;
+
+#pragma clang diagnostic pop

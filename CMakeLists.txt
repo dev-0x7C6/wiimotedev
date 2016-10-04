@@ -28,7 +28,6 @@ set (wiimotedev_project_files
 
 option(WIIMOTEDEV_BUILD_DAEMON "Build wiiremote daemon" ON)
 option(WIIMOTEDEV_BUILD_IO "Build input device emulator" ON)
-option(WIIMOTEDEV_BUILD_MANAGER "Build diagnostic tool" ON)
 option(WIIMOTEDEV_INSTALL_SYSTEMD "Install systemd services" ON)
 
 include("FindBluetooth.cmake")
@@ -43,7 +42,6 @@ set(WIIMOTEDEV_SBIN_DIR "/usr/sbin")
 set(WIIMOTEDEV_BIN_DIR "/usr/bin/")
 
 add_subdirectory(linux)
-add_subdirectory(static)
 
 configure_file(config.h.in config.h)
 
@@ -55,13 +53,9 @@ if(WIIMOTEDEV_BUILD_IO)
   add_subdirectory(io)
 endif(WIIMOTEDEV_BUILD_IO)
 
-if(WIIMOTEDEV_BUILD_MANAGER)
-  add_subdirectory(manager)
-endif(WIIMOTEDEV_BUILD_MANAGER)
 
 message("BUILD")
 message("-- Build wiimotedev-daemon: ${WIIMOTEDEV_BUILD_DAEMON}")
 message("-- Build wiimotedev-io: ${WIIMOTEDEV_BUILD_IO}")
-message("-- Build wiimotedev-manager: ${WIIMOTEDEV_BUILD_MANAGER}")
 message("-- Install systemd services: ${WIIMOTEDEV_INSTALL_SYSTEMD}")
 
