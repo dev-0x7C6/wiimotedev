@@ -1,9 +1,9 @@
 #pragma once
 
 #include "interfaces/icontainer.h"
-#include "enums/device-type.h"
+#include "common/enums/device.h"
 
-namespace service {
+namespace dae {
 namespace container {
 
 class StatusContainer final : public interface::IContainer {
@@ -13,14 +13,14 @@ public:
 		Disconnected
 	};
 
-	explicit StatusContainer(const enums::Device device, const State state);
+	explicit StatusContainer(const common::enums::Device device, const State state);
 
 	virtual enums::Event event() const override;
-	virtual enums::Device device() const override;
+	virtual common::enums::Device device() const override;
 	State state() const;
 
 private:
-	const enums::Device m_source;
+	const common::enums::Device m_source;
 	const State m_state;
 };
 }

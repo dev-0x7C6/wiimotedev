@@ -2,7 +2,7 @@
 
 #include <array>
 
-namespace service {
+namespace dae {
 namespace functional {
 
 template <typename type, std::size_t size>

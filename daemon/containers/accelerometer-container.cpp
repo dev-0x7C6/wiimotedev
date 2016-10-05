@@ -1,11 +1,12 @@
 #include "accelerometer-container.h"
 
-using namespace service::container;
-using namespace service::container::structs;
-using namespace service::enums;
-using namespace service::interface;
+using namespace common::enums;
+using namespace dae::container;
+using namespace dae::container::structs;
+using namespace dae::enums;
+using namespace dae::interface;
 
-AccelerometerContainer::AccelerometerContainer(const enums::Device source, const accdata &data)
+AccelerometerContainer::AccelerometerContainer(const common::enums::Device source, const accdata &data)
 		: m_source(source)
 		, m_data(data) {
 }

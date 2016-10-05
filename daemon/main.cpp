@@ -7,7 +7,7 @@
 #include <QCoreApplication>
 #include "wiimotedevcore.h"
 
-using namespace service::core;
+using namespace dae::core;
 
 int main(int argc, char *argv[]) {
 	QCoreApplication application(argc, argv);

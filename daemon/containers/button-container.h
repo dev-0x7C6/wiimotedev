@@ -3,15 +3,15 @@
 #include <cstdint>
 #include "interfaces/icontainer.h"
 
-namespace service {
+namespace dae {
 namespace container {
 
 class ButtonContainer final : public interface::IContainer {
 public:
-	explicit ButtonContainer(const enums::Device device, const uint64_t state);
+	explicit ButtonContainer(const common::enums::Device device, const uint64_t state);
 	virtual ~ButtonContainer() = default;
 
-	virtual enums::Device device() const override;
+	virtual common::enums::Device device() const override;
 	virtual enums::Event event() const override;
 
 	uint64_t state() const;
@@ -19,7 +19,7 @@ public:
 
 private:
 	uint64_t m_state;
-	enums::Device m_source;
+	common::enums::Device m_source;
 };
 }
 }

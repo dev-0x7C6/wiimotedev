@@ -7,7 +7,7 @@
 #include "interfaces/icontainer.h"
 #include "interfaces/iid-manager.h"
 
-namespace service {
+namespace dae {
 namespace interface {
 
 class IWiimote {
@@ -19,7 +19,7 @@ public:
 		XWiimote
 	};
 
-	virtual enums::Device type() const = 0;
+	virtual common::enums::Device type() const = 0;
 	virtual Api api() const = 0;
 
 	virtual bool isValid() const = 0;

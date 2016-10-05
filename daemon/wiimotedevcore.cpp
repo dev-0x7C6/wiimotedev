@@ -7,11 +7,12 @@
 #include "factories/dispatcher-factory.h"
 #include "interfaces/icontainer.h"
 
-using namespace service::controller;
-using namespace service::core;
-using namespace service::enums;
-using namespace service::factory;
-using namespace service::interface;
+using namespace common::enums;
+using namespace dae::controller;
+using namespace dae::core;
+using namespace dae::enums;
+using namespace dae::factory;
+using namespace dae::interface;
 
 WiimotedevCore::WiimotedevCore(QObject *parent)
 		: QObject(parent)

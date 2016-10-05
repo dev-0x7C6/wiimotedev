@@ -3,7 +3,7 @@
 #include "interfaces/icontainer.h"
 #include "include/wiimotedev/wiimotedev"
 
-namespace service {
+namespace dae {
 namespace container {
 namespace structs {
 struct gyrodata {
@@ -21,7 +21,7 @@ public:
 	explicit GyroscopeContainer(const struct structs::gyrodata &data);
 	virtual ~GyroscopeContainer() = default;
 
-	virtual enums::Device device() const override;
+	virtual common::enums::Device device() const override;
 	virtual enums::Event event() const override;
 
 	structs::gyrodata data() const;

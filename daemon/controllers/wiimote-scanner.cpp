@@ -4,9 +4,9 @@
 #include <chrono>
 #include "factories/controller-manager-factory.h"
 
-using namespace service::controller;
-using namespace service::factory;
-using namespace service::interface;
+using namespace dae::controller;
+using namespace dae::factory;
+using namespace dae::interface;
 using namespace std::literals;
 
 WiimoteScanner::WiimoteScanner(const IWiimote::Api api)

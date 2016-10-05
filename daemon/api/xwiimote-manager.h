@@ -4,7 +4,7 @@
 #include "interfaces/iwiimote-manager.h"
 #include "controllers/wiimote-id-manager.h"
 
-namespace service {
+namespace dae {
 namespace api {
 
 namespace helper {

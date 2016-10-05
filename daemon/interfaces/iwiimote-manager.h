@@ -4,7 +4,7 @@
 
 #include <memory>
 
-namespace service {
+namespace dae {
 namespace interface {
 
 class IWiimote;

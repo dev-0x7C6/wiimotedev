@@ -3,7 +3,7 @@
 #include "interfaces/iwiimote-api.h"
 #include "interfaces/iwiimote-manager.h"
 
-namespace service {
+namespace dae {
 namespace controller {
 
 class WiimoteScanner {

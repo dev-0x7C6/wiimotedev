@@ -3,7 +3,7 @@
 #include "interfaces/icontainer.h"
 #include "include/wiimotedev/wiimotedev"
 
-namespace service {
+namespace dae {
 namespace container {
 namespace structs {
 struct accdata {
@@ -17,16 +17,16 @@ struct accdata {
 
 class AccelerometerContainer final : public interface::IContainer {
 public:
-	explicit AccelerometerContainer(const enums::Device device, const structs::accdata &data);
+	explicit AccelerometerContainer(const common::enums::Device device, const structs::accdata &data);
 	virtual ~AccelerometerContainer() = default;
 
-	virtual enums::Device device() const override;
+	virtual common::enums::Device device() const override;
 	virtual enums::Event event() const override;
 
 	const structs::accdata &data() const;
 
 private:
-	const enums::Device m_source;
+	const common::enums::Device m_source;
 	structs::accdata m_data;
 };
 }

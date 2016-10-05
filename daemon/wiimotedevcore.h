@@ -6,7 +6,7 @@
 #include "interfaces/icontainer-processor.h"
 #include "include/wiimotedev/wiimotedev"
 
-namespace service {
+namespace dae {
 namespace core {
 
 class WiimotedevCore final : public QObject {
@@ -19,9 +19,9 @@ protected:
 	virtual void timerEvent(QTimerEvent *event) override;
 
 private:
-	service::controller::WiimoteScannerThread m_scanner;
-	std::list<std::unique_ptr<service::interface::IWiimote>> m_devices;
-	std::list<std::unique_ptr<service::interface::IContainerProcessor>> m_adaptors;
+	dae::controller::WiimoteScannerThread m_scanner;
+	std::list<std::unique_ptr<dae::interface::IWiimote>> m_devices;
+	std::list<std::unique_ptr<dae::interface::IContainerProcessor>> m_adaptors;
 };
 }
 }

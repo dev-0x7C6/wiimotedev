@@ -4,8 +4,8 @@
 #include <iostream>
 #include "daemon/controllers/wiimote-scanner.h"
 
-using namespace service::controller;
-using namespace service::interface;
+using namespace dae::controller;
+using namespace dae::interface;
 using namespace std::literals;
 
 WiimoteScannerThread::WiimoteScannerThread(const IWiimote::Api api)

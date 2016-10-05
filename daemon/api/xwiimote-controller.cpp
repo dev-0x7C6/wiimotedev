@@ -18,11 +18,12 @@
 #include "containers/stick-container.h"
 #include "interfaces/icontainer.h"
 
-using namespace service::api;
-using namespace service::container;
-using namespace service::container::structs;
-using namespace service::enums;
-using namespace service::interface;
+using namespace common::enums;
+using namespace dae::api;
+using namespace dae::container;
+using namespace dae::container::structs;
+using namespace dae::enums;
+using namespace dae::interface;
 using namespace wiimotedev;
 
 static_assert(1ull << XWII_KEY_LEFT == WIIMOTEDEV_BTN_LEFT, "");
@@ -99,7 +100,7 @@ Device XWiimoteController::type() const {
 
 bool XWiimoteController::isValid() const { return m_connected; }
 
-std::unique_ptr<service::interface::IContainer> XWiimoteController::process() {
+std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 	auto process_ir = [](const xwii_event &event) {
 		IrPoints ir;
 		for (std::size_t i = 0; i < ir.size(); ++i) {

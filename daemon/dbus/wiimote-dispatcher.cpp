@@ -9,10 +9,11 @@
 #include "containers/status-container.h"
 #include "wiimoteadaptor.h"
 
-using namespace service::container;
-using namespace service::enums;
-using namespace service::dbus;
-using namespace service::interface;
+using namespace common::enums;
+using namespace dae::container;
+using namespace dae::enums;
+using namespace dae::dbus;
+using namespace dae::interface;
 
 WiimoteDispatcher::WiimoteDispatcher(QObject *parent)
 		: IContainerProcessor(parent) {

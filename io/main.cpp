@@ -27,7 +27,7 @@ int main(int argc, char *argv[]) {
 		QString::number(WIIMOTEDEV_VERSION_PATCH));
 
 	if (getuid()) {
-		std::cout << "root privilages needed." << std::endl;
+		std::cerr << "root privilages needed." << std::endl;
 		return 1;
 	}
 

@@ -64,7 +64,6 @@ target_link_libraries(
 	wiimotedev-io
 	Qt5::Core
 	Qt5::DBus
-	Qt5::Network
 	Qt5::Widgets
 )
 

@@ -4,10 +4,11 @@
 #include "containers/pressure-container.h"
 #include "containers/status-container.h"
 
-using namespace service::dbus;
-using namespace service::enums;
-using namespace service::interface;
-using namespace service::container;
+using namespace common::enums;
+using namespace dae::dbus;
+using namespace dae::enums;
+using namespace dae::interface;
+using namespace dae::container;
 
 BalanceBoardDispatcher::BalanceBoardDispatcher(QObject *parent)
 		: IContainerProcessor(parent) {
@@ -17,7 +18,7 @@ BalanceBoardDispatcher::BalanceBoardDispatcher(QObject *parent)
 Device BalanceBoardDispatcher::device() const { return Device::BalanceBoard; }
 QList<uint> BalanceBoardDispatcher::balanceBoardList() { return m_ids.toList(); }
 
-void BalanceBoardDispatcher::process(const uint32_t id, const std::unique_ptr<service::interface::IContainer> &container) {
+void BalanceBoardDispatcher::process(const uint32_t id, const std::unique_ptr<dae::interface::IContainer> &container) {
 	auto process_pressure = [this, id, &container]() {
 		const auto data = static_cast<PressureContainer *>(container.get())->data();
 		emit balanceBoardDataChanged(id, data.tl, data.tr, data.bl, data.br);

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace service {
+namespace common {
 namespace enums {
 
 enum class Device {

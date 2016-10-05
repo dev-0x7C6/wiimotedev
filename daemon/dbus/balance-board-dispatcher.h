@@ -3,7 +3,7 @@
 #include <QSet>
 #include "interfaces/icontainer-processor.h"
 
-namespace service {
+namespace dae {
 namespace dbus {
 
 class BalanceBoardDispatcher final : public interface::IContainerProcessor {
@@ -12,7 +12,7 @@ public:
 	explicit BalanceBoardDispatcher(QObject *parent = nullptr);
 	virtual ~BalanceBoardDispatcher() = default;
 
-	virtual enums::Device device() const override;
+	virtual common::enums::Device device() const override;
 	virtual void process(const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
 
 public:

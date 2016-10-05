@@ -10,10 +10,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 find_package(Qt5Core)
-find_package(Qt5Gui)
 find_package(Qt5DBus)
 find_package(Qt5Widgets)
-find_package(Qt5Network)
 
 include("Version.cmake")
 

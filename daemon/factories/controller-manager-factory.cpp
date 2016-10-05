@@ -4,9 +4,9 @@
 #include "api/xwiimote-monitor.h"
 #include "interfaces/iwiimote-api.h"
 
-using namespace service::api;
-using namespace service::factory;
-using namespace service::interface;
+using namespace dae::api;
+using namespace dae::factory;
+using namespace dae::interface;
 
 std::unique_ptr<IWiimoteManager> ControllerManagerFactory::create(const IWiimote::Api type) {
 	switch (type) {

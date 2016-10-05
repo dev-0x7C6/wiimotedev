@@ -1,3 +1,3 @@
 #include "iid-manager.h"
 
-using namespace service::interface;
+using namespace dae::interface;

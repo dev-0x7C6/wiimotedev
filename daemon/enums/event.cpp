@@ -1,3 +1,3 @@
 #include "event.h"
 
-using namespace service::enums;
+using namespace dae::enums;

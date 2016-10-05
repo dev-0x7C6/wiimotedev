@@ -1,9 +1,10 @@
 #include "infrared-container.h"
 #include <xwiimote.h>
 
-using namespace service::container;
-using namespace service::enums;
-using namespace service::interface;
+using namespace common::enums;
+using namespace dae::container;
+using namespace dae::enums;
+using namespace dae::interface;
 
 InfraredContainer::InfraredContainer(const IrPoints &points)
 		: m_points(points) {}

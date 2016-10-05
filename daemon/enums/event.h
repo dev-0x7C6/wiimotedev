@@ -1,6 +1,6 @@
 #pragma once
 
-namespace service {
+namespace dae {
 namespace enums {
 
 enum class Event {

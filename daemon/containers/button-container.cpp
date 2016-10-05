@@ -1,8 +1,9 @@
 #include "button-container.h"
 
-using namespace service::container;
-using namespace service::interface;
-using namespace service::enums;
+using namespace common::enums;
+using namespace dae::container;
+using namespace dae::interface;
+using namespace dae::enums;
 
 Event ButtonContainer::event() const { return Event::Button; }
 

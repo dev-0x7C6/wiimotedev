@@ -1,9 +1,9 @@
 #pragma once
 
-#include "enums/device-type.h"
+#include "common/enums/device.h"
 #include "enums/event.h"
 
-namespace service {
+namespace dae {
 namespace interface {
 
 class IContainer {
@@ -11,7 +11,7 @@ public:
 	explicit IContainer() = default;
 	virtual ~IContainer() = default;
 
-	virtual enums::Device device() const = 0;
+	virtual common::enums::Device device() const = 0;
 	virtual enums::Event event() const = 0;
 };
 }

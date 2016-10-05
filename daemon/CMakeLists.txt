@@ -2,8 +2,6 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}
-	${CMAKE_SOURCE_DIR}/..
-	${CMAKE_SOURCE_DIR}/linux/usr/include/
 )
 
 set(sources
@@ -15,6 +13,8 @@ set(sources
 	api/xwiimote-monitor.h
 	${CMAKE_SOURCE_DIR}/config.h
 	${CMAKE_SOURCE_DIR}/include/wiimotedev/wiimotedev
+	${CMAKE_SOURCE_DIR}/common/enums/device.cpp
+	${CMAKE_SOURCE_DIR}/common/enums/device.h
 	containers/accelerometer-container.cpp
 	containers/accelerometer-container.h
 	containers/button-container.cpp
@@ -45,8 +45,6 @@ set(sources
 	dbus/pro-controller-dispatcher.h
 	dbus/wiimote-dispatcher.cpp
 	dbus/wiimote-dispatcher.h
-	enums/device-type.cpp
-	enums/device-type.h
 	enums/event.cpp
 	enums/event.h
 	factories/controller-manager-factory.cpp
@@ -69,12 +67,12 @@ set(sources
 )
 
 #qt5_add_dbus_adaptor(sources dbus/deviceevents.xml wiimotedevcore.h service::core::WiimotedevCore)
-qt5_add_dbus_adaptor(sources ../dbus/balanceboard.xml dbus/balance-board-dispatcher.h service::dbus::BalanceBoardDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/classic.xml dbus/classic-dispatcher.h service::dbus::ClassicDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/nunchuk.xml dbus/nunchuk-dispatcher.h service::dbus::NunchukDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/wiimote.xml dbus/wiimote-dispatcher.h service::dbus::WiimoteDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/motionplus.xml wiimotedevcore.h service::core::WiimotedevCore)
-qt5_add_dbus_adaptor(sources ../dbus/procontroller.xml dbus/pro-controller-dispatcher.h service::dbus::ProControllerDispatcher)
+qt5_add_dbus_adaptor(sources ../dbus/balanceboard.xml dbus/balance-board-dispatcher.h dae::dbus::BalanceBoardDispatcher)
+qt5_add_dbus_adaptor(sources ../dbus/classic.xml dbus/classic-dispatcher.h dae::dbus::ClassicDispatcher)
+qt5_add_dbus_adaptor(sources ../dbus/nunchuk.xml dbus/nunchuk-dispatcher.h dae::dbus::NunchukDispatcher)
+qt5_add_dbus_adaptor(sources ../dbus/wiimote.xml dbus/wiimote-dispatcher.h dae::dbus::WiimoteDispatcher)
+qt5_add_dbus_adaptor(sources ../dbus/motionplus.xml wiimotedevcore.h dae::core::WiimotedevCore)
+qt5_add_dbus_adaptor(sources ../dbus/procontroller.xml dbus/pro-controller-dispatcher.h dae::dbus::ProControllerDispatcher)
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
 
@@ -82,7 +80,6 @@ target_link_libraries(wiimotedev-daemon
 	${BLUETOOTH_LIBRARIES}
 	Qt5::Core
 	Qt5::DBus
-	Qt5::Network
 	xwiimote
 	pthread
 )

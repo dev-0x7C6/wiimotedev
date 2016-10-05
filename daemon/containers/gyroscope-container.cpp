@@ -1,9 +1,10 @@
 #include "gyroscope-container.h"
 
-using namespace service::container;
-using namespace service::container::structs;
-using namespace service::interface;
-using namespace service::enums;
+using namespace common::enums;
+using namespace dae::container;
+using namespace dae::container::structs;
+using namespace dae::interface;
+using namespace dae::enums;
 
 GyroscopeContainer::GyroscopeContainer(const gyrodata &data)
 		: m_data(data) {}

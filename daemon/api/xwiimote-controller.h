@@ -10,7 +10,7 @@
 struct xwii_iface;
 struct xwii_event;
 
-namespace service {
+namespace dae {
 namespace api {
 
 class XWiimoteController final : public interface::IWiimote {
@@ -18,7 +18,7 @@ public:
 	explicit XWiimoteController(interface::IIdManager &manager, const std::string &interfaceFilePath);
 	virtual ~XWiimoteController();
 
-	virtual enums::Device type() const override;
+	virtual common::enums::Device type() const override;
 	virtual Api api() const override { return Api::XWiimote; }
 
 	virtual bool isValid() const override;

@@ -7,7 +7,7 @@
 
 #include "interfaces/iwiimote-api.h"
 
-namespace service {
+namespace dae {
 namespace controller {
 
 class WiimoteScannerThread {

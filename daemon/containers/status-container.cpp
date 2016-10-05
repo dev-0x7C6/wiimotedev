@@ -1,10 +1,11 @@
 #include "status-container.h"
 
-using namespace service::container;
-using namespace service::interface;
-using namespace service::enums;
+using namespace common::enums;
+using namespace dae::container;
+using namespace dae::enums;
+using namespace dae::interface;
 
-StatusContainer::StatusContainer(const enums::Device source, const StatusContainer::State state)
+StatusContainer::StatusContainer(const common::enums::Device source, const StatusContainer::State state)
 		: m_source(source)
 		, m_state(state) {
 }

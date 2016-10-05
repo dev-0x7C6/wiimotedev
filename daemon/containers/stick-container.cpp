@@ -1,7 +1,8 @@
 #include "stick-container.h"
 
-using namespace service::container;
-using namespace service::enums;
+using namespace common::enums;
+using namespace dae::container;
+using namespace dae::enums;
 
 StickContainer::StickContainer(const Device device, int32_t lx, int32_t ly, int32_t rx, int32_t ry)
 		: m_device(device)

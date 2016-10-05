@@ -5,10 +5,11 @@
 #include "dbus/pro-controller-dispatcher.h"
 #include "dbus/wiimote-dispatcher.h"
 
-using namespace service::dbus;
-using namespace service::enums;
-using namespace service::factory;
-using namespace service::interface;
+using namespace common::enums;
+using namespace dae::dbus;
+using namespace dae::enums;
+using namespace dae::factory;
+using namespace dae::interface;
 
 std::unique_ptr<IContainerProcessor> DispatcherFactory::create(const Device type) {
 	switch (type) {

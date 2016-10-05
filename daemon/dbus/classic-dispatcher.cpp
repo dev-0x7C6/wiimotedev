@@ -5,10 +5,11 @@
 #include "containers/status-container.h"
 #include "containers/stick-container.h"
 
-using namespace service::container;
-using namespace service::dbus;
-using namespace service::enums;
-using namespace service::interface;
+using namespace common::enums;
+using namespace dae::container;
+using namespace dae::dbus;
+using namespace dae::enums;
+using namespace dae::interface;
 
 ClassicDispatcher::ClassicDispatcher(QObject *parent)
 		: IContainerProcessor(parent) {

@@ -8,7 +8,7 @@
 
 struct xwii_event;
 
-namespace service {
+namespace dae {
 namespace container {
 namespace structs {
 struct irpoint {
@@ -24,7 +24,7 @@ class InfraredContainer final : public interface::IContainer {
 public:
 	explicit InfraredContainer(const IrPoints &points);
 
-	virtual enums::Device device() const override;
+	virtual common::enums::Device device() const override;
 	virtual enums::Event event() const override;
 
 	const IrPoints &points() const;

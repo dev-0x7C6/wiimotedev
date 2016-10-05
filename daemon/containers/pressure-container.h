@@ -3,7 +3,7 @@
 #include "interfaces/icontainer.h"
 #include "include/wiimotedev/wiimotedev"
 
-namespace service {
+namespace dae {
 namespace container {
 namespace structs {
 struct pressdata {
@@ -19,7 +19,7 @@ public:
 	explicit PressureContainer(const structs::pressdata &data);
 	virtual ~PressureContainer() = default;
 
-	virtual enums::Device device() const override;
+	virtual common::enums::Device device() const override;
 	virtual enums::Event event() const override;
 
 	const structs::pressdata &data() const;

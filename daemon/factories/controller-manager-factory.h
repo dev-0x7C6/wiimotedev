@@ -3,7 +3,7 @@
 #include <memory>
 #include "interfaces/iwiimote-manager.h"
 
-namespace service {
+namespace dae {
 namespace factory {
 
 class ControllerManagerFactory {
