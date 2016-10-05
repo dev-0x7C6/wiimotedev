@@ -42,7 +42,7 @@ Profile::Profile(const std::string &configurationFilePath)
 	connect(&wiimote, &org::wiimotedev::wiimote::wiimoteDisconnected, [this](uint id) { disconnected(common::enums::Device::Wiimote, id); });
 
 	connect(&classic, &org::wiimotedev::classic::classicButtonDataChanged, [this](uint id, qulonglong mask) {
-		buttonDataChanged(common::enums::Device::Wiimote, id, mask);
+		buttonDataChanged(common::enums::Device::Classic, id, mask);
 	});
 
 	connect(&nunchuk, &org::wiimotedev::nunchuk::nunchukButtonDataChanged, [this](uint id, qulonglong mask) {
@@ -55,6 +55,18 @@ Profile::Profile(const std::string &configurationFilePath)
 
 	connect(&wiimote, &org::wiimotedev::wiimote::wiimoteButtonDataChanged, [this](uint id, qulonglong mask) {
 		buttonDataChanged(common::enums::Device::Wiimote, id, mask);
+	});
+
+	connect(&classic, &org::wiimotedev::classic::classicStickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
+		stickDataChanged(common::enums::Device::Classic, id, lx, ly, rx, ry);
+	});
+
+	connect(&nunchuk, &org::wiimotedev::nunchuk::nunchukStickDataChanged, [this](uint id, int x, int y) {
+		stickDataChanged(common::enums::Device::Nunchuk, id, x, y, 0, 0);
+	});
+
+	connect(&procontroller, &org::wiimotedev::procontroller::procontrollerStickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
+		stickDataChanged(common::enums::Device::ProController, id, lx, ly, rx, ry);
 	});
 
 	QSettings settings(QString::fromStdString(configurationFilePath), QSettings::IniFormat);
