@@ -15,22 +15,6 @@ find_package(Qt5DBus)
 find_package(Qt5Widgets)
 find_package(Qt5Network)
 
-set (wiimotedev_project_files
-	${CMAKE_SOURCE_DIR}/linux/etc/dbus-1/system.d/org.wiimotedev-daemon.conf
-	${CMAKE_SOURCE_DIR}/linux/etc/dbus-1/system.d/org.wiimotedev-io.conf
-	${CMAKE_SOURCE_DIR}/linux/usr/lib/systemd/system/wiimotedev-daemon.service
-	${CMAKE_SOURCE_DIR}/linux/usr/lib/systemd/system/wiimotedev-io.service
-	${CMAKE_SOURCE_DIR}/AUTHORS
-	${CMAKE_SOURCE_DIR}/CHANGELOG
-	${CMAKE_SOURCE_DIR}/COPYING
-	${CMAKE_SOURCE_DIR}/README
-)
-
-option(WIIMOTEDEV_BUILD_DAEMON "Build wiiremote daemon" ON)
-option(WIIMOTEDEV_BUILD_IO "Build input device emulator" ON)
-option(WIIMOTEDEV_INSTALL_SYSTEMD "Install systemd services" ON)
-
-include("FindBluetooth.cmake")
 include("Version.cmake")
 
 # Set paths
@@ -42,20 +26,25 @@ set(WIIMOTEDEV_SBIN_DIR "/usr/sbin")
 set(WIIMOTEDEV_BIN_DIR "/usr/bin/")
 
 add_subdirectory(linux)
+add_subdirectory(daemon)
+add_subdirectory(io)
 
 configure_file(config.h.in config.h)
 
-if(WIIMOTEDEV_BUILD_DAEMON)
-  add_subdirectory(daemon)
-endif()
+set (system-headers
+	include/wiimotedev/wiimotedev
+)
 
-if(WIIMOTEDEV_BUILD_IO)
-  add_subdirectory(io)
-endif(WIIMOTEDEV_BUILD_IO)
+install(FILES ${system-headers} DESTINATION ${WIIMOTEDEV_INC_DIR}/wiimotedev)
 
+set(services
+	systemd/wiimotedev-daemon.service
+	systemd/wiimotedev-io.service
+)
 
-message("BUILD")
-message("-- Build wiimotedev-daemon: ${WIIMOTEDEV_BUILD_DAEMON}")
-message("-- Build wiimotedev-io: ${WIIMOTEDEV_BUILD_IO}")
-message("-- Install systemd services: ${WIIMOTEDEV_INSTALL_SYSTEMD}")
-
+install(FILES ${services} DESTINATION "${WIIMOTEDEV_SYSD_DIR}"
+	PERMISSIONS
+	OWNER_READ  OWNER_WRITE
+	GROUP_READ
+	WORLD_READ
+)

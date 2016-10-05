@@ -1,0 +1,12 @@
+[Unit]
+Description=Wiiremote manager and data provider (via dbus).
+After=bluetooth.target
+
+[Service]
+Type=dbus
+BusName=org.wiimotedev.daemon
+ExecStart=/usr/sbin/wiimotedev-daemon
+
+[Install]
+WantedBy=multi-user.target
+

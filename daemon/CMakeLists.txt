@@ -14,7 +14,7 @@ set(sources
 	api/xwiimote-monitor.cpp
 	api/xwiimote-monitor.h
 	${CMAKE_SOURCE_DIR}/config.h
-	${CMAKE_SOURCE_DIR}/linux/usr/include/wiimotedev/wiimotedev
+	${CMAKE_SOURCE_DIR}/include/wiimotedev/wiimotedev
 	containers/accelerometer-container.cpp
 	containers/accelerometer-container.h
 	containers/button-container.cpp

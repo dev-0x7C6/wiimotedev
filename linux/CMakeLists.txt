@@ -3,4 +3,3 @@
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
 add_subdirectory(etc)
-add_subdirectory(usr)

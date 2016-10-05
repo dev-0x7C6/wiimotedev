@@ -2,7 +2,7 @@
 
 #include <cstdint>
 #include <qnamespace.h>
-#include "linux/usr/include/wiimotedev/wiimotedev"
+#include "include/wiimotedev/wiimotedev"
 
 namespace io {
 

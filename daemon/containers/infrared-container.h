@@ -4,7 +4,7 @@
 #include <array>
 
 #include "interfaces/icontainer.h"
-#include "linux/usr/include/wiimotedev/wiimotedev"
+#include "include/wiimotedev/wiimotedev"
 
 struct xwii_event;
 

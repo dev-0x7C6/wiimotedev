@@ -1,10 +1,10 @@
 [Unit]
-Description=Wiiremote mouse/keyboard/joystick emulator
+Description=Customizable input emulator for wiiremotes.
 After=wiimotedev-daemon.service
 
 [Service]
-Type=forking
-PIDFile=/var/run/wiimotedev-io.pid
+Type=dbus
+BusName=org.wiimotedev.io
 ExecStart=/usr/sbin/wiimotedev-io
 
 [Install]

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "interfaces/icontainer.h"
-#include "linux/usr/include/wiimotedev/wiimotedev"
+#include "include/wiimotedev/wiimotedev"
 
 namespace service {
 namespace container {

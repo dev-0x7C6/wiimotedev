@@ -9,7 +9,7 @@
 #include <string>
 #include <functional>
 
-#include "linux/usr/include/wiimotedev/wiimotedev"
+#include "include/wiimotedev/wiimotedev"
 #include "interfaces/iinput-device.h"
 
 namespace io {

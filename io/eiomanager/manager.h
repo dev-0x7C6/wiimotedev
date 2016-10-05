@@ -12,7 +12,7 @@
 #include "emulation/event-device.h"
 #include "functionals/profile.h"
 #include "interfaces/igamepad.h"
-#include "linux/usr/include/wiimotedev/wiimotedev"
+#include "include/wiimotedev/wiimotedev"
 
 class UInputProfileManager : public QObject {
 	Q_OBJECT

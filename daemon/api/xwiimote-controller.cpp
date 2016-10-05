@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <iostream>
 
-#include "linux/usr/include/wiimotedev/wiimotedev"
+#include "include/wiimotedev/wiimotedev"
 #include "containers/accelerometer-container.h"
 #include "containers/infrared-container.h"
 #include "containers/gyroscope-container.h"
