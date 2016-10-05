@@ -49,7 +49,7 @@ set(sources
 	interfaces/iprofile.h
 	interfaces/iwiimotedev-event.cpp
 	interfaces/iwiimotedev-event.h
-	uinput.cpp
+	main.cpp
 )
 
 qt5_add_dbus_interface(sources ../dbus/balanceboard.xml dbus/interfaces/balanceboard)
