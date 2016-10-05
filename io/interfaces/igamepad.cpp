@@ -1,6 +1,7 @@
 #include "igamepad.h"
 #include <map>
 
+using namespace common::enums;
 using namespace io::interface;
 
 IGamepad::IGamepad(const std::string &name, const uint32_t id, ButtonMap &&buttons, AxisMap &&axises)
@@ -11,11 +12,11 @@ IGamepad::IGamepad(const std::string &name, const uint32_t id, ButtonMap &&butto
 {
 }
 
-IGamepad::Type IGamepad::fromString(const std::string &type) {
-	static std::map<std::string, Type> str2type{
-		{"classic", Type::Classic},
-		{"nunchuk", Type::Nunchuk},
-		{"wiimote", Type::Wiimote}};
+Device IGamepad::fromString(const std::string &type) {
+	static std::map<std::string, Device> str2type{
+		{"classic", Device::Classic},
+		{"nunchuk", Device::Nunchuk},
+		{"wiimote", Device::Wiimote}};
 
 	try {
 		return str2type.at(type);
@@ -23,7 +24,7 @@ IGamepad::Type IGamepad::fromString(const std::string &type) {
 		throw e;
 	}
 
-	return Type::Classic;
+	return Device::Classic;
 }
 
 bool IGamepad::configure() {

@@ -14,7 +14,7 @@ public:
 	explicit GamepadFactory() = delete;
 	virtual ~GamepadFactory() = delete;
 
-	static std::unique_ptr<io::interface::IGamepad> create(const io::interface::IGamepad::Type type, const std::string &name, const uint32_t id);
+	static std::unique_ptr<io::interface::IGamepad> create(const common::enums::Device type, const std::string &name, const uint32_t id);
 	static bool configure(std::unique_ptr<io::interface::IGamepad> &interface);
 };
 }

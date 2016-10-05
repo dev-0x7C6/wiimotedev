@@ -3,15 +3,18 @@
 #include "emulation/gamepads/nunchuk-gamepad.h"
 #include "emulation/gamepads/wiimote-gamepad.h"
 
+using namespace common::enums;
 using namespace io::emulation::gamepad;
 using namespace io::factory;
 using namespace io::interface;
 
-std::unique_ptr<IGamepad> GamepadFactory::create(const IGamepad::Type type, const std::string &name, const uint32_t id) {
+std::unique_ptr<IGamepad> GamepadFactory::create(const Device type, const std::string &name, const uint32_t id) {
 	switch (type) {
-		case IGamepad::Type::Classic: return std::make_unique<ClassicGamepad>(name, id);
-		case IGamepad::Type::Nunchuk: return std::make_unique<NunchukGamepad>(name, id);
-		case IGamepad::Type::Wiimote: return std::make_unique<WiimoteGamepad>(name, id);
+		case Device::Classic: return std::make_unique<ClassicGamepad>(name, id);
+		case Device::Nunchuk: return std::make_unique<NunchukGamepad>(name, id);
+		case Device::Wiimote: return std::make_unique<WiimoteGamepad>(name, id);
+		default:
+			return nullptr;
 	}
 
 	return nullptr;

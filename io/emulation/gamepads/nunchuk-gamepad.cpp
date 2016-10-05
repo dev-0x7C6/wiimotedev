@@ -1,5 +1,6 @@
 #include "nunchuk-gamepad.h"
 
+using namespace common::enums;
 using namespace io::emulation::gamepad;
 using namespace io::interface;
 using namespace wiimotedev;
@@ -14,4 +15,4 @@ constexpr std::array<AxisPair, 1> AXISES{{AxisPair(Stick::Stick, {{{ABS_X, 0xFF 
 NunchukGamepad::NunchukGamepad(const std::string &name, const uint32_t id)
 		: IGamepad(name, id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
 
-IGamepad::Type NunchukGamepad::type() const { return Type::Nunchuk; }
+Device NunchukGamepad::type() const { return Device::Nunchuk; }

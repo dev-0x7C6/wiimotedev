@@ -11,7 +11,7 @@ public:
 	explicit NunchukGamepad(const std::string &name, const uint32_t id);
 	virtual ~NunchukGamepad() = default;
 
-	virtual Type type() const override;
+	virtual common::enums::Device type() const override;
 };
 }
 }

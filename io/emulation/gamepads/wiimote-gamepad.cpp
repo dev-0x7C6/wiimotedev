@@ -1,5 +1,6 @@
 #include "emulation/gamepads/wiimote-gamepad.h"
 
+using namespace common::enums;
 using namespace io::emulation::gamepad;
 using namespace io::interface;
 using namespace wiimotedev;
@@ -25,4 +26,4 @@ constexpr std::array<AxisPair, 1> AXISES{{
 WiimoteGamepad::WiimoteGamepad(const std::string &name, const uint32_t id)
 		: IGamepad(name, id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
 
-IGamepad::Type WiimoteGamepad::type() const { return Type::Wiimote; }
+Device WiimoteGamepad::type() const { return Device::Wiimote; }

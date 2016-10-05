@@ -1,7 +1,8 @@
 #pragma once
 
-#include "emulation/input-device.h"
+#include "common/enums/device.h"
 #include "container/stick-container.h"
+#include "emulation/input-device.h"
 
 namespace io {
 namespace interface {
@@ -11,15 +12,9 @@ public:
 	explicit IGamepad(const std::string &name, const uint32_t id, ButtonMap &&buttons, AxisMap &&axises);
 	virtual ~IGamepad() = default;
 
-	enum class Type {
-		Classic,
-		Nunchuk,
-		Wiimote,
-	};
+	static common::enums::Device fromString(const std::string &type);
 
-	static Type fromString(const std::string &type);
-
-	virtual Type type() const = 0;
+	virtual common::enums::Device type() const = 0;
 	virtual bool configure() override;
 
 	virtual bool input(const uint64_t buttons);
