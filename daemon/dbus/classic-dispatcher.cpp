@@ -17,12 +17,12 @@ ClassicDispatcher::ClassicDispatcher(QObject *parent)
 }
 
 Device ClassicDispatcher::device() const { return Device::Classic; }
-QList<uint> ClassicDispatcher::classicList() const { return m_ids.toList(); }
+QList<uint> ClassicDispatcher::list() const { return m_ids.toList(); }
 
 void ClassicDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
 	auto process_key = [this, id, &container]() {
 		const auto state = static_cast<const ButtonContainer *>(container.get())->state();
-		emit classicButtonDataChanged(id, state);
+		emit buttonDataChanged(id, state);
 	};
 
 	auto process_stick = [this, id, &container]() {
@@ -30,7 +30,7 @@ void ClassicDispatcher::process(const uint32_t id, const std::unique_ptr<IContai
 		const auto ly = static_cast<const StickContainer *>(container.get())->ly();
 		const auto rx = static_cast<const StickContainer *>(container.get())->rx();
 		const auto ry = static_cast<const StickContainer *>(container.get())->ry();
-		emit classicStickDataChanged(id, lx, ly, rx, ry);
+		emit stickDataChanged(id, lx, ly, rx, ry);
 	};
 
 	auto process_status = [this, id, &container]() {
@@ -38,12 +38,12 @@ void ClassicDispatcher::process(const uint32_t id, const std::unique_ptr<IContai
 
 		if (state == StatusContainer::State::Connected) {
 			m_ids.insert(id);
-			emit classicConnected(id);
+			emit connected(id);
 		}
 
 		if (state == StatusContainer::State::Disconnected) {
 			m_ids.remove(id);
-			emit classicDisconnected(id);
+			emit disconnected(id);
 		}
 	};
 

@@ -17,12 +17,12 @@ ProControllerDispatcher::ProControllerDispatcher(QObject *parent)
 }
 
 Device ProControllerDispatcher::device() const { return Device::ProController; }
-QList<uint> ProControllerDispatcher::procontrollerList() { return m_ids.toList(); }
+QList<uint> ProControllerDispatcher::list() { return m_ids.toList(); }
 
 void ProControllerDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
 	auto process_key = [this, id, &container]() {
 		const auto state = static_cast<const ButtonContainer *>(container.get())->state();
-		emit procontrollerButtonDataChanged(id, state);
+		emit buttonDataChanged(id, state);
 	};
 
 	auto process_status = [this, id, &container]() {
@@ -30,12 +30,12 @@ void ProControllerDispatcher::process(const uint32_t id, const std::unique_ptr<I
 
 		if (state == StatusContainer::State::Connected) {
 			m_ids.insert(id);
-			emit procontrollerConnected(id);
+			emit connected(id);
 		}
 
 		if (state == StatusContainer::State::Disconnected) {
 			m_ids.insert(id);
-			emit procontrollerDisconnected(id);
+			emit disconnected(id);
 		}
 	};
 
@@ -44,7 +44,7 @@ void ProControllerDispatcher::process(const uint32_t id, const std::unique_ptr<I
 		const auto ly = static_cast<const StickContainer *>(container.get())->ly();
 		const auto rx = static_cast<const StickContainer *>(container.get())->rx();
 		const auto ry = static_cast<const StickContainer *>(container.get())->ry();
-		emit procontrollerStickDataChanged(id, lx, ly, rx, ry);
+		emit stickDataChanged(id, lx, ly, rx, ry);
 	};
 
 	switch (container->event()) {

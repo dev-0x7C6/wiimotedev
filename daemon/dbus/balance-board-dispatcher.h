@@ -16,12 +16,12 @@ public:
 	virtual void process(const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
 
 public:
-	QList<uint> balanceBoardList();
+	QList<uint> list();
 
 signals:
-	void balanceBoardConnected(uint id);
-	void balanceBoardDataChanged(uint id, int top_left, int top_right, int bottom_left, int bottom_right);
-	void balanceBoardDisconnected(uint id);
+	void connected(uint id);
+	void dataChanged(uint id, int top_left, int top_right, int bottom_left, int bottom_right);
+	void disconnected(uint id);
 
 private:
 	QSet<uint> m_ids;

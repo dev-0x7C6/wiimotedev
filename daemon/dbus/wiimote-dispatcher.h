@@ -15,16 +15,16 @@ public:
 	virtual void process(const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
 
 public:
-	QList<uint> wiimoteList() const;
+	QList<uint> list() const;
 
 signals:
-	void wiimoteConnected(uint id);
-	void wiimoteDisconnected(uint id);
+	void connected(uint id);
+	void disconnected(uint id);
 
-	void wiimoteAccelerometerDataChanged(uint id, int x, int y, int z, int pitch, int roll);
-	void wiimoteButtonDataChanged(uint id, qulonglong mask);
-	void wiimoteGyroscopeDataChanged(uint id, int x, int y, int z, int lowX, int lowY, int lowZ);
-	void wiimoteInfraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
+	void accelerometerDataChanged(uint id, int x, int y, int z, int pitch, int roll);
+	void buttonDataChanged(uint id, qulonglong mask);
+	void gyroscopeDataChanged(uint id, int x, int y, int z, int lowX, int lowY, int lowZ);
+	void infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
 
 private:
 	QSet<uint> m_ids;

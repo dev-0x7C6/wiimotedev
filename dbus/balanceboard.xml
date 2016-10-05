@@ -1,17 +1,17 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
 	<interface name="org.wiimotedev.balanceboard">
-		<method name="balanceBoardList">
+		<method name="list">
 				<annotation value="QList&lt;uint>" name="org.qtproject.QtDBus.QtTypeName.Out0" />
 				<arg direction="out" type="au" name="list" />
 		</method>
-		<signal name="balanceBoardConnected">
+		<signal name="connected">
 			<arg name="id" type="u" direction="out" />
 		</signal>
-		<signal name="balanceBoardDisconnected">
+		<signal name="disconnected">
 			<arg name="id" type="u" direction="out" />
 		</signal>
-		<signal name="balanceBoardDataChanged">
+		<signal name="dataChanged">
 			<arg name="id" type="u" direction="out" />
 			<arg name="tl" type="i" direction="out" />
 			<arg name="tr" type="i" direction="out" />

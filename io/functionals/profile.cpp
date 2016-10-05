@@ -29,43 +29,43 @@ Profile::Profile(const std::string &configurationFilePath)
 	org::wiimotedev::procontroller procontroller("org.wiimotedev.daemon", "/procontroller", QDBusConnection::systemBus(), this);
 	org::wiimotedev::wiimote wiimote("org.wiimotedev.daemon", "/wiimote", QDBusConnection::systemBus(), this);
 
-	connect(&balanceboard, &org::wiimotedev::balanceboard::balanceBoardConnected, [this](uint id) { connected(common::enums::Device::BalanceBoard, id); });
-	connect(&classic, &org::wiimotedev::classic::classicConnected, [this](uint id) { connected(common::enums::Device::Classic, id); });
-	connect(&nunchuk, &org::wiimotedev::nunchuk::nunchukConnected, [this](uint id) { connected(common::enums::Device::Nunchuk, id); });
-	connect(&procontroller, &org::wiimotedev::procontroller::procontrollerConnected, [this](uint id) { connected(common::enums::Device::ProController, id); });
-	connect(&wiimote, &org::wiimotedev::wiimote::wiimoteConnected, [this](uint id) { connected(common::enums::Device::Wiimote, id); });
+	connect(&balanceboard, &org::wiimotedev::balanceboard::connected, [this](uint id) { connected(common::enums::Device::BalanceBoard, id); });
+	connect(&classic, &org::wiimotedev::classic::connected, [this](uint id) { connected(common::enums::Device::Classic, id); });
+	connect(&nunchuk, &org::wiimotedev::nunchuk::connected, [this](uint id) { connected(common::enums::Device::Nunchuk, id); });
+	connect(&procontroller, &org::wiimotedev::procontroller::connected, [this](uint id) { connected(common::enums::Device::ProController, id); });
+	connect(&wiimote, &org::wiimotedev::wiimote::connected, [this](uint id) { connected(common::enums::Device::Wiimote, id); });
 
-	connect(&balanceboard, &org::wiimotedev::balanceboard::balanceBoardDisconnected, [this](uint id) { disconnected(common::enums::Device::BalanceBoard, id); });
-	connect(&classic, &org::wiimotedev::classic::classicDisconnected, [this](uint id) { disconnected(common::enums::Device::Classic, id); });
-	connect(&nunchuk, &org::wiimotedev::nunchuk::nunchukDisconnected, [this](uint id) { disconnected(common::enums::Device::Nunchuk, id); });
-	connect(&procontroller, &org::wiimotedev::procontroller::procontrollerDisconnected, [this](uint id) { disconnected(common::enums::Device::ProController, id); });
-	connect(&wiimote, &org::wiimotedev::wiimote::wiimoteDisconnected, [this](uint id) { disconnected(common::enums::Device::Wiimote, id); });
+	connect(&balanceboard, &org::wiimotedev::balanceboard::disconnected, [this](uint id) { disconnected(common::enums::Device::BalanceBoard, id); });
+	connect(&classic, &org::wiimotedev::classic::disconnected, [this](uint id) { disconnected(common::enums::Device::Classic, id); });
+	connect(&nunchuk, &org::wiimotedev::nunchuk::disconnected, [this](uint id) { disconnected(common::enums::Device::Nunchuk, id); });
+	connect(&procontroller, &org::wiimotedev::procontroller::disconnected, [this](uint id) { disconnected(common::enums::Device::ProController, id); });
+	connect(&wiimote, &org::wiimotedev::wiimote::disconnected, [this](uint id) { disconnected(common::enums::Device::Wiimote, id); });
 
-	connect(&classic, &org::wiimotedev::classic::classicButtonDataChanged, [this](uint id, qulonglong mask) {
+	connect(&classic, &org::wiimotedev::classic::buttonDataChanged, [this](uint id, qulonglong mask) {
 		buttonDataChanged(common::enums::Device::Classic, id, mask);
 	});
 
-	connect(&nunchuk, &org::wiimotedev::nunchuk::nunchukButtonDataChanged, [this](uint id, qulonglong mask) {
+	connect(&nunchuk, &org::wiimotedev::nunchuk::buttonDataChanged, [this](uint id, qulonglong mask) {
 		buttonDataChanged(common::enums::Device::Nunchuk, id, mask);
 	});
 
-	connect(&procontroller, &org::wiimotedev::procontroller::procontrollerButtonDataChanged, [this](uint id, qulonglong mask) {
+	connect(&procontroller, &org::wiimotedev::procontroller::buttonDataChanged, [this](uint id, qulonglong mask) {
 		buttonDataChanged(common::enums::Device::ProController, id, mask);
 	});
 
-	connect(&wiimote, &org::wiimotedev::wiimote::wiimoteButtonDataChanged, [this](uint id, qulonglong mask) {
+	connect(&wiimote, &org::wiimotedev::wiimote::buttonDataChanged, [this](uint id, qulonglong mask) {
 		buttonDataChanged(common::enums::Device::Wiimote, id, mask);
 	});
 
-	connect(&classic, &org::wiimotedev::classic::classicStickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
+	connect(&classic, &org::wiimotedev::classic::stickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
 		stickDataChanged(common::enums::Device::Classic, id, lx, ly, rx, ry);
 	});
 
-	connect(&nunchuk, &org::wiimotedev::nunchuk::nunchukStickDataChanged, [this](uint id, int x, int y) {
+	connect(&nunchuk, &org::wiimotedev::nunchuk::stickDataChanged, [this](uint id, int x, int y) {
 		stickDataChanged(common::enums::Device::Nunchuk, id, x, y, 0, 0);
 	});
 
-	connect(&procontroller, &org::wiimotedev::procontroller::procontrollerStickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
+	connect(&procontroller, &org::wiimotedev::procontroller::stickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
 		stickDataChanged(common::enums::Device::ProController, id, lx, ly, rx, ry);
 	});
 

@@ -16,12 +16,12 @@ BalanceBoardDispatcher::BalanceBoardDispatcher(QObject *parent)
 }
 
 Device BalanceBoardDispatcher::device() const { return Device::BalanceBoard; }
-QList<uint> BalanceBoardDispatcher::balanceBoardList() { return m_ids.toList(); }
+QList<uint> BalanceBoardDispatcher::list() { return m_ids.toList(); }
 
 void BalanceBoardDispatcher::process(const uint32_t id, const std::unique_ptr<dae::interface::IContainer> &container) {
 	auto process_pressure = [this, id, &container]() {
 		const auto data = static_cast<PressureContainer *>(container.get())->data();
-		emit balanceBoardDataChanged(id, data.tl, data.tr, data.bl, data.br);
+		emit dataChanged(id, data.tl, data.tr, data.bl, data.br);
 	};
 
 	auto process_status = [this, id, &container]() {
@@ -29,12 +29,12 @@ void BalanceBoardDispatcher::process(const uint32_t id, const std::unique_ptr<da
 
 		if (state == StatusContainer::State::Connected) {
 			m_ids.insert(id);
-			emit balanceBoardConnected(id);
+			emit connected(id);
 		}
 
 		if (state == StatusContainer::State::Disconnected) {
 			m_ids.remove(id);
-			emit balanceBoardDisconnected(id);
+			emit disconnected(id);
 		}
 	};
 

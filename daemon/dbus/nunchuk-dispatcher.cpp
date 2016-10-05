@@ -18,16 +18,16 @@ NunchukDispatcher::NunchukDispatcher(QObject *parent)
 }
 
 Device NunchukDispatcher::device() const { return Device::Nunchuk; }
-QList<uint> NunchukDispatcher::nunchukList() const { return m_ids.toList(); }
+QList<uint> NunchukDispatcher::list() const { return m_ids.toList(); }
 
 void NunchukDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
 	auto process_acc = [this, id, &container]() -> void {
 		const auto &data = static_cast<const AccelerometerContainer *>(container.get())->data();
-		emit nunchukAccelerometerDataChanged(id, data.x, data.y, data.z, data.pitch, data.roll);
+		emit accelerometerDataChanged(id, data.x, data.y, data.z, data.pitch, data.roll);
 	};
 
 	auto process_key = [this, id, &container]() {
-		emit nunchukButtonDataChanged(id, static_cast<ButtonContainer *>(container.get())->state());
+		emit buttonDataChanged(id, static_cast<ButtonContainer *>(container.get())->state());
 	};
 
 	auto process_status = [this, id, &container]() {
@@ -35,19 +35,19 @@ void NunchukDispatcher::process(const uint32_t id, const std::unique_ptr<IContai
 
 		if (state == StatusContainer::State::Connected) {
 			m_ids.insert(id);
-			emit nunchukConnected(id);
+			emit connected(id);
 		}
 
 		if (state == StatusContainer::State::Disconnected) {
 			m_ids.remove(id);
-			emit nunchukDisconnected(id);
+			emit disconnected(id);
 		}
 	};
 
 	auto process_stick = [this, id, &container]() {
 		const auto lx = static_cast<const StickContainer *>(container.get())->lx();
 		const auto ly = static_cast<const StickContainer *>(container.get())->ly();
-		emit nunchukStickDataChanged(id, lx, ly);
+		emit stickDataChanged(id, lx, ly);
 	};
 
 	switch (container->event()) {

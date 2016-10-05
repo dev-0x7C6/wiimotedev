@@ -16,16 +16,16 @@ public:
 	virtual void process(const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
 
 public:
-	QList<uint> classicList() const;
+	QList<uint> list() const;
 
 private:
 	QSet<uint> m_ids;
 
 signals:
-	void classicButtonDataChanged(uint id, qulonglong mask);
-	void classicConnected(uint id);
-	void classicDisconnected(uint id);
-	void classicStickDataChanged(uint id, int lx, int ly, int rx, int ry);
+	void buttonDataChanged(uint id, qulonglong mask);
+	void connected(uint id);
+	void disconnected(uint id);
+	void stickDataChanged(uint id, int lx, int ly, int rx, int ry);
 };
 }
 }

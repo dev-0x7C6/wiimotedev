@@ -15,14 +15,14 @@ public:
 	virtual void process(const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
 
 public:
-	QList<uint> nunchukList() const;
+	QList<uint> list() const;
 
 signals:
-	void nunchukAccelerometerDataChanged(uint id, int x, int y, int z, int pitch, int roll);
-	void nunchukButtonDataChanged(uint id, qulonglong mask);
-	void nunchukConnected(uint id);
-	void nunchukDisconnected(uint id);
-	void nunchukStickDataChanged(uint id, int x, int y);
+	void accelerometerDataChanged(uint id, int x, int y, int z, int pitch, int roll);
+	void buttonDataChanged(uint id, qulonglong mask);
+	void connected(uint id);
+	void disconnected(uint id);
+	void stickDataChanged(uint id, int x, int y);
 
 private:
 	QSet<uint> m_ids;

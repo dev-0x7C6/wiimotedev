@@ -1,21 +1,21 @@
 <!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
 <node>
 	<interface name="org.wiimotedev.procontroller">
-		<method name="procontrollerList">
+		<method name="list">
 			<annotation value="QList&lt;uint>" name="org.qtproject.QtDBus.QtTypeName.Out0"/>
 			<arg name="list" type="au" direction="out"/>
 		</method>
-		<signal name="procontrollerConnected">
+		<signal name="connected">
 			<arg name="id" type="u" direction="out" />
 		</signal>
-		<signal name="procontrollerDisconnected">
+		<signal name="disconnected">
 			<arg name="id" type="u" direction="out" />
 		</signal>
-		<signal name="procontrollerButtonDataChanged">
+		<signal name="buttonDataChanged">
 			<arg name="id" type="u" direction="out" />
 			<arg name="mask" type="t" direction="out" />
 		</signal>
-		<signal name="procontrollerStickDataChanged">
+		<signal name="stickDataChanged">
 			<arg name="id" type="u" direction="out" />
 			<arg name="lx" type="i" direction="out" />
 			<arg name="ly" type="i" direction="out" />
