@@ -7,7 +7,7 @@
 constexpr auto WIIMOTEDEV_DBUS_SERVICE_NAME = "org.wiimotedev.daemon";
 
 namespace wiimotedev {
-
+//core buttons
 constexpr auto WIIMOTEDEV_BTN_LEFT = 1ull << 0;
 constexpr auto WIIMOTEDEV_BTN_RIGHT = 1ull << 1;
 constexpr auto WIIMOTEDEV_BTN_UP = 1ull << 2;
@@ -30,6 +30,27 @@ constexpr auto WIIMOTEDEV_BTN_THUMBR = 1ull << 18;
 constexpr auto WIIMOTEDEV_BTN_C = 1ull << 19;
 constexpr auto WIIMOTEDEV_BTN_Z = 1ull << 20;
 
+namespace abstract {
+//balance board
+constexpr auto WIIMOTEDEV_BTN_PRESSURE_TL = 1ull << 21;
+constexpr auto WIIMOTEDEV_BTN_PRESSURE_TR = 1ull << 22;
+constexpr auto WIIMOTEDEV_BTN_PRESSURE_BL = 1ull << 23;
+constexpr auto WIIMOTEDEV_BTN_PRESSURE_BR = 1ull << 24;
+//accelerometer + gyroscope
+constexpr auto WIIMOTEDEV_BTN_TILT_NORTH = 1ull << 25;
+constexpr auto WIIMOTEDEV_BTN_TILT_SOUTH = 1ull << 26;
+constexpr auto WIIMOTEDEV_BTN_TILT_WEST = 1ull << 27;
+constexpr auto WIIMOTEDEV_BTN_TILT_EAST = 1ull << 28;
+//accelerometer + gyroscope
+constexpr auto WIIMOTEDEV_BTN_SHIFT_FORWARD = 1ull << 29;
+constexpr auto WIIMOTEDEV_BTN_SHIFT_BACKWARD = 1ull << 30;
+constexpr auto WIIMOTEDEV_BTN_SHIFT_LEFT = 1ull << 31;
+constexpr auto WIIMOTEDEV_BTN_SHIFT_RIGHT = 1ull << 32;
+constexpr auto WIIMOTEDEV_BTN_SHIFT_UP = 1ull << 33;
+constexpr auto WIIMOTEDEV_BTN_SHIFT_DOWN = 1ull << 34;
+//accelerometer + gyroscope
+constexpr auto WIIMOTEDEV_BTN_SHAKE = 1ull << 35;
+}
 }
 
 #pragma clang diagnostic pop

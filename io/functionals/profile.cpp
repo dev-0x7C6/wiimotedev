@@ -91,7 +91,17 @@ void Profile::buttonDataChanged(Device source, uint id, qulonglong mask) {
 	gamepad_iterator(source, id, [&mask](const auto &gamepad) { gamepad->input(mask); });
 }
 
-void Profile::stickDataChanged(Device, uint id, int lx, int ly, int rx, int ry) {
+void Profile::stickDataChanged(Device source, uint id, int lx, int ly, int rx, int ry) {
+	gamepad_iterator(source, id, [source, lx, ly, rx, ry](const auto &gamepad) {
+		if (source == Device::Classic || source == Device::ProController) {
+			gamepad->input(Stick::LStick, lx, ly);
+			gamepad->input(Stick::RStick, lx, ly);
+		}
+
+		if (source == Device::Nunchuk) {
+			gamepad->input(Stick::Stick, lx, ly);
+		}
+	});
 }
 
 void Profile::accelerometerDataChanged(Device, uint id, int x, int y, int z) {
