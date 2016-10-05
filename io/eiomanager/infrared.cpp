@@ -19,8 +19,8 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
 			device->config().setAccTimeout(settings.value("acc.timeout", 2000).toLongLong());
 			device->config().setDeadzoneX(settings.value("deadzone.x", 30).toULongLong());
 			device->config().setDeadzoneY(settings.value("deadzone.y", 20).toULongLong());
-//			connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusVirtualCursorPosition, device.get(), &EIOInfraredMouse::dbusVirtualCursorPosition);
-//			connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusVirtualCursorLost, device.get(), &EIOInfraredMouse::dbusVirtualCursorLost);
+			//			connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusVirtualCursorPosition, device.get(), &EIOInfraredMouse::dbusVirtualCursorPosition);
+			//			connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusVirtualCursorLost, device.get(), &EIOInfraredMouse::dbusVirtualCursorLost);
 			settings.endGroup();
 			device->start();
 			m_mouses.emplace_back(std::move(device));

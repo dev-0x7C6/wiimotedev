@@ -15,12 +15,12 @@ const QRegExp deviceEventRegExp(".*(\\[.*(\\d+)\\])");
 
 UInputProfileManager::UInputProfileManager(QObject *parent)
 		: QObject(parent)
-//		, dbusDeviceEventsIface(std::make_unique<WiimotedevDeviceEvents>(
-//			  WIIMOTEDEV_DBUS_SERVICE_NAME,
-//			  WIIMOTEDEV_DBUS_OBJECT_EVENTS,
-//			  QDBusConnection::systemBus(), this))
+		//		, dbusDeviceEventsIface(std::make_unique<WiimotedevDeviceEvents>(
+		//			  WIIMOTEDEV_DBUS_SERVICE_NAME,
+		//			  WIIMOTEDEV_DBUS_OBJECT_EVENTS,
+		//			  QDBusConnection::systemBus(), this))
 		, m_eventDevice("Virtual mouse and keyboard", 0) {
-//	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, this, &UInputProfileManager::dbusWiimoteGeneralButtons, Qt::DirectConnection);
+	//	connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusWiimoteGeneralButtons, this, &UInputProfileManager::dbusWiimoteGeneralButtons, Qt::DirectConnection);
 	initializeCommandEvents();
 	dbusWiimoteGeneralButtons(1, 0);
 	m_eventDevice.open();

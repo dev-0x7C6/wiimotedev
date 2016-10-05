@@ -14,7 +14,7 @@ public:
 	enum class Type {
 		Classic,
 		Nunchuk,
-		Wiimote
+		Wiimote,
 	};
 
 	static Type fromString(const std::string &type);

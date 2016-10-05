@@ -2,10 +2,11 @@
 
 using namespace io::emulation::gamepad;
 using namespace io::interface;
+using namespace wiimotedev;
 
 constexpr std::array<ButtonMapping, 2> BUTTONS{{
-	{NUNCHUK_BTN_Z, BTN_A},
-	{NUNCHUK_BTN_C, BTN_X},
+	{WIIMOTEDEV_BTN_Z, BTN_A},
+	{WIIMOTEDEV_BTN_C, BTN_X},
 }};
 
 constexpr std::array<AxisPair, 1> AXISES{{AxisPair(Stick::Stick, {{{ABS_X, 0xFF - 0x1F, 0x1F, 0xFF, 0x00}, {ABS_Y, 0xFF - 0x1F, 0x1F, 0xFF, 0x00}}})}};

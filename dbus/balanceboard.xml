@@ -13,10 +13,10 @@
 		</signal>
 		<signal name="balanceBoardDataChanged">
 			<arg name="id" type="u" direction="out" />
-			<arg name="top_left" type="i" direction="out" />
-			<arg name="top_right" type="i" direction="out" />
-			<arg name="bottom_left" type="i" direction="out" />
-			<arg name="bottom_right" type="i" direction="out" />
+			<arg name="tl" type="i" direction="out" />
+			<arg name="tr" type="i" direction="out" />
+			<arg name="bl" type="i" direction="out" />
+			<arg name="br" type="i" direction="out" />
 		</signal>
 	</interface>
 </node>
