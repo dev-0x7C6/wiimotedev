@@ -2,10 +2,12 @@
 
 #include <string>
 
+#include "interfaces/iwiimotedev-event.h"
+
 namespace io {
 namespace interface {
 
-class IProfile {
+class IProfile : public IWiimotedevEvent {
 public:
 	explicit IProfile(const std::string &configurationFilePath);
 	virtual ~IProfile() = default;

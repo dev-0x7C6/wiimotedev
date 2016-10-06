@@ -71,7 +71,6 @@ qt5_add_dbus_adaptor(sources ../dbus/balanceboard.xml dbus/balance-board-dispatc
 qt5_add_dbus_adaptor(sources ../dbus/classic.xml dbus/classic-dispatcher.h dae::dbus::ClassicDispatcher)
 qt5_add_dbus_adaptor(sources ../dbus/nunchuk.xml dbus/nunchuk-dispatcher.h dae::dbus::NunchukDispatcher)
 qt5_add_dbus_adaptor(sources ../dbus/wiimote.xml dbus/wiimote-dispatcher.h dae::dbus::WiimoteDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/motionplus.xml wiimotedevcore.h dae::core::WiimotedevCore)
 qt5_add_dbus_adaptor(sources ../dbus/procontroller.xml dbus/pro-controller-dispatcher.h dae::dbus::ProControllerDispatcher)
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})

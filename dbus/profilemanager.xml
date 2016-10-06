@@ -1,0 +1,23 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+	<interface name="org.wiimotedev.profileManager">
+		<method name="list">
+			<annotation value="QList&lt;QString>" name="org.qtproject.QtDBus.QtTypeName.Out0" />
+			<arg direction="out" type="as" name="list" />
+		</method>
+		<method name="load">
+			<arg name="path" type="s" direction="in" />
+			<arg name="return" type="b" direction="out" />
+		</method>
+		<method name="unload">
+			<arg name="path" type="s" direction="in" />
+			<arg name="return" type="b" direction="out" />
+		</method>
+		<signal name="loaded">
+			<arg name="path" type="s" direction="out" />
+		</signal>
+		<signal name="unloaded">
+			<arg name="path" type="s" direction="out" />
+		</signal>
+	</interface>
+</node>

@@ -4,19 +4,17 @@
 
 #include "eiomanager/manager.h"
 #include "include/wiimotedev/wiimotedev"
+#include "core/profile-manager.h"
 
 #include <QCoreApplication>
-#include <QFile>
-#include <QFileInfo>
 #include <QMap>
-#include <QSettings>
-#include <QStringList>
-#include <QTextStream>
 
-const QString scancodeFile("/etc/wiimotedev/scancode.conf");
+//const QString scancodeFile("/etc/wiimotedev/scancode.conf");
 
 QMap<QString, uint64_t> devicebuttons;
 QMap<QString, uint> scancodes;
+
+using namespace io::core;
 
 int main(int argc, char *argv[]) {
 	QCoreApplication application(argc, argv);
@@ -33,13 +31,13 @@ int main(int argc, char *argv[]) {
 
 	signal(SIGTERM, [](int) { qApp->quit(); });
 
-	QSettings settings(scancodeFile, QSettings::IniFormat);
-	settings.beginGroup("scancode");
-	for (int32_t i = 0; i < settings.allKeys().count(); ++i)
-		scancodes[QString(settings.allKeys().at(i)).toLower().remove(QChar(' '))] = settings.value(settings.allKeys().at(i), 0).toInt();
-	settings.endGroup();
+	//	QSettings settings(scancodeFile, QSettings::IniFormat);
+	//	settings.beginGroup("scancode");
+	//	for (int32_t i = 0; i < settings.allKeys().count(); ++i)
+	//		scancodes[QString(settings.allKeys().at(i)).toLower().remove(QChar(' '))] = settings.value(settings.allKeys().at(i), 0).toInt();
+	//	settings.endGroup();
 
-	UInputProfileManager profileManager;
+	ProfileManager profileManager;
 	application.exec();
 	return 0;
 }

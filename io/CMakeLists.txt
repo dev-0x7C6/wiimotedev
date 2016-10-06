@@ -15,6 +15,8 @@ set(sources
 	container/infrared-cursor.h
 	container/stick-container.cpp
 	container/stick-container.h
+	core/profile-manager.cpp
+	core/profile-manager.h
 	eioinfrared/eioinfraredmouse.cpp
 	eioinfrared/eioinfraredmouse.h
 	eiokeyboard/eioremotekeyboard.cpp
@@ -52,6 +54,7 @@ set(sources
 	main.cpp
 )
 
+qt5_add_dbus_adaptor(sources ../dbus/profilemanager.xml core/profile-manager.h io::core::ProfileManager)
 qt5_add_dbus_interface(sources ../dbus/balanceboard.xml dbus/interfaces/balanceboard)
 qt5_add_dbus_interface(sources ../dbus/classic.xml dbus/interfaces/nunchuk)
 qt5_add_dbus_interface(sources ../dbus/nunchuk.xml dbus/interfaces/classic)

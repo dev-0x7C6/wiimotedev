@@ -7,12 +7,6 @@
 #include "factories/gamepad-factory.h"
 #include "interfaces/igamepad.h"
 
-#include "dbus/interfaces/balanceboard.h"
-#include "dbus/interfaces/classic.h"
-#include "dbus/interfaces/nunchuk.h"
-#include "dbus/interfaces/procontroller.h"
-#include "dbus/interfaces/wiimote.h"
-
 using namespace common::enums;
 using namespace io::factory;
 using namespace io::interface;
@@ -23,52 +17,6 @@ Profile::Profile(const std::string &configurationFilePath)
 		, IProfile(configurationFilePath)
 
 {
-	org::wiimotedev::balanceboard balanceboard("org.wiimotedev.daemon", "/balanceboard", QDBusConnection::systemBus(), this);
-	org::wiimotedev::classic classic("org.wiimotedev.daemon", "/classic", QDBusConnection::systemBus(), this);
-	org::wiimotedev::nunchuk nunchuk("org.wiimotedev.daemon", "/nunchuk", QDBusConnection::systemBus(), this);
-	org::wiimotedev::procontroller procontroller("org.wiimotedev.daemon", "/procontroller", QDBusConnection::systemBus(), this);
-	org::wiimotedev::wiimote wiimote("org.wiimotedev.daemon", "/wiimote", QDBusConnection::systemBus(), this);
-
-	connect(&balanceboard, &org::wiimotedev::balanceboard::connected, [this](uint id) { connected(common::enums::Device::BalanceBoard, id); });
-	connect(&classic, &org::wiimotedev::classic::connected, [this](uint id) { connected(common::enums::Device::Classic, id); });
-	connect(&nunchuk, &org::wiimotedev::nunchuk::connected, [this](uint id) { connected(common::enums::Device::Nunchuk, id); });
-	connect(&procontroller, &org::wiimotedev::procontroller::connected, [this](uint id) { connected(common::enums::Device::ProController, id); });
-	connect(&wiimote, &org::wiimotedev::wiimote::connected, [this](uint id) { connected(common::enums::Device::Wiimote, id); });
-
-	connect(&balanceboard, &org::wiimotedev::balanceboard::disconnected, [this](uint id) { disconnected(common::enums::Device::BalanceBoard, id); });
-	connect(&classic, &org::wiimotedev::classic::disconnected, [this](uint id) { disconnected(common::enums::Device::Classic, id); });
-	connect(&nunchuk, &org::wiimotedev::nunchuk::disconnected, [this](uint id) { disconnected(common::enums::Device::Nunchuk, id); });
-	connect(&procontroller, &org::wiimotedev::procontroller::disconnected, [this](uint id) { disconnected(common::enums::Device::ProController, id); });
-	connect(&wiimote, &org::wiimotedev::wiimote::disconnected, [this](uint id) { disconnected(common::enums::Device::Wiimote, id); });
-
-	connect(&classic, &org::wiimotedev::classic::buttonDataChanged, [this](uint id, qulonglong mask) {
-		buttonDataChanged(common::enums::Device::Classic, id, mask);
-	});
-
-	connect(&nunchuk, &org::wiimotedev::nunchuk::buttonDataChanged, [this](uint id, qulonglong mask) {
-		buttonDataChanged(common::enums::Device::Nunchuk, id, mask);
-	});
-
-	connect(&procontroller, &org::wiimotedev::procontroller::buttonDataChanged, [this](uint id, qulonglong mask) {
-		buttonDataChanged(common::enums::Device::ProController, id, mask);
-	});
-
-	connect(&wiimote, &org::wiimotedev::wiimote::buttonDataChanged, [this](uint id, qulonglong mask) {
-		buttonDataChanged(common::enums::Device::Wiimote, id, mask);
-	});
-
-	connect(&classic, &org::wiimotedev::classic::stickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
-		stickDataChanged(common::enums::Device::Classic, id, lx, ly, rx, ry);
-	});
-
-	connect(&nunchuk, &org::wiimotedev::nunchuk::stickDataChanged, [this](uint id, int x, int y) {
-		stickDataChanged(common::enums::Device::Nunchuk, id, x, y, 0, 0);
-	});
-
-	connect(&procontroller, &org::wiimotedev::procontroller::stickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
-		stickDataChanged(common::enums::Device::ProController, id, lx, ly, rx, ry);
-	});
-
 	QSettings settings(QString::fromStdString(configurationFilePath), QSettings::IniFormat);
 	for (const auto &group : settings.childGroups()) {
 		if (settings.value(group + "/module", {}).toString() != "gamepad")
@@ -93,7 +41,7 @@ Profile::~Profile() {
 	m_gamepads.clear();
 }
 
-void Profile::connected(Device, uint id) {
+void Profile::connected(Device device, uint id) {
 }
 
 void Profile::disconnected(Device, uint id) {

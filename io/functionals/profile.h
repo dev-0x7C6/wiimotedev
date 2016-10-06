@@ -13,13 +13,12 @@
 namespace io {
 namespace functional {
 
-class Profile final : public QObject, public interface::IProfile, public interface::IWiimotedevEvent {
+class Profile final : public QObject, public interface::IProfile {
 	Q_OBJECT
 public:
 	explicit Profile(const std::string &configurationFilePath);
 	virtual ~Profile();
 
-protected:
 	virtual void connected(common::enums::Device, uint id) override;
 	virtual void disconnected(common::enums::Device, uint id) override;
 	virtual void buttonDataChanged(common::enums::Device, uint id, qulonglong mask) override;
