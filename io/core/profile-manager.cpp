@@ -1,5 +1,5 @@
 #include "profile-manager.h"
-#include "profile-manageradaptor.h"
+#include "profilemanageradaptor.h"
 
 #include <QDBusConnection>
 #include <QFileInfo>
@@ -112,6 +112,26 @@ ProfileManager::ProfileManager(QObject *parent)
 	connect(procontroller, &org::wiimotedev::procontroller::stickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
 		for (const auto &profile : m_profiles)
 			profile->stickDataChanged(Device::ProController, id, lx, ly, rx, ry);
+	});
+
+	connect(wiimote, &org::wiimotedev::wiimote::infraredDataChanged, [this](uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
+		for (const auto &profile : m_profiles)
+			profile->infraredDataChanged(id, x1, y1, x2, y2, x3, y3, x4, y4);
+	});
+
+	connect(wiimote, &org::wiimotedev::wiimote::accelerometerDataChanged, [this](uint id, int x, int y, int z, int pitch, int roll) {
+		for (const auto &profile : m_profiles)
+			profile->accelerometerDataChanged(Device::Wiimote, id, x, y, z);
+	});
+
+	connect(nunchuk, &org::wiimotedev::nunchuk::accelerometerDataChanged, [this](uint id, int x, int y, int z, int pitch, int roll) {
+		for (const auto &profile : m_profiles)
+			profile->accelerometerDataChanged(Device::Nunchuk, id, x, y, z);
+	});
+
+	connect(wiimote, &org::wiimotedev::wiimote::gyroscopeDataChanged, [this](uint id, int x, int y, int z, int lowX, int lowY, int lowZ) {
+		for (const auto &profile : m_profiles)
+			profile->gyroscopeDataChanged(id, x, y, z, lowX, lowY, lowZ);
 	});
 }
 
