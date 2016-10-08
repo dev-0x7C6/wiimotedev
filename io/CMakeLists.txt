@@ -28,6 +28,8 @@ set(sources
 	eiomanager/manager.h
 	emulation/event-device.cpp
 	emulation/event-device.h
+	emulation/gamepads/balance-board-gamepad.cpp
+	emulation/gamepads/balance-board-gamepad.h
 	emulation/gamepads/classic-gamepad.cpp
 	emulation/gamepads/classic-gamepad.h
 	emulation/gamepads/nunchuk-gamepad.cpp

@@ -73,6 +73,28 @@ void Profile::gyroscopeDataChanged(uint id, int x, int y, int z, int lowX, int l
 void Profile::infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
 }
 
+#include <iostream>
+
+void Profile::pressureDataChanged(uint id, int tl, int tr, int bl, int br) {
+	gamepad_iterator(Device::BalanceBoard, id, [tl, tr, bl, br](const auto &gamepad) {
+		auto sum = tl + tr + bl + br;
+
+		if (sum < 500)
+			return;
+
+		auto l = tl + bl; // 1000
+		auto r = tr + br; // 2000
+		// 3000
+		auto sl = 0xFFF * r / l;
+		std::cout << "sl " << sl << std::endl;
+
+		auto t = tl + tr;
+		auto b = bl + br;
+
+		//	gamepad->input(Stick::LStick, );
+	});
+}
+
 void Profile::gamepad_iterator(const Device type, const quint32 id, std::function<void(const std::unique_ptr<IGamepad> &)> &&function) {
 	for (const auto &gamepad : m_gamepads) {
 		if (gamepad->id() == id && gamepad->type() == type && gamepad->isCreated()) {

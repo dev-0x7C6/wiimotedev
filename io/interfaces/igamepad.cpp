@@ -16,7 +16,8 @@ Device IGamepad::fromString(const std::string &type) {
 	static std::map<std::string, Device> str2type{
 		{"classic", Device::Classic},
 		{"nunchuk", Device::Nunchuk},
-		{"wiimote", Device::Wiimote}};
+		{"wiimote", Device::Wiimote},
+		{"balanceboard", Device::BalanceBoard}};
 
 	try {
 		return str2type.at(type);
@@ -43,6 +44,14 @@ bool IGamepad::configure() {
 	}
 
 	return isValid;
+}
+
+bool IGamepad::input(const int tl, const int tr, const int bl, const int br) {
+	static_cast<void>(tl);
+	static_cast<void>(tr);
+	static_cast<void>(bl);
+	static_cast<void>(br);
+	return true;
 }
 
 bool IGamepad::input(const uint64_t buttons) {
