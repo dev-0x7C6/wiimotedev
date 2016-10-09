@@ -23,7 +23,7 @@ Profile::Profile(const std::string &configurationFilePath)
 			continue;
 
 		settings.beginGroup(group);
-		auto assign = settings.value("assign").toUInt();
+		auto assign = settings.value("assign", 1).toUInt();
 		auto device = settings.value("device").toString().toLower().toStdString();
 		auto name = settings.value("name").toString().toStdString();
 
@@ -79,18 +79,13 @@ void Profile::pressureDataChanged(uint id, int tl, int tr, int bl, int br) {
 	gamepad_iterator(Device::BalanceBoard, id, [tl, tr, bl, br](const auto &gamepad) {
 		auto sum = tl + tr + bl + br;
 
-		if (sum < 500)
+		if (sum < 200)
 			return;
 
-		auto l = tl + bl; // 1000
-		auto r = tr + br; // 2000
-		// 3000
-		auto sl = 0xFFF * r / l;
-		std::cout << "sl " << sl << std::endl;
+		double l = (tl + bl) + 1; // 3000
+		double r = (tr + br) + 1; // 1000
 
-		auto t = tl + tr;
-		auto b = bl + br;
-
+		std::cout << l << std::endl;
 		//	gamepad->input(Stick::LStick, );
 	});
 }

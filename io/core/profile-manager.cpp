@@ -133,6 +133,11 @@ ProfileManager::ProfileManager(QObject *parent)
 		for (const auto &profile : m_profiles)
 			profile->gyroscopeDataChanged(id, x, y, z, lowX, lowY, lowZ);
 	});
+
+	connect(balanceboard, &org::wiimotedev::balanceboard::dataChanged, [this](uint id, int tl, int tr, int bl, int br) {
+		for (const auto &profile : m_profiles)
+			profile->pressureDataChanged(id, tl, tr, bl, br);
+	});
 }
 
 QStringList ProfileManager::list() const {
