@@ -77,16 +77,26 @@ void Profile::infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x
 
 void Profile::pressureDataChanged(uint id, int tl, int tr, int bl, int br) {
 	gamepad_iterator(Device::BalanceBoard, id, [tl, tr, bl, br](const auto &gamepad) {
-		auto sum = tl + tr + bl + br;
+		double sum = tl + tr + bl + br + 1;
 
 		if (sum < 200)
 			return;
 
-		double l = (tl + bl) + 1; // 3000
-		double r = (tr + br) + 1; // 1000
+		double tsum = tl + tr + 1;
+		double bsum = bl + br + 1;
+		double lsum = tl + bl + 1;
+		double rsum = tr + br + 1;
 
-		std::cout << l << std::endl;
-		//	gamepad->input(Stick::LStick, );
+		auto p1 = std::min(lsum / rsum, 3.0);
+		auto p2 = std::min(rsum / lsum, 3.0);
+		auto p3 = std::min(lsum / rsum, 3.0);
+		auto p4 = std::min(rsum / lsum, 3.0);
+		auto x = 0;
+		auto y = 0;
+
+		x = (((p1 > p2) ? p1 : -p2) * (0xfff / 3.0)) + 0xfff;
+		y = (((p3 > p4) ? p3 : -p4) * (0xfff / 3.0)) + 0xfff;
+		gamepad->input(Stick::Stick, x, y);
 	});
 }
 
