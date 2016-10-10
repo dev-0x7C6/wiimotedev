@@ -79,24 +79,41 @@ void Profile::pressureDataChanged(uint id, int tl, int tr, int bl, int br) {
 	gamepad_iterator(Device::BalanceBoard, id, [tl, tr, bl, br](const auto &gamepad) {
 		double sum = tl + tr + bl + br + 1;
 
-		if (sum < 200)
+		if (sum < 600) {
+			gamepad->input(Stick::Stick, 0xfff, 0xfff);
 			return;
+		}
 
 		double tsum = tl + tr + 1;
 		double bsum = bl + br + 1;
 		double lsum = tl + bl + 1;
 		double rsum = tr + br + 1;
 
-		auto p1 = std::min(lsum / rsum, 3.0);
-		auto p2 = std::min(rsum / lsum, 3.0);
-		auto p3 = std::min(lsum / rsum, 3.0);
-		auto p4 = std::min(rsum / lsum, 3.0);
+		auto p1 = std::max(std::min(lsum / rsum, 2.0), 0.0);
+		auto p2 = std::max(std::min(rsum / lsum, 2.0), 0.0);
+		auto p3 = std::max(std::min(bsum / tsum, 2.0), 0.0);
+		auto p4 = std::max(std::min(tsum / bsum, 2.0), 0.0);
 		auto x = 0;
 		auto y = 0;
 
-		x = (((p1 > p2) ? p1 : -p2) * (0xfff / 3.0)) + 0xfff;
-		y = (((p3 > p4) ? p3 : -p4) * (0xfff / 3.0)) + 0xfff;
-		gamepad->input(Stick::Stick, x, y);
+		if (p1 >= 1.0) {
+			x = p1 * 0xfff;
+		} else {
+			x = p2 * 0xfff;
+			x ^= 0x1fff;
+		}
+
+		if (p3 >= 1.0) {
+			y = p3 * 0xfff;
+		} else {
+			y = p4 * 0xfff;
+			y ^= 0x1fff;
+		}
+
+		x = std::max(0, std::min(0x1fff, x));
+		y = std::max(0, std::min(0x1fff, y));
+
+		gamepad->input(Stick::Stick, y ^ 0x1fff, x);
 	});
 }
 

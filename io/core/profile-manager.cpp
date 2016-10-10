@@ -138,6 +138,8 @@ ProfileManager::ProfileManager(QObject *parent)
 		for (const auto &profile : m_profiles)
 			profile->pressureDataChanged(id, tl, tr, bl, br);
 	});
+
+	load("/test.ini");
 }
 
 QStringList ProfileManager::list() const {
