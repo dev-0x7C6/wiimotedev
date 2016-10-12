@@ -1,8 +1,9 @@
 #include "gamepad-factory.h"
+#include "emulation/gamepads/balance-board-gamepad.h"
 #include "emulation/gamepads/classic-gamepad.h"
 #include "emulation/gamepads/nunchuk-gamepad.h"
+#include "emulation/gamepads/pro-controller-gamepad.h"
 #include "emulation/gamepads/wiimote-gamepad.h"
-#include "emulation/gamepads/balance-board-gamepad.h"
 
 using namespace common::enums;
 using namespace io::emulation::gamepad;
@@ -15,8 +16,8 @@ std::unique_ptr<IGamepad> GamepadFactory::create(const Device type, const std::s
 		case Device::Nunchuk: return std::make_unique<NunchukGamepad>(name, id);
 		case Device::Wiimote: return std::make_unique<WiimoteGamepad>(name, id);
 		case Device::BalanceBoard: return std::make_unique<BalanceBoardGamepad>(name, id);
-		default:
-			return nullptr;
+		case Device::ProController: return std::make_unique<ProControllerGamepad>(name, id);
+		case Device::Last: return nullptr;
 	}
 
 	return nullptr;

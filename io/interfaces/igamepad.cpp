@@ -13,19 +13,11 @@ IGamepad::IGamepad(const std::string &name, const uint32_t id, ButtonMap &&butto
 }
 
 Device IGamepad::fromString(const std::string &type) {
-	static std::map<std::string, Device> str2type{
-		{"classic", Device::Classic},
-		{"nunchuk", Device::Nunchuk},
-		{"wiimote", Device::Wiimote},
-		{"balanceboard", Device::BalanceBoard}};
+	const auto result = convert(type);
+	if (result == Device::Last)
+		throw std::out_of_range("unknown device type");
 
-	try {
-		return str2type.at(type);
-	} catch (std::out_of_range &e) {
-		throw e;
-	}
-
-	return Device::Classic;
+	return result;
 }
 
 bool IGamepad::configure() {

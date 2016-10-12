@@ -18,6 +18,7 @@ std::unique_ptr<IContainerProcessor> DispatcherFactory::create(const Device type
 		case Device::Nunchuk: return std::make_unique<NunchukDispatcher>();
 		case Device::ProController: return std::make_unique<ProControllerDispatcher>();
 		case Device::Wiimote: return std::make_unique<WiimoteDispatcher>();
+		case Device::Last: return nullptr;
 	}
 
 	return nullptr;

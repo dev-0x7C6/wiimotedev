@@ -73,8 +73,6 @@ void Profile::gyroscopeDataChanged(uint id, int x, int y, int z, int lowX, int l
 void Profile::infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
 }
 
-#include <iostream>
-
 void Profile::pressureDataChanged(uint id, int tl, int tr, int bl, int br) {
 	gamepad_iterator(Device::BalanceBoard, id, [tl, tr, bl, br](const auto &gamepad) {
 		double sum = tl + tr + bl + br + 1;

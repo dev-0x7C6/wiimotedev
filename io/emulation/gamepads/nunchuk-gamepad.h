@@ -1,6 +1,6 @@
 #pragma once
 
-#include <interfaces/igamepad.h>
+#include "interfaces/igamepad.h"
 
 namespace io {
 namespace emulation {

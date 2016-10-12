@@ -34,6 +34,8 @@ set(sources
 	emulation/gamepads/classic-gamepad.h
 	emulation/gamepads/nunchuk-gamepad.cpp
 	emulation/gamepads/nunchuk-gamepad.h
+	emulation/gamepads/pro-controller-gamepad.cpp
+	emulation/gamepads/pro-controller-gamepad.h
 	emulation/gamepads/wiimote-gamepad.cpp
 	emulation/gamepads/wiimote-gamepad.h
 	emulation/input-device.cpp

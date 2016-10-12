@@ -1,3 +1,5 @@
+#pragma once
+
 #include "interfaces/igamepad.h"
 
 namespace io {
