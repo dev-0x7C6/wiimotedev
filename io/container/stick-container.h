@@ -24,6 +24,13 @@ struct Axis {
 			, raw_max(raw_max)
 			, raw_min(raw_min) {}
 
+	constexpr Axis(int32_t axis, int32_t max, int32_t min)
+			: axis(axis)
+			, max(max)
+			, min(min)
+			, raw_max(max)
+			, raw_min(min) {}
+
 	int32_t axis;
 	int32_t max;
 	int32_t min;

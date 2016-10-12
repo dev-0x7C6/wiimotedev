@@ -20,7 +20,7 @@ constexpr std::array<ButtonMapping, 11> BUTTONS{{
 }};
 
 constexpr std::array<AxisPair, 1> AXISES{{
-	AxisPair(Stick::Dpad, {{{ABS_HAT0X, 1, -1, 1, -1}, {ABS_HAT0Y, 1, -1, 1, -1}}}),
+	AxisPair(Stick::Dpad, {{{ABS_HAT0X, 1, -1}, {ABS_HAT0Y, 1, -1}}}),
 }};
 
 WiimoteGamepad::WiimoteGamepad(const std::string &name, const uint32_t id)

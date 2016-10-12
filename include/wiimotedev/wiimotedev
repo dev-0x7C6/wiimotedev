@@ -3,6 +3,7 @@
 #pragma clang diagnostic ignored "-Wunused-variable"
 
 #include <cstdint>
+#include <limits>
 
 constexpr auto WIIMOTEDEV_DBUS_SERVICE_NAME = "org.wiimotedev.daemon";
 
@@ -51,6 +52,9 @@ constexpr auto WIIMOTEDEV_BTN_SHIFT_DOWN = 1ull << 34;
 //accelerometer + gyroscope
 constexpr auto WIIMOTEDEV_BTN_SHAKE = 1ull << 35;
 }
+
+constexpr auto WIIMOTEDEV_STICK_MIN = std::numeric_limits<int16_t>::min();
+constexpr auto WIIMOTEDEV_STICK_MAX = std::numeric_limits<int16_t>::max();
 }
 
 #pragma clang diagnostic pop

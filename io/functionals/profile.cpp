@@ -55,7 +55,7 @@ void Profile::stickDataChanged(Device source, uint id, int lx, int ly, int rx, i
 	gamepad_iterator(source, id, [source, lx, ly, rx, ry](const auto &gamepad) {
 		if (source == Device::Classic || source == Device::ProController) {
 			gamepad->input(Stick::LStick, lx, ly);
-			gamepad->input(Stick::RStick, lx, ly);
+			gamepad->input(Stick::RStick, rx, ry);
 		}
 
 		if (source == Device::Nunchuk) {

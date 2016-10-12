@@ -163,6 +163,39 @@ std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 	};
 
 	auto process_stick = [this](Device device, const xwii_event &event) {
+		auto calculate = [](int32_t &x, int32_t &y, int32_t step) {
+			constexpr int32_t min = WIIMOTEDEV_STICK_MIN;
+			constexpr int32_t max = WIIMOTEDEV_STICK_MAX;
+			x = std::max(-step, std::min(step, x)) * (max / step);
+			y = std::max(-step, std::min(step, y)) * (max / step);
+			x = std::max(min, std::min(max, x));
+			y = std::max(min, std::min(max, y));
+		};
+
+		int32_t lx = event.v.abs[0].x;
+		int32_t ly = event.v.abs[0].y;
+		int32_t rx = event.v.abs[1].x;
+		int32_t ry = event.v.abs[1].y;
+
+		if (device == Device::Nunchuk) {
+			calculate(lx, ly, 100);
+			return std::make_unique<StickContainer>(device, lx, ly, 0, 0);
+		}
+
+		if (device == Device::Classic) {
+			calculate(lx, ly, 24);
+			calculate(rx, ry, 24);
+			return std::make_unique<StickContainer>(device, lx, ly, rx, ry);
+		}
+
+		if (device == Device::ProController) {
+			calculate(lx, ly, 1280);
+			calculate(rx, ry, 1280);
+			ly *= -1;
+			ry *= -1;
+			return std::make_unique<StickContainer>(device, lx, ly, rx, ry);
+		}
+
 		return std::make_unique<StickContainer>(device,
 			event.v.abs[0].x, event.v.abs[0].y, event.v.abs[1].x, event.v.abs[1].y);
 	};

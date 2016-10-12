@@ -10,7 +10,10 @@ constexpr std::array<ButtonMapping, 2> BUTTONS{{
 	{WIIMOTEDEV_BTN_C, BTN_X},
 }};
 
-constexpr std::array<AxisPair, 1> AXISES{{AxisPair(Stick::Stick, {{{ABS_X, 0xFF - 0x1F, 0x1F, 0xFF, 0x00}, {ABS_Y, 0xFF - 0x1F, 0x1F, 0xFF, 0x00}}})}};
+constexpr auto MAX = WIIMOTEDEV_STICK_MAX;
+constexpr auto MIN = WIIMOTEDEV_STICK_MIN;
+
+constexpr std::array<AxisPair, 1> AXISES{{AxisPair(Stick::Stick, {{{ABS_X, MAX, MIN}, {ABS_Y, MAX, MIN}}})}};
 
 NunchukGamepad::NunchukGamepad(const std::string &name, const uint32_t id)
 		: IGamepad(name, id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}

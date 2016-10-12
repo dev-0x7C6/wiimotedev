@@ -23,10 +23,13 @@ constexpr std::array<ButtonMapping, 15> BUTTONS{{
 	{WIIMOTEDEV_BTN_PLUS, BTN_START},
 }};
 
+constexpr auto MAX = WIIMOTEDEV_STICK_MAX;
+constexpr auto MIN = WIIMOTEDEV_STICK_MIN;
+
 constexpr std::array<AxisPair, 3> AXISES{{
 	AxisPair(Stick::Dpad, {{{ABS_HAT0X, 1, -1, 1, -1}, {ABS_HAT0Y, 1, -1, 1, -1}}}),
-	AxisPair(Stick::LStick, {{{ABS_X, 0x3A, 0x05, 0x3F, 0x00}, {ABS_Y, 0x3A, 0x05, 0x3F, 0x00}}}),
-	AxisPair(Stick::RStick, {{{ABS_RX, 0x1B, 0x04, 0x1F, 0x00}, {ABS_RY, 0x1B, 0x04, 0x1F, 0x00}}}),
+	AxisPair(Stick::LStick, {{{ABS_X, MAX, MIN}, {ABS_Y, MAX, MIN}}}),
+	AxisPair(Stick::RStick, {{{ABS_RX, MAX, MIN}, {ABS_RY, MAX, MIN}}}),
 }};
 
 ClassicGamepad::ClassicGamepad(const std::string &name, const uint32_t id)
