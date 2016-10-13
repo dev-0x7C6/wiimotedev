@@ -72,6 +72,27 @@ void Profile::accelerometerDataChanged(Device, uint id, int x, int y, int z) {
 }
 
 void Profile::gyroscopeDataChanged(uint id, int x, int y, int z, int lowX, int lowY, int lowZ) {
+	gamepad_iterator(Device::Wiimote, id, [x, y, z](const auto &gamepad) {
+		static int sx = 0;
+		static int sz = 0;
+		static int lx = 0;
+		static int lz = 0;
+
+		if (x > 4000 || x < -4000) {
+			sx += x / 8;
+		}
+
+		if (z > 4000 || z < -4000) {
+			sz += z / 8;
+		}
+
+		sx = std::min(int(std::numeric_limits<int16_t>::max()), std::max(int(std::numeric_limits<int16_t>::min()), sx));
+		sz = std::min(int(std::numeric_limits<int16_t>::max()), std::max(int(std::numeric_limits<int16_t>::min()), sz));
+		lx = x;
+		lz = z;
+
+		gamepad->input(Stick::Stick, sx * -1, sz * -1);
+	});
 }
 
 void Profile::infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
