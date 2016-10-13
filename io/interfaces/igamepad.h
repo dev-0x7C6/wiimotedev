@@ -4,6 +4,8 @@
 #include "container/stick-container.h"
 #include "emulation/input-device.h"
 
+#include <QJsonObject>
+
 namespace io {
 namespace interface {
 
@@ -24,7 +26,11 @@ public:
 	virtual int32_t axisMax(const int32_t axis);
 	virtual int32_t axisMin(const int32_t axis);
 
+	void setConfiguration(const QJsonObject &json);
+	const QJsonObject &configuration();
+
 protected:
+	QJsonObject m_configuration;
 	ButtonMap m_buttons;
 	AxisMap m_axises;
 };

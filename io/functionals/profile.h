@@ -30,7 +30,7 @@ public:
 
 protected:
 	void gamepad_iterator(const common::enums::Device type, const quint32 id, std::function<void(const std::unique_ptr<interface::IGamepad> &)> &&function);
-	bool setup(const common::enums::Device type, const std::string &name, quint32 id);
+	bool setup(const common::enums::Device type, const std::string &name, quint32 id, const QJsonObject &json);
 
 private:
 	std::list<std::unique_ptr<io::interface::IGamepad>> m_gamepads;

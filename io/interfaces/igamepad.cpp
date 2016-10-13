@@ -91,3 +91,6 @@ int32_t IGamepad::axisMin(const int32_t axis) {
 				return pair.min;
 	return 0;
 }
+
+void IGamepad::setConfiguration(const QJsonObject &json) { m_configuration = json; }
+const QJsonObject &IGamepad::configuration() { return m_configuration; }

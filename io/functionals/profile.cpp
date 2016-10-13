@@ -5,6 +5,7 @@
 #include <QDBusConnection>
 
 #include "factories/gamepad-factory.h"
+#include "functionals/balance-board-processor.h"
 #include "interfaces/igamepad.h"
 
 using namespace common::enums;
@@ -27,8 +28,11 @@ Profile::Profile(const std::string &configurationFilePath)
 		auto device = settings.value("device").toString().toLower().toStdString();
 		auto name = settings.value("name").toString().toStdString();
 
+		QJsonObject configuration;
+		configuration["balanceboard.layout"] = settings.value("balanceboard.layout", "snowboard").toString();
+
 		try {
-			setup(IGamepad::fromString(device), name, assign);
+			setup(IGamepad::fromString(device), name, assign, configuration);
 		} catch (std::out_of_range &) {
 			std::cout << "unknown gamepad module \"" << device << "\"" << std::endl;
 		}
@@ -74,38 +78,20 @@ void Profile::infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x
 }
 
 void Profile::pressureDataChanged(uint id, int tl, int tr, int bl, int br) {
-	gamepad_iterator(Device::BalanceBoard, id, [tl, tr, bl, br](const auto &gamepad) {
-		double sum = tl + tr + bl + br + 1;
+	gamepad_iterator(Device::BalanceBoard, id, [tl, tr, bl, br](const std::unique_ptr<interface::IGamepad> &gamepad) {
+		BalanceBoardProcessor processor({tl, tr, bl, br}, wiimotedev::WIIMOTEDEV_STICK_MIN, wiimotedev::WIIMOTEDEV_STICK_MAX);
 
-		if (sum < 600) {
-			gamepad->input(Stick::Stick, 0xfff, 0xfff);
+		if (!processor.isValid()) {
+			gamepad->input(Stick::Stick, 0, 0);
 			return;
 		}
 
-		double tsum = tl + tr + 1;
-		double bsum = bl + br + 1;
-		double lsum = tl + bl + 1;
-		double rsum = tr + br + 1;
+		if (gamepad->configuration().value("balanceboard.layout").toString() == "snowboard") {
+			gamepad->input(Stick::Stick, processor.y() * -1, processor.x() * -1);
+			return;
+		}
 
-		auto pressure = [](double x, double y) {
-			auto p1 = std::max(std::min(x / y, 2.0), 0.0);
-			auto p2 = std::max(std::min(y / x, 2.0), 0.0);
-			uint32_t ret;
-
-			if (p1 >= 1.0) {
-				ret = p1 * 0xfff;
-			} else {
-				ret = p2 * 0xfff;
-				ret ^= 0x1fff;
-			}
-
-			return std::max(0u, std::min(0x1fffu, ret));
-		};
-
-		auto x = pressure(lsum, rsum);
-		auto y = pressure(bsum, tsum);
-
-		gamepad->input(Stick::Stick, y ^ 0x1fff, x);
+		gamepad->input(Stick::Stick, processor.x() * -1, processor.y());
 	});
 }
 
@@ -117,12 +103,14 @@ void Profile::gamepad_iterator(const Device type, const quint32 id, std::functio
 	}
 }
 
-bool Profile::setup(const Device type, const std::string &name, quint32 id) {
+bool Profile::setup(const Device type, const std::string &name, quint32 id, const QJsonObject &json) {
 	auto device = GamepadFactory::create(type, name, id);
 	auto isValid = GamepadFactory::configure(device);
 
-	if (isValid)
+	if (isValid) {
+		device->setConfiguration(json);
 		m_gamepads.emplace_back(std::move(device));
+	}
 
 	return isValid;
 }

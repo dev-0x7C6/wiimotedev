@@ -45,6 +45,8 @@ set(sources
 	functionals/hash-compare.h
 	functionals/profile.cpp
 	functionals/profile.h
+	functionals/balance-board-processor.cpp
+	functionals/balance-board-processor.h
 	functionals/uinput-helper.cpp
 	functionals/uinput-helper.h
 	interfaces/igamepad.cpp
