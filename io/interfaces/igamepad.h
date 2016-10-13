@@ -21,6 +21,9 @@ public:
 	virtual bool input(const uint64_t buttons);
 	virtual bool input(const Stick stick, const int32_t x, const int32_t y);
 
+	virtual int32_t axisMax(const int32_t axis);
+	virtual int32_t axisMin(const int32_t axis);
+
 protected:
 	ButtonMap m_buttons;
 	AxisMap m_axises;

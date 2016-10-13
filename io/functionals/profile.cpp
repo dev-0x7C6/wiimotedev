@@ -87,29 +87,23 @@ void Profile::pressureDataChanged(uint id, int tl, int tr, int bl, int br) {
 		double lsum = tl + bl + 1;
 		double rsum = tr + br + 1;
 
-		auto p1 = std::max(std::min(lsum / rsum, 2.0), 0.0);
-		auto p2 = std::max(std::min(rsum / lsum, 2.0), 0.0);
-		auto p3 = std::max(std::min(bsum / tsum, 2.0), 0.0);
-		auto p4 = std::max(std::min(tsum / bsum, 2.0), 0.0);
-		auto x = 0;
-		auto y = 0;
+		auto pressure = [](double x, double y) {
+			auto p1 = std::max(std::min(x / y, 2.0), 0.0);
+			auto p2 = std::max(std::min(y / x, 2.0), 0.0);
+			uint32_t ret;
 
-		if (p1 >= 1.0) {
-			x = p1 * 0xfff;
-		} else {
-			x = p2 * 0xfff;
-			x ^= 0x1fff;
-		}
+			if (p1 >= 1.0) {
+				ret = p1 * 0xfff;
+			} else {
+				ret = p2 * 0xfff;
+				ret ^= 0x1fff;
+			}
 
-		if (p3 >= 1.0) {
-			y = p3 * 0xfff;
-		} else {
-			y = p4 * 0xfff;
-			y ^= 0x1fff;
-		}
+			return std::max(0u, std::min(0x1fffu, ret));
+		};
 
-		x = std::max(0, std::min(0x1fff, x));
-		y = std::max(0, std::min(0x1fff, y));
+		auto x = pressure(lsum, rsum);
+		auto y = pressure(bsum, tsum);
 
 		gamepad->input(Stick::Stick, y ^ 0x1fff, x);
 	});

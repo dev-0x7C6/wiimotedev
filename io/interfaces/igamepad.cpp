@@ -75,3 +75,19 @@ bool IGamepad::input(const Stick stick, const int32_t x, const int32_t y) {
 	isValid &= sync();
 	return isValid;
 }
+
+int32_t IGamepad::axisMax(const int32_t axis) {
+	for (const auto &data : m_axises)
+		for (const auto &pair : data.pair)
+			if (pair.axis == axis)
+				return pair.max;
+	return 0;
+}
+
+int32_t IGamepad::axisMin(const int32_t axis) {
+	for (const auto &data : m_axises)
+		for (const auto &pair : data.pair)
+			if (pair.axis == axis)
+				return pair.min;
+	return 0;
+}
