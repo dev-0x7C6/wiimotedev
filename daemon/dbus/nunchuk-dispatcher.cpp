@@ -17,10 +17,13 @@ NunchukDispatcher::NunchukDispatcher(QObject *parent)
 	new NunchukAdaptor(this);
 }
 
-Device NunchukDispatcher::device() const { return Device::Nunchuk; }
+Adaptor NunchukDispatcher::type() const { return Adaptor::Nunchuk; }
 QList<uint> NunchukDispatcher::list() const { return m_ids.toList(); }
 
-void NunchukDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
+void NunchukDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) {
+	if (Device::Nunchuk != device)
+		return;
+
 	auto process_acc = [this, id, &container]() -> void {
 		const auto &data = static_cast<const AccelerometerContainer *>(container.get())->data();
 		emit accelerometerDataChanged(id, data.x, data.y, data.z, data.pitch, data.roll);

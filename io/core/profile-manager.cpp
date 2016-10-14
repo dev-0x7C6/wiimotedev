@@ -10,6 +10,7 @@
 #include "dbus/interfaces/classic.h"
 #include "dbus/interfaces/nunchuk.h"
 #include "dbus/interfaces/procontroller.h"
+#include "dbus/interfaces/virtualcursor.h"
 #include "dbus/interfaces/wiimote.h"
 
 using namespace io::core;
@@ -28,6 +29,7 @@ ProfileManager::ProfileManager(QObject *parent)
 	auto nunchuk = new org::wiimotedev::nunchuk("org.wiimotedev.daemon", "/nunchuk", QDBusConnection::systemBus(), this);
 	auto procontroller = new org::wiimotedev::procontroller("org.wiimotedev.daemon", "/procontroller", QDBusConnection::systemBus(), this);
 	auto wiimote = new org::wiimotedev::wiimote("org.wiimotedev.daemon", "/wiimote", QDBusConnection::systemBus(), this);
+	auto virtualcursor = new org::wiimotedev::virtualcursor("org.wiimotedev.daemon", "/virtualcursor", QDBusConnection::systemBus(), this);
 
 	connect(balanceboard, &org::wiimotedev::balanceboard::connected, [this](uint id) {
 		for (const auto &profile : m_profiles)

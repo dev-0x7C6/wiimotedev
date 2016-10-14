@@ -51,6 +51,15 @@ void Profile::connected(Device device, uint id) {
 void Profile::disconnected(Device, uint id) {
 }
 
+void Profile::found(Device, uint id) {
+}
+
+void Profile::lost(Device, uint id) {
+}
+
+void Profile::virtualCursorDataChanged(uint id, double x, double y, double l, double a) {
+}
+
 void Profile::buttonDataChanged(Device source, uint id, qulonglong mask) {
 	gamepad_iterator(source, id, [&mask](const auto &gamepad) { gamepad->input(mask); });
 }

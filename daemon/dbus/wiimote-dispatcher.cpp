@@ -21,9 +21,13 @@ WiimoteDispatcher::WiimoteDispatcher(QObject *parent)
 	new WiimoteAdaptor(this);
 }
 
-Device WiimoteDispatcher::device() const { return Device::Wiimote; }
+Adaptor WiimoteDispatcher::type() const { return Adaptor::Wiimote; }
+QList<uint> WiimoteDispatcher::list() const { return m_ids.toList(); }
 
-void WiimoteDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
+void WiimoteDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) {
+	if (Device::Wiimote != device)
+		return;
+
 	auto process_ir = [this, id, &container]() -> void {
 		const auto &ir = static_cast<InfraredContainer *>(container.get())->points();
 		emit infraredDataChanged(id, ir[0].x, ir[0].y, ir[1].x, ir[1].y, ir[2].x, ir[2].y, ir[3].x, ir[3].y);
@@ -71,5 +75,3 @@ void WiimoteDispatcher::process(const uint32_t id, const std::unique_ptr<IContai
 			break;
 	}
 }
-
-QList<uint> WiimoteDispatcher::list() const { return m_ids.toList(); }

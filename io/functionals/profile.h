@@ -21,6 +21,9 @@ public:
 
 	virtual void connected(common::enums::Device, uint id) override;
 	virtual void disconnected(common::enums::Device, uint id) override;
+	virtual void found(common::enums::Device, uint id) override;
+	virtual void lost(common::enums::Device, uint id) override;
+	virtual void virtualCursorDataChanged(uint id, double x, double y, double l, double a) override;
 	virtual void buttonDataChanged(common::enums::Device, uint id, qulonglong mask) override;
 	virtual void stickDataChanged(common::enums::Device, uint id, int lx, int ly, int rx, int ry) override;
 	virtual void accelerometerDataChanged(common::enums::Device, uint id, int x, int y, int z) override;

@@ -1,9 +1,11 @@
 #pragma once
 
-#include <QObject>
 #include <memory>
-#include "interfaces/icontainer.h"
+#include <QObject>
+
 #include "common/enums/device.h"
+#include "enums/adaptor.h"
+#include "interfaces/icontainer.h"
 
 namespace dae {
 namespace interface {
@@ -13,10 +15,8 @@ public:
 	explicit IContainerProcessor(QObject *parent = nullptr);
 	virtual ~IContainerProcessor() = default;
 
-	virtual common::enums::Device device() const = 0;
-	virtual std::string interface() const;
-
-	virtual void process(const uint32_t id, const std::unique_ptr<IContainer> &container) = 0;
+	virtual enums::Adaptor type() const = 0;
+	virtual void process(const common::enums::Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) = 0;
 };
 }
 }

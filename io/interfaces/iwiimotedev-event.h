@@ -15,6 +15,9 @@ public:
 
 	virtual void connected(common::enums::Device device, uint id) = 0;
 	virtual void disconnected(common::enums::Device device, uint id) = 0;
+	virtual void found(common::enums::Device, uint id) = 0;
+	virtual void lost(common::enums::Device, uint id) = 0;
+	virtual void virtualCursorDataChanged(uint id, double x, double y, double l, double a) = 0;
 	virtual void buttonDataChanged(common::enums::Device device, uint id, qulonglong mask) = 0;
 	virtual void stickDataChanged(common::enums::Device device, uint id, int lx, int ly, int rx, int ry) = 0;
 	virtual void accelerometerDataChanged(common::enums::Device device, uint id, int x, int y, int z) = 0;

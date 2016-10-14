@@ -18,11 +18,12 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 		: QObject(parent)
 		, m_scanner(IWiimote::Api::XWiimote) {
 	const auto processors = {
-		Device::BalanceBoard,
-		Device::Classic,
-		Device::Nunchuk,
-		Device::ProController,
-		Device::Wiimote,
+		Adaptor::BalanceBoard,
+		Adaptor::Classic,
+		Adaptor::Nunchuk,
+		Adaptor::ProController,
+		Adaptor::VirtualCursor,
+		Adaptor::Wiimote,
 	};
 
 	for (const auto &processor : processors)
@@ -30,7 +31,7 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 
 	QDBusConnection connection = QDBusConnection::systemBus();
 	for (const auto &adaptor : m_adaptors)
-		connection.registerObject("/" + QString::fromStdString(adaptor->interface()), adaptor.get());
+		connection.registerObject("/" + QString::fromStdString(name(adaptor->type())), adaptor.get());
 
 	connection.registerService("org.wiimotedev.daemon");
 	startTimer(1, Qt::PreciseTimer);
@@ -45,8 +46,7 @@ void WiimotedevCore::timerEvent(QTimerEvent *event) {
 	for (const auto &device : m_devices) {
 		while ((container = device->process())) {
 			for (const auto &adaptor : m_adaptors)
-				if (container->device() == adaptor->device())
-					adaptor->process(device->id(), container);
+				adaptor->process(device->type(), device->id(), container);
 		}
 
 		if (!device->isValid()) {

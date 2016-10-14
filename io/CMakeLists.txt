@@ -66,6 +66,7 @@ qt5_add_dbus_interface(sources ../dbus/classic.xml dbus/interfaces/nunchuk)
 qt5_add_dbus_interface(sources ../dbus/nunchuk.xml dbus/interfaces/classic)
 qt5_add_dbus_interface(sources ../dbus/procontroller.xml dbus/interfaces/procontroller)
 qt5_add_dbus_interface(sources ../dbus/wiimote.xml dbus/interfaces/wiimote)
+qt5_add_dbus_interface(sources ../dbus/virtualcursor.xml dbus/interfaces/virtualcursor)
 
 add_executable(wiimotedev-io ${sources})
 

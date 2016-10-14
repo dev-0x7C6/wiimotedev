@@ -15,10 +15,13 @@ BalanceBoardDispatcher::BalanceBoardDispatcher(QObject *parent)
 	new BalanceboardAdaptor(this);
 }
 
-Device BalanceBoardDispatcher::device() const { return Device::BalanceBoard; }
+Adaptor BalanceBoardDispatcher::type() const { return Adaptor::BalanceBoard; }
 QList<uint> BalanceBoardDispatcher::list() { return m_ids.toList(); }
 
-void BalanceBoardDispatcher::process(const uint32_t id, const std::unique_ptr<dae::interface::IContainer> &container) {
+void BalanceBoardDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<dae::interface::IContainer> &container) {
+	if (Device::BalanceBoard != device)
+		return;
+
 	auto process_pressure = [this, id, &container]() {
 		const auto data = static_cast<PressureContainer *>(container.get())->data();
 		emit dataChanged(id, data.tl, data.tr, data.bl, data.br);

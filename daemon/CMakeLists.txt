@@ -43,10 +43,14 @@ set(sources
 	dbus/nunchuk-dispatcher.h
 	dbus/pro-controller-dispatcher.cpp
 	dbus/pro-controller-dispatcher.h
+	dbus/virtual-cursor-dispatcher.cpp
+	dbus/virtual-cursor-dispatcher.h
 	dbus/wiimote-dispatcher.cpp
 	dbus/wiimote-dispatcher.h
 	enums/event.cpp
 	enums/event.h
+	enums/adaptor.cpp
+	enums/adaptor.h
 	factories/controller-manager-factory.cpp
 	factories/controller-manager-factory.h
 	factories/dispatcher-factory.cpp
@@ -70,8 +74,9 @@ set(sources
 qt5_add_dbus_adaptor(sources ../dbus/balanceboard.xml dbus/balance-board-dispatcher.h dae::dbus::BalanceBoardDispatcher)
 qt5_add_dbus_adaptor(sources ../dbus/classic.xml dbus/classic-dispatcher.h dae::dbus::ClassicDispatcher)
 qt5_add_dbus_adaptor(sources ../dbus/nunchuk.xml dbus/nunchuk-dispatcher.h dae::dbus::NunchukDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/wiimote.xml dbus/wiimote-dispatcher.h dae::dbus::WiimoteDispatcher)
 qt5_add_dbus_adaptor(sources ../dbus/procontroller.xml dbus/pro-controller-dispatcher.h dae::dbus::ProControllerDispatcher)
+qt5_add_dbus_adaptor(sources ../dbus/virtualcursor.xml dbus/virtual-cursor-dispatcher.h dae::dbus::VirtualCursorDispatcher)
+qt5_add_dbus_adaptor(sources ../dbus/wiimote.xml dbus/wiimote-dispatcher.h dae::dbus::WiimoteDispatcher)
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
 

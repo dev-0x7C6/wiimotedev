@@ -16,10 +16,13 @@ ClassicDispatcher::ClassicDispatcher(QObject *parent)
 	new ClassicAdaptor(this);
 }
 
-Device ClassicDispatcher::device() const { return Device::Classic; }
+Adaptor ClassicDispatcher::type() const { return Adaptor::Classic; }
 QList<uint> ClassicDispatcher::list() const { return m_ids.toList(); }
 
-void ClassicDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
+void ClassicDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) {
+	if (Device::Classic != device)
+		return;
+
 	auto process_key = [this, id, &container]() {
 		const auto state = static_cast<const ButtonContainer *>(container.get())->state();
 		emit buttonDataChanged(id, state);

@@ -16,10 +16,13 @@ ProControllerDispatcher::ProControllerDispatcher(QObject *parent)
 	new ProcontrollerAdaptor(this);
 }
 
-Device ProControllerDispatcher::device() const { return Device::ProController; }
+Adaptor ProControllerDispatcher::type() const { return Adaptor::ProController; }
 QList<uint> ProControllerDispatcher::list() { return m_ids.toList(); }
 
-void ProControllerDispatcher::process(const uint32_t id, const std::unique_ptr<IContainer> &container) {
+void ProControllerDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) {
+	if (Device::ProController != device)
+		return;
+
 	auto process_key = [this, id, &container]() {
 		const auto state = static_cast<const ButtonContainer *>(container.get())->state();
 		emit buttonDataChanged(id, state);
