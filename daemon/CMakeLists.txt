@@ -56,6 +56,8 @@ set(sources
 	factories/dispatcher-factory.cpp
 	factories/dispatcher-factory.h
 	functionals/unique-id.h
+	functionals/virtual-cursor-processor.cpp
+	functionals/virtual-cursor-processor.h
 	interfaces/icontainer.h
 	interfaces/icontainer-processor.cpp
 	interfaces/icontainer-processor.h
