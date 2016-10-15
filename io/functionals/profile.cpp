@@ -80,7 +80,7 @@ void Profile::stickDataChanged(Device source, uint id, int lx, int ly, int rx, i
 void Profile::accelerometerDataChanged(Device, uint id, int x, int y, int z) {
 }
 
-void Profile::gyroscopeDataChanged(uint id, int x, int y, int z, int lowX, int lowY, int lowZ) {
+void Profile::gyroscopeDataChanged(uint id, int x, int y, int z) {
 	gamepad_iterator(Device::Wiimote, id, [x, y, z](const auto &gamepad) {
 		static int sx = 0;
 		static int sz = 0;

@@ -17,6 +17,10 @@ public:
 
 public:
 	QList<uint> list() const;
+	uint ledStatus(uint id) const;
+	uint rumbleStatus(uint id) const;
+	bool setLedStatus(uint id, uint status);
+	bool setRumbleStatus(uint id, bool status);
 
 signals:
 	void connected(uint id);
@@ -24,7 +28,7 @@ signals:
 
 	void accelerometerDataChanged(uint id, int x, int y, int z, int pitch, int roll);
 	void buttonDataChanged(uint id, qulonglong mask);
-	void gyroscopeDataChanged(uint id, int x, int y, int z, int lowX, int lowY, int lowZ);
+	void gyroscopeDataChanged(uint id, int x, int y, int z);
 	void infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
 
 private:

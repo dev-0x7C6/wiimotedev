@@ -5,6 +5,24 @@
 			<annotation value="QList&lt;uint>" name="org.qtproject.QtDBus.QtTypeName.Out0"/>
 			<arg name="list" type="au" direction="out"/>
 		</method>
+		<method name="rumbleStatus">
+			<arg name="id" type="u" direction="in" />
+			<arg name="status" type="b" direction="out" />
+		</method>
+		<method name="ledStatus">
+			<arg name="id" type="u" direction="in" />
+			<arg name="status" type="u" direction="out" />
+		</method>
+		<method name="setRumbleStatus">
+			<arg name="id" type="u" direction="in" />
+			<arg name="status" type="b" direction="in" />
+			<arg name="result" type="b" direction="out" />
+		</method>
+		<method name="setLedStatus">
+			<arg name="id" type="u" direction="in" />
+			<arg name="status" type="u" direction="in" />
+			<arg name="result" type="b" direction="out" />
+		</method>
 		<signal name="connected">
 			<arg name="id" type="u" direction="out" />
 		</signal>
@@ -39,9 +57,14 @@
 			<arg name="x" type="i" direction="out" />
 			<arg name="y" type="i" direction="out" />
 			<arg name="z" type="i" direction="out" />
-			<arg name="lowX" type="i" direction="out" />
-			<arg name="lowY" type="i" direction="out" />
-			<arg name="lowZ" type="i" direction="out" />
+		</signal>
+		<signal name="ledDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="status" type="u" direction="out" />
+		</signal>
+		<signal name="rumbleDataChanged">
+			<arg name="id" type="u" direction="out" />
+			<arg name="status" type="b" direction="out" />
 		</signal>
 	</interface>
 </node>

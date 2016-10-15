@@ -27,7 +27,7 @@ public:
 	virtual void buttonDataChanged(common::enums::Device, uint id, qulonglong mask) override;
 	virtual void stickDataChanged(common::enums::Device, uint id, int lx, int ly, int rx, int ry) override;
 	virtual void accelerometerDataChanged(common::enums::Device, uint id, int x, int y, int z) override;
-	virtual void gyroscopeDataChanged(uint id, int x, int y, int z, int lowX, int lowY, int lowZ) override;
+	virtual void gyroscopeDataChanged(uint id, int x, int y, int z) override;
 	virtual void infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) override;
 	virtual void pressureDataChanged(uint id, int tl, int tr, int bl, int br) override;
 

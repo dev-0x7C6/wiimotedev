@@ -122,17 +122,6 @@ std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 		return std::make_unique<AccelerometerContainer>(source, data);
 	};
 
-	auto process_gyro = [](const xwii_event &event) {
-		struct gyrodata data;
-		data.x = event.v.abs[0].x;
-		data.y = event.v.abs[0].y;
-		data.z = event.v.abs[0].z;
-		data.lowX = event.v.abs[1].x;
-		data.lowY = event.v.abs[1].y;
-		data.lowZ = event.v.abs[1].z;
-		return std::make_unique<GyroscopeContainer>(data);
-	};
-
 	auto process_press = [](const xwii_event &event) {
 		struct pressdata data;
 		data.tl = event.v.abs[2].x;
@@ -234,7 +223,7 @@ std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 		case XWII_EVENT_GONE: return process_gone();
 		case XWII_EVENT_IR: return process_ir(event);
 		case XWII_EVENT_KEY: return process_key(Device::Wiimote, event);
-		case XWII_EVENT_MOTION_PLUS: return process_gyro(event);
+		case XWII_EVENT_MOTION_PLUS: return std::make_unique<GyroscopeContainer>(event.v.abs[0].x, event.v.abs[0].y, event.v.abs[0].z);
 		case XWII_EVENT_NUNCHUK_KEY: return process_key(Device::Nunchuk, event);
 		case XWII_EVENT_NUNCHUK_MOVE:
 			m_messages.emplace(process_acc(Device::Nunchuk, event, 1));

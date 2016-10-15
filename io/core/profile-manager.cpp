@@ -131,9 +131,9 @@ ProfileManager::ProfileManager(QObject *parent)
 			profile->accelerometerDataChanged(Device::Nunchuk, id, x, y, z);
 	});
 
-	connect(wiimote, &org::wiimotedev::wiimote::gyroscopeDataChanged, [this](uint id, int x, int y, int z, int lowX, int lowY, int lowZ) {
+	connect(wiimote, &org::wiimotedev::wiimote::gyroscopeDataChanged, [this](uint id, int x, int y, int z) {
 		for (const auto &profile : m_profiles)
-			profile->gyroscopeDataChanged(id, x, y, z, lowX, lowY, lowZ);
+			profile->gyroscopeDataChanged(id, x, y, z);
 	});
 
 	connect(balanceboard, &org::wiimotedev::balanceboard::dataChanged, [this](uint id, int tl, int tr, int bl, int br) {

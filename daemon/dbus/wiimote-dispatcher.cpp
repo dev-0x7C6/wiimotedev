@@ -24,6 +24,11 @@ WiimoteDispatcher::WiimoteDispatcher(QObject *parent)
 Adaptor WiimoteDispatcher::type() const { return Adaptor::Wiimote; }
 QList<uint> WiimoteDispatcher::list() const { return m_ids.toList(); }
 
+uint WiimoteDispatcher::ledStatus(uint id) const { return id; }
+uint WiimoteDispatcher::rumbleStatus(uint id) const { return id; }
+bool WiimoteDispatcher::setLedStatus(uint id, uint status) { return status; }
+bool WiimoteDispatcher::setRumbleStatus(uint id, bool status) { return status; }
+
 void WiimoteDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) {
 	if (Device::Wiimote != device)
 		return;
@@ -39,8 +44,8 @@ void WiimoteDispatcher::process(const Device device, const uint32_t id, const st
 	};
 
 	auto process_gyro = [this, id, &container]() -> void {
-		const auto &data = static_cast<GyroscopeContainer *>(container.get())->data();
-		emit gyroscopeDataChanged(id, data.x, data.y, data.z, data.lowX, data.lowY, data.lowZ);
+		const auto *gyro = static_cast<GyroscopeContainer *>(container.get());
+		emit gyroscopeDataChanged(id, gyro->x(), gyro->y(), gyro->z());
 	};
 
 	auto process_button = [this, id, &container]() -> void {
