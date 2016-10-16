@@ -2,8 +2,8 @@
 <node>
 	<interface name="org.wiimotedev.balanceboard">
 		<method name="list">
-				<annotation value="QList&lt;uint>" name="org.qtproject.QtDBus.QtTypeName.Out0" />
-				<arg direction="out" type="au" name="list" />
+			<annotation value="QList&lt;uint>" name="org.qtproject.QtDBus.QtTypeName.Out0" />
+			<arg direction="out" type="au" name="list" />
 		</method>
 		<signal name="connected">
 			<arg name="id" type="u" direction="out" />

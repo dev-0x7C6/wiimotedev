@@ -2,11 +2,10 @@ include_directories(
 	${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_CURRENT_SOURCE_DIR}
 	${CMAKE_SOURCE_DIR}
-	${CMAKE_SOURCE_DIR}/linux/usr/include/
 )
 
 set(sources
-	${CMAKE_SOURCE_DIR}/include/wiimotedev/wiimotedev
+	${CMAKE_SOURCE_DIR}/resource/include/wiimotedev/wiimotedev
 	common/tick-aligned-loop.cpp
 	common/tick-aligned-loop.h
 	container/infrared-config.cpp

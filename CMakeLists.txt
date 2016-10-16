@@ -1,7 +1,3 @@
-# Distributed under the terms of the GNU Lesser General Public License, v2.1 or later
-# Copyright (C) 2008-2016 Bartłomiej Burdukiewicz
-# Contact: bartlomiej.burdukiewicz@gmail.com
-
 project(wiimotedev)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_CXX_STANDARD 14)
@@ -13,7 +9,9 @@ find_package(Qt5Core)
 find_package(Qt5DBus)
 find_package(Qt5Widgets)
 
-include("Version.cmake")
+set(WIIMOTEDEV_VERSION_MAJOR 2)
+set(WIIMOTEDEV_VERSION_MINOR 9)
+set(WIIMOTEDEV_VERSION_PATCH 0)
 
 # Set paths
 set(WIIMOTEDEV_CONF_DIR "/etc/wiimotedev")
