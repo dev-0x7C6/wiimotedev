@@ -62,13 +62,13 @@ set(sources
 	main.cpp
 )
 
-qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.profilemanager.xml core/profile-manager.h io::core::ProfileManager)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.balanceboard.xml dbus/interfaces/balanceboard)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.classic.xml dbus/interfaces/nunchuk)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.nunchuk.xml dbus/interfaces/classic)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.procontroller.xml dbus/interfaces/procontroller)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.wiimote.xml dbus/interfaces/wiimote)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.virtualcursor.xml dbus/interfaces/virtualcursor)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.profilemanager.xml core/profile-manager.h io::core::ProfileManager)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.balanceboard.xml dbus/interfaces/balanceboard)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.classic.xml dbus/interfaces/nunchuk)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.nunchuk.xml dbus/interfaces/classic)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.procontroller.xml dbus/interfaces/procontroller)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.wiimote.xml dbus/interfaces/wiimote)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.virtualcursor.xml dbus/interfaces/virtualcursor)
 
 add_executable(wiimotedev-io ${sources})
 
@@ -79,4 +79,10 @@ target_link_libraries(
 	Qt5::Widgets
 )
 
-install(TARGETS wiimotedev-io DESTINATION ${WIIMOTEDEV_SBIN_DIR})
+install(TARGETS wiimotedev-io
+	DESTINATION "${CMAKE_INSTALL_PREFIX}/sbin/"
+	PERMISSIONS
+		OWNER_READ OWNER_WRITE OWNER_EXECUTE
+		GROUP_READ GROUP_EXECUTE
+		WORLD_READ WORLD_EXECUTE
+)

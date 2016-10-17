@@ -1,5 +1,5 @@
 [Unit]
-Description=Wiiremote manager and data provider (via dbus).
+Description=wiiremote connection manager and dbus interface provider
 After=bluetooth.target
 
 [Service]

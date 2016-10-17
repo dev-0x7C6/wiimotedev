@@ -72,12 +72,12 @@ set(sources
 	wiimotedevcore.h
 )
 
-qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.balanceboard.xml dbus/balance-board-dispatcher.h dae::dbus::BalanceBoardDispatcher)
-qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.classic.xml dbus/classic-dispatcher.h dae::dbus::ClassicDispatcher)
-qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.nunchuk.xml dbus/nunchuk-dispatcher.h dae::dbus::NunchukDispatcher)
-qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.procontroller.xml dbus/pro-controller-dispatcher.h dae::dbus::ProControllerDispatcher)
-qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.virtualcursor.xml dbus/virtual-cursor-dispatcher.h dae::dbus::VirtualCursorDispatcher)
-qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.wiimote.xml dbus/wiimote-dispatcher.h dae::dbus::WiimoteDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.balanceboard.xml dbus/balance-board-dispatcher.h dae::dbus::BalanceBoardDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.classic.xml dbus/classic-dispatcher.h dae::dbus::ClassicDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.nunchuk.xml dbus/nunchuk-dispatcher.h dae::dbus::NunchukDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.procontroller.xml dbus/pro-controller-dispatcher.h dae::dbus::ProControllerDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.virtualcursor.xml dbus/virtual-cursor-dispatcher.h dae::dbus::VirtualCursorDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.wiimote.xml dbus/wiimote-dispatcher.h dae::dbus::WiimoteDispatcher)
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
 
@@ -89,4 +89,10 @@ target_link_libraries(wiimotedev-daemon
 	pthread
 )
 
-install(TARGETS wiimotedev-daemon DESTINATION ${WIIMOTEDEV_SBIN_DIR})
+install(TARGETS wiimotedev-daemon
+	DESTINATION "${CMAKE_INSTALL_PREFIX}/sbin/"
+	PERMISSIONS
+		OWNER_READ OWNER_WRITE OWNER_EXECUTE
+		GROUP_READ GROUP_EXECUTE
+		WORLD_READ WORLD_EXECUTE
+)

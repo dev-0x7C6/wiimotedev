@@ -1,5 +1,5 @@
 [Unit]
-Description=Customizable input emulator for wiiremotes.
+Description=customizable input emulator for wiiremotes
 After=wiimotedev-daemon.service
 
 [Service]
