@@ -5,7 +5,10 @@ include_directories(
 )
 
 set(sources
-	${CMAKE_SOURCE_DIR}/resource/include/wiimotedev/wiimotedev
+	${CMAKE_SOURCE_DIR}/config.h
+	${CMAKE_SOURCE_DIR}/include/wiimotedev/wiimotedev
+	${CMAKE_SOURCE_DIR}/common/enums/device.cpp
+	${CMAKE_SOURCE_DIR}/common/enums/device.h
 	common/tick-aligned-loop.cpp
 	common/tick-aligned-loop.h
 	container/infrared-config.cpp
@@ -41,11 +44,11 @@ set(sources
 	emulation/input-device.h
 	factories/gamepad-factory.cpp
 	factories/gamepad-factory.h
+	functionals/balance-board-processor.cpp
+	functionals/balance-board-processor.h
 	functionals/hash-compare.h
 	functionals/profile.cpp
 	functionals/profile.h
-	functionals/balance-board-processor.cpp
-	functionals/balance-board-processor.h
 	functionals/uinput-helper.cpp
 	functionals/uinput-helper.h
 	interfaces/igamepad.cpp
@@ -59,13 +62,13 @@ set(sources
 	main.cpp
 )
 
-qt5_add_dbus_adaptor(sources ../dbus/profilemanager.xml core/profile-manager.h io::core::ProfileManager)
-qt5_add_dbus_interface(sources ../dbus/balanceboard.xml dbus/interfaces/balanceboard)
-qt5_add_dbus_interface(sources ../dbus/classic.xml dbus/interfaces/nunchuk)
-qt5_add_dbus_interface(sources ../dbus/nunchuk.xml dbus/interfaces/classic)
-qt5_add_dbus_interface(sources ../dbus/procontroller.xml dbus/interfaces/procontroller)
-qt5_add_dbus_interface(sources ../dbus/wiimote.xml dbus/interfaces/wiimote)
-qt5_add_dbus_interface(sources ../dbus/virtualcursor.xml dbus/interfaces/virtualcursor)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.profilemanager.xml core/profile-manager.h io::core::ProfileManager)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.balanceboard.xml dbus/interfaces/balanceboard)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.classic.xml dbus/interfaces/nunchuk)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.nunchuk.xml dbus/interfaces/classic)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.procontroller.xml dbus/interfaces/procontroller)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.wiimote.xml dbus/interfaces/wiimote)
+qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.virtualcursor.xml dbus/interfaces/virtualcursor)
 
 add_executable(wiimotedev-io ${sources})
 

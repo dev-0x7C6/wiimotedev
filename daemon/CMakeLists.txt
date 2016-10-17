@@ -5,16 +5,16 @@ include_directories(
 )
 
 set(sources
+	${CMAKE_SOURCE_DIR}/config.h
+	${CMAKE_SOURCE_DIR}/include/wiimotedev/wiimotedev
+	${CMAKE_SOURCE_DIR}/common/enums/device.cpp
+	${CMAKE_SOURCE_DIR}/common/enums/device.h
 	api/xwiimote-controller.cpp
 	api/xwiimote-controller.h
 	api/xwiimote-manager.cpp
 	api/xwiimote-manager.h
 	api/xwiimote-monitor.cpp
 	api/xwiimote-monitor.h
-	${CMAKE_SOURCE_DIR}/config.h
-	${CMAKE_SOURCE_DIR}/include/wiimotedev/wiimotedev
-	${CMAKE_SOURCE_DIR}/common/enums/device.cpp
-	${CMAKE_SOURCE_DIR}/common/enums/device.h
 	containers/accelerometer-container.cpp
 	containers/accelerometer-container.h
 	containers/button-container.cpp
@@ -47,10 +47,10 @@ set(sources
 	dbus/virtual-cursor-dispatcher.h
 	dbus/wiimote-dispatcher.cpp
 	dbus/wiimote-dispatcher.h
-	enums/event.cpp
-	enums/event.h
 	enums/adaptor.cpp
 	enums/adaptor.h
+	enums/event.cpp
+	enums/event.h
 	factories/controller-manager-factory.cpp
 	factories/controller-manager-factory.h
 	factories/dispatcher-factory.cpp
@@ -72,13 +72,12 @@ set(sources
 	wiimotedevcore.h
 )
 
-#qt5_add_dbus_adaptor(sources dbus/deviceevents.xml wiimotedevcore.h service::core::WiimotedevCore)
-qt5_add_dbus_adaptor(sources ../dbus/balanceboard.xml dbus/balance-board-dispatcher.h dae::dbus::BalanceBoardDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/classic.xml dbus/classic-dispatcher.h dae::dbus::ClassicDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/nunchuk.xml dbus/nunchuk-dispatcher.h dae::dbus::NunchukDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/procontroller.xml dbus/pro-controller-dispatcher.h dae::dbus::ProControllerDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/virtualcursor.xml dbus/virtual-cursor-dispatcher.h dae::dbus::VirtualCursorDispatcher)
-qt5_add_dbus_adaptor(sources ../dbus/wiimote.xml dbus/wiimote-dispatcher.h dae::dbus::WiimoteDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.balanceboard.xml dbus/balance-board-dispatcher.h dae::dbus::BalanceBoardDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.classic.xml dbus/classic-dispatcher.h dae::dbus::ClassicDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.nunchuk.xml dbus/nunchuk-dispatcher.h dae::dbus::NunchukDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.procontroller.xml dbus/pro-controller-dispatcher.h dae::dbus::ProControllerDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.virtualcursor.xml dbus/virtual-cursor-dispatcher.h dae::dbus::VirtualCursorDispatcher)
+qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/interfaces/org.wiimotedev.wiimote.xml dbus/wiimote-dispatcher.h dae::dbus::WiimoteDispatcher)
 
 add_executable(wiimotedev-daemon ${sources} ${headers} ${wiimotedev_project_files})
 
