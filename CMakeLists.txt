@@ -14,10 +14,9 @@ set(WIIMOTEDEV_VERSION_MINOR 9)
 set(WIIMOTEDEV_VERSION_PATCH 0)
 
 configure_file(config.h.in config.h)
-
 add_subdirectory(daemon)
-add_subdirectory(io)
 add_subdirectory(dbus-1/conf)
 add_subdirectory(dbus-1/interfaces)
 add_subdirectory(include)
+add_subdirectory(io)
 add_subdirectory(services)

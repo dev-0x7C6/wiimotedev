@@ -41,9 +41,7 @@ Profile::Profile(const std::string &configurationFilePath)
 	}
 }
 
-Profile::~Profile() {
-	m_gamepads.clear();
-}
+Profile::~Profile() = default;
 
 void Profile::connected(Device device, uint id) {
 }

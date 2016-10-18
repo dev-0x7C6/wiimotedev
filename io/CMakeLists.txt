@@ -55,6 +55,8 @@ set(sources
 	interfaces/igamepad.h
 	interfaces/iinput-device.cpp
 	interfaces/iinput-device.h
+	interfaces/imouse.cpp
+	interfaces/imouse.h
 	interfaces/iprofile.cpp
 	interfaces/iprofile.h
 	interfaces/iwiimotedev-event.cpp

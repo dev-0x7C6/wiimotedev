@@ -7,6 +7,7 @@
 #include <QObject>
 
 #include "interfaces/igamepad.h"
+#include "interfaces/imouse.h"
 #include "interfaces/iprofile.h"
 #include "interfaces/iwiimotedev-event.h"
 
@@ -37,6 +38,7 @@ protected:
 
 private:
 	std::list<std::unique_ptr<io::interface::IGamepad>> m_gamepads;
+	std::list<std::unique_ptr<io::interface::IMouse>> m_mouses;
 };
 }
 }
