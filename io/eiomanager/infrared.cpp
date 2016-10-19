@@ -8,7 +8,7 @@ void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
 		if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "infrared" ||
 			settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "mouse") {
 			settings.beginGroup(key);
-			auto device = std::make_unique<EIOInfraredMouse>(m_eventDevice);
+			auto device = std::make_unique<io::EIOInfraredMouse>(m_eventDevice);
 			device->setId(settings.value("device", uint(1)).toLongLong());
 			std::cout << settings.value("acc", false).toBool() << std::endl;
 			device->config().setAccEnabled(settings.value("acc", false).toBool());

@@ -68,7 +68,7 @@ private:
 	std::unique_ptr<io::functional::Profile> m_profile;
 
 	std::list<std::unique_ptr<EIORemoteKeyboard>> m_keyboards;
-	std::list<std::unique_ptr<EIOInfraredMouse>> m_mouses;
+	std::list<std::unique_ptr<io::EIOInfraredMouse>> m_mouses;
 	std::list<std::unique_ptr<CommandAction>> commandActions;
 	QHash<uint32_t, uint64_t> lastWiiremoteButtons;
 	io::emulation::EventDevice m_eventDevice;

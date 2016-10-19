@@ -13,6 +13,8 @@
 
 #include <atomic>
 
+namespace io {
+
 class EIOInfraredMouse : public QThread {
 public:
 	enum Axis {
@@ -46,7 +48,7 @@ protected:
 	void processAbsoluteMouse();
 	void processRelativeMouse();
 
-	void setCursor(InfraredCursor &&cursor);
+	void setCursor(container::InfraredCursor &&cursor);
 
 private:
 	double m_position[2];
@@ -59,7 +61,7 @@ private:
 
 private:
 	io::emulation::EventDevice &m_device;
-	InfraredCursor m_cursor;
+	container::InfraredCursor m_cursor;
 
 	std::atomic<uint32_t> m_id;
 	std::atomic<uint32_t> m_mode;
@@ -67,3 +69,5 @@ private:
 	QMutex m_mutex;
 	TickAlignedLoop m_tick;
 };
+
+}

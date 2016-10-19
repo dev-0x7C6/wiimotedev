@@ -1,16 +1,19 @@
 #pragma once
 
+namespace io {
+namespace container {
+
 class InfraredCursor {
 public:
 	InfraredCursor(double x, double y, double distance, double angle, bool valid = true);
 	InfraredCursor(const InfraredCursor &cursor);
 	InfraredCursor();
 
-	double x() const;
-	double y() const;
-	double distance() const;
-	double angle() const;
-	bool isValid() const;
+	inline double x() const { return m_x; }
+	inline double y() const { return m_y; }
+	inline double distance() const { return m_distance; }
+	inline double angle() const { return m_angle; }
+	inline bool isValid() const { return m_valid; }
 
 	InfraredCursor &operator=(const InfraredCursor &other);
 
@@ -21,3 +24,5 @@ private:
 	double m_angle;
 	bool m_valid;
 };
+}
+}

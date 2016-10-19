@@ -1,5 +1,7 @@
 #include "infrared-cursor.h"
 
+using namespace io::container;
+
 InfraredCursor::InfraredCursor(double x, double y, double distance, double angle, bool valid)
 		: m_x(x)
 		, m_y(y)
@@ -18,26 +20,6 @@ InfraredCursor::InfraredCursor()
 		, m_distance(0)
 		, m_angle(0)
 		, m_valid(false) {
-}
-
-double InfraredCursor::x() const {
-	return m_x;
-}
-
-double InfraredCursor::y() const {
-	return m_y;
-}
-
-double InfraredCursor::distance() const {
-	return m_distance;
-}
-
-double InfraredCursor::angle() const {
-	return m_angle;
-}
-
-bool InfraredCursor::isValid() const {
-	return m_valid;
 }
 
 InfraredCursor &InfraredCursor::operator=(const InfraredCursor &other) {

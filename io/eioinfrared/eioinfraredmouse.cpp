@@ -8,6 +8,8 @@
 #include <iostream>
 #include <cassert>
 
+using namespace io;
+using namespace io::container;
 using namespace io::interface;
 using namespace io::emulation;
 
