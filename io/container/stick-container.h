@@ -4,6 +4,9 @@
 #include <cstdint>
 #include <vector>
 
+namespace io {
+namespace container {
+
 enum AxisType {
 	X,
 	Y,
@@ -65,3 +68,5 @@ struct ButtonMapping {
 
 using ButtonMap = std::vector<ButtonMapping>;
 using AxisMap = std::vector<AxisPair>;
+}
+}

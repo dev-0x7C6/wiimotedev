@@ -2,6 +2,7 @@
 #include <map>
 
 using namespace common::enums;
+using namespace io::container;
 using namespace io::interface;
 
 IGamepad::IGamepad(const std::string &name, const uint32_t id, ButtonMap &&buttons, AxisMap &&axises)

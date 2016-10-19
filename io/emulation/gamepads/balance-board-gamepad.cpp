@@ -1,6 +1,7 @@
 #include "balance-board-gamepad.h"
 
 using namespace common::enums;
+using namespace io::container;
 using namespace io::emulation::gamepad;
 using namespace wiimotedev;
 

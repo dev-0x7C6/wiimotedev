@@ -1,5 +1,7 @@
 #include "stick-container.h"
 
+using namespace io::container;
+
 void AxisPair::center() {
 	for (const auto &axis : {AxisType::X, AxisType::Y})
 		pair[axis].value = (pair[axis].raw_min + pair[axis].raw_max) / 2;

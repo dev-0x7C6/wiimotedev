@@ -1,6 +1,7 @@
 #include "emulation/gamepads/wiimote-gamepad.h"
 
 using namespace common::enums;
+using namespace io::container;
 using namespace io::emulation::gamepad;
 using namespace io::interface;
 using namespace wiimotedev;

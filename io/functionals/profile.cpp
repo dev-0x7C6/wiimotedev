@@ -9,9 +9,10 @@
 #include "interfaces/igamepad.h"
 
 using namespace common::enums;
+using namespace io::container;
 using namespace io::factory;
-using namespace io::interface;
 using namespace io::functional;
+using namespace io::interface;
 
 Profile::Profile(const std::string &configurationFilePath)
 		: QObject(nullptr)
