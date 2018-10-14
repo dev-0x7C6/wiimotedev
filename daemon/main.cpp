@@ -1,7 +1,7 @@
 #include "../config.h"
 #include <iostream>
 #include <memory>
-#include <signal.h>
+#include <csignal>
 #include <unistd.h>
 
 #include <QCoreApplication>

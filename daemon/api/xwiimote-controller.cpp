@@ -26,27 +26,27 @@ using namespace dae::enums;
 using namespace dae::interface;
 using namespace wiimotedev;
 
-static_assert(1ull << XWII_KEY_LEFT == WIIMOTEDEV_BTN_LEFT, "");
-static_assert(1ull << XWII_KEY_RIGHT == WIIMOTEDEV_BTN_RIGHT, "");
-static_assert(1ull << XWII_KEY_UP == WIIMOTEDEV_BTN_UP, "");
-static_assert(1ull << XWII_KEY_DOWN == WIIMOTEDEV_BTN_DOWN, "");
-static_assert(1ull << XWII_KEY_A == WIIMOTEDEV_BTN_A, "");
-static_assert(1ull << XWII_KEY_B == WIIMOTEDEV_BTN_B, "");
-static_assert(1ull << XWII_KEY_PLUS == WIIMOTEDEV_BTN_PLUS, "");
-static_assert(1ull << XWII_KEY_MINUS == WIIMOTEDEV_BTN_MINUS, "");
-static_assert(1ull << XWII_KEY_HOME == WIIMOTEDEV_BTN_HOME, "");
-static_assert(1ull << XWII_KEY_ONE == WIIMOTEDEV_BTN_ONE, "");
-static_assert(1ull << XWII_KEY_TWO == WIIMOTEDEV_BTN_TWO, "");
-static_assert(1ull << XWII_KEY_X == WIIMOTEDEV_BTN_X, "");
-static_assert(1ull << XWII_KEY_Y == WIIMOTEDEV_BTN_Y, "");
-static_assert(1ull << XWII_KEY_TL == WIIMOTEDEV_BTN_TL, "");
-static_assert(1ull << XWII_KEY_TR == WIIMOTEDEV_BTN_TR, "");
-static_assert(1ull << XWII_KEY_ZL == WIIMOTEDEV_BTN_ZL, "");
-static_assert(1ull << XWII_KEY_ZR == WIIMOTEDEV_BTN_ZR, "");
-static_assert(1ull << XWII_KEY_THUMBL == WIIMOTEDEV_BTN_THUMBL, "");
-static_assert(1ull << XWII_KEY_THUMBR == WIIMOTEDEV_BTN_THUMBR, "");
-static_assert(1ull << XWII_KEY_C == WIIMOTEDEV_BTN_C, "");
-static_assert(1ull << XWII_KEY_Z == WIIMOTEDEV_BTN_Z, "");
+static_assert(1ull << XWII_KEY_LEFT == WIIMOTEDEV_BTN_LEFT);
+static_assert(1ull << XWII_KEY_RIGHT == WIIMOTEDEV_BTN_RIGHT);
+static_assert(1ull << XWII_KEY_UP == WIIMOTEDEV_BTN_UP);
+static_assert(1ull << XWII_KEY_DOWN == WIIMOTEDEV_BTN_DOWN);
+static_assert(1ull << XWII_KEY_A == WIIMOTEDEV_BTN_A);
+static_assert(1ull << XWII_KEY_B == WIIMOTEDEV_BTN_B);
+static_assert(1ull << XWII_KEY_PLUS == WIIMOTEDEV_BTN_PLUS);
+static_assert(1ull << XWII_KEY_MINUS == WIIMOTEDEV_BTN_MINUS);
+static_assert(1ull << XWII_KEY_HOME == WIIMOTEDEV_BTN_HOME);
+static_assert(1ull << XWII_KEY_ONE == WIIMOTEDEV_BTN_ONE);
+static_assert(1ull << XWII_KEY_TWO == WIIMOTEDEV_BTN_TWO);
+static_assert(1ull << XWII_KEY_X == WIIMOTEDEV_BTN_X);
+static_assert(1ull << XWII_KEY_Y == WIIMOTEDEV_BTN_Y);
+static_assert(1ull << XWII_KEY_TL == WIIMOTEDEV_BTN_TL);
+static_assert(1ull << XWII_KEY_TR == WIIMOTEDEV_BTN_TR);
+static_assert(1ull << XWII_KEY_ZL == WIIMOTEDEV_BTN_ZL);
+static_assert(1ull << XWII_KEY_ZR == WIIMOTEDEV_BTN_ZR);
+static_assert(1ull << XWII_KEY_THUMBL == WIIMOTEDEV_BTN_THUMBL);
+static_assert(1ull << XWII_KEY_THUMBR == WIIMOTEDEV_BTN_THUMBR);
+static_assert(1ull << XWII_KEY_C == WIIMOTEDEV_BTN_C);
+static_assert(1ull << XWII_KEY_Z == WIIMOTEDEV_BTN_Z);
 
 XWiimoteController::XWiimoteController(IIdManager &manager, const std::string &interfaceFilePath)
 		: IWiimote(manager)
@@ -134,7 +134,7 @@ std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 	auto process_key = [this](const Device source, const xwii_event &event) {
 		auto mask = m_buttons.at(static_cast<std::size_t>(source));
 		auto code = 1ull << event.v.key.code;
-		static_assert(sizeof(code) == 8, "");
+		static_assert(sizeof(code) == 8);
 
 		if (event.v.key.state)
 			mask |= code;

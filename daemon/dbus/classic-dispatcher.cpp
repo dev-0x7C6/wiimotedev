@@ -50,9 +50,12 @@ void ClassicDispatcher::process(const Device device, const uint32_t id, const st
 		}
 	};
 
-	switch (container->event()) {
-		case Event::Button: return process_key();
-		case Event::Stick: return process_stick();
-		case Event::Status: return process_status();
-	}
+	const auto event = container->event();
+
+	if (event == Event::Button)
+		process_key();
+	else if (event == Event::Stick)
+		process_stick();
+	else if (event == Event::Status)
+		process_status();
 }

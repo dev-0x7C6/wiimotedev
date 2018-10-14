@@ -79,15 +79,13 @@ bool UInputProfileManager::loadProfile(QString file) {
 	//connect(dbusDeviceEventsIface.get(), &WiimotedevDeviceEvents::dbusClassicControllerRStick, m_profile.get(), &Profile::classicControllerRStick, Qt::DirectConnection);
 
 	QSettings settings(file, QSettings::IniFormat);
-	foreach (const QString &key, settings.childGroups()) {
+	for (auto &&key : settings.childGroups()) {
 		const QString &module = settings.value(key + "/module", QString()).toString();
 
 		if (module.isEmpty())
 			continue;
 
-		module.toLower();
-
-		if (module == QString::fromUtf8("keyboard"))
+		if (module.toLower() == QString::fromUtf8("keyboard"))
 			assignKeyboardEvents(key, settings);
 	}
 	loadCommandEvents(settings);

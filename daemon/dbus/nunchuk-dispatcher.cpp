@@ -53,10 +53,14 @@ void NunchukDispatcher::process(const Device device, const uint32_t id, const st
 		emit stickDataChanged(id, lx, ly);
 	};
 
-	switch (container->event()) {
-		case Event::Accelerometer: return process_acc();
-		case Event::Button: return process_key();
-		case Event::Status: return process_status();
-		case Event::Stick: return process_stick();
-	}
+	const auto event = container->event();
+
+	if (event == Event::Accelerometer)
+		return process_acc();
+	else if (event == Event::Button)
+		return process_key();
+	else if (event == Event::Status)
+		return process_status();
+	else if (event == Event::Stick)
+		return process_stick();
 }

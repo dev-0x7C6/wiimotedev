@@ -41,8 +41,10 @@ void BalanceBoardDispatcher::process(const Device device, const uint32_t id, con
 		}
 	};
 
-	switch (container->event()) {
-		case Event::Pressure: return process_pressure();
-		case Event::Status: return process_status();
-	}
+	const auto event = container->event();
+
+	if (event == Event::Pressure)
+		process_pressure();
+	else if (event == Event::Status)
+		process_status();
 }

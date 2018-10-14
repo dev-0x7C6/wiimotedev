@@ -50,9 +50,12 @@ void ProControllerDispatcher::process(const Device device, const uint32_t id, co
 		emit stickDataChanged(id, lx, ly, rx, ry);
 	};
 
-	switch (container->event()) {
-		case Event::Status: return process_status();
-		case Event::Button: return process_key();
-		case Event::Stick: return process_stick();
-	}
+	const auto event = container->event();
+
+	if (event == Event::Status)
+		return process_status();
+	else if (event == Event::Button)
+		return process_key();
+	else if (event == Event::Stick)
+		return process_stick();
 }
