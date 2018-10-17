@@ -11,7 +11,7 @@ public:
 	explicit DispatcherFactory() = delete;
 	virtual ~DispatcherFactory() = delete;
 
-	static std::unique_ptr<interface::IContainerProcessor> create(const enums::Adaptor type);
+	static std::unique_ptr<interface::IContainerProcessor> create(EventCallback &&eventCallback, enums::Adaptor type);
 };
 }
 }

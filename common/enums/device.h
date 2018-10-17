@@ -1,9 +1,39 @@
 #pragma once
 
+#include <functional>
 #include <string>
+#include <variant>
 
-namespace common {
-namespace enums {
+enum class CommandType {
+	GetLedState,
+	GetRumbleState,
+	SetLedState,
+	SetRumbleState,
+};
+
+using CommandParameter = std::variant<std::monostate, bool, uint32_t>;
+using CommandResult = std::variant<std::monostate, bool, uint32_t>;
+
+class CommandEvent {
+public:
+	constexpr CommandEvent(CommandType command, uint32_t id, CommandParameter parameter)
+			: m_command(command)
+			, m_id(id)
+			, m_parameter(parameter) {}
+
+	constexpr auto command() const noexcept { return m_command; }
+	constexpr auto id() const noexcept { return m_id; }
+	constexpr auto parameter() const noexcept { return m_parameter; }
+
+private:
+	CommandType m_command;
+	uint32_t m_id{0};
+	CommandParameter m_parameter;
+};
+
+using EventCallback = std::function<CommandResult(CommandEvent &&)>;
+
+namespace common::enums {
 
 enum class Device {
 	BalanceBoard,
@@ -42,6 +72,5 @@ inline auto convert(const std::string &str) -> Device {
 			return value;
 
 	return Device::Last;
-}
 }
 }

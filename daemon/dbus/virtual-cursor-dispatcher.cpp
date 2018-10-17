@@ -10,8 +10,8 @@ using namespace dae::dbus;
 using namespace dae::enums;
 using namespace dae::functional;
 
-VirtualCursorDispatcher::VirtualCursorDispatcher(QObject *parent)
-		: IContainerProcessor(parent) {
+VirtualCursorDispatcher::VirtualCursorDispatcher(EventCallback &&eventCallback)
+		: IContainerProcessor(std::move(eventCallback)) {
 	new VirtualcursorAdaptor(this);
 }
 

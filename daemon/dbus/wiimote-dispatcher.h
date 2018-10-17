@@ -9,16 +9,15 @@ namespace dbus {
 class WiimoteDispatcher final : public interface::IContainerProcessor {
 	Q_OBJECT
 public:
-	explicit WiimoteDispatcher(QObject *parent = nullptr);
-	virtual ~WiimoteDispatcher() = default;
+	explicit WiimoteDispatcher(EventCallback &&eventCallback);
 
 	virtual enums::Adaptor type() const override;
 	virtual void process(const common::enums::Device, const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
 
-public:
-	QList<uint> list() const;
-	uint ledStatus(uint id) const;
-	uint rumbleStatus(uint id) const;
+public Q_SLOTS:
+	QList<uint> list();
+	uint ledStatus(uint id);
+	uint rumbleStatus(uint id);
 	bool setLedStatus(uint id, uint status);
 	bool setRumbleStatus(uint id, bool status);
 

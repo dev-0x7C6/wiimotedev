@@ -11,8 +11,8 @@ using namespace dae::dbus;
 using namespace dae::enums;
 using namespace dae::interface;
 
-ClassicDispatcher::ClassicDispatcher(QObject *parent)
-		: IContainerProcessor(parent) {
+ClassicDispatcher::ClassicDispatcher(EventCallback &&eventCallback)
+		: IContainerProcessor(std::move(eventCallback)) {
 	new ClassicAdaptor(this);
 }
 

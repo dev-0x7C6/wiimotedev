@@ -15,19 +15,19 @@ using namespace dae::enums;
 using namespace dae::dbus;
 using namespace dae::interface;
 
-WiimoteDispatcher::WiimoteDispatcher(QObject *parent)
-		: IContainerProcessor(parent) {
+WiimoteDispatcher::WiimoteDispatcher(EventCallback &&eventCallback)
+		: IContainerProcessor(std::move(eventCallback)) {
 
 	new WiimoteAdaptor(this);
 }
 
 Adaptor WiimoteDispatcher::type() const { return Adaptor::Wiimote; }
-QList<uint> WiimoteDispatcher::list() const { return m_ids.toList(); }
+QList<uint> WiimoteDispatcher::list() { return m_ids.toList(); }
 
-uint WiimoteDispatcher::ledStatus(uint id) const { return id; }
-uint WiimoteDispatcher::rumbleStatus(uint id) const { return id; }
-bool WiimoteDispatcher::setLedStatus(uint id, uint status) { return status; }
-bool WiimoteDispatcher::setRumbleStatus(uint id, bool status) { return status; }
+uint WiimoteDispatcher::ledStatus(uint id) { return std::get<uint32_t>(generateEvent({CommandType::GetLedState, id, {}})); }
+uint WiimoteDispatcher::rumbleStatus(uint id) { return std::get<uint32_t>(generateEvent({CommandType::GetRumbleState, id, {}})); }
+bool WiimoteDispatcher::setLedStatus(uint id, uint status) { return std::get<bool>(generateEvent({CommandType::SetLedState, id, status})); }
+bool WiimoteDispatcher::setRumbleStatus(uint id, bool status) { return std::get<bool>(generateEvent({CommandType::SetRumbleState, id, status})); }
 
 void WiimoteDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) {
 	if (Device::Wiimote != device)

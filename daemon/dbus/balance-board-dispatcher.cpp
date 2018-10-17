@@ -10,8 +10,8 @@ using namespace dae::enums;
 using namespace dae::interface;
 using namespace dae::container;
 
-BalanceBoardDispatcher::BalanceBoardDispatcher(QObject *parent)
-		: IContainerProcessor(parent) {
+BalanceBoardDispatcher::BalanceBoardDispatcher(EventCallback &&eventCallback)
+		: IContainerProcessor(std::move(eventCallback)) {
 	new BalanceboardAdaptor(this);
 }
 

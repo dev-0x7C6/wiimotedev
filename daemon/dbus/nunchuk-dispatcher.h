@@ -9,7 +9,7 @@ namespace dbus {
 class NunchukDispatcher final : public interface::IContainerProcessor {
 	Q_OBJECT
 public:
-	explicit NunchukDispatcher(QObject *parent = nullptr);
+	explicit NunchukDispatcher(EventCallback &&eventCallback);
 
 	virtual enums::Adaptor type() const override;
 	virtual void process(const common::enums::Device device, const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;

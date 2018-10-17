@@ -26,7 +26,10 @@ WiimotedevCore::WiimotedevCore()
 	};
 
 	for (const auto &processor : processors)
-		m_adaptors.emplace_back(DispatcherFactory::create(processor));
+		m_adaptors.emplace_back(DispatcherFactory::create([](auto &&) -> CommandResult {
+			return false; //TODO
+		},
+			processor));
 
 	QDBusConnection connection = QDBusConnection::systemBus();
 	for (const auto &adaptor : m_adaptors)

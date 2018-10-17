@@ -12,8 +12,8 @@ using namespace dae::dbus;
 using namespace dae::enums;
 using namespace dae::interface;
 
-NunchukDispatcher::NunchukDispatcher(QObject *parent)
-		: IContainerProcessor(parent) {
+NunchukDispatcher::NunchukDispatcher(EventCallback &&eventCallback)
+		: IContainerProcessor(std::move(eventCallback)) {
 	new NunchukAdaptor(this);
 }
 

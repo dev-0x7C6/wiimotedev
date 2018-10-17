@@ -9,8 +9,7 @@ namespace dbus {
 class BalanceBoardDispatcher final : public interface::IContainerProcessor {
 	Q_OBJECT
 public:
-	explicit BalanceBoardDispatcher(QObject *parent = nullptr);
-	virtual ~BalanceBoardDispatcher() = default;
+	explicit BalanceBoardDispatcher(EventCallback &&eventCallback);
 
 	virtual enums::Adaptor type() const override;
 	virtual void process(const common::enums::Device device, const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;

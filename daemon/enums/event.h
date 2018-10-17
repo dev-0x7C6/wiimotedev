@@ -1,7 +1,6 @@
 #pragma once
 
-namespace dae {
-namespace enums {
+namespace dae::enums {
 
 enum class Event {
 	Accelerometer,
@@ -12,5 +11,5 @@ enum class Event {
 	Status,
 	Stick,
 };
-}
+
 }
