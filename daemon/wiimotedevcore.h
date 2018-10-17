@@ -6,22 +6,18 @@
 #include "interfaces/icontainer-processor.h"
 #include "include/wiimotedev/wiimotedev"
 
-namespace dae {
-namespace core {
+namespace dae::core {
 
-class WiimotedevCore final : public QObject {
-	Q_OBJECT
+class WiimotedevCore final {
 public:
-	explicit WiimotedevCore(QObject *parent = nullptr);
-	virtual ~WiimotedevCore() = default;
+	explicit WiimotedevCore();
 
-protected:
-	virtual void timerEvent(QTimerEvent *event) override;
+	void process();
 
 private:
 	dae::controller::WiimoteScannerThread m_scanner;
 	std::list<std::unique_ptr<dae::interface::IWiimote>> m_devices;
 	std::list<std::unique_ptr<dae::interface::IContainerProcessor>> m_adaptors;
 };
-}
+
 }

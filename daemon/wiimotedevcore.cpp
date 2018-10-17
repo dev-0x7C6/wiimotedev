@@ -14,9 +14,8 @@ using namespace dae::enums;
 using namespace dae::factory;
 using namespace dae::interface;
 
-WiimotedevCore::WiimotedevCore(QObject *parent)
-		: QObject(parent)
-		, m_scanner(IWiimote::Api::XWiimote) {
+WiimotedevCore::WiimotedevCore()
+		: m_scanner(IWiimote::Api::XWiimote) {
 	const auto processors = {
 		Adaptor::BalanceBoard,
 		Adaptor::Classic,
@@ -34,12 +33,9 @@ WiimotedevCore::WiimotedevCore(QObject *parent)
 		connection.registerObject("/" + QString::fromStdString(name(adaptor->type())), adaptor.get());
 
 	connection.registerService("org.wiimotedev.daemon");
-	startTimer(1, Qt::PreciseTimer);
 }
 
-void WiimotedevCore::timerEvent(QTimerEvent *event) {
-	static_cast<void>(event);
-
+void WiimotedevCore::process() {
 	m_scanner.merge(m_devices);
 	std::unique_ptr<IContainer> container;
 

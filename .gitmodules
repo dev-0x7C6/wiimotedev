@@ -1,3 +1,6 @@
 [submodule "formatter"]
 	path = formatter
 	url = git@github.com:dev-0x7C6/dev1990-clang-formatter-integration.git
+[submodule "externals/common"]
+	path = externals/common
+	url = git@github.com:dev-0x7C6/common.git

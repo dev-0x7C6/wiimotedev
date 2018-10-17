@@ -1,10 +1,11 @@
 #include "../config.h"
 #include <iostream>
-#include <memory>
 #include <csignal>
 #include <unistd.h>
 
 #include <QCoreApplication>
+#include <QTimer>
+
 #include "wiimotedevcore.h"
 
 using namespace dae::core;
@@ -24,7 +25,11 @@ int main(int argc, char *argv[]) {
 
 	signal(SIGTERM, [](int) { qApp->quit(); });
 
-	std::unique_ptr<WiimotedevCore> core = std::make_unique<WiimotedevCore>();
+	WiimotedevCore core;
+	QTimer processTimer;
+	processTimer.connect(&processTimer, &QTimer::timeout, [&core]() { core.process(); });
+	processTimer.start(1);
+
 	application.exec();
 
 	return 0;
