@@ -14,6 +14,9 @@ public:
 
 	void process();
 
+protected:
+	CommandResult event(CommandEvent &&event) noexcept;
+
 private:
 	dae::controller::WiimoteScannerThread m_scanner;
 	std::list<std::unique_ptr<dae::interface::IWiimote>> m_devices;

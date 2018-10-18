@@ -26,8 +26,8 @@ WiimotedevCore::WiimotedevCore()
 	};
 
 	for (const auto &processor : processors)
-		m_adaptors.emplace_back(DispatcherFactory::create([](auto &&) -> CommandResult {
-			return false; //TODO
+		m_adaptors.emplace_back(DispatcherFactory::create([this](auto &&command) -> CommandResult {
+			return event(std::forward<decltype(command)>(command));
 		},
 			processor));
 
@@ -53,4 +53,19 @@ void WiimotedevCore::process() {
 			return;
 		}
 	}
+}
+
+CommandResult WiimotedevCore::event(CommandEvent &&event) noexcept {
+	for (const auto &device : m_devices) {
+		const auto id = device->id();
+		if (id == event.id())
+			switch (event.command()) {
+				case CommandType::GetLedState: return device->ledStatus(std::get<uint32_t>(event.parameter()));
+				case CommandType::SetLedState: return device->setLedStatus(1, std::get<bool>(event.parameter()));
+				case CommandType::GetRumbleState: return device->rumbleStatus();
+				case CommandType::SetRumbleState: return device->setRumbleStatus(std::get<bool>(event.parameter()));
+			}
+	}
+
+	return {};
 }

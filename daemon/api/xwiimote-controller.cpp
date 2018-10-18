@@ -151,7 +151,7 @@ std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 		//return std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected);
 	};
 
-	auto process_stick = [this](Device device, const xwii_event &event) {
+	auto process_stick = [](Device device, const xwii_event &event) {
 		auto calculate = [](int32_t &x, int32_t &y, int32_t step) {
 			constexpr int32_t min = WIIMOTEDEV_STICK_MIN;
 			constexpr int32_t max = WIIMOTEDEV_STICK_MAX;

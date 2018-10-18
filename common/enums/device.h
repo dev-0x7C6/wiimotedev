@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <string>
+#include <optional>
 #include <variant>
 
 enum class CommandType {
@@ -12,7 +13,7 @@ enum class CommandType {
 };
 
 using CommandParameter = std::variant<std::monostate, bool, uint32_t>;
-using CommandResult = std::variant<std::monostate, bool, uint32_t>;
+using CommandResult = std::optional<std::variant<bool, uint32_t>>;
 
 class CommandEvent {
 public:
