@@ -56,14 +56,29 @@ void WiimotedevCore::process() {
 }
 
 CommandResult WiimotedevCore::event(CommandEvent &&event) noexcept {
+	auto getLedStatus = [](const std::unique_ptr<IWiimote> &device, const CommandParameter &parameter) {
+		const auto event = std::get<GetLedStateEvent>(parameter);
+		return device->ledStatus(event.led_id);
+	};
+
+	auto setLedStatus = [](const std::unique_ptr<IWiimote> &device, const CommandParameter &parameter) {
+		const auto event = std::get<SetLedStateEvent>(parameter);
+		return device->setLedStatus(event.led_id, event.state);
+	};
+
+	auto setRumbleStatus = [](const std::unique_ptr<IWiimote> &device, const CommandParameter &parameter) {
+		const auto event = std::get<SetRumbleStateEvent>(parameter);
+		return device->setRumbleStatus(event.state);
+	};
+
 	for (const auto &device : m_devices) {
 		const auto id = device->id();
 		if (id == event.id())
 			switch (event.command()) {
-				case CommandType::GetLedState: return device->ledStatus(std::get<uint32_t>(event.parameter()));
-				case CommandType::SetLedState: return device->setLedStatus(1, std::get<bool>(event.parameter()));
+				case CommandType::GetLedState: return getLedStatus(device, event.parameter());
+				case CommandType::SetLedState: return setLedStatus(device, event.parameter());
 				case CommandType::GetRumbleState: return device->rumbleStatus();
-				case CommandType::SetRumbleState: return device->setRumbleStatus(std::get<bool>(event.parameter()));
+				case CommandType::SetRumbleState: return setRumbleStatus(device, event.parameter());
 			}
 	}
 

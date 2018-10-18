@@ -24,10 +24,10 @@ WiimoteDispatcher::WiimoteDispatcher(EventCallback &&eventCallback)
 Adaptor WiimoteDispatcher::type() const { return Adaptor::Wiimote; }
 QList<uint> WiimoteDispatcher::list() { return m_ids.toList(); }
 
-uint WiimoteDispatcher::ledStatus(uint id) { return std::get<bool>(generateEvent({CommandType::GetLedState, id, {}}).value_or(false)); }
-uint WiimoteDispatcher::rumbleStatus(uint id) { return std::get<bool>(generateEvent({CommandType::GetRumbleState, id, {}}).value_or(false)); }
-bool WiimoteDispatcher::setLedStatus(uint id, bool status) { return std::get<bool>(generateEvent({CommandType::SetLedState, id, status}).value_or(false)); }
-bool WiimoteDispatcher::setRumbleStatus(uint id, bool status) { return std::get<bool>(generateEvent({CommandType::SetRumbleState, id, status}).value_or(false)); }
+bool WiimoteDispatcher::ledStatus(uint id, uint led_id) { return std::get<bool>(generateEvent({CommandType::GetLedState, id, GetLedStateEvent{led_id}}).value_or(false)); }
+bool WiimoteDispatcher::rumbleStatus(uint id) { return std::get<bool>(generateEvent({CommandType::GetRumbleState, id, {}}).value_or(false)); }
+bool WiimoteDispatcher::setLedStatus(uint id, uint led_id, bool status) { return std::get<bool>(generateEvent({CommandType::SetLedState, id, SetLedStateEvent{led_id, status}}).value_or(false)); }
+bool WiimoteDispatcher::setRumbleStatus(uint id, bool status) { return std::get<bool>(generateEvent({CommandType::SetRumbleState, id, SetRumbleStateEvent{status}}).value_or(false)); }
 
 void WiimoteDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) {
 	if (Device::Wiimote != device)

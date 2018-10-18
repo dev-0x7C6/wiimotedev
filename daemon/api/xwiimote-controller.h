@@ -53,13 +53,14 @@ private:
 
 	std::queue<std::unique_ptr<interface::IContainer>> m_messages;
 
-	bool m_connectedFlag = false;
-	bool m_balanceBoardConnected = false;
-	bool m_classicControllerConnected = false;
-	bool m_motionPlusConnected = false;
-	bool m_nunchukConnected = false;
-	bool m_proControllerConnected = false;
-	bool m_wiimoteConnected = false;
+	bool m_connectedFlag{false};
+	bool m_balanceBoardConnected{false};
+	bool m_classicControllerConnected{false};
+	bool m_motionPlusConnected{false};
+	bool m_nunchukConnected{false};
+	bool m_proControllerConnected{false};
+	bool m_wiimoteConnected{false};
+	bool m_rumbleStatus{false};
 };
 }
 }

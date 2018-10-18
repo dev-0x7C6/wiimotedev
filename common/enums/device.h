@@ -5,6 +5,8 @@
 #include <optional>
 #include <variant>
 
+using u32 = uint32_t;
+
 enum class CommandType {
 	GetLedState,
 	GetRumbleState,
@@ -12,7 +14,20 @@ enum class CommandType {
 	SetRumbleState,
 };
 
-using CommandParameter = std::variant<std::monostate, bool, uint32_t>;
+struct GetLedStateEvent {
+	u32 led_id;
+};
+
+struct SetRumbleStateEvent {
+	u32 state;
+};
+
+struct SetLedStateEvent {
+	u32 led_id;
+	u32 state;
+};
+
+using CommandParameter = std::variant<std::monostate, GetLedStateEvent, SetRumbleStateEvent, SetLedStateEvent>;
 using CommandResult = std::optional<std::variant<bool, uint32_t>>;
 
 class CommandEvent {

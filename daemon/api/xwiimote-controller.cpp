@@ -260,7 +260,7 @@ bool XWiimoteController::ledStatus(const uint32_t id) {
 }
 
 bool XWiimoteController::rumbleStatus() {
-	return true;
+	return m_rumbleStatus;
 }
 
 bool XWiimoteController::setLedStatus(const uint32_t id, const bool status) {
@@ -268,7 +268,10 @@ bool XWiimoteController::setLedStatus(const uint32_t id, const bool status) {
 }
 
 bool XWiimoteController::setRumbleStatus(const bool rumble) {
-	return xwii_iface_rumble(m_interface, rumble) == 0;
+	const auto isValid = xwii_iface_rumble(m_interface, rumble) == 0;
+	if (isValid)
+		m_rumbleStatus = rumble;
+	return isValid;
 }
 
 bool XWiimoteController::hasClassicExtension() {

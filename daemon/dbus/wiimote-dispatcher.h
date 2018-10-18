@@ -16,9 +16,9 @@ public:
 
 public Q_SLOTS:
 	QList<uint> list();
-	uint ledStatus(uint id);
-	uint rumbleStatus(uint id);
-	bool setLedStatus(uint id, bool status);
+	bool ledStatus(uint id, uint led_id);
+	bool rumbleStatus(uint id);
+	bool setLedStatus(uint id, uint led_id, bool status);
 	bool setRumbleStatus(uint id, bool status);
 
 signals:
