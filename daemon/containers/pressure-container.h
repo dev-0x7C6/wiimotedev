@@ -17,7 +17,6 @@ struct pressdata {
 class PressureContainer final : public interface::IContainer {
 public:
 	explicit PressureContainer(const structs::pressdata &data);
-	virtual ~PressureContainer() = default;
 
 	virtual common::enums::Device device() const override;
 	virtual enums::Event event() const override;

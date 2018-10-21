@@ -10,7 +10,6 @@ class StickContainer final : public interface::IContainer {
 public:
 	explicit StickContainer(const common::enums::Device device,
 		int32_t lx, int32_t ly, int32_t rx, int32_t ry);
-	virtual ~StickContainer() = default;
 
 	virtual common::enums::Device device() const override;
 	virtual enums::Event event() const override;

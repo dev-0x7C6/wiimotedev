@@ -18,7 +18,6 @@ struct accdata {
 class AccelerometerContainer final : public interface::IContainer {
 public:
 	explicit AccelerometerContainer(const common::enums::Device device, const structs::accdata &data);
-	virtual ~AccelerometerContainer() = default;
 
 	virtual common::enums::Device device() const override;
 	virtual enums::Event event() const override;

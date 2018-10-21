@@ -18,7 +18,6 @@ public:
 
 private:
 	xwii_monitor *m_monitor;
-	int m_fd;
 };
 }
 }

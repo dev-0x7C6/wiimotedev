@@ -8,8 +8,7 @@ namespace container {
 
 class GyroscopeContainer final : public interface::IContainer {
 public:
-	explicit GyroscopeContainer(const int32_t x, const int32_t y, const int32_t z);
-	virtual ~GyroscopeContainer() = default;
+	explicit GyroscopeContainer(int32_t x, int32_t y, int32_t z);
 
 	virtual common::enums::Device device() const override;
 	virtual enums::Event event() const override;

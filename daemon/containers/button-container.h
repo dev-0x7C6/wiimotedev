@@ -9,7 +9,6 @@ namespace container {
 class ButtonContainer final : public interface::IContainer {
 public:
 	explicit ButtonContainer(const common::enums::Device device, const uint64_t state);
-	virtual ~ButtonContainer() = default;
 
 	virtual common::enums::Device device() const override;
 	virtual enums::Event event() const override;

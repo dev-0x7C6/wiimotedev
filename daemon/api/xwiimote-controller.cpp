@@ -48,6 +48,13 @@ static_assert(1ull << XWII_KEY_THUMBR == WIIMOTEDEV_BTN_THUMBR);
 static_assert(1ull << XWII_KEY_C == WIIMOTEDEV_BTN_C);
 static_assert(1ull << XWII_KEY_Z == WIIMOTEDEV_BTN_Z);
 
+namespace {
+template <typename type, typename input_type>
+constexpr auto is_available(type &&flags, input_type &&match_with) noexcept {
+	return (flags & match_with) == match_with;
+}
+}
+
 XWiimoteController::XWiimoteController(IIdManager &manager, const std::string &interfaceFilePath)
 		: IWiimote(manager)
 		, m_interfaceFilePath(interfaceFilePath) {
@@ -89,10 +96,10 @@ XWiimoteController::~XWiimoteController() {
 Device XWiimoteController::type() const {
 	const auto flags = xwii_iface_available(m_interface);
 
-	if (flags & XWII_IFACE_BALANCE_BOARD)
+	if (is_available(flags, XWII_IFACE_BALANCE_BOARD))
 		return Device::BalanceBoard;
 
-	if (flags & XWII_IFACE_PRO_CONTROLLER)
+	if (is_available(flags, XWII_IFACE_PRO_CONTROLLER))
 		return Device::ProController;
 
 	return Device::Wiimote;
@@ -243,8 +250,7 @@ bool XWiimoteController::isLedSupported() {
 }
 
 bool XWiimoteController::isInfraredSupported() {
-	const auto flags = xwii_iface_available(m_interface);
-	return (flags & XWII_IFACE_IR) == XWII_IFACE_IR;
+	return is_available(xwii_iface_available(m_interface), XWII_IFACE_IR);
 }
 
 uint8_t XWiimoteController::batteryStatus() {
@@ -275,18 +281,15 @@ bool XWiimoteController::setRumbleStatus(const bool rumble) {
 }
 
 bool XWiimoteController::hasClassicExtension() {
-	const auto flags = xwii_iface_available(m_interface);
-	return (flags & XWII_IFACE_CLASSIC_CONTROLLER) == XWII_IFACE_CLASSIC_CONTROLLER;
+	return is_available(xwii_iface_available(m_interface), XWII_IFACE_CLASSIC_CONTROLLER);
 }
 
 bool XWiimoteController::hasMotionPlusExtension() {
-	const auto flags = xwii_iface_available(m_interface);
-	return (flags & XWII_IFACE_MOTION_PLUS) == XWII_IFACE_MOTION_PLUS;
+	return is_available(xwii_iface_available(m_interface), XWII_IFACE_MOTION_PLUS);
 }
 
 bool XWiimoteController::hasNunchukExtension() {
-	const auto flags = xwii_iface_available(m_interface);
-	return (flags & XWII_IFACE_NUNCHUK) == XWII_IFACE_NUNCHUK;
+	return is_available(xwii_iface_available(m_interface), XWII_IFACE_NUNCHUK);
 }
 
 std::string XWiimoteController::interfaceFilePath() const {
@@ -297,62 +300,62 @@ void XWiimoteController::reconfigure() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
 	auto ret = xwii_iface_open(m_interface, flags);
 
-	if ((flags & XWII_IFACE_CORE) && !m_wiimoteConnected) {
+	if (is_available(flags, XWII_IFACE_CORE) && !m_wiimoteConnected) {
 		m_wiimoteConnected = true;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Connected));
 	}
 
-	if ((flags & XWII_IFACE_CLASSIC_CONTROLLER) && !m_classicControllerConnected) {
+	if (is_available(flags, XWII_IFACE_CLASSIC_CONTROLLER) && !m_classicControllerConnected) {
 		m_classicControllerConnected = true;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::Classic, StatusContainer::State::Connected));
 	}
 
-	if ((flags & XWII_IFACE_NUNCHUK) && !m_nunchukConnected) {
+	if (is_available(flags, XWII_IFACE_NUNCHUK) && !m_nunchukConnected) {
 		m_nunchukConnected = true;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::Nunchuk, StatusContainer::State::Connected));
 	}
 
-	if ((flags & XWII_IFACE_MOTION_PLUS) && !m_motionPlusConnected) {
+	if (is_available(flags, XWII_IFACE_MOTION_PLUS) && !m_motionPlusConnected) {
 		m_motionPlusConnected = true;
 		//m_messages.emplace(std::make_unique<StatusContainer>(Device::, StatusContainer::State::Connected));
 	}
 
-	if ((flags & XWII_IFACE_BALANCE_BOARD) && !m_balanceBoardConnected) {
+	if (is_available(flags, XWII_IFACE_BALANCE_BOARD) && !m_balanceBoardConnected) {
 		m_balanceBoardConnected = true;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::BalanceBoard, StatusContainer::State::Connected));
 	}
 
-	if ((flags & XWII_IFACE_PRO_CONTROLLER) && !m_proControllerConnected) {
+	if (is_available(flags, XWII_IFACE_PRO_CONTROLLER) && !m_proControllerConnected) {
 		m_proControllerConnected = true;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Connected));
 	}
 
-	if (!(flags & XWII_IFACE_CORE) && m_wiimoteConnected) {
+	if (!is_available(flags, XWII_IFACE_CORE) && m_wiimoteConnected) {
 		m_wiimoteConnected = false;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected));
 	}
 
-	if (!(flags & XWII_IFACE_CLASSIC_CONTROLLER) && m_classicControllerConnected) {
+	if (!is_available(flags, XWII_IFACE_CLASSIC_CONTROLLER) && m_classicControllerConnected) {
 		m_classicControllerConnected = false;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::Classic, StatusContainer::State::Disconnected));
 	}
 
-	if (!(flags & XWII_IFACE_NUNCHUK) && m_nunchukConnected) {
+	if (!is_available(flags, XWII_IFACE_NUNCHUK) && m_nunchukConnected) {
 		m_nunchukConnected = false;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::Nunchuk, StatusContainer::State::Disconnected));
 	}
 
-	if (!(flags & XWII_IFACE_MOTION_PLUS) && m_motionPlusConnected) {
+	if (!is_available(flags, XWII_IFACE_MOTION_PLUS) && m_motionPlusConnected) {
 		m_motionPlusConnected = false;
 		//m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected));
 	}
 
-	if (!(flags & XWII_IFACE_BALANCE_BOARD) && m_balanceBoardConnected) {
+	if (!is_available(flags, XWII_IFACE_BALANCE_BOARD) && m_balanceBoardConnected) {
 		m_balanceBoardConnected = false;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::BalanceBoard, StatusContainer::State::Disconnected));
 	}
 
-	if (!(flags & XWII_IFACE_PRO_CONTROLLER) && m_proControllerConnected) {
+	if (!is_available(flags, XWII_IFACE_PRO_CONTROLLER) && m_proControllerConnected) {
 		m_proControllerConnected = false;
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Disconnected));
 	}
