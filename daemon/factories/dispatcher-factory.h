@@ -9,7 +9,7 @@ namespace factory {
 class DispatcherFactory {
 public:
 	explicit DispatcherFactory() = delete;
-	virtual ~DispatcherFactory() = delete;
+	~DispatcherFactory() = delete;
 
 	static std::unique_ptr<interface::IContainerProcessor> create(EventCallback &&eventCallback, enums::Adaptor type);
 };
