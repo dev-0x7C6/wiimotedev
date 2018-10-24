@@ -63,9 +63,9 @@ private:
 	io::emulation::EventDevice &m_device;
 	container::InfraredCursor m_cursor;
 
-	std::atomic<uint32_t> m_id;
-	std::atomic<uint32_t> m_mode;
-	std::atomic<bool> m_interrupted;
+	std::atomic<uint32_t> m_id{1};
+	std::atomic<uint32_t> m_mode{Relative};
+	std::atomic<bool> m_interrupted{false};
 	QMutex m_mutex;
 	TickAlignedLoop m_tick;
 };

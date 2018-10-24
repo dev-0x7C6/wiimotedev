@@ -1,6 +1,4 @@
 #pragma once
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-variable"
 
 #include <cstdint>
 #include <limits>
@@ -56,5 +54,3 @@ constexpr auto WIIMOTEDEV_BTN_SHAKE = 1ull << 35;
 constexpr auto WIIMOTEDEV_STICK_MIN = std::numeric_limits<int16_t>::min();
 constexpr auto WIIMOTEDEV_STICK_MAX = std::numeric_limits<int16_t>::max();
 }
-
-#pragma clang diagnostic pop

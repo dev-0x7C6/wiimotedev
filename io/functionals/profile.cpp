@@ -83,8 +83,6 @@ void Profile::gyroscopeDataChanged(uint id, int x, int y, int z) {
 	gamepad_iterator(Device::Wiimote, id, [x, y, z](const auto &gamepad) {
 		static int sx = 0;
 		static int sz = 0;
-		static int lx = 0;
-		static int lz = 0;
 
 		if (x > 4000 || x < -4000) {
 			sx += x / 8;
@@ -96,8 +94,6 @@ void Profile::gyroscopeDataChanged(uint id, int x, int y, int z) {
 
 		sx = std::min(int(std::numeric_limits<int16_t>::max()), std::max(int(std::numeric_limits<int16_t>::min()), sx));
 		sz = std::min(int(std::numeric_limits<int16_t>::max()), std::max(int(std::numeric_limits<int16_t>::min()), sz));
-		lx = x;
-		lz = z;
 
 		gamepad->input(Stick::Stick, sx * -1, sz * -1);
 	});

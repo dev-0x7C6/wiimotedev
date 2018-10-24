@@ -13,7 +13,7 @@ struct accdata {
 	double pitch;
 	double roll;
 };
-};
+}
 
 class AccelerometerContainer final : public interface::IContainer {
 public:

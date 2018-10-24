@@ -15,10 +15,7 @@ using namespace io::emulation;
 
 EIOInfraredMouse::EIOInfraredMouse(EventDevice &device, QObject *parent)
 		: QThread(parent)
-		, m_device(device)
-		, m_id(1)
-		, m_interrupted(false)
-		, m_mode(Relative) {
+		, m_device(device) {
 }
 
 EIOInfraredMouse::~EIOInfraredMouse() {

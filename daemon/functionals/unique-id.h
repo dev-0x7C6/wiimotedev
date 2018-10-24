@@ -5,7 +5,7 @@
 namespace dae {
 namespace functional {
 
-template <typename type, std::size_t size>
+template <typename type, int size>
 class UniqueId final {
 public:
 	explicit UniqueId() {

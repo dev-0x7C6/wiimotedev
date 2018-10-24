@@ -43,4 +43,4 @@ bool EventDevice::configure() {
 	isValid &= set_rel_bit(REL_HWHEEL) == 0;
 	isValid &= set_rel_bit(REL_WHEEL) == 0;
 	return isValid;
-};
+}

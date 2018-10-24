@@ -20,4 +20,4 @@ ButtonContainer::ButtonContainer(const Device source, const uint64_t state)
 		, m_source(source) {
 }
 
-Device ButtonContainer::device() const { return m_source; };
+Device ButtonContainer::device() const { return m_source; }
