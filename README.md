@@ -1,17 +1,11 @@
-Wiimotedev-project is a collection of wiimotedev sub-projects, for more information go
-to wiimotedev-project website (https://github.com/dev-0x7C6)
+![wiimotedev_logo](https://devwork.space/wp-content/uploads/2018/10/g3460.png)
 
-Requirement:
-	Linux
-	Qt5
-	Bluez
+A userspace service that distrbute connected wiiremotes events using dbus and emulates keyboard, mouse or joysticks.
 
-Optional:
-	Uinput (kernel with uinput support, this allow to emulate mouse, keyboard and gamepads)
-
-In order to compile and install, run:
-
-	$ cd source_directory
-	$ cmake .
-	$ make all
-	$ make install
+Compilation:
+```sh
+cd source_directory
+*cmake .
+make all
+make install
+```
