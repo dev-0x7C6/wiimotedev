@@ -5,7 +5,7 @@ set(system-headers
 install(FILES ${system-headers} 
 	DESTINATION "${CMAKE_INSTALL_PREFIX}/include/wiimotedev/"
 	PERMISSIONS
-		OWNER_READ  OWNER_WRITE
+		OWNER_READ OWNER_WRITE
 		GROUP_READ
 		WORLD_READ
 )

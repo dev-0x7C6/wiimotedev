@@ -8,9 +8,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wpedantic")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wall -Wpedantic")
 
-find_package(Qt5Core)
-find_package(Qt5DBus)
-find_package(Qt5Widgets)
+find_package(Qt5 COMPONENTS Core DBus Widgets REQUIRED)
 
 set(WIIMOTEDEV_VERSION_MAJOR 2)
 set(WIIMOTEDEV_VERSION_MINOR 9)
