@@ -78,6 +78,7 @@ target_link_libraries(
 	Qt5::Core
 	Qt5::DBus
 	Qt5::Widgets
+	stdc++fs
 )
 
 install(TARGETS wiimotedev-io

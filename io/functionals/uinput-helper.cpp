@@ -1,17 +1,20 @@
 #include "uinput-helper.h"
 
-#include <sys/stat.h>
+#include <experimental/filesystem>
+
+namespace fs = std::experimental::filesystem;
+
+namespace {
+constexpr auto uinput_interface_paths = {
+	"/dev/uinput",
+	"/dev/input/uinput",
+	"/dev/misc/uinput",
+};
+}
 
 std::string UInputHelper::findUinputInterface() {
-	static auto paths = {
-		"/dev/uinput",
-		"/dev/input/uinput",
-		"/dev/misc/uinput",
-	};
-
-	for (const auto &path : paths) {
-		struct stat buffer;
-		if (stat(path, &buffer) == 0)
+	for (auto path : uinput_interface_paths) {
+		if (fs::is_character_file(path))
 			return path;
 	}
 
