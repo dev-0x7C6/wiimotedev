@@ -33,7 +33,7 @@ constexpr std::array<AxisPair, 3> AXISES{{
 	AxisPair(Stick::RStick, {{{ABS_RX, MAX, MIN}, {ABS_RY, MAX, MIN}}}),
 }};
 
-ClassicGamepad::ClassicGamepad(const std::string &name, const uint32_t id)
-		: IGamepad(name, id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
+ClassicGamepad::ClassicGamepad(std::string &&name, const u32 id)
+		: IGamepad(std::move(name), id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
 
 Device ClassicGamepad::type() const { return Device::Classic; }

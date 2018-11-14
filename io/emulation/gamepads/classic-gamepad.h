@@ -8,10 +8,9 @@ namespace gamepad {
 
 class ClassicGamepad final : public interface::IGamepad {
 public:
-	explicit ClassicGamepad(const std::string &name, const uint32_t id);
-	virtual ~ClassicGamepad() = default;
+	explicit ClassicGamepad(std::string &&name, u32 id);
 
-	virtual common::enums::Device type() const override;
+	common::enums::Device type() const final;
 };
 }
 }

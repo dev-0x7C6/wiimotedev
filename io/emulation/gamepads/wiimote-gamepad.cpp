@@ -26,7 +26,7 @@ constexpr auto MIN = WIIMOTEDEV_STICK_MIN;
 constexpr std::array<AxisPair, 2> AXISES{{AxisPair(Stick::Dpad, {{{ABS_HAT0X, 1, -1}, {ABS_HAT0Y, 1, -1}}}),
 	AxisPair(Stick::Stick, {{{ABS_X, MAX, MIN}, {ABS_Y, MAX, MIN}}})}};
 
-WiimoteGamepad::WiimoteGamepad(const std::string &name, const uint32_t id)
-		: IGamepad(name, id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
+WiimoteGamepad::WiimoteGamepad(std::string &&name, const u32 id)
+		: IGamepad(std::move(name), id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
 
 Device WiimoteGamepad::type() const { return Device::Wiimote; }

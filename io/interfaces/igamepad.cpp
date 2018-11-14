@@ -5,8 +5,8 @@ using namespace common::enums;
 using namespace io::container;
 using namespace io::interface;
 
-IGamepad::IGamepad(const std::string &name, const uint32_t id, ButtonMap &&buttons, AxisMap &&axises)
-		: InputDevice(name, id)
+IGamepad::IGamepad(std::string &&name, const u32 id, ButtonMap &&buttons, AxisMap &&axises)
+		: InputDevice(std::move(name), id)
 		, m_buttons(buttons)
 		, m_axises(axises)
 

@@ -2,8 +2,8 @@
 
 using namespace io::emulation;
 
-EventDevice::EventDevice(const std::string &name, const uint32_t id)
-		: InputDevice(name, id) {
+EventDevice::EventDevice(std::string &&name, const u32 id)
+		: InputDevice(std::move(name), id) {
 }
 
 bool EventDevice::pressKey(const uint16_t key) { return report(EV_KEY, key, 1, true); }

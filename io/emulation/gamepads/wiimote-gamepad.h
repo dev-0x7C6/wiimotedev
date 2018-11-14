@@ -8,10 +8,9 @@ namespace gamepad {
 
 class WiimoteGamepad final : public io::interface::IGamepad {
 public:
-	explicit WiimoteGamepad(const std::string &name, const uint32_t id);
-	virtual ~WiimoteGamepad() = default;
+	explicit WiimoteGamepad(std::string &&name, u32 id);
 
-	virtual common::enums::Device type() const override;
+	common::enums::Device type() const final;
 };
 }
 }

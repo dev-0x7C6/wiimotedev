@@ -14,8 +14,8 @@ constexpr std::array<AxisPair, 1> AXISES{{
 	AxisPair(Stick::Stick, {{{ABS_X, MAX, MIN}, {ABS_Y, MAX, MIN}}}),
 }};
 
-BalanceBoardGamepad::BalanceBoardGamepad(const std::string &name, const uint32_t id)
-		: IGamepad(name, id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
+BalanceBoardGamepad::BalanceBoardGamepad(std::string &&name, const u32 id)
+		: IGamepad(std::move(name), id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
 
 Device BalanceBoardGamepad::type() const {
 	return Device::BalanceBoard;

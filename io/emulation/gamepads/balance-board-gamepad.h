@@ -8,10 +8,9 @@ namespace gamepad {
 
 class BalanceBoardGamepad final : public interface::IGamepad {
 public:
-	explicit BalanceBoardGamepad(const std::string &name, const uint32_t id);
-	virtual ~BalanceBoardGamepad() = default;
+	explicit BalanceBoardGamepad(std::string &&name, u32 id);
 
-	virtual common::enums::Device type() const override;
+	common::enums::Device type() const final;
 };
 }
 }

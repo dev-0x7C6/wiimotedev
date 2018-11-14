@@ -8,10 +8,9 @@ namespace gamepad {
 
 class NunchukGamepad final : public interface::IGamepad {
 public:
-	explicit NunchukGamepad(const std::string &name, const uint32_t id);
-	virtual ~NunchukGamepad() = default;
+	explicit NunchukGamepad(std::string &&name, u32 id);
 
-	virtual common::enums::Device type() const override;
+	common::enums::Device type() const final;
 };
 }
 }

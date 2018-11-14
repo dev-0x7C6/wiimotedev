@@ -16,7 +16,7 @@ constexpr auto MIN = WIIMOTEDEV_STICK_MIN;
 
 constexpr std::array<AxisPair, 1> AXISES{{AxisPair(Stick::Stick, {{{ABS_X, MAX, MIN}, {ABS_Y, MAX, MIN}}})}};
 
-NunchukGamepad::NunchukGamepad(const std::string &name, const uint32_t id)
-		: IGamepad(name, id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
+NunchukGamepad::NunchukGamepad(std::string &&name, const u32 id)
+		: IGamepad(std::move(name), id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
 
 Device NunchukGamepad::type() const { return Device::Nunchuk; }

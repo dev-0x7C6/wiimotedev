@@ -33,7 +33,7 @@ Profile::Profile(const std::string &configurationFilePath)
 		configuration["balanceboard.layout"] = settings.value("balanceboard.layout", "snowboard").toString();
 
 		try {
-			setup(IGamepad::fromString(device), name, assign, configuration);
+			setup(IGamepad::fromString(device), std::move(name), assign, configuration);
 		} catch (std::out_of_range &) {
 			std::cout << "unknown gamepad module \"" << device << "\"" << std::endl;
 		}
@@ -128,8 +128,8 @@ void Profile::gamepad_iterator(const Device type, const quint32 id, std::functio
 	}
 }
 
-bool Profile::setup(const Device type, const std::string &name, quint32 id, const QJsonObject &json) {
-	auto device = GamepadFactory::create(type, name, id);
+bool Profile::setup(const Device type, std::string &&name, quint32 id, const QJsonObject &json) {
+	auto device = GamepadFactory::create(type, std::move(name), id);
 	auto isValid = GamepadFactory::configure(device);
 
 	if (isValid) {

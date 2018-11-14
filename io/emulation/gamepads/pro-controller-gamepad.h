@@ -8,10 +8,9 @@ namespace gamepad {
 
 class ProControllerGamepad final : public interface::IGamepad {
 public:
-	explicit ProControllerGamepad(const std::string &name, const uint32_t id);
-	virtual ~ProControllerGamepad() = default;
+	explicit ProControllerGamepad(std::string &&name, u32 id);
 
-	virtual common::enums::Device type() const override;
+	common::enums::Device type() const final;
 };
 }
 }

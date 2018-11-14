@@ -17,17 +17,17 @@ namespace emulation {
 
 class InputDevice : public interface::IInputDevice {
 public:
-	explicit InputDevice(const std::string &name, const uint32_t id);
-	virtual ~InputDevice();
+	explicit InputDevice(std::string &&name, u32 id);
+	~InputDevice() override;
 
-	virtual bool open() override;
-	virtual bool configure() override = 0;
-	virtual bool create() override;
-	virtual bool destroy() override;
-	virtual bool close() override;
+	bool open() override;
+	bool configure() override = 0;
+	bool create() override;
+	bool destroy() override;
+	bool close() override;
 
-	virtual bool isOpen() const override;
-	virtual bool isCreated() const override;
+	bool isOpen() const override;
+	bool isCreated() const override;
 
 protected:
 	int set_ev_bit(int bit);

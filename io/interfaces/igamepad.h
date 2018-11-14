@@ -11,20 +11,19 @@ namespace interface {
 
 class IGamepad : public emulation::InputDevice {
 public:
-	explicit IGamepad(const std::string &name, const uint32_t id, container::ButtonMap &&buttons, container::AxisMap &&axises);
-	virtual ~IGamepad() = default;
+	explicit IGamepad(std::string &&name, u32 id, container::ButtonMap &&buttons, container::AxisMap &&axises);
 
 	static common::enums::Device fromString(const std::string &type);
 
 	virtual common::enums::Device type() const = 0;
-	virtual bool configure() override;
+	bool configure() override;
 
-	virtual bool input(const int tl, const int tr, const int bl, const int br);
-	virtual bool input(const uint64_t buttons);
-	virtual bool input(const container::Stick stick, const int32_t x, const int32_t y);
+	bool input(int tl, int tr, int bl, int br);
+	bool input(u64 buttons);
+	bool input(container::Stick stick, i32 x, i32 y);
 
-	virtual int32_t axisMax(const int32_t axis);
-	virtual int32_t axisMin(const int32_t axis);
+	i32 axisMax(i32 axis);
+	i32 axisMin(i32 axis);
 
 	void setConfiguration(const QJsonObject &json);
 	const QJsonObject &configuration();

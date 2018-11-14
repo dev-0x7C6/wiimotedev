@@ -7,16 +7,16 @@ namespace emulation {
 
 class EventDevice final : public InputDevice {
 public:
-	explicit EventDevice(const std::string &name, const uint32_t id);
+	explicit EventDevice(std::string &&name, u32 id);
 
-	bool pressKey(const uint16_t key);
-	bool releaseKey(const uint16_t key);
-	bool tapKey(const uint16_t key);
-	bool moveMousePointer(const int32_t x, const int32_t y);
-	bool moveMouseVWheel(const int32_t delta);
-	bool moveMouseHWheel(const int32_t delta);
+	bool pressKey(u16 key);
+	bool releaseKey(u16 key);
+	bool tapKey(u16 key);
+	bool moveMousePointer(i32 x, i32 y);
+	bool moveMouseVWheel(i32 delta);
+	bool moveMouseHWheel(i32 delta);
 
-	virtual bool configure() override;
+	bool configure() override;
 };
 }
 }

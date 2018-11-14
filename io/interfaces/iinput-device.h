@@ -3,12 +3,20 @@
 #include <cstdint>
 #include <string>
 
+#include <externals/common/types.hpp>
+
 namespace io {
 namespace interface {
 
 class IInputDevice {
 public:
-	explicit IInputDevice(const std::string &name, const uint32_t id);
+	explicit IInputDevice(std::string &&name, u32 id);
+
+	IInputDevice(const IInputDevice &) = delete;
+	IInputDevice &operator=(const IInputDevice &) = delete;
+	IInputDevice(IInputDevice &&) noexcept = delete;
+	IInputDevice &operator=(IInputDevice &&) noexcept = delete;
+
 	virtual ~IInputDevice() = default;
 
 	virtual bool open() = 0;
@@ -17,8 +25,8 @@ public:
 	virtual bool destroy() = 0;
 	virtual bool close() = 0;
 
-	virtual uint32_t id() const;
-	virtual std::string name() const;
+	auto id() const noexcept { return m_id; };
+	auto name() const noexcept { return m_name; };
 
 	virtual bool isOpen() const = 0;
 	virtual bool isCreated() const = 0;
