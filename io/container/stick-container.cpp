@@ -7,7 +7,7 @@ void AxisPair::center() {
 		pair[axis].value = (pair[axis].raw_min + pair[axis].raw_max) / 2;
 }
 
-void AxisPair::setValue(int32_t x, int32_t y) {
+void AxisPair::setValue(i32 x, i32 y) {
 	if (pair[X].min >= 0 || pair[Y].min >= 0) {
 		x = (m_invertXAxis) ? x ^ pair[X].raw_max : x;
 		y = (m_invertYAxis) ? y ^ pair[Y].raw_max : y;

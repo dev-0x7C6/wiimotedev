@@ -7,10 +7,10 @@ namespace dae {
 namespace container {
 namespace structs {
 struct pressdata {
-	int32_t tl;
-	int32_t tr;
-	int32_t bl;
-	int32_t br;
+	i32 tl;
+	i32 tr;
+	i32 bl;
+	i32 br;
 };
 }
 

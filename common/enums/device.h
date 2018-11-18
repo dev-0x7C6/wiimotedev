@@ -5,7 +5,7 @@
 #include <optional>
 #include <variant>
 
-using u32 = uint32_t;
+#include <externals/common/types.hpp>
 
 enum class CommandType {
 	GetLedState,
@@ -28,11 +28,11 @@ struct SetLedStateEvent {
 };
 
 using CommandParameter = std::variant<std::monostate, GetLedStateEvent, SetRumbleStateEvent, SetLedStateEvent>;
-using CommandResult = std::optional<std::variant<bool, uint32_t>>;
+using CommandResult = std::optional<std::variant<bool, u32>>;
 
 class CommandEvent {
 public:
-	constexpr CommandEvent(CommandType command, uint32_t id, CommandParameter parameter)
+	constexpr CommandEvent(CommandType command, u32 id, CommandParameter parameter)
 			: m_command(command)
 			, m_id(id)
 			, m_parameter(parameter) {}
@@ -43,7 +43,7 @@ public:
 
 private:
 	CommandType m_command;
-	uint32_t m_id{0};
+	u32 m_id{0};
 	CommandParameter m_parameter;
 };
 

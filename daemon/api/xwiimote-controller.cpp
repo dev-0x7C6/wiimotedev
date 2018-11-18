@@ -159,19 +159,19 @@ std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 	};
 
 	auto process_stick = [](Device device, const xwii_event &event) {
-		auto calculate = [](int32_t &x, int32_t &y, int32_t step) {
-			constexpr int32_t min = WIIMOTEDEV_STICK_MIN;
-			constexpr int32_t max = WIIMOTEDEV_STICK_MAX;
+		auto calculate = [](i32 &x, i32 &y, i32 step) {
+			constexpr i32 min = WIIMOTEDEV_STICK_MIN;
+			constexpr i32 max = WIIMOTEDEV_STICK_MAX;
 			x = std::max(-step, std::min(step, x)) * (max / step);
 			y = std::max(-step, std::min(step, y)) * (max / step);
 			x = std::max(min, std::min(max, x));
 			y = std::max(min, std::min(max, y));
 		};
 
-		int32_t lx = event.v.abs[0].x;
-		int32_t ly = event.v.abs[0].y;
-		int32_t rx = event.v.abs[1].x;
-		int32_t ry = event.v.abs[1].y;
+		i32 lx = event.v.abs[0].x;
+		i32 ly = event.v.abs[0].y;
+		i32 rx = event.v.abs[1].x;
+		i32 ry = event.v.abs[1].y;
 
 		if (device == Device::Nunchuk) {
 			calculate(lx, ly, 100);
@@ -253,13 +253,13 @@ bool XWiimoteController::isInfraredSupported() {
 	return is_available(xwii_iface_available(m_interface), XWII_IFACE_IR);
 }
 
-uint8_t XWiimoteController::batteryStatus() {
-	uint8_t capacity = 0;
+u8 XWiimoteController::batteryStatus() {
+	u8 capacity = 0;
 	xwii_iface_get_battery(m_interface, &capacity);
 	return capacity;
 }
 
-bool XWiimoteController::ledStatus(const uint32_t id) {
+bool XWiimoteController::ledStatus(const u32 id) {
 	bool state = false;
 	xwii_iface_get_led(m_interface, id, &state);
 	return state;
@@ -269,7 +269,7 @@ bool XWiimoteController::rumbleStatus() {
 	return m_rumbleStatus;
 }
 
-bool XWiimoteController::setLedStatus(const uint32_t id, const bool status) {
+bool XWiimoteController::setLedStatus(const u32 id, const bool status) {
 	return xwii_iface_set_led(m_interface, id, status) == 0;
 }
 

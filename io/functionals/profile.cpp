@@ -92,8 +92,8 @@ void Profile::gyroscopeDataChanged(uint id, int x, int y, int z) {
 			sz += z / 8;
 		}
 
-		sx = std::min(int(std::numeric_limits<int16_t>::max()), std::max(int(std::numeric_limits<int16_t>::min()), sx));
-		sz = std::min(int(std::numeric_limits<int16_t>::max()), std::max(int(std::numeric_limits<int16_t>::min()), sz));
+		sx = std::min(int(std::numeric_limits<i16>::max()), std::max(int(std::numeric_limits<i16>::min()), sx));
+		sz = std::min(int(std::numeric_limits<i16>::max()), std::max(int(std::numeric_limits<i16>::min()), sz));
 
 		gamepad->input(Stick::Stick, sx * -1, sz * -1);
 	});

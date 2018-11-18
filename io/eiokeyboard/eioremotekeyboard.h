@@ -11,7 +11,7 @@
 #include "include/wiimotedev/wiimotedev"
 
 struct KeyboardAction {
-	QHash<uint32_t, uint64_t> event;
+	QHash<u32, u64> event;
 	QList<uint> keys;
 	bool pushed;
 };
@@ -27,20 +27,20 @@ public:
 	void setCompareType(QString);
 
 public slots:
-	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
+	void dbusWiimoteGeneralButtons(u32, u64);
 
 private:
 	void pressKeyboardButtons(QList<uint> &);
 	void releaseKeyboardButtons(QList<uint> &);
-	void pressKeyboardExtendedButton(uint32_t);
-	void releaseKeyboardExtendedButton(uint32_t);
+	void pressKeyboardExtendedButton(u32);
+	void releaseKeyboardExtendedButton(u32);
 
 private:
 	io::emulation::EventDevice &m_device;
-	uint32_t id;
-	uint32_t compareType;
+	u32 id;
+	u32 compareType;
 
-	QHash<uint32_t, uint64_t> buttons;
+	QHash<u32, u64> buttons;
 
 	std::list<std::unique_ptr<KeyboardAction>> keyboardActions;
 };

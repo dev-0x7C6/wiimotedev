@@ -1,7 +1,8 @@
 #pragma once
 
-#include <cmath>
 #include <QList>
+#include <cmath>
+#include <externals/common/types.hpp>
 
 namespace dae {
 namespace functional {
@@ -19,7 +20,7 @@ public:
 
 private:
 	double angleDiff(double a, double b);
-	double _distance(int16_t p[2], int16_t q[2]);
+	double _distance(i16 p[2], i16 q[2]);
 
 private:
 	double m_x = 0;
@@ -30,8 +31,8 @@ private:
 private:
 	bool m_visible = false;
 	int m_index = 0;
-	int16_t m_ctable[2][2];
-	int16_t m_ltable[2][2];
+	i16 m_ctable[2][2];
+	i16 m_ltable[2][2];
 	int m_calibrationPoint[2];
 };
 }

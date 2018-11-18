@@ -19,7 +19,7 @@ ClassicDispatcher::ClassicDispatcher(EventCallback &&eventCallback)
 Adaptor ClassicDispatcher::type() const { return Adaptor::Classic; }
 QList<uint> ClassicDispatcher::list() const { return m_ids.toList(); }
 
-void ClassicDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) {
+void ClassicDispatcher::process(const Device device, const u32 id, const std::unique_ptr<IContainer> &container) {
 	if (Device::Classic != device)
 		return;
 

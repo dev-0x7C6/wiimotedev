@@ -28,11 +28,11 @@ public:
 	virtual bool isLedSupported() override;
 	virtual bool isInfraredSupported() override;
 
-	virtual uint8_t batteryStatus() override;
-	virtual bool ledStatus(const uint32_t id) override;
+	virtual u8 batteryStatus() override;
+	virtual bool ledStatus(const u32 id) override;
 	virtual bool rumbleStatus() override;
 
-	virtual bool setLedStatus(const uint32_t id, const bool status) override;
+	virtual bool setLedStatus(const u32 id, const bool status) override;
 	virtual bool setRumbleStatus(const bool rumble) override;
 
 	virtual bool hasClassicExtension() override;
@@ -49,7 +49,7 @@ private:
 	xwii_iface *m_interface;
 	bool m_connected;
 	int m_fd;
-	std::array<uint64_t, 5> m_buttons;
+	std::array<u64, 5> m_buttons;
 
 	std::queue<std::unique_ptr<interface::IContainer>> m_messages;
 

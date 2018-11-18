@@ -12,9 +12,9 @@ namespace dae {
 namespace container {
 namespace structs {
 struct irpoint {
-	int16_t size;
-	uint16_t x;
-	uint16_t y;
+	i16 size;
+	u16 x;
+	u16 y;
 };
 }
 

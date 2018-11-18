@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <vector>
 
+#include <externals/common/types.hpp>
+
 namespace io {
 namespace container {
 
@@ -12,7 +14,7 @@ enum AxisType {
 	Y,
 };
 
-enum class Stick : int32_t {
+enum class Stick : i32 {
 	Dpad,
 	Stick,
 	LStick,
@@ -20,26 +22,26 @@ enum class Stick : int32_t {
 };
 
 struct Axis {
-	constexpr Axis(int32_t axis, int32_t max, int32_t min, int32_t raw_max, int32_t raw_min)
+	constexpr Axis(i32 axis, i32 max, i32 min, i32 raw_max, i32 raw_min)
 			: axis(axis)
 			, max(max)
 			, min(min)
 			, raw_max(raw_max)
 			, raw_min(raw_min) {}
 
-	constexpr Axis(int32_t axis, int32_t max, int32_t min)
+	constexpr Axis(i32 axis, i32 max, i32 min)
 			: axis(axis)
 			, max(max)
 			, min(min)
 			, raw_max(max)
 			, raw_min(min) {}
 
-	int32_t axis;
-	int32_t max;
-	int32_t min;
-	int32_t raw_max;
-	int32_t raw_min;
-	int32_t value = 0;
+	i32 axis;
+	i32 max;
+	i32 min;
+	i32 raw_max;
+	i32 raw_min;
+	i32 value = 0;
 };
 
 struct AxisPair {
@@ -49,21 +51,21 @@ public:
 			, pair(mapping) {}
 
 	void center();
-	void setValue(int32_t x, int32_t y);
+	void setValue(i32 x, i32 y);
 
 public:
 	Stick type;
 	std::array<Axis, 2> pair;
-	int32_t m_invertXAxis = false;
-	int32_t m_invertYAxis = true;
+	i32 m_invertXAxis = false;
+	i32 m_invertYAxis = true;
 };
 
 struct ButtonMapping {
-	constexpr ButtonMapping(uint64_t input, uint64_t output)
+	constexpr ButtonMapping(u64 input, u64 output)
 			: input(input)
 			, output(output) {}
-	uint64_t input;
-	uint64_t output;
+	u64 input;
+	u64 output;
 };
 
 using ButtonMap = std::vector<ButtonMapping>;

@@ -43,8 +43,8 @@ public:
 	explicit WiimoteIdManager() = default;
 	~WiimoteIdManager() override = default;
 
-	virtual uint32_t take(const common::enums::Device device) override;
-	virtual uint32_t debt(const common::enums::Device device, const uint32_t index) override;
+	virtual u32 take(const common::enums::Device device) override;
+	virtual u32 debt(const common::enums::Device device, const u32 index) override;
 
 private:
 	std::array<functional::UniqueId<std::atomic<bool>, 128>, static_cast<std::size_t>(common::enums::Device::Last)> m_uniqueId;

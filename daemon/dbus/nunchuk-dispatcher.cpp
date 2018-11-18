@@ -20,7 +20,7 @@ NunchukDispatcher::NunchukDispatcher(EventCallback &&eventCallback)
 Adaptor NunchukDispatcher::type() const { return Adaptor::Nunchuk; }
 QList<uint> NunchukDispatcher::list() const { return m_ids.toList(); }
 
-void NunchukDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) {
+void NunchukDispatcher::process(const Device device, const u32 id, const std::unique_ptr<IContainer> &container) {
 	if (Device::Nunchuk != device)
 		return;
 

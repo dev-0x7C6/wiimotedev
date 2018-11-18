@@ -4,6 +4,8 @@
 #include <QHash>
 #include <QHashIterator>
 
+#include <externals/common/types.hpp>
+
 template <class typeKey, class typeValue>
 class HashCompare {
 public:
@@ -16,11 +18,11 @@ public:
 		NotEqualCompare
 	};
 
-	bool compare(QHash<typeKey, typeValue> *, QHash<typeKey, typeValue> *, uint8_t);
+	bool compare(QHash<typeKey, typeValue> *, QHash<typeKey, typeValue> *, u8);
 };
 
 template <class typeKey, class typeValue>
-bool HashCompare<typeKey, typeValue>::compare(QHash<typeKey, typeValue> *first, QHash<typeKey, typeValue> *second, uint8_t style) {
+bool HashCompare<typeKey, typeValue>::compare(QHash<typeKey, typeValue> *first, QHash<typeKey, typeValue> *second, u8 style) {
 	if (first->isEmpty() || second->isEmpty())
 		return false;
 

@@ -17,7 +17,7 @@ public:
 	virtual ~IContainerProcessor() = default;
 
 	virtual enums::Adaptor type() const = 0;
-	virtual void process(const common::enums::Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) = 0;
+	virtual void process(const common::enums::Device device, const u32 id, const std::unique_ptr<IContainer> &container) = 0;
 
 protected:
 	CommandResult generateEvent(CommandEvent &&event) const noexcept;

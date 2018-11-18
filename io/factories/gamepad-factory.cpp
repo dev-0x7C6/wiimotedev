@@ -10,7 +10,7 @@ using namespace io::emulation::gamepad;
 using namespace io::factory;
 using namespace io::interface;
 
-std::unique_ptr<IGamepad> GamepadFactory::create(const Device type, std::string &&name, const uint32_t id) {
+std::unique_ptr<IGamepad> GamepadFactory::create(const Device type, std::string &&name, const u32 id) {
 	switch (type) {
 		case Device::Classic: return std::make_unique<ClassicGamepad>(std::move(name), id);
 		case Device::Nunchuk: return std::make_unique<NunchukGamepad>(std::move(name), id);

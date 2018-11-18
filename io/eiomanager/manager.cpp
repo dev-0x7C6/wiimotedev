@@ -8,7 +8,7 @@
 using namespace io::interface;
 using namespace io::functional;
 
-extern QMap<QString, uint64_t> devicebuttons;
+extern QMap<QString, u64> devicebuttons;
 extern QMap<QString, uint> scancodes;
 
 const QRegExp deviceEventRegExp(".*(\\[.*(\\d+)\\])");
@@ -28,12 +28,12 @@ UInputProfileManager::UInputProfileManager(QObject *parent)
 	m_eventDevice.create();
 }
 
-QHash<uint32_t, uint64_t> UInputProfileManager::extractDeviceEvent(QString input) {
+QHash<u32, u64> UInputProfileManager::extractDeviceEvent(QString input) {
 	QStringList list = input.remove(QRegExp("[ ]")).toLower().split('+');
-	QHash<uint32_t, uint64_t> values;
+	QHash<u32, u64> values;
 	bool result = false;
-	uint32_t index;
-	uint64_t value;
+	u32 index;
+	u64 value;
 	foreach (const QString &item, list) {
 		deviceEventRegExp.exactMatch(item);
 		index = deviceEventRegExp.cap(2).toUInt();
@@ -43,7 +43,7 @@ QHash<uint32_t, uint64_t> UInputProfileManager::extractDeviceEvent(QString input
 	}
 
 	if (!result)
-		return (QHash<uint32_t, uint64_t>());
+		return (QHash<u32, u64>());
 	else
 		return values;
 }
@@ -58,7 +58,7 @@ QList<uint> UInputProfileManager::extractScancodes(QStringList list) {
 	return values;
 }
 
-void UInputProfileManager::dbusWiimoteGeneralButtons(uint32_t id, uint64_t buttons) {
+void UInputProfileManager::dbusWiimoteGeneralButtons(u32 id, u64 buttons) {
 	if (lastWiiremoteButtons.value(id, -1) == buttons)
 		return;
 

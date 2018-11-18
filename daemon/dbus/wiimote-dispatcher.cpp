@@ -29,7 +29,7 @@ bool WiimoteDispatcher::rumbleStatus(uint id) { return std::get<bool>(generateEv
 bool WiimoteDispatcher::setLedStatus(uint id, uint led_id, bool status) { return std::get<bool>(generateEvent({CommandType::SetLedState, id, SetLedStateEvent{led_id, status}}).value_or(false)); }
 bool WiimoteDispatcher::setRumbleStatus(uint id, bool status) { return std::get<bool>(generateEvent({CommandType::SetRumbleState, id, SetRumbleStateEvent{status}}).value_or(false)); }
 
-void WiimoteDispatcher::process(const Device device, const uint32_t id, const std::unique_ptr<IContainer> &container) {
+void WiimoteDispatcher::process(const Device device, const u32 id, const std::unique_ptr<IContainer> &container) {
 	if (Device::Wiimote != device)
 		return;
 

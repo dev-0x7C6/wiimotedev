@@ -9,7 +9,7 @@ TickAlignedLoop::TickAlignedLoop()
 	m_elapsed.start();
 }
 
-uint64_t TickAlignedLoop::wait(uint64_t hz) {
+u64 TickAlignedLoop::wait(u64 hz) {
 	m_runtime = m_elapsed.elapsed();
 	m_alltime += m_runtime;
 	m_elapsed.restart();
@@ -30,6 +30,6 @@ uint64_t TickAlignedLoop::wait(uint64_t hz) {
 	return m_loop;
 }
 
-uint64_t TickAlignedLoop::loopCount() const {
+u64 TickAlignedLoop::loopCount() const {
 	return m_loop;
 }

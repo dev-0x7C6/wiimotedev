@@ -7,9 +7,9 @@ namespace dae {
 namespace container {
 namespace structs {
 struct accdata {
-	uint8_t x;
-	uint8_t y;
-	uint8_t z;
+	u8 x;
+	u8 y;
+	u8 z;
 	double pitch;
 	double roll;
 };

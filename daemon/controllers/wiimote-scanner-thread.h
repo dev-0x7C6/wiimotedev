@@ -21,7 +21,7 @@ private:
 
 private:
 	const interface::IWiimote::Api m_api;
-	std::atomic<int32_t> m_count{0};
+	std::atomic<i32> m_count{0};
 	raii_thread m_thread;
 	std::mutex m_mutex;
 	std::list<std::unique_ptr<interface::IWiimote>> m_devices;

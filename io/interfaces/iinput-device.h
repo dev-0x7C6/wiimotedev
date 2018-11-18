@@ -33,7 +33,7 @@ public:
 
 protected:
 	const std::string m_name;
-	const uint32_t m_id;
+	const u32 m_id;
 };
 }
 }

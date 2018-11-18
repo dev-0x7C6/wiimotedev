@@ -11,8 +11,8 @@ public:
 	explicit IIdManager() = default;
 	virtual ~IIdManager() = default;
 
-	virtual uint32_t take(const common::enums::Device device) = 0;
-	virtual uint32_t debt(const common::enums::Device device, const uint32_t index) = 0;
+	virtual u32 take(const common::enums::Device device) = 0;
+	virtual u32 debt(const common::enums::Device device, const u32 index) = 0;
 };
 }
 }

@@ -21,7 +21,7 @@ public:
 	virtual ~UInputProfileManager();
 
 private:
-	QHash<uint32_t, uint64_t> extractDeviceEvent(QString);
+	QHash<u32, u64> extractDeviceEvent(QString);
 	QList<uint> extractScancodes(QStringList);
 
 	QMap<QString, uint> commandIds;
@@ -44,7 +44,7 @@ private:
 	void deactiveCommandEvent(QStringList &);
 
 private slots:
-	void dbusWiimoteGeneralButtons(uint32_t, uint64_t);
+	void dbusWiimoteGeneralButtons(u32, u64);
 
 public slots:
 	bool loadProfile(QString);
@@ -52,10 +52,10 @@ public slots:
 
 private:
 	struct CommandAction {
-		QHash<uint32_t, uint64_t> event;
+		QHash<u32, u64> event;
 		QStringList params;
 		bool actived;
-		uint8_t alghoritm;
+		u8 alghoritm;
 	};
 
 	enum CommandList {
@@ -70,7 +70,7 @@ private:
 	std::list<std::unique_ptr<EIORemoteKeyboard>> m_keyboards;
 	std::list<std::unique_ptr<io::EIOInfraredMouse>> m_mouses;
 	std::list<std::unique_ptr<CommandAction>> commandActions;
-	QHash<uint32_t, uint64_t> lastWiiremoteButtons;
+	QHash<u32, u64> lastWiiremoteButtons;
 	io::emulation::EventDevice m_eventDevice;
 
 signals:

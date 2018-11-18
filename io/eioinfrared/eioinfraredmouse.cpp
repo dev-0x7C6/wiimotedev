@@ -23,13 +23,13 @@ EIOInfraredMouse::~EIOInfraredMouse() {
 	wait();
 }
 
-void EIOInfraredMouse::dbusVirtualCursorPosition(uint32_t id, double x, double y, double distance, double angle) {
+void EIOInfraredMouse::dbusVirtualCursorPosition(u32 id, double x, double y, double distance, double angle) {
 	if (id != m_id) return;
 
 	setCursor({x, y, distance, angle});
 }
 
-void EIOInfraredMouse::dbusVirtualCursorLost(uint32_t id) {
+void EIOInfraredMouse::dbusVirtualCursorLost(u32 id) {
 	if (id != m_id) return;
 
 	m_mutex.lock();
@@ -106,10 +106,10 @@ void EIOInfraredMouse::processRelativeMouse() {
 	double y = -m_delta[YAxis];
 	m_acc[XAxis] += x;
 	m_acc[YAxis] += y;
-	m_acc[XAxis] -= static_cast<int32_t>(x);
-	m_acc[YAxis] -= static_cast<int32_t>(y);
-	auto calc = [&](const int8_t axis) {
-		const int32_t shift = static_cast<int32_t>(m_acc[axis]);
+	m_acc[XAxis] -= static_cast<i32>(x);
+	m_acc[YAxis] -= static_cast<i32>(y);
+	auto calc = [&](const i8 axis) {
+		const i32 shift = static_cast<i32>(m_acc[axis]);
 		m_acc[axis] -= shift;
 		return (m_position[axis] > 0) ? shift : -shift;
 	};
@@ -134,11 +134,11 @@ void EIOInfraredMouse::setCursor(InfraredCursor &&cursor) {
 	m_cursor = cursor;
 }
 
-uint32_t EIOInfraredMouse::id() const {
+u32 EIOInfraredMouse::id() const {
 	return m_id;
 }
 
-void EIOInfraredMouse::setId(const uint32_t id) {
+void EIOInfraredMouse::setId(const u32 id) {
 	m_id = id;
 }
 

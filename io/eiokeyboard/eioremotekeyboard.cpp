@@ -14,7 +14,7 @@ enum KeyboardExtension {
 
 EIORemoteKeyboard::EIORemoteKeyboard(EventDevice &device)
 		: m_device(device) {
-	compareType = HashCompare<uint32_t, uint64_t>::BitCompare;
+	compareType = HashCompare<u32, u64>::BitCompare;
 }
 
 EIORemoteKeyboard::~EIORemoteKeyboard() {
@@ -26,14 +26,14 @@ EIORemoteKeyboard::~EIORemoteKeyboard() {
 }
 
 void EIORemoteKeyboard::setCompareType(QString type) {
-	compareType = HashCompare<uint32_t, uint64_t>::BitCompare;
+	compareType = HashCompare<u32, u64>::BitCompare;
 
 	if (type.toLower() == QString("bitCompare").toLower())
-		compareType = HashCompare<uint32_t, uint64_t>::BitCompare;
+		compareType = HashCompare<u32, u64>::BitCompare;
 	else if (type.toLower() == QString("equal").toLower())
-		compareType = HashCompare<uint32_t, uint64_t>::EqualCompare;
+		compareType = HashCompare<u32, u64>::EqualCompare;
 	else if (type.toLower() == QString("notEqual").toLower())
-		compareType = HashCompare<uint32_t, uint64_t>::NotEqualCompare;
+		compareType = HashCompare<u32, u64>::NotEqualCompare;
 }
 
 void EIORemoteKeyboard::addKeyboardAction(KeyboardAction &action) {
@@ -48,12 +48,12 @@ void EIORemoteKeyboard::clearKeyboardActions() {
 	keyboardActions.clear();
 }
 
-void EIORemoteKeyboard::dbusWiimoteGeneralButtons(uint32_t id, uint64_t value) {
+void EIORemoteKeyboard::dbusWiimoteGeneralButtons(u32 id, u64 value) {
 	if (value == buttons.value(id, -1))
 		return;
 
 	buttons[id] = value;
-	HashCompare<uint32_t, uint64_t> compare;
+	HashCompare<u32, u64> compare;
 	for (const auto &action : keyboardActions) {
 		if (action->event.isEmpty())
 			continue;
@@ -70,7 +70,7 @@ void EIORemoteKeyboard::dbusWiimoteGeneralButtons(uint32_t id, uint64_t value) {
 	}
 }
 
-void EIORemoteKeyboard::pressKeyboardExtendedButton(uint32_t key) {
+void EIORemoteKeyboard::pressKeyboardExtendedButton(u32 key) {
 	switch (key) {
 		case keyboardExtMouseWheelLeft:
 			m_device.moveMouseHWheel(-1);
@@ -90,7 +90,7 @@ void EIORemoteKeyboard::pressKeyboardExtendedButton(uint32_t key) {
 	}
 }
 
-void EIORemoteKeyboard::releaseKeyboardExtendedButton(uint32_t key) {
+void EIORemoteKeyboard::releaseKeyboardExtendedButton(u32 key) {
 	Q_UNUSED(key);
 }
 
@@ -98,7 +98,7 @@ void EIORemoteKeyboard::pressKeyboardButtons(QList<uint> &list) {
 	if (list.isEmpty())
 		return;
 
-	foreach (const uint32_t key, list) {
+	foreach (const u32 key, list) {
 		if (key <= keyboardExt)
 			m_device.pressKey(key);
 		else
@@ -110,7 +110,7 @@ void EIORemoteKeyboard::releaseKeyboardButtons(QList<uint> &list) {
 	if (list.isEmpty())
 		return;
 
-	foreach (const uint32_t key, list)
+	foreach (const u32 key, list)
 
 		if (key <= keyboardExt)
 			m_device.releaseKey(key);

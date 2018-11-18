@@ -12,7 +12,7 @@ public:
 	explicit WiimoteDispatcher(EventCallback &&eventCallback);
 
 	virtual enums::Adaptor type() const override;
-	virtual void process(const common::enums::Device, const uint32_t id, const std::unique_ptr<interface::IContainer> &container) override;
+	virtual void process(const common::enums::Device, const u32 id, const std::unique_ptr<interface::IContainer> &container) override;
 
 public Q_SLOTS:
 	QList<uint> list();

@@ -5,7 +5,7 @@ using namespace dae::container;
 using namespace dae::interface;
 using namespace dae::enums;
 
-GyroscopeContainer::GyroscopeContainer(const int32_t x, const int32_t y, const int32_t z)
+GyroscopeContainer::GyroscopeContainer(const i32 x, const i32 y, const i32 z)
 		: m_x(x)
 		, m_y(y)
 		, m_z(z) {

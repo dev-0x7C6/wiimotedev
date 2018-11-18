@@ -11,7 +11,7 @@
 
 //const QString scancodeFile("/etc/wiimotedev/scancode.conf");
 
-QMap<QString, uint64_t> devicebuttons;
+QMap<QString, u64> devicebuttons;
 QMap<QString, uint> scancodes;
 
 using namespace io::core;
@@ -33,7 +33,7 @@ int main(int argc, char *argv[]) {
 
 	//	QSettings settings(scancodeFile, QSettings::IniFormat);
 	//	settings.beginGroup("scancode");
-	//	for (int32_t i = 0; i < settings.allKeys().count(); ++i)
+	//	for (i32 i = 0; i < settings.allKeys().count(); ++i)
 	//		scancodes[QString(settings.allKeys().at(i)).toLower().remove(QChar(' '))] = settings.value(settings.allKeys().at(i), 0).toInt();
 	//	settings.endGroup();
 

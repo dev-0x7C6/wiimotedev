@@ -3,28 +3,30 @@
 #include <cstdint>
 #include <array>
 
-using balanceboard_data = std::array<int32_t, 4>;
+#include <externals/common/types.hpp>
+
+using balanceboard_data = std::array<i32, 4>;
 
 namespace io {
 namespace functional {
 
 class BalanceBoardProcessor {
 public:
-	explicit BalanceBoardProcessor(balanceboard_data &&data, int32_t min, int32_t max);
+	explicit BalanceBoardProcessor(balanceboard_data &&data, i32 min, i32 max);
 
 	bool isValid() const;
 
-	int32_t x() const;
-	int32_t y() const;
+	i32 x() const;
+	i32 y() const;
 
 private:
-	int32_t calculate(double x, double y) const;
+	i32 calculate(double x, double y) const;
 
 public:
 private:
 	const balanceboard_data m_data;
-	const int32_t m_min;
-	const int32_t m_max;
+	const i32 m_min;
+	const i32 m_max;
 };
 }
 }

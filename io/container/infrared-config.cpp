@@ -56,10 +56,10 @@ void InfraredConfigContainer::setDeadzoneY(double deadzoneY) {
 	m_deadzoneY = deadzoneY;
 }
 
-int32_t InfraredConfigContainer::accTimeout() const {
+i32 InfraredConfigContainer::accTimeout() const {
 	return m_accTimeout;
 }
 
-void InfraredConfigContainer::setAccTimeout(const int32_t &accTimeout) {
+void InfraredConfigContainer::setAccTimeout(const i32 &accTimeout) {
 	m_accTimeout = accTimeout;
 }

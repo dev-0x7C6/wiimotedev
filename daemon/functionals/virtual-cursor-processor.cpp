@@ -4,7 +4,7 @@ using namespace dae::functional;
 
 VirtualCursorProcessor::VirtualCursorProcessor() {
 
-	for (uint32_t i = 0; i < 2; ++i) {
+	for (std::size_t i = 0; i < 2; ++i) {
 		m_ctable[i][0] = 0x00;
 		m_ctable[i][1] = 0x00;
 		m_ltable[i][0] = 0x00;
@@ -26,7 +26,7 @@ double VirtualCursorProcessor::angleDiff(double a, double b) {
 	return diff;
 }
 
-double VirtualCursorProcessor::_distance(int16_t p[], int16_t q[]) {
+double VirtualCursorProcessor::_distance(i16 p[], i16 q[]) {
 	double dx = p[0] - q[0];
 	double dy = p[1] - q[1];
 	dx = sqrt(dx * dx + dy * dy);

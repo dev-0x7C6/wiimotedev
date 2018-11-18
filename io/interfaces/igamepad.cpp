@@ -47,10 +47,10 @@ bool IGamepad::input(const int tl, const int tr, const int bl, const int br) {
 	return true;
 }
 
-bool IGamepad::input(const uint64_t buttons) {
+bool IGamepad::input(const u64 buttons) {
 	bool isValid = true;
-	int32_t dpad_x = 0;
-	int32_t dpad_y = 0;
+	i32 dpad_x = 0;
+	i32 dpad_y = 0;
 	for (const auto &value : m_buttons) {
 		const bool toggled = (buttons & value.input) ? 1 : 0;
 		isValid &= report(EV_KEY, value.output, toggled);
@@ -63,7 +63,7 @@ bool IGamepad::input(const uint64_t buttons) {
 	return isValid;
 }
 
-bool IGamepad::input(const Stick stick, const int32_t x, const int32_t y) {
+bool IGamepad::input(const Stick stick, const i32 x, const i32 y) {
 	bool isValid = true;
 	for (auto &axises : m_axises) {
 		if (axises.type == stick)
@@ -77,7 +77,7 @@ bool IGamepad::input(const Stick stick, const int32_t x, const int32_t y) {
 	return isValid;
 }
 
-int32_t IGamepad::axisMax(const int32_t axis) {
+i32 IGamepad::axisMax(const i32 axis) {
 	for (const auto &data : m_axises)
 		for (const auto &pair : data.pair)
 			if (pair.axis == axis)
@@ -85,7 +85,7 @@ int32_t IGamepad::axisMax(const int32_t axis) {
 	return 0;
 }
 
-int32_t IGamepad::axisMin(const int32_t axis) {
+i32 IGamepad::axisMin(const i32 axis) {
 	for (const auto &data : m_axises)
 		for (const auto &pair : data.pair)
 			if (pair.axis == axis)

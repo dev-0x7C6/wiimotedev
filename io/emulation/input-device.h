@@ -36,7 +36,7 @@ protected:
 	int set_abs_bit(int bit);
 	void set_range(int abs, int max, int min);
 
-	bool report(uint16_t type, uint16_t code, int32_t value, bool triggerSync = false);
+	bool report(u16 type, u16 code, i32 value, bool triggerSync = false);
 	bool sync();
 
 protected:

@@ -6,6 +6,7 @@
 
 #include "interfaces/icontainer.h"
 #include "interfaces/iid-manager.h"
+#include <externals/common/types.hpp>
 
 namespace dae {
 namespace interface {
@@ -29,25 +30,25 @@ public:
 	virtual bool isLedSupported() = 0;
 	virtual bool isInfraredSupported() = 0;
 
-	virtual uint8_t batteryStatus() = 0;
-	virtual bool ledStatus(const uint32_t id) = 0;
+	virtual u8 batteryStatus() = 0;
+	virtual bool ledStatus(u32 id) = 0;
 	virtual bool rumbleStatus() = 0;
 
-	virtual bool setLedStatus(const uint32_t id, const bool status) = 0;
+	virtual bool setLedStatus(const u32 id, const bool status) = 0;
 	virtual bool setRumbleStatus(const bool rumble) = 0;
 
 	virtual bool hasClassicExtension() = 0;
 	virtual bool hasMotionPlusExtension() = 0;
 	virtual bool hasNunchukExtension() = 0;
 
-	uint32_t id() const;
-	void setId(const uint32_t &id);
+	u32 id() const;
+	void setId(const u32 &id);
 
 protected:
 	IIdManager &m_idManager;
 
 private:
-	uint32_t m_id = 0u;
+	u32 m_id = 0u;
 };
 }
 }

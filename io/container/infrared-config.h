@@ -2,6 +2,8 @@
 
 #include <cstdlib>
 
+#include <externals/common/types.hpp>
+
 class InfraredConfigContainer {
 public:
 	bool accEnabled() const;
@@ -11,14 +13,14 @@ public:
 	double accPowY() const;
 	double deadzoneX() const;
 	double deadzoneY() const;
-	int32_t accTimeout() const;
+	i32 accTimeout() const;
 
 	void setAccEnabled(bool accEnabled);
 	void setAccMultiX(double accMultiX);
 	void setAccMultiY(double accMultiY);
 	void setAccPowX(double accPowX);
 	void setAccPowY(double accPowY);
-	void setAccTimeout(const int32_t &accTimeout);
+	void setAccTimeout(const i32 &accTimeout);
 	void setDeadzoneX(double deadzoneX);
 	void setDeadzoneY(double deadzoneY);
 
@@ -30,5 +32,5 @@ private:
 	double m_accPowY;
 	double m_deadzoneX;
 	double m_deadzoneY;
-	int32_t m_accTimeout;
+	i32 m_accTimeout;
 };

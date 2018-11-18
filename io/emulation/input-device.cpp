@@ -107,7 +107,7 @@ int InputDevice::set_rel_bit(int bit) { return UInputHelper::set_rel_bit(m_fd, b
 int InputDevice::set_abs_bit(int bit) { return UInputHelper::set_abs_bit(m_fd, bit); }
 void InputDevice::set_range(int abs, int max, int min) { UInputHelper::range(m_dev, abs, max, min); }
 
-bool InputDevice::report(uint16_t type, uint16_t code, int32_t value, bool triggerSync) {
+bool InputDevice::report(u16 type, u16 code, i32 value, bool triggerSync) {
 	if (!isCreated())
 		return false;
 

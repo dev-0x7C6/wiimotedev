@@ -7,15 +7,15 @@ using namespace dae::enums;
 
 Event ButtonContainer::event() const { return Event::Button; }
 
-uint64_t ButtonContainer::state() const {
+u64 ButtonContainer::state() const {
 	return m_state;
 }
 
-void ButtonContainer::setState(const uint64_t &state) {
+void ButtonContainer::setState(const u64 &state) {
 	m_state = state;
 }
 
-ButtonContainer::ButtonContainer(const Device source, const uint64_t state)
+ButtonContainer::ButtonContainer(const Device source, const u64 state)
 		: m_state(state)
 		, m_source(source) {
 }
