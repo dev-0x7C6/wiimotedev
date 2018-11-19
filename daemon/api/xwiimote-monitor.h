@@ -11,7 +11,7 @@ namespace helper {
 class XWiimoteMonitor final {
 public:
 	explicit XWiimoteMonitor();
-	virtual ~XWiimoteMonitor();
+	~XWiimoteMonitor() noexcept;
 
 	bool isValid() const;
 	std::string dequeue();

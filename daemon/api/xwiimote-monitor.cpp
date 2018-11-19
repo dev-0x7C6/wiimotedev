@@ -22,7 +22,5 @@ std::string XWiimoteMonitor::dequeue() {
 	if (cstring == nullptr)
 		return {};
 
-	const std::string result(cstring);
-
-	return result;
+	return cstring;
 }
