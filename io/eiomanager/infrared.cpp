@@ -4,7 +4,7 @@
 
 void UInputProfileManager::loadInfraredEvents(QSettings &settings) {
 	unloadInfraredEvents();
-	foreach (const QString &key, settings.childGroups()) {
+	for (const auto &key : settings.childGroups()) {
 		if (settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "infrared" ||
 			settings.value(QString("%1/module").arg(key), QString()).toString().toLower() == "mouse") {
 			settings.beginGroup(key);

@@ -15,7 +15,7 @@ void UInputProfileManager::loadCommandEvents(QSettings &settings) {
 	while (map.hasNext()) {
 		map.next();
 		settings.beginGroup(map.key());
-		foreach (const QString &string, settings.allKeys()) {
+		for (const auto &string : settings.allKeys()) {
 			QStringList params = settings.value(string, QString()).toString().split(QChar(' '));
 			i32 index;
 

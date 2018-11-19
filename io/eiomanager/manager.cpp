@@ -34,7 +34,7 @@ QHash<u32, u64> UInputProfileManager::extractDeviceEvent(QString input) {
 	bool result = false;
 	u32 index;
 	u64 value;
-	foreach (const QString &item, list) {
+	for (const auto &item : list) {
 		deviceEventRegExp.exactMatch(item);
 		index = deviceEventRegExp.cap(2).toUInt();
 		value = devicebuttons.value(deviceEventRegExp.cap(0).remove(deviceEventRegExp.cap(1)), 0);

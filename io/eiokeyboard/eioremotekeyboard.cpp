@@ -98,7 +98,7 @@ void EIORemoteKeyboard::pressKeyboardButtons(QList<uint> &list) {
 	if (list.isEmpty())
 		return;
 
-	foreach (const u32 key, list) {
+	for (auto &&key : list) {
 		if (key <= keyboardExt)
 			m_device.pressKey(key);
 		else
@@ -110,8 +110,7 @@ void EIORemoteKeyboard::releaseKeyboardButtons(QList<uint> &list) {
 	if (list.isEmpty())
 		return;
 
-	foreach (const u32 key, list)
-
+	for (auto &&key : list)
 		if (key <= keyboardExt)
 			m_device.releaseKey(key);
 		else

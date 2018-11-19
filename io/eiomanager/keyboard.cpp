@@ -9,7 +9,7 @@ void UInputProfileManager::assignKeyboardEvents(const QString &key, QSettings &s
 
 	auto device = std::make_unique<EIORemoteKeyboard>(m_eventDevice);
 
-	foreach (const QString &string, settings.allKeys()) {
+	for (const auto &string : settings.allKeys()) {
 		if (string.toLower() == "module")
 			continue;
 
