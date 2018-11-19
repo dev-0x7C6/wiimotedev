@@ -55,9 +55,9 @@ constexpr auto is_available(type &&flags, input_type &&match_with) noexcept {
 }
 }
 
-XWiimoteController::XWiimoteController(IIdManager &manager, const std::string &interfaceFilePath)
+XWiimoteController::XWiimoteController(IIdManager &manager, std::string &&path)
 		: IWiimote(manager)
-		, m_interfaceFilePath(interfaceFilePath) {
+		, m_interfaceFilePath(std::move(path)) {
 	m_buttons.fill(0);
 	auto ret = xwii_iface_new(&m_interface, m_interfaceFilePath.c_str());
 

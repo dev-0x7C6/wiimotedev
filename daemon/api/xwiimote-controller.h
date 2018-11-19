@@ -15,29 +15,29 @@ namespace api {
 
 class XWiimoteController final : public interface::IWiimote {
 public:
-	explicit XWiimoteController(interface::IIdManager &manager, const std::string &interfaceFilePath);
+	explicit XWiimoteController(interface::IIdManager &manager, std::string &&path);
 	~XWiimoteController() override;
 
-	virtual common::enums::Device type() const override;
-	virtual Api api() const override { return Api::XWiimote; }
+	common::enums::Device type() const final;
+	Api api() const final { return Api::XWiimote; }
 
-	virtual bool isValid() const override;
-	virtual std::unique_ptr<interface::IContainer> process() override;
+	bool isValid() const final;
+	std::unique_ptr<interface::IContainer> process() override;
 
-	virtual bool isRumbleSupported() override;
-	virtual bool isLedSupported() override;
-	virtual bool isInfraredSupported() override;
+	bool isRumbleSupported() final;
+	bool isLedSupported() final;
+	bool isInfraredSupported() final;
 
-	virtual u8 batteryStatus() override;
-	virtual bool ledStatus(const u32 id) override;
-	virtual bool rumbleStatus() override;
+	u8 batteryStatus() final;
+	bool ledStatus(u32 id) final;
+	bool rumbleStatus() final;
 
-	virtual bool setLedStatus(const u32 id, const bool status) override;
-	virtual bool setRumbleStatus(const bool rumble) override;
+	bool setLedStatus(u32 id, bool status) final;
+	bool setRumbleStatus(bool rumble) final;
 
-	virtual bool hasClassicExtension() override;
-	virtual bool hasMotionPlusExtension() override;
-	virtual bool hasNunchukExtension() override;
+	bool hasClassicExtension() final;
+	bool hasMotionPlusExtension() final;
+	bool hasNunchukExtension() final;
 
 private:
 	std::string interfaceFilePath() const;
@@ -46,10 +46,10 @@ private:
 
 private:
 	const std::string m_interfaceFilePath;
-	xwii_iface *m_interface;
+	xwii_iface *m_interface{nullptr};
 	bool m_connected;
 	int m_fd;
-	std::array<u64, 5> m_buttons;
+	std::array<u64, 5> m_buttons{0, 0, 0, 0, 0};
 
 	std::queue<std::unique_ptr<interface::IContainer>> m_messages;
 

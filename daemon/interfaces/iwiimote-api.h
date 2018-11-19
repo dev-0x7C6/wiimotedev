@@ -34,21 +34,21 @@ public:
 	virtual bool ledStatus(u32 id) = 0;
 	virtual bool rumbleStatus() = 0;
 
-	virtual bool setLedStatus(const u32 id, const bool status) = 0;
-	virtual bool setRumbleStatus(const bool rumble) = 0;
+	virtual bool setLedStatus(u32 id, bool status) = 0;
+	virtual bool setRumbleStatus(bool rumble) = 0;
 
 	virtual bool hasClassicExtension() = 0;
 	virtual bool hasMotionPlusExtension() = 0;
 	virtual bool hasNunchukExtension() = 0;
 
-	u32 id() const;
-	void setId(const u32 &id);
+	auto id() const noexcept { return m_id; };
+	void setId(u32 id) noexcept { m_id = id; }
 
 protected:
 	IIdManager &m_idManager;
 
 private:
-	u32 m_id = 0u;
+	u32 m_id{0u};
 };
 }
 }

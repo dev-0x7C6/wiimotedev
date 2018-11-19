@@ -15,8 +15,10 @@ class XWiimoteManager final : public interface::IWiimoteManager {
 public:
 	explicit XWiimoteManager();
 
-	virtual interface::IWiimote::Api api() const override { return interface::IWiimote::Api::XWiimote; }
-	virtual std::unique_ptr<interface::IWiimote> connect() override;
+	interface::IWiimote::Api api() const final {
+		return interface::IWiimote::Api::XWiimote;
+	}
+	std::unique_ptr<interface::IWiimote> connect() final;
 
 private:
 	std::unique_ptr<helper::XWiimoteMonitor> m_monitor;

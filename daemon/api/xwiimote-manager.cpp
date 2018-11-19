@@ -14,10 +14,10 @@ std::unique_ptr<IWiimote> XWiimoteManager::connect() {
 	if (!m_monitor->isValid())
 		return nullptr;
 
-	const auto device = m_monitor->dequeue();
+	auto device = m_monitor->dequeue();
 
 	if (device.empty())
 		return nullptr;
 
-	return std::make_unique<XWiimoteController>(m_idManager, device);
+	return std::make_unique<XWiimoteController>(m_idManager, std::move(device));
 }
