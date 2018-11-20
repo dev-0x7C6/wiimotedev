@@ -18,7 +18,6 @@ set(sources
 	containers/accelerometer-container.h
 	containers/button-container.cpp
 	containers/button-container.h
-	containers/gyroscope-container.cpp
 	containers/gyroscope-container.h
 	containers/infrared-container.cpp
 	containers/infrared-container.h

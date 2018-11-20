@@ -8,16 +8,18 @@ namespace container {
 
 class ButtonContainer final : public interface::IContainer {
 public:
-	explicit ButtonContainer(const common::enums::Device device, const u64 state);
+	constexpr explicit ButtonContainer(common::enums::Device device, u64 state)
+			: m_state(state)
+			, m_source(device) {}
 
-	virtual common::enums::Device device() const override;
-	virtual enums::Event event() const override;
+	common::enums::Device device() const final { return m_source; }
+	enums::Event event() const final { return enums::Event::Button; }
 
-	u64 state() const;
-	void setState(const u64 &state);
+	constexpr auto state() const noexcept { return m_state; };
+	constexpr void setState(u64 state) { m_state = state; }
 
 private:
-	u64 m_state;
+	u64 m_state{0};
 	common::enums::Device m_source;
 };
 }
