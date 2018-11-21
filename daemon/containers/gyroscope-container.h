@@ -8,14 +8,18 @@ namespace container {
 
 class GyroscopeContainer final : public interface::IContainer {
 public:
-	explicit GyroscopeContainer(i32 x, i32 y, i32 z);
+	constexpr explicit GyroscopeContainer(i32 x, i32 y, i32 z)
+			: m_x(x)
+			, m_y(y)
+			, m_z(z) {
+	}
 
-	virtual common::enums::Device device() const override;
-	virtual enums::Event event() const override;
+	common::enums::Device device() const final { return common::enums::Device::Wiimote; }
+	enums::Event event() const final { return enums::Event::Gyroscope; }
 
-	inline i32 x() const { return m_x; }
-	inline i32 y() const { return m_y; }
-	inline i32 z() const { return m_z; }
+	constexpr auto x() const noexcept { return m_x; }
+	constexpr auto y() const noexcept { return m_y; }
+	constexpr auto z() const noexcept { return m_z; }
 
 private:
 	const i32 m_x = 0;
