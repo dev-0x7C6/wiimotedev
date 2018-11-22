@@ -22,12 +22,13 @@ using IrPoints = std::array<structs::irpoint, 4>; // max 4 ir
 
 class InfraredContainer final : public interface::IContainer {
 public:
-	explicit InfraredContainer(const IrPoints &points);
+	constexpr explicit InfraredContainer(const IrPoints &points)
+			: m_points(points) {}
 
-	virtual common::enums::Device device() const override;
-	virtual enums::Event event() const override;
+	common::enums::Device device() const final { return common::enums::Device::Wiimote; }
+	enums::Event event() const final { return enums::Event::Infrared; };
 
-	const IrPoints &points() const;
+	const auto &points() const noexcept { return m_points; };
 
 private:
 	IrPoints m_points;

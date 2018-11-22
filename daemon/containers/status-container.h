@@ -13,11 +13,14 @@ public:
 		Disconnected
 	};
 
-	explicit StatusContainer(const common::enums::Device device, const State state);
+	constexpr explicit StatusContainer(const common::enums::Device device, const State state)
+			: m_source(device)
+			, m_state(state) {
+	}
 
-	virtual enums::Event event() const override;
-	virtual common::enums::Device device() const override;
-	State state() const;
+	enums::Event event() const final { return enums::Event::Status; }
+	common::enums::Device device() const final { return m_source; }
+	auto state() const noexcept { return m_state; }
 
 private:
 	const common::enums::Device m_source;
