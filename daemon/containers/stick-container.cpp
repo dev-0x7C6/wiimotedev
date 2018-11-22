@@ -1,1 +1,0 @@
-#include "stick-container.h"

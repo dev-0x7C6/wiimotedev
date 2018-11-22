@@ -17,12 +17,15 @@ struct accdata {
 
 class AccelerometerContainer final : public interface::IContainer {
 public:
-	explicit AccelerometerContainer(const common::enums::Device device, const structs::accdata &data);
+	constexpr explicit AccelerometerContainer(const common::enums::Device device, const structs::accdata &data)
+			: m_source(device)
+			, m_data(data) {
+	}
 
-	virtual common::enums::Device device() const override;
-	virtual enums::Event event() const override;
+	common::enums::Device device() const final { return m_source; }
+	enums::Event event() const override { return enums::Event::Accelerometer; }
 
-	const structs::accdata &data() const;
+	const auto &data() const noexcept { return m_data; }
 
 private:
 	const common::enums::Device m_source;

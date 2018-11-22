@@ -26,9 +26,9 @@ public:
 			: m_points(points) {}
 
 	common::enums::Device device() const final { return common::enums::Device::Wiimote; }
-	enums::Event event() const final { return enums::Event::Infrared; };
+	enums::Event event() const final { return enums::Event::Infrared; }
 
-	const auto &points() const noexcept { return m_points; };
+	const auto &points() const noexcept { return m_points; }
 
 private:
 	IrPoints m_points;

@@ -15,7 +15,7 @@ public:
 	common::enums::Device device() const final { return m_source; }
 	enums::Event event() const final { return enums::Event::Button; }
 
-	constexpr auto state() const noexcept { return m_state; };
+	constexpr auto state() const noexcept { return m_state; }
 	constexpr void setState(u64 state) { m_state = state; }
 
 private:

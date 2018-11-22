@@ -14,18 +14,12 @@ set(sources
 	api/xwiimote-manager.h
 	api/xwiimote-monitor.cpp
 	api/xwiimote-monitor.h
-	containers/accelerometer-container.cpp
 	containers/accelerometer-container.h
-	containers/button-container.cpp
 	containers/button-container.h
 	containers/gyroscope-container.h
-	containers/infrared-container.cpp
 	containers/infrared-container.h
-	containers/pressure-container.cpp
 	containers/pressure-container.h
-	containers/status-container.cpp
 	containers/status-container.h
-	containers/stick-container.cpp
 	containers/stick-container.h
 	controllers/wiimote-id-manager.cpp
 	controllers/wiimote-id-manager.h
