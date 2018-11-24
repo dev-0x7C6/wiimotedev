@@ -20,7 +20,7 @@ public:
 			: m_data(data) {}
 
 	common::enums::Device device() const final { return common::enums::Device::BalanceBoard; }
-	enums::Event event() const final { enums::Event::Pressure; }
+	enums::Event event() const final { return enums::Event::Pressure; }
 
 	const auto &data() const noexcept { return m_data; }
 

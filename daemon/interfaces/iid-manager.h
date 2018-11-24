@@ -3,6 +3,8 @@
 #include "common/enums/device.h"
 #include "functionals/unique-id.h"
 
+#include <externals/common/types.hpp>
+
 namespace dae {
 namespace interface {
 
