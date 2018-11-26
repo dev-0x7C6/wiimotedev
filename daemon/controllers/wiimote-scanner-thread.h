@@ -12,7 +12,7 @@ namespace dae::controller {
 
 class WiimoteScannerThread {
 public:
-	explicit WiimoteScannerThread(const interface::IWiimote::Api api);
+	explicit WiimoteScannerThread(interface::IWiimote::Api api);
 
 	void merge(std::list<std::unique_ptr<interface::IWiimote>> &list);
 

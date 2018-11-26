@@ -11,8 +11,8 @@ class ClassicDispatcher final : public interface::IContainerProcessor {
 public:
 	explicit ClassicDispatcher(EventCallback &&eventCallback);
 
-	virtual enums::Adaptor type() const override;
-	virtual void process(const common::enums::Device device, const u32 id, const std::unique_ptr<interface::IContainer> &container) override;
+	enums::Adaptor type() const final;
+	void process(common::enums::Device device, u32 id, const std::unique_ptr<interface::IContainer> &container) final;
 
 public:
 	QList<uint> list() const;

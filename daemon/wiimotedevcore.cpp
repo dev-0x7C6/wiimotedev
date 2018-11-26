@@ -26,7 +26,7 @@ WiimotedevCore::WiimotedevCore()
 	};
 
 	for (const auto &processor : processors)
-		m_adaptors.emplace_back(DispatcherFactory::create([this](auto &&command) -> CommandResult {
+		m_adaptors.emplace_back(make_dispatcher([this](auto &&command) -> CommandResult {
 			return event(std::forward<decltype(command)>(command));
 		},
 			processor));

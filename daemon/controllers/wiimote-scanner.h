@@ -10,7 +10,7 @@ namespace dae::controller {
 
 class WiimoteScanner {
 public:
-	explicit WiimoteScanner(const interface::IWiimote::Api api);
+	explicit WiimoteScanner(interface::IWiimote::Api api);
 	~WiimoteScanner();
 
 	std::unique_ptr<interface::IWiimote> process();

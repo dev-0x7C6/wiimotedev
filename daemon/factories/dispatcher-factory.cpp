@@ -13,7 +13,7 @@ using namespace dae::enums;
 using namespace dae::factory;
 using namespace dae::interface;
 
-std::unique_ptr<IContainerProcessor> DispatcherFactory::create(EventCallback &&eventCallback, Adaptor type) {
+std::unique_ptr<IContainerProcessor> dae::factory::make_dispatcher(EventCallback &&eventCallback, enums::Adaptor type) noexcept {
 	switch (type) {
 		case Adaptor::BalanceBoard: return std::make_unique<BalanceBoardDispatcher>(std::move(eventCallback));
 		case Adaptor::Classic: return std::make_unique<ClassicDispatcher>(std::move(eventCallback));

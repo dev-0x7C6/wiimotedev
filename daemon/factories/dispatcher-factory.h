@@ -6,12 +6,6 @@
 namespace dae {
 namespace factory {
 
-class DispatcherFactory {
-public:
-	explicit DispatcherFactory() = delete;
-	~DispatcherFactory() = delete;
-
-	static std::unique_ptr<interface::IContainerProcessor> create(EventCallback &&eventCallback, enums::Adaptor type);
-};
+std::unique_ptr<interface::IContainerProcessor> make_dispatcher(EventCallback &&eventCallback, enums::Adaptor type) noexcept;
 }
 }

@@ -12,7 +12,7 @@ using namespace dae::interface;
 using namespace std::literals;
 
 WiimoteScanner::WiimoteScanner(const IWiimote::Api api)
-		: m_manager(ControllerManagerFactory::create(api)) {
+		: m_manager(make_controller_manager(api)) {
 }
 
 WiimoteScanner::~WiimoteScanner() = default;
