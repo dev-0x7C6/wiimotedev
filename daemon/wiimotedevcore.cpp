@@ -14,16 +14,19 @@ using namespace dae::enums;
 using namespace dae::factory;
 using namespace dae::interface;
 
+namespace {
+constexpr auto processors = {
+	Adaptor::BalanceBoard,
+	Adaptor::Classic,
+	Adaptor::Nunchuk,
+	Adaptor::ProController,
+	Adaptor::VirtualCursor,
+	Adaptor::Wiimote,
+};
+}
+
 WiimotedevCore::WiimotedevCore()
 		: m_scanner(IWiimote::Api::XWiimote) {
-	const auto processors = {
-		Adaptor::BalanceBoard,
-		Adaptor::Classic,
-		Adaptor::Nunchuk,
-		Adaptor::ProController,
-		Adaptor::VirtualCursor,
-		Adaptor::Wiimote,
-	};
 
 	for (const auto &processor : processors)
 		m_adaptors.emplace_back(make_dispatcher([this](auto &&command) -> CommandResult {
