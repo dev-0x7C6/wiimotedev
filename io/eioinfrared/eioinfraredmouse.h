@@ -34,7 +34,7 @@ public:
 	void dbusVirtualCursorLost(u32);
 
 	u32 id() const;
-	void setId(const u32 id);
+	void setId(u32 id);
 
 	InfraredConfigContainer &config() {
 		return m_config;
@@ -43,7 +43,7 @@ public:
 	void interrupt();
 
 protected:
-	void run();
+	void run() override;
 
 	void processAbsoluteMouse();
 	void processRelativeMouse();
