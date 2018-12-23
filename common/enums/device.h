@@ -13,6 +13,14 @@ enum class Device {
 	Last,
 };
 
+constexpr static auto device_list = {
+	Device::BalanceBoard,
+	Device::Classic,
+	Device::Nunchuk,
+	Device::ProController,
+	Device::Wiimote,
+};
+
 constexpr auto name(const Device &device) {
 	switch (device) {
 		case Device::BalanceBoard: return "balanceboard";
@@ -27,16 +35,7 @@ constexpr auto name(const Device &device) {
 }
 
 inline auto convert(const std::string &str) -> Device {
-	const auto list = {
-		Device::BalanceBoard,
-		Device::Classic,
-		Device::Nunchuk,
-		Device::ProController,
-		Device::Wiimote,
-		Device::Last,
-	};
-
-	for (const auto &value : list)
+	for (auto &&value : device_list)
 		if (name(value) == str)
 			return value;
 
