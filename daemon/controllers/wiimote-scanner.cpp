@@ -27,9 +27,7 @@ std::unique_ptr<IWiimote> WiimoteScanner::process() {
 		controller->setLedStatus(1, id & 0x2);
 		controller->setLedStatus(2, id & 0x4);
 		controller->setLedStatus(3, id & 0x8);
-
-		return controller;
 	}
 
-	return nullptr;
+	return controller;
 }
