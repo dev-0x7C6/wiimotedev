@@ -1,11 +1,39 @@
 #pragma once
 
 #include <array>
+#include <functional>
 #include <memory>
-#include <string>
+#include <optional>
 #include <queue>
+#include <string>
 
 #include "interfaces/iwiimote-api.h"
+
+class call_on_destroy {
+public:
+	call_on_destroy(std::function<void()> &&callable)
+			: m_callable(std::move(callable)) {}
+
+	call_on_destroy(call_on_destroy &&rhs) noexcept = default;
+	call_on_destroy(call_on_destroy const &) = delete;
+
+	call_on_destroy &operator=(call_on_destroy &&) noexcept = default;
+	call_on_destroy &operator=(call_on_destroy const &) = delete;
+	call_on_destroy &operator=(std::function<void()> &&callable) noexcept {
+		m_callable = callable;
+		return *this;
+	}
+
+	~call_on_destroy() {
+		if (m_callable)
+			m_callable();
+	}
+
+private:
+	std::function<void()> m_callable;
+};
+
+using destruction_queue = std::queue<call_on_destroy>;
 
 struct xwii_iface;
 struct xwii_event;
@@ -40,11 +68,14 @@ public:
 	bool hasNunchukExtension() final;
 
 private:
+	bool openXWiimoteInterface();
+	bool watchXWiimoteEvents();
+	bool reconfigureXWiimoteInterface();
+
 	std::string interfaceFilePath() const;
 
-	void reconfigure();
-
 private:
+	destruction_queue m_destructionQueue;
 	const std::string m_interfaceFilePath;
 	xwii_iface *m_interface{nullptr};
 	bool m_connected;

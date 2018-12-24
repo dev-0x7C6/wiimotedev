@@ -59,38 +59,48 @@ XWiimoteController::XWiimoteController(IIdManager &manager, std::string &&path)
 		: IWiimote(manager)
 		, m_interfaceFilePath(std::move(path)) {
 	m_buttons.fill(0);
+
+	if (openXWiimoteInterface() && watchXWiimoteEvents() && reconfigureXWiimoteInterface()) {
+		m_connected = true;
+		setId(m_idManager.reserve(type()));
+	}
+}
+
+bool XWiimoteController::openXWiimoteInterface() {
 	auto ret = xwii_iface_new(&m_interface, m_interfaceFilePath.c_str());
 
 	if (ret) {
 		std::cerr << "fail: unable to create " << m_interfaceFilePath << " interface." << std::endl;
-		return;
-	}
+		return false;
+	};
+
+	m_destructionQueue.emplace([this]() {
+		xwii_iface_unref(m_interface);
+		std::cerr << "unref" << std::endl;
+	});
 
 	m_fd = xwii_iface_get_fd(m_interface);
+	return true;
+}
 
-	if (m_fd < 0) {
-		std::cerr << "fail: cannot get decriptor for interface." << std::endl;
-		return;
-	}
-
-	ret = xwii_iface_watch(m_interface, true);
+bool XWiimoteController::watchXWiimoteEvents() {
+	auto ret = xwii_iface_watch(m_interface, true);
 
 	if (ret) {
 		std::cerr << "fail: unable to attach watcher on interface." << std::endl;
-		return;
+		return false;
 	}
 
-	reconfigure();
+	m_destructionQueue.emplace([this]() {
+		xwii_iface_close(m_interface, XWII_IFACE_ALL | XWII_IFACE_WRITABLE);
+		std::cout << "xwii_iface_close" << std::endl;
+	});
 
-	m_connected = true;
-
-	setId(m_idManager.take(type()));
+	return true;
 }
 
 XWiimoteController::~XWiimoteController() {
-	xwii_iface_close(m_interface, XWII_IFACE_ALL | XWII_IFACE_WRITABLE);
-	xwii_iface_unref(m_interface);
-	m_idManager.debt(type(), id());
+	m_idManager.release(type(), id());
 }
 
 Device XWiimoteController::type() const {
@@ -197,7 +207,7 @@ std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 	};
 
 	auto process_watch = [this]() {
-		reconfigure();
+		reconfigureXWiimoteInterface();
 		return nullptr;
 	};
 
@@ -296,7 +306,7 @@ std::string XWiimoteController::interfaceFilePath() const {
 	return m_interfaceFilePath;
 }
 
-void XWiimoteController::reconfigure() {
+bool XWiimoteController::reconfigureXWiimoteInterface() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
 	auto ret = xwii_iface_open(m_interface, flags);
 
@@ -360,31 +370,29 @@ void XWiimoteController::reconfigure() {
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Disconnected));
 	}
 
-	//	constexpr auto space = 25;
-	//	std::cout << "report mode:" << std::endl;
-	//	std::cout << std::boolalpha << std::left;
-	//	std::cout << std::setw(space) << "  core"
-	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_CORE) << std::endl;
-	//	std::cout << std::setw(space) << "  accelerometer"
-	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_ACCEL) << std::endl;
-	//	std::cout << std::setw(space) << "  gyroscope"
-	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_MOTION_PLUS) << std::endl;
-	//	std::cout << std::setw(space) << "  nunchuk"
-	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_NUNCHUK) << std::endl;
-	//	std::cout << std::setw(space) << "  classic"
-	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_CLASSIC_CONTROLLER) << std::endl;
-	//	std::cout << std::setw(space) << "  balance board"
-	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_BALANCE_BOARD) << std::endl;
-	//	std::cout << std::setw(space) << "  pro controller"
-	//			  << ": " << static_cast<bool>(flags & XWII_IFACE_PRO_CONTROLLER) << std::endl;
-	//	std::cout << std::noboolalpha;
+	constexpr auto space = 25;
+	std::cout << "report mode:" << std::endl;
+	std::cout << std::boolalpha << std::left;
+	std::cout << std::setw(space) << "  core"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_CORE) << std::endl;
+	std::cout << std::setw(space) << "  accelerometer"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_ACCEL) << std::endl;
+	std::cout << std::setw(space) << "  gyroscope"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_MOTION_PLUS) << std::endl;
+	std::cout << std::setw(space) << "  nunchuk"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_NUNCHUK) << std::endl;
+	std::cout << std::setw(space) << "  classic"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_CLASSIC_CONTROLLER) << std::endl;
+	std::cout << std::setw(space) << "  balance board"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_BALANCE_BOARD) << std::endl;
+	std::cout << std::setw(space) << "  pro controller"
+			  << ": " << static_cast<bool>(flags & XWII_IFACE_PRO_CONTROLLER) << std::endl;
+	std::cout << std::noboolalpha;
 
 	if (ret) {
-		std::cerr << "fail: unable to open " << m_interfaceFilePath << " interface." << std::endl;
-		xwii_iface_close(m_interface, 0);
-		xwii_iface_unref(m_interface);
-		m_interface = nullptr;
 		m_connected = false;
-		return;
+		return false;
 	}
+
+	return true;
 }

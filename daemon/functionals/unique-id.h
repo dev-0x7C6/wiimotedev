@@ -8,12 +8,7 @@ namespace functional {
 template <typename type, int size>
 class UniqueId final {
 public:
-	explicit UniqueId() {
-		for (int i = 0; i < size; ++i) m_table[i] = false;
-	}
-	virtual ~UniqueId() = default;
-
-	decltype(size) take() {
+	decltype(size) reserve() {
 		decltype(size) index = 1;
 		while (size > index && m_table[index]) ++index;
 
@@ -24,13 +19,13 @@ public:
 		return index;
 	}
 
-	decltype(size) debt(const decltype(size) index) {
+	decltype(size) release(const decltype(size) index) {
 		m_table[index] = false;
 		return index;
 	}
 
 private:
-	std::array<type, size> m_table;
+	std::array<type, size> m_table{};
 };
 }
 }

@@ -10,11 +10,10 @@ namespace interface {
 
 class IIdManager {
 public:
-	explicit IIdManager() = default;
 	virtual ~IIdManager() = default;
 
-	virtual u32 take(const common::enums::Device device) = 0;
-	virtual u32 debt(const common::enums::Device device, const u32 index) = 0;
+	virtual u32 reserve(common::enums::Device device) = 0;
+	virtual u32 release(common::enums::Device device, u32 index) = 0;
 };
 }
 }

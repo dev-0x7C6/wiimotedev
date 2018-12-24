@@ -12,8 +12,8 @@ using namespace dae::core;
 
 int main(int argc, char *argv[]) {
 	QCoreApplication application(argc, argv);
-	application.setApplicationName("wiimotedev-daemon");
-	application.setApplicationVersion(
+	QCoreApplication::setApplicationName("wiimotedev-daemon");
+	QCoreApplication::setApplicationVersion(
 		QString::number(WIIMOTEDEV_VERSION_MAJOR) + '.' +
 		QString::number(WIIMOTEDEV_VERSION_MINOR) + '.' +
 		QString::number(WIIMOTEDEV_VERSION_PATCH));
@@ -27,10 +27,8 @@ int main(int argc, char *argv[]) {
 
 	WiimotedevCore core;
 	QTimer processTimer;
-	processTimer.connect(&processTimer, &QTimer::timeout, [&core]() { core.process(); });
+	QCoreApplication::connect(&processTimer, &QTimer::timeout, [&core]() { core.process(); });
 	processTimer.start(1);
 
-	application.exec();
-
-	return 0;
+	return QCoreApplication::exec();
 }
