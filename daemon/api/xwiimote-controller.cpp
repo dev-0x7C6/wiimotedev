@@ -76,7 +76,7 @@ bool XWiimoteController::openXWiimoteInterface() {
 
 	m_destructionQueue.emplace([this]() {
 		xwii_iface_unref(m_interface);
-		std::cerr << "unref" << std::endl;
+		m_logger.debug("xwii_iface_unref");
 	});
 
 	m_fd = xwii_iface_get_fd(m_interface);
@@ -93,7 +93,7 @@ bool XWiimoteController::watchXWiimoteEvents() {
 
 	m_destructionQueue.emplace([this]() {
 		xwii_iface_close(m_interface, XWII_IFACE_ALL | XWII_IFACE_WRITABLE);
-		std::cout << "xwii_iface_close" << std::endl;
+		m_logger.debug("xwii_iface_close");
 	});
 
 	return true;

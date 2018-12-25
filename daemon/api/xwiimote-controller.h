@@ -2,12 +2,92 @@
 
 #include <array>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <queue>
 #include <string>
 
 #include "interfaces/iwiimote-api.h"
+
+enum class error_class {
+	critical,
+	error,
+	warning,
+	information,
+	notice,
+	hint,
+	debug,
+};
+
+template <error_class filter_above = error_class::information, auto... prefixes>
+class logger {
+public:
+	template <error_class id = error_class::information, typename... args>
+	constexpr void log(args &&... values) {
+		if constexpr (filter_above >= id) {
+			switch (id) {
+				case error_class::critical:
+				case error_class::error:
+				case error_class::warning:
+					print_error(std::forward<decltype(prefixes)>(prefixes)..., std::forward<args>(values)...);
+					break;
+				case error_class::information:
+				case error_class::notice:
+				case error_class::hint:
+				case error_class::debug:
+					print_standard(std::forward<decltype(prefixes)>(prefixes)..., std::forward<args>(values)...);
+					break;
+			}
+		}
+	}
+
+	template <typename... args>
+	constexpr void critical(args &&... values) {
+		log<error_class::critical>(std::forward<args>(values)...);
+	}
+
+	template <typename... args>
+	constexpr void error(args &&... values) {
+		log<error_class::error>(std::forward<args>(values)...);
+	}
+
+	template <typename... args>
+	constexpr void warning(args &&... values) {
+		log<error_class::warning>(std::forward<args>(values)...);
+	}
+
+	template <typename... args>
+	constexpr void information(args &&... values) {
+		log<error_class::information>(std::forward<args>(values)...);
+	}
+
+	template <typename... args>
+	constexpr void notice(args &&... values) {
+		log<error_class::notice>(std::forward<args>(values)...);
+	}
+
+	template <typename... args>
+	constexpr void hint(args &&... values) {
+		log<error_class::hint>(std::forward<args>(values)...);
+	}
+
+	template <typename... args>
+	constexpr void debug(args &&... values) {
+		log<error_class::debug>(std::forward<args>(values)...);
+	}
+
+protected:
+	template <typename... args>
+	void print_error(args &&... values) {
+		std::cerr << (values << ...) << std::endl;
+	}
+
+	template <typename... args>
+	void print_standard(args &&... values) {
+		std::cout << (values << ...) << std::endl;
+	}
+};
 
 class call_on_destroy {
 public:
@@ -83,6 +163,7 @@ private:
 	std::array<u64, 5> m_buttons{0, 0, 0, 0, 0};
 
 	std::queue<std::unique_ptr<interface::IContainer>> m_messages;
+	logger<error_class::debug> m_logger;
 
 	bool m_connectedFlag{false};
 	bool m_balanceBoardConnected{false};
