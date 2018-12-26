@@ -20,72 +20,72 @@ enum class error_class {
 	debug,
 };
 
-template <error_class filter_above = error_class::information, auto... prefixes>
+template <error_class filter_above = error_class::information, std::ostream &out = std::cout, std::ostream &err = std::cerr>
 class logger {
 public:
 	template <error_class id = error_class::information, typename... args>
-	constexpr void log(args &&... values) {
+	constexpr static void log(args &&... values) {
 		if constexpr (filter_above >= id) {
 			switch (id) {
 				case error_class::critical:
 				case error_class::error:
 				case error_class::warning:
-					print_error(std::forward<decltype(prefixes)>(prefixes)..., std::forward<args>(values)...);
+					print_error(std::forward<args>(values)...);
 					break;
 				case error_class::information:
 				case error_class::notice:
 				case error_class::hint:
 				case error_class::debug:
-					print_standard(std::forward<decltype(prefixes)>(prefixes)..., std::forward<args>(values)...);
+					print_standard(std::forward<args>(values)...);
 					break;
 			}
 		}
 	}
 
 	template <typename... args>
-	constexpr void critical(args &&... values) {
+	constexpr static void critical(args &&... values) {
 		log<error_class::critical>(std::forward<args>(values)...);
 	}
 
 	template <typename... args>
-	constexpr void error(args &&... values) {
+	constexpr static void error(args &&... values) {
 		log<error_class::error>(std::forward<args>(values)...);
 	}
 
 	template <typename... args>
-	constexpr void warning(args &&... values) {
+	constexpr static void warning(args &&... values) {
 		log<error_class::warning>(std::forward<args>(values)...);
 	}
 
 	template <typename... args>
-	constexpr void information(args &&... values) {
+	constexpr static void information(args &&... values) {
 		log<error_class::information>(std::forward<args>(values)...);
 	}
 
 	template <typename... args>
-	constexpr void notice(args &&... values) {
+	constexpr static void notice(args &&... values) {
 		log<error_class::notice>(std::forward<args>(values)...);
 	}
 
 	template <typename... args>
-	constexpr void hint(args &&... values) {
+	constexpr static void hint(args &&... values) {
 		log<error_class::hint>(std::forward<args>(values)...);
 	}
 
 	template <typename... args>
-	constexpr void debug(args &&... values) {
+	constexpr static void debug(args &&... values) {
 		log<error_class::debug>(std::forward<args>(values)...);
 	}
 
 protected:
 	template <typename... args>
-	void print_error(args &&... values) {
-		std::cerr << (values << ...) << std::endl;
+	constexpr static void print_error(args &&... values) {
+		((out << values), ...) << std::endl;
 	}
 
 	template <typename... args>
-	void print_standard(args &&... values) {
-		std::cout << (values << ...) << std::endl;
+	constexpr static void print_standard(args &&... values) {
+		((err << values), ...) << std::endl;
 	}
 };
 
@@ -158,8 +158,8 @@ private:
 	destruction_queue m_destructionQueue;
 	const std::string m_interfaceFilePath;
 	xwii_iface *m_interface{nullptr};
-	bool m_connected;
-	int m_fd;
+	bool m_connected{false};
+	int m_fd{0};
 	std::array<u64, 5> m_buttons{0, 0, 0, 0, 0};
 
 	std::queue<std::unique_ptr<interface::IContainer>> m_messages;
