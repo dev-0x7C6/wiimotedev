@@ -2,9 +2,10 @@
 # Copyright (C) 2008-2015 Bartłomiej Burdukiewicz
 # Contact: bartlomiej.burdukiewicz@gmail.com
 
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.4)
 
 project( WiimotedevProject )
+set(CMAKE_CXX_STANDARD 14)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
@@ -14,9 +15,6 @@ find_package(Qt5Gui)
 find_package(Qt5DBus)
 find_package(Qt5Widgets)
 find_package(Qt5Network)
-
-set(CMAKE_C_FLAGS "-march=native -O2 -Wall")
-set(CMAKE_CXX_FLAGS "-march=native -O2 -std=c++14 -Wall")
 
 set (wiimotedev_project_files
   ${CMAKE_SOURCE_DIR}/linux/etc/dbus-1/system.d/org.wiimotedev-daemon.conf
