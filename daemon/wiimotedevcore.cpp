@@ -52,9 +52,10 @@ void WiimotedevCore::process() {
 	std::unique_ptr<IContainer> container;
 
 	for (const auto &device : m_devices) {
-		while ((container = device->process())) {
-			for (const auto &adaptor : m_adaptors)
-				adaptor->process(device->type(), device->id(), container);
+		for (auto &&event : device->process()) {
+			for (const auto &adaptor : m_adaptors) {
+				adaptor->process(device->type(), device->id(), event);
+			}
 		}
 
 		if (!device->isValid()) {

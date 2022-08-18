@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <array>
 #include <memory>
+#include <vector>
 
 #include "interfaces/icontainer.h"
 #include "interfaces/iid-manager.h"
@@ -24,7 +25,7 @@ public:
 	virtual Api api() const = 0;
 
 	virtual bool isValid() const = 0;
-	virtual std::unique_ptr<IContainer> process() = 0;
+	virtual auto process() -> std::vector<std::unique_ptr<IContainer>> = 0;
 
 	virtual bool isRumbleSupported() = 0;
 	virtual bool isLedSupported() = 0;

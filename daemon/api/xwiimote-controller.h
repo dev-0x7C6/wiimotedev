@@ -33,7 +33,7 @@ public:
 	Api api() const final { return Api::XWiimote; }
 
 	bool isValid() const final;
-	std::unique_ptr<interface::IContainer> process() override;
+	std::vector<std::unique_ptr<interface::IContainer>> process() override;
 
 	bool isRumbleSupported() final;
 	bool isLedSupported() final;
@@ -63,17 +63,17 @@ private:
 	bool m_connected{false};
 	std::array<u64, 5> m_buttons{0, 0, 0, 0, 0};
 
-	std::queue<std::unique_ptr<interface::IContainer>> m_messages;
 	logger<error_class::debug> m_logger;
 	std::unique_ptr<::helper::xwii_iface_instance> instance;
 	std::unique_ptr<::helper::xwii_iface_session> session;
 
-	bool m_balanceBoardConnected{false};
-	bool m_classicControllerConnected{false};
-	bool m_motionPlusConnected{false};
-	bool m_nunchukConnected{false};
-	bool m_proControllerConnected{false};
-	bool m_wiimoteConnected{false};
+	std::optional<bool> m_balanceBoardConnected;
+	std::optional<bool> m_classicControllerConnected;
+	std::optional<bool> m_motionPlusConnected;
+	std::optional<bool> m_nunchukConnected;
+	std::optional<bool> m_proControllerConnected;
+	std::optional<bool> m_wiimoteConnected;
+
 	bool m_rumbleStatus{false};
 };
 }

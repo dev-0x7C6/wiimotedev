@@ -60,7 +60,8 @@ XWiimoteController::XWiimoteController(IIdManager &manager, std::string &&path)
 		, m_interfaceFilePath(std::move(path)) {
 	setId(m_idManager.reserve(type()));
 	m_buttons.fill(0);
-	spdlog::debug("XWiimoteController::InterfacePath = {}", m_interfaceFilePath);
+	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
+	spdlog::debug("{} interface: {}", wiiremote, m_interfaceFilePath);
 
 	if (openXWiimoteInterface() && watchXWiimoteEvents() && reconfigureXWiimoteInterface()) {
 		m_connected = true;
@@ -149,37 +150,52 @@ Device XWiimoteController::type() const {
 
 bool XWiimoteController::isValid() const { return m_connected; }
 
-std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
-	auto process_ir = [](const xwii_event &event) {
-		IrPoints ir;
-		for (std::size_t i = 0; i < ir.size(); ++i) {
-			ir[i].x = event.v.abs[i].x;
-			ir[i].y = event.v.abs[i].y;
-			ir[i].size = xwii_event_ir_is_valid(&event.v.abs[i]) ? 1 : -1;
-		}
+using Results = std::vector<std::unique_ptr<dae::interface::IContainer>>;
 
-		return std::make_unique<InfraredContainer>(ir);
-	};
+auto element(std::unique_ptr<dae::interface::IContainer> &&v) -> Results {
+	Results ret;
+	ret.emplace_back(std::move(v));
+	return ret;
+}
 
-	auto process_acc = [](const Device source, const xwii_event &event, const int axis) {
-		struct accdata data;
-		data.x = event.v.abs[axis].x;
-		data.y = event.v.abs[axis].y;
-		data.z = event.v.abs[axis].z;
-		data.roll = 0;
-		data.pitch = 0;
-		return std::make_unique<AccelerometerContainer>(source, data);
-	};
+constexpr auto connection_state(const bool available) noexcept -> StatusContainer::State {
+	return available ? StatusContainer::State::Connected : StatusContainer::State::Disconnected;
+}
 
-	auto process_press = [](const xwii_event &event) {
-		struct pressdata data;
-		data.tl = event.v.abs[2].x;
-		data.bl = event.v.abs[3].x;
-		data.br = event.v.abs[1].x;
-		data.tr = event.v.abs[0].x;
-		return std::make_unique<PressureContainer>(data);
-	};
+namespace process {
+auto ir(const xwii_event &event) -> Results {
+	IrPoints ir;
+	for (std::size_t i = 0; i < ir.size(); ++i) {
+		ir[i].x = event.v.abs[i].x;
+		ir[i].y = event.v.abs[i].y;
+		ir[i].size = xwii_event_ir_is_valid(&event.v.abs[i]) ? 1 : -1;
+	}
 
+	return element(std::make_unique<InfraredContainer>(ir));
+}
+
+auto acc(const Device source, const xwii_event &event, const int axis) -> Results {
+	struct accdata data;
+	data.x = event.v.abs[axis].x;
+	data.y = event.v.abs[axis].y;
+	data.z = event.v.abs[axis].z;
+	data.roll = 0;
+	data.pitch = 0;
+	return element(std::make_unique<AccelerometerContainer>(source, data));
+};
+
+auto press(const xwii_event &event) {
+	struct pressdata data;
+	data.tl = event.v.abs[2].x;
+	data.bl = event.v.abs[3].x;
+	data.br = event.v.abs[1].x;
+	data.tr = event.v.abs[0].x;
+	return element(std::make_unique<PressureContainer>(data));
+};
+
+}
+
+std::vector<std::unique_ptr<dae::interface::IContainer>> XWiimoteController::process() {
 	auto process_key = [this](const Device source, const xwii_event &event) {
 		auto mask = m_buttons.at(static_cast<std::size_t>(source));
 		auto code = 1ull << event.v.key.code;
@@ -191,13 +207,42 @@ std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 			mask &= ~code;
 
 		m_buttons.at(static_cast<std::size_t>(source)) = mask;
-		return std::make_unique<ButtonContainer>(source, mask);
+		return element(std::make_unique<ButtonContainer>(source, mask));
 	};
 
-	auto process_gone = [this]() {
+	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
+
+	auto process_gone = [&]() -> Results {
+		spdlog::debug("{} gone", wiiremote);
+
+		Results ret;
+		if (m_nunchukConnected.value_or(false)) {
+			ret.emplace_back(std::make_unique<StatusContainer>(Device::Nunchuk, StatusContainer::State::Disconnected));
+			spdlog::debug("{} report nunchuk: {}", wiiremote, "disconnected");
+		}
+
+		if (m_classicControllerConnected.value_or(false)) {
+			ret.emplace_back(std::make_unique<StatusContainer>(Device::Classic, StatusContainer::State::Disconnected));
+			spdlog::debug("{} report classic controller: {}", wiiremote, "disconnected");
+		}
+
+		if (m_balanceBoardConnected.value_or(false)) {
+			ret.emplace_back(std::make_unique<StatusContainer>(Device::BalanceBoard, StatusContainer::State::Disconnected));
+			spdlog::debug("{} report balance board: {}", wiiremote, "disconnected");
+		}
+
+		if (m_proControllerConnected.value_or(false)) {
+			ret.emplace_back(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Disconnected));
+			spdlog::debug("{} report pro controller: {}", wiiremote, "disconnected");
+		}
+
+		if (m_wiimoteConnected.value_or(false)) {
+			ret.emplace_back(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected));
+			spdlog::debug("{} report wiiremote: {}", wiiremote, "disconnected");
+		}
+
 		m_connected = false;
-		return nullptr;
-		//return std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected);
+		return ret;
 	};
 
 	auto process_stick = [](Device device, const xwii_event &event) {
@@ -217,13 +262,13 @@ std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 
 		if (device == Device::Nunchuk) {
 			calculate(lx, ly, 100);
-			return std::make_unique<StickContainer>(device, lx, ly, 0, 0);
+			return element(std::make_unique<StickContainer>(device, lx, ly, 0, 0));
 		}
 
 		if (device == Device::Classic) {
 			calculate(lx, ly, 24);
 			calculate(rx, ry, 24);
-			return std::make_unique<StickContainer>(device, lx, ly, rx, ry);
+			return element(std::make_unique<StickContainer>(device, lx, ly, rx, ry));
 		}
 
 		if (device == Device::ProController) {
@@ -231,56 +276,47 @@ std::unique_ptr<dae::interface::IContainer> XWiimoteController::process() {
 			calculate(rx, ry, 1280);
 			ly *= -1;
 			ry *= -1;
-			return std::make_unique<StickContainer>(device, lx, ly, rx, ry);
+			return element(std::make_unique<StickContainer>(device, lx, ly, rx, ry));
 		}
 
-		return std::make_unique<StickContainer>(device,
-			event.v.abs[0].x, event.v.abs[0].y, event.v.abs[1].x, event.v.abs[1].y);
+		return element(std::make_unique<StickContainer>(device,
+			event.v.abs[0].x, event.v.abs[0].y, event.v.abs[1].x, event.v.abs[1].y));
 	};
 
-	auto process_watch = [this]() {
+	auto process_watch = [this]() -> Results {
 		reconfigureXWiimoteInterface();
-		return nullptr;
+		return {};
 	};
 
 	struct xwii_event event;
 	event.type = XWII_EVENT_NUM;
-	auto ret = xwii_iface_dispatch(m_interface, &event, sizeof(event));
 
-	if (ret) {
-		if (!m_messages.empty()) {
-			auto result = std::move(m_messages.front());
-			m_messages.pop();
-			return result;
-		}
-		return nullptr;
-	}
-
-	if (!m_messages.empty()) {
-		auto result = std::move(m_messages.front());
-		m_messages.pop();
-		return result;
-	}
+	if (xwii_iface_dispatch(m_interface, &event, sizeof(event)))
+		return {};
 
 	switch (event.type) {
-		case XWII_EVENT_ACCEL: return process_acc(Device::Wiimote, event, 0);
-		case XWII_EVENT_BALANCE_BOARD: return process_press(event);
+		case XWII_EVENT_ACCEL: return process::acc(Device::Wiimote, event, 0);
+		case XWII_EVENT_BALANCE_BOARD: return process::press(event);
 		case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return process_key(Device::Classic, event);
 		case XWII_EVENT_CLASSIC_CONTROLLER_MOVE: return process_stick(Device::Classic, event);
 		case XWII_EVENT_PRO_CONTROLLER_KEY: return process_key(Device::ProController, event);
 		case XWII_EVENT_PRO_CONTROLLER_MOVE: return process_stick(Device::ProController, event);
 		case XWII_EVENT_GONE: return process_gone();
-		case XWII_EVENT_IR: return process_ir(event);
+		case XWII_EVENT_IR: return process::ir(event);
 		case XWII_EVENT_KEY: return process_key(Device::Wiimote, event);
-		case XWII_EVENT_MOTION_PLUS: return std::make_unique<GyroscopeContainer>(event.v.abs[0].x, event.v.abs[0].y, event.v.abs[0].z);
+		case XWII_EVENT_MOTION_PLUS: return element(std::make_unique<GyroscopeContainer>(event.v.abs[0].x, event.v.abs[0].y, event.v.abs[0].z));
 		case XWII_EVENT_NUNCHUK_KEY: return process_key(Device::Nunchuk, event);
-		case XWII_EVENT_NUNCHUK_MOVE:
-			m_messages.emplace(process_acc(Device::Nunchuk, event, 1));
-			return process_stick(Device::Nunchuk, event);
+		case XWII_EVENT_NUNCHUK_MOVE: {
+			Results ret;
+			ret.emplace_back(std::move(process::acc(Device::Nunchuk, event, 1).front()));
+			ret.emplace_back(std::move(process_stick(Device::Nunchuk, event).front()));
+			return ret;
+		}
+
 		case XWII_EVENT_WATCH: return process_watch();
 	}
 
-	return nullptr;
+	return {};
 }
 
 bool XWiimoteController::isRumbleSupported() {
@@ -342,71 +378,51 @@ bool XWiimoteController::reconfigureXWiimoteInterface() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
 	session = std::make_unique<helper::xwii_iface_session>(m_interface, flags);
 
-	if (is_available(flags, XWII_IFACE_CORE) && !m_wiimoteConnected) {
-		m_wiimoteConnected = true;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Connected));
+	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
+	spdlog::debug("process flags");
+
+	Results ret;
+
+	if (const auto available = is_available(flags, XWII_IFACE_CORE); available != m_wiimoteConnected) {
+		m_wiimoteConnected = available;
+		ret.emplace_back(std::make_unique<StatusContainer>(Device::Wiimote, connection_state(available)));
+		spdlog::debug("{} report wiiremote: {}", wiiremote, available ? "connected" : "disconnected");
 	}
 
-	if (is_available(flags, XWII_IFACE_CLASSIC_CONTROLLER) && !m_classicControllerConnected) {
-		m_classicControllerConnected = true;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::Classic, StatusContainer::State::Connected));
+	if (const auto available = is_available(flags, XWII_IFACE_NUNCHUK); available != m_nunchukConnected) {
+		m_nunchukConnected = available;
+		ret.emplace_back(std::make_unique<StatusContainer>(Device::Nunchuk, connection_state(available)));
+		spdlog::debug("{} report nunchuk: {}", wiiremote, available ? "connected" : "disconnected");
 	}
 
-	if (is_available(flags, XWII_IFACE_NUNCHUK) && !m_nunchukConnected) {
-		m_nunchukConnected = true;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::Nunchuk, StatusContainer::State::Connected));
+	if (const auto available = is_available(flags, XWII_IFACE_CLASSIC_CONTROLLER); available != m_classicControllerConnected) {
+		m_classicControllerConnected = available;
+		ret.emplace_back(std::make_unique<StatusContainer>(Device::Classic, connection_state(available)));
+		spdlog::debug("{} report classic controller: {}", wiiremote, available ? "connected" : "disconnected");
 	}
 
-	if (is_available(flags, XWII_IFACE_MOTION_PLUS) && !m_motionPlusConnected) {
-		m_motionPlusConnected = true;
-		//m_messages.emplace(std::make_unique<StatusContainer>(Device::, StatusContainer::State::Connected));
+	if (const auto available = is_available(flags, XWII_IFACE_MOTION_PLUS); available != m_motionPlusConnected) {
+		m_motionPlusConnected = available;
+		// m_messages.emplace(std::make_unique<StatusContainer>(Device::, connection_state(available)));
+		spdlog::debug("{} report motion+: {}", wiiremote, available ? "connected" : "disconnected");
 	}
 
-	if (is_available(flags, XWII_IFACE_BALANCE_BOARD) && !m_balanceBoardConnected) {
-		m_balanceBoardConnected = true;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::BalanceBoard, StatusContainer::State::Connected));
+	if (const auto available = is_available(flags, XWII_IFACE_BALANCE_BOARD); available != m_balanceBoardConnected) {
+		m_balanceBoardConnected = available;
+		ret.emplace_back(std::make_unique<StatusContainer>(Device::BalanceBoard, connection_state(available)));
+		spdlog::debug("{} report balance board: {}", wiiremote, available ? "connected" : "disconnected");
 	}
 
-	if (is_available(flags, XWII_IFACE_PRO_CONTROLLER) && !m_proControllerConnected) {
-		m_proControllerConnected = true;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Connected));
-	}
-
-	if (!is_available(flags, XWII_IFACE_CORE) && m_wiimoteConnected) {
-		m_wiimoteConnected = false;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected));
-	}
-
-	if (!is_available(flags, XWII_IFACE_CLASSIC_CONTROLLER) && m_classicControllerConnected) {
-		m_classicControllerConnected = false;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::Classic, StatusContainer::State::Disconnected));
-	}
-
-	if (!is_available(flags, XWII_IFACE_NUNCHUK) && m_nunchukConnected) {
-		m_nunchukConnected = false;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::Nunchuk, StatusContainer::State::Disconnected));
-	}
-
-	if (!is_available(flags, XWII_IFACE_MOTION_PLUS) && m_motionPlusConnected) {
-		m_motionPlusConnected = false;
-		//m_messages.emplace(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected));
-	}
-
-	if (!is_available(flags, XWII_IFACE_BALANCE_BOARD) && m_balanceBoardConnected) {
-		m_balanceBoardConnected = false;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::BalanceBoard, StatusContainer::State::Disconnected));
-	}
-
-	if (!is_available(flags, XWII_IFACE_PRO_CONTROLLER) && m_proControllerConnected) {
-		m_proControllerConnected = false;
-		m_messages.emplace(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Disconnected));
+	if (const auto available = is_available(flags, XWII_IFACE_PRO_CONTROLLER); available != m_proControllerConnected) {
+		m_proControllerConnected = available;
+		ret.emplace_back(std::make_unique<StatusContainer>(Device::ProController, connection_state(available)));
+		spdlog::debug("{} report pro controller: {}", wiiremote, available ? "connected" : "disconnected");
 	}
 
 	auto is_reporting = [&](const u32 match) -> bool {
 		return (flags & match) != 0;
 	};
 
-	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
 	spdlog::debug("{} report table:", wiiremote);
 	spdlog::debug("{}   -> core:           {}", wiiremote, is_reporting(XWII_IFACE_CORE));
 	spdlog::debug("{}   -> accelerometer:  {}", wiiremote, is_reporting(XWII_IFACE_ACCEL));
