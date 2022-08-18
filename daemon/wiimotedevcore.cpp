@@ -34,7 +34,13 @@ WiimotedevCore::WiimotedevCore()
 		},
 			processor));
 
-	QDBusConnection connection = QDBusConnection::systemBus();
+	auto connection = []() {
+		if (getuid() == 0)
+			return QDBusConnection::systemBus();
+
+		return QDBusConnection::sessionBus();
+	}();
+
 	for (const auto &adaptor : m_adaptors)
 		connection.registerObject("/" + QString::fromStdString(name(adaptor->type())), adaptor.get());
 

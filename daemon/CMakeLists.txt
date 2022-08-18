@@ -1,12 +1,13 @@
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_SOURCE_DIR}
 )
 
 set(sources
 	${CMAKE_SOURCE_DIR}/common/enums/device.cpp
 	${CMAKE_SOURCE_DIR}/common/enums/device.h
-	${CMAKE_SOURCE_DIR}/config.h
+        ${CMAKE_CURRENT_BINARY_DIR}/../config.h
 	${CMAKE_SOURCE_DIR}/include/wiimotedev/wiimotedev
 	api/xwiimote-controller.cpp
 	api/xwiimote-controller.h
@@ -78,6 +79,7 @@ target_link_libraries(wiimotedev-daemon
 	${BLUETOOTH_LIBRARIES}
 	Qt5::Core
 	Qt5::DBus
+        spdlog::spdlog
 	xwiimote
 	pthread
 )

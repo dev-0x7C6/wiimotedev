@@ -8,6 +8,8 @@
 
 #include "wiimotedevcore.h"
 
+#include <spdlog/spdlog.h>
+
 using namespace dae::core;
 
 int main(int argc, char *argv[]) {
@@ -18,9 +20,11 @@ int main(int argc, char *argv[]) {
 		QString::number(WIIMOTEDEV_VERSION_MINOR) + '.' +
 		QString::number(WIIMOTEDEV_VERSION_PATCH));
 
+	spdlog::set_level(spdlog::level::debug);
+	spdlog::set_pattern("[%^%l%$] %v");
+
 	if (getuid()) {
-		std::cerr << "root privilages needed." << std::endl;
-		return 1;
+		spdlog::warn("core: dbus session will be user wise (non-root)");
 	}
 
 	signal(SIGTERM, [](int) { qApp->quit(); });

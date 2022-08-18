@@ -5,8 +5,6 @@
 
 #include <cstdlib>
 #include <cstring>
-#include <iomanip>
-#include <iostream>
 
 #include "include/wiimotedev/wiimotedev"
 #include "containers/accelerometer-container.h"
@@ -17,6 +15,8 @@
 #include "containers/status-container.h"
 #include "containers/stick-container.h"
 #include "interfaces/icontainer.h"
+
+#include <spdlog/spdlog.h>
 
 using namespace common::enums;
 using namespace dae::api;
@@ -58,11 +58,12 @@ constexpr auto is_available(type &&flags, input_type &&match_with) noexcept {
 XWiimoteController::XWiimoteController(IIdManager &manager, std::string &&path)
 		: IWiimote(manager)
 		, m_interfaceFilePath(std::move(path)) {
+	setId(m_idManager.reserve(type()));
 	m_buttons.fill(0);
+	spdlog::debug("XWiimoteController::InterfacePath = {}", m_interfaceFilePath);
 
 	if (openXWiimoteInterface() && watchXWiimoteEvents() && reconfigureXWiimoteInterface()) {
 		m_connected = true;
-		setId(m_idManager.reserve(type()));
 	}
 }
 
@@ -370,24 +371,19 @@ bool XWiimoteController::reconfigureXWiimoteInterface() {
 		m_messages.emplace(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Disconnected));
 	}
 
-	constexpr auto space = 25;
-	std::cout << "report mode:" << std::endl;
-	std::cout << std::boolalpha << std::left;
-	std::cout << std::setw(space) << "  core"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_CORE) << std::endl;
-	std::cout << std::setw(space) << "  accelerometer"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_ACCEL) << std::endl;
-	std::cout << std::setw(space) << "  gyroscope"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_MOTION_PLUS) << std::endl;
-	std::cout << std::setw(space) << "  nunchuk"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_NUNCHUK) << std::endl;
-	std::cout << std::setw(space) << "  classic"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_CLASSIC_CONTROLLER) << std::endl;
-	std::cout << std::setw(space) << "  balance board"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_BALANCE_BOARD) << std::endl;
-	std::cout << std::setw(space) << "  pro controller"
-			  << ": " << static_cast<bool>(flags & XWII_IFACE_PRO_CONTROLLER) << std::endl;
-	std::cout << std::noboolalpha;
+	auto is_reporting = [&](const u32 match) -> bool {
+		return (flags & match) != 0;
+	};
+
+	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
+	spdlog::debug("{} report table:", wiiremote);
+	spdlog::debug("{}  core:           {}", wiiremote, is_reporting(XWII_IFACE_CORE));
+	spdlog::debug("{}  accelerometer:  {}", wiiremote, is_reporting(XWII_IFACE_ACCEL));
+	spdlog::debug("{}  motion+:        {}", wiiremote, is_reporting(XWII_IFACE_MOTION_PLUS));
+	spdlog::debug("{}  nunchuk:        {}", wiiremote, is_reporting(XWII_IFACE_NUNCHUK));
+	spdlog::debug("{}  classic:        {}", wiiremote, is_reporting(XWII_IFACE_CLASSIC_CONTROLLER));
+	spdlog::debug("{}  balance board:  {}", wiiremote, is_reporting(XWII_IFACE_BALANCE_BOARD));
+	spdlog::debug("{}  pro controller: {}", wiiremote, is_reporting(XWII_IFACE_PRO_CONTROLLER));
 
 	if (ret) {
 		m_connected = false;

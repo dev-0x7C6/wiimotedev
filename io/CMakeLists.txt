@@ -1,10 +1,10 @@
 include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}
+        ${CMAKE_CURRENT_BINARY_DIR}
 	${CMAKE_SOURCE_DIR}
 )
 
 set(sources
-	${CMAKE_SOURCE_DIR}/config.h
 	${CMAKE_SOURCE_DIR}/include/wiimotedev/wiimotedev
 	${CMAKE_SOURCE_DIR}/common/enums/device.cpp
 	${CMAKE_SOURCE_DIR}/common/enums/device.h
