@@ -18,6 +18,10 @@ using destruction_queue = std::queue<raii_tail_call>;
 struct xwii_iface;
 struct xwii_event;
 
+namespace helper {
+struct xwii_iface_session;
+}
+
 namespace dae {
 namespace api {
 
@@ -64,6 +68,7 @@ private:
 
 	std::queue<std::unique_ptr<interface::IContainer>> m_messages;
 	logger<error_class::debug> m_logger;
+	std::unique_ptr<::helper::xwii_iface_session> session;
 
 	bool m_connectedFlag{false};
 	bool m_balanceBoardConnected{false};

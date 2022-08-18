@@ -307,9 +307,32 @@ std::string XWiimoteController::interfaceFilePath() const {
 	return m_interfaceFilePath;
 }
 
+namespace helper {
+struct xwii_iface_session {
+	xwii_iface_session(xwii_iface *iface, const u32 flags)
+			: iface(iface)
+			, flags(flags) {
+		iface = (xwii_iface_open(iface, flags) == 0) ? iface : nullptr;
+	}
+
+	constexpr auto valid() const noexcept -> bool {
+		return iface != nullptr;
+	}
+
+	~xwii_iface_session() {
+		if (iface)
+			xwii_iface_close(iface, flags);
+	}
+
+private:
+	xwii_iface *iface{nullptr};
+	u32 flags{};
+};
+}
+
 bool XWiimoteController::reconfigureXWiimoteInterface() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
-	auto ret = xwii_iface_open(m_interface, flags);
+	session = std::make_unique<helper::xwii_iface_session>(m_interface, flags);
 
 	if (is_available(flags, XWII_IFACE_CORE) && !m_wiimoteConnected) {
 		m_wiimoteConnected = true;
@@ -377,15 +400,16 @@ bool XWiimoteController::reconfigureXWiimoteInterface() {
 
 	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
 	spdlog::debug("{} report table:", wiiremote);
-	spdlog::debug("{}  core:           {}", wiiremote, is_reporting(XWII_IFACE_CORE));
-	spdlog::debug("{}  accelerometer:  {}", wiiremote, is_reporting(XWII_IFACE_ACCEL));
-	spdlog::debug("{}  motion+:        {}", wiiremote, is_reporting(XWII_IFACE_MOTION_PLUS));
-	spdlog::debug("{}  nunchuk:        {}", wiiremote, is_reporting(XWII_IFACE_NUNCHUK));
-	spdlog::debug("{}  classic:        {}", wiiremote, is_reporting(XWII_IFACE_CLASSIC_CONTROLLER));
-	spdlog::debug("{}  balance board:  {}", wiiremote, is_reporting(XWII_IFACE_BALANCE_BOARD));
-	spdlog::debug("{}  pro controller: {}", wiiremote, is_reporting(XWII_IFACE_PRO_CONTROLLER));
+	spdlog::debug("{}   -> core:           {}", wiiremote, is_reporting(XWII_IFACE_CORE));
+	spdlog::debug("{}   -> accelerometer:  {}", wiiremote, is_reporting(XWII_IFACE_ACCEL));
+	spdlog::debug("{}   -> motion+:        {}", wiiremote, is_reporting(XWII_IFACE_MOTION_PLUS));
+	spdlog::debug("{}   -> nunchuk:        {}", wiiremote, is_reporting(XWII_IFACE_NUNCHUK));
+	spdlog::debug("{}   -> classic:        {}", wiiremote, is_reporting(XWII_IFACE_CLASSIC_CONTROLLER));
+	spdlog::debug("{}   -> balance board:  {}", wiiremote, is_reporting(XWII_IFACE_BALANCE_BOARD));
+	spdlog::debug("{}   -> pro controller: {}", wiiremote, is_reporting(XWII_IFACE_PRO_CONTROLLER));
 
-	if (ret) {
+	if (!session->valid()) {
+		spdlog::error("{} session interface is broken", wiiremote);
 		m_connected = false;
 		return false;
 	}
