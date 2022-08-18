@@ -67,20 +67,56 @@ XWiimoteController::XWiimoteController(IIdManager &manager, std::string &&path)
 	}
 }
 
-bool XWiimoteController::openXWiimoteInterface() {
-	auto ret = xwii_iface_new(&m_interface, m_interfaceFilePath.c_str());
+namespace helper {
+struct xwii_iface_instance {
+	xwii_iface_instance(xwii_iface **iface, const char *path)
+			: iface(iface) {
+		iface = (xwii_iface_new(iface, path) == 0) ? iface : nullptr;
+	}
 
-	if (ret) {
-		std::cerr << "fail: unable to create " << m_interfaceFilePath << " interface." << std::endl;
+	constexpr auto valid() const noexcept -> bool {
+		return iface != nullptr;
+	}
+
+	~xwii_iface_instance() {
+		if (iface)
+			xwii_iface_unref(*iface);
+	}
+
+private:
+	xwii_iface **iface{nullptr};
+};
+
+struct xwii_iface_session {
+	xwii_iface_session(xwii_iface *iface, const u32 flags)
+			: iface(iface)
+			, flags(flags) {
+		iface = (xwii_iface_open(iface, flags) == 0) ? iface : nullptr;
+	}
+
+	constexpr auto valid() const noexcept -> bool {
+		return iface != nullptr;
+	}
+
+	~xwii_iface_session() {
+		if (iface)
+			xwii_iface_close(iface, flags);
+	}
+
+private:
+	xwii_iface *iface{nullptr};
+	u32 flags{};
+};
+}
+
+bool XWiimoteController::openXWiimoteInterface() {
+	instance = std::make_unique<helper::xwii_iface_instance>(&m_interface, m_interfaceFilePath.c_str());
+
+	if (!instance->valid()) {
+		spdlog::error("unable to create {} interface", m_interfaceFilePath);
 		return false;
 	};
 
-	m_destructionQueue.emplace([this]() {
-		xwii_iface_unref(m_interface);
-		m_logger.debug("xwii_iface_unref");
-	});
-
-	m_fd = xwii_iface_get_fd(m_interface);
 	return true;
 }
 
@@ -91,11 +127,6 @@ bool XWiimoteController::watchXWiimoteEvents() {
 		std::cerr << "fail: unable to attach watcher on interface." << std::endl;
 		return false;
 	}
-
-	m_destructionQueue.emplace([this]() {
-		xwii_iface_close(m_interface, XWII_IFACE_ALL | XWII_IFACE_WRITABLE);
-		m_logger.debug("xwii_iface_close");
-	});
 
 	return true;
 }
@@ -305,29 +336,6 @@ bool XWiimoteController::hasNunchukExtension() {
 
 std::string XWiimoteController::interfaceFilePath() const {
 	return m_interfaceFilePath;
-}
-
-namespace helper {
-struct xwii_iface_session {
-	xwii_iface_session(xwii_iface *iface, const u32 flags)
-			: iface(iface)
-			, flags(flags) {
-		iface = (xwii_iface_open(iface, flags) == 0) ? iface : nullptr;
-	}
-
-	constexpr auto valid() const noexcept -> bool {
-		return iface != nullptr;
-	}
-
-	~xwii_iface_session() {
-		if (iface)
-			xwii_iface_close(iface, flags);
-	}
-
-private:
-	xwii_iface *iface{nullptr};
-	u32 flags{};
-};
 }
 
 bool XWiimoteController::reconfigureXWiimoteInterface() {
