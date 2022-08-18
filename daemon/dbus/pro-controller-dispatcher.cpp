@@ -17,7 +17,7 @@ ProControllerDispatcher::ProControllerDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor ProControllerDispatcher::type() const { return Adaptor::ProController; }
-QList<uint> ProControllerDispatcher::list() { return m_ids.toList(); }
+QList<uint> ProControllerDispatcher::list() { return m_ids.values(); }
 
 void ProControllerDispatcher::process(const Device device, const u32 id, const std::unique_ptr<IContainer> &container) {
 	if (Device::ProController != device)

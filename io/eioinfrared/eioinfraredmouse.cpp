@@ -1,12 +1,11 @@
 #include "eioinfraredmouse.h"
+
 #include <cmath>
-#include <QCursor>
+
 #include <QRect>
-#include <QApplication>
-#include <QDesktopWidget>
+#include <QGuiApplication>
+#include <QScreen>
 #include <QCursor>
-#include <iostream>
-#include <cassert>
 
 using namespace io;
 using namespace io::container;
@@ -85,7 +84,7 @@ void EIOInfraredMouse::processAbsoluteMouse() {
 	if (m_delta[XAxis] == 0 && m_delta[YAxis] == 0)
 		return;
 
-	QRect rect = QApplication::desktop()->screenGeometry(0);
+	const auto rect = QGuiApplication::screens().first()->geometry();
 	double x = -m_position[XAxis] + 0x200;
 	double y = -m_position[YAxis] + 0x180;
 	const double w = rect.width();

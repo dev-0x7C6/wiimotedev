@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <variant>
+#include <optional>
 
 #include <externals/common/types.hpp>
 

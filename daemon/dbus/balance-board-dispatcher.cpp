@@ -16,7 +16,7 @@ BalanceBoardDispatcher::BalanceBoardDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor BalanceBoardDispatcher::type() const { return Adaptor::BalanceBoard; }
-QList<uint> BalanceBoardDispatcher::list() { return m_ids.toList(); }
+QList<uint> BalanceBoardDispatcher::list() { return m_ids.values(); }
 
 void BalanceBoardDispatcher::process(const Device device, const u32 id, const std::unique_ptr<dae::interface::IContainer> &container) {
 	if (Device::BalanceBoard != device)
