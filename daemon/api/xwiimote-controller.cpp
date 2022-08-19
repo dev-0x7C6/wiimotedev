@@ -125,7 +125,7 @@ bool XWiimoteController::watchXWiimoteEvents() {
 	auto ret = xwii_iface_watch(m_interface, true);
 
 	if (ret) {
-		std::cerr << "fail: unable to attach watcher on interface." << std::endl;
+		spdlog::error("fail: unable to attach watcher on interface");
 		return false;
 	}
 

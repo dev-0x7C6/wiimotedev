@@ -2,14 +2,9 @@
 
 #include <array>
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <optional>
-#include <queue>
 #include <string>
-
-#include <externals/common/logger/logger.hpp>
-#include <externals/common/std/raii/raii-tail-call.hpp>
 
 #include "interfaces/iwiimote-api.h"
 
@@ -60,10 +55,8 @@ private:
 private:
 	const std::string m_interfaceFilePath;
 	xwii_iface *m_interface{nullptr};
-	bool m_connected{false};
 	std::array<u64, 5> m_buttons{0, 0, 0, 0, 0};
 
-	logger<error_class::debug> m_logger;
 	std::unique_ptr<::helper::xwii_iface_instance> instance;
 	std::unique_ptr<::helper::xwii_iface_session> session;
 
@@ -74,6 +67,7 @@ private:
 	std::optional<bool> m_proControllerConnected;
 	std::optional<bool> m_wiimoteConnected;
 
+	bool m_connected{false};
 	bool m_rumbleStatus{false};
 };
 }

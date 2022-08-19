@@ -51,18 +51,12 @@ void WiimotedevCore::process() {
 	m_scanner.merge(m_devices);
 	std::unique_ptr<IContainer> container;
 
-	for (const auto &device : m_devices) {
-		for (auto &&event : device->process()) {
-			for (const auto &adaptor : m_adaptors) {
-				adaptor->process(device->type(), device->id(), event);
-			}
-		}
+	m_devices.remove_if([](auto &&device) { return !device->isValid(); });
 
-		if (!device->isValid()) {
-			m_devices.remove_if([&device](const auto &value) { return value.get() == device.get(); });
-			return;
-		}
-	}
+	for (const auto &device : m_devices)
+		for (auto &&event : device->process())
+			for (const auto &adaptor : m_adaptors)
+				adaptor->process(device->type(), device->id(), event);
 }
 
 CommandResult WiimotedevCore::event(CommandEvent &&event) noexcept {
