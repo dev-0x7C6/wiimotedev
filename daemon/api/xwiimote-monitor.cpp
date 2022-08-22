@@ -1,15 +1,16 @@
 #include "xwiimote-monitor.h"
 
-#include <xwiimote.h>
+#include <xwiimote-ng.h>
 
 using namespace dae::api::helper;
 
-XWiimoteMonitor::XWiimoteMonitor() {
-	m_monitor = xwii_monitor_new(true, true);
+XWiimoteMonitor::XWiimoteMonitor()
+		: m_monitor(xwii_monitor_new(true, true)) {
 }
 
-XWiimoteMonitor::~XWiimoteMonitor() {
-	xwii_monitor_unref(m_monitor);
+XWiimoteMonitor::~XWiimoteMonitor() noexcept {
+	if (isValid())
+		xwii_monitor_unref(m_monitor);
 }
 
 bool XWiimoteMonitor::isValid() const {

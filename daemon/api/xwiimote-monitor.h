@@ -18,7 +18,7 @@ public:
 	std::string dequeue();
 
 private:
-	xwii_monitor *m_monitor;
+	xwii_monitor *m_monitor{nullptr};
 };
 }
 }

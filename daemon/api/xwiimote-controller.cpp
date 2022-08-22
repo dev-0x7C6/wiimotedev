@@ -1,8 +1,9 @@
 #include "xwiimote-controller.h"
 
 #include <poll.h>
-#include <xwiimote.h>
+#include <xwiimote-ng.h>
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
 
@@ -291,32 +292,43 @@ std::vector<std::unique_ptr<dae::interface::IContainer>> XWiimoteController::pro
 	struct xwii_event event;
 	event.type = XWII_EVENT_NUM;
 
-	if (xwii_iface_dispatch(m_interface, &event, sizeof(event)))
-		return {};
+	u32 i = 0;
 
-	switch (event.type) {
-		case XWII_EVENT_ACCEL: return process::acc(Device::Wiimote, event, 0);
-		case XWII_EVENT_BALANCE_BOARD: return process::press(event);
-		case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return process_key(Device::Classic, event);
-		case XWII_EVENT_CLASSIC_CONTROLLER_MOVE: return process_stick(Device::Classic, event);
-		case XWII_EVENT_PRO_CONTROLLER_KEY: return process_key(Device::ProController, event);
-		case XWII_EVENT_PRO_CONTROLLER_MOVE: return process_stick(Device::ProController, event);
-		case XWII_EVENT_GONE: return process_gone();
-		case XWII_EVENT_IR: return process::ir(event);
-		case XWII_EVENT_KEY: return process_key(Device::Wiimote, event);
-		case XWII_EVENT_MOTION_PLUS: return element(std::make_unique<GyroscopeContainer>(event.v.abs[0].x, event.v.abs[0].y, event.v.abs[0].z));
-		case XWII_EVENT_NUNCHUK_KEY: return process_key(Device::Nunchuk, event);
-		case XWII_EVENT_NUNCHUK_MOVE: {
-			Results ret;
-			ret.emplace_back(std::move(process::acc(Device::Nunchuk, event, 1).front()));
-			ret.emplace_back(std::move(process_stick(Device::Nunchuk, event).front()));
-			return ret;
-		}
+	Results results;
+	while (xwii_iface_dispatch(m_interface, &event, sizeof(event)) == 0) {
+		i++;
+		auto x = [&]() -> Results {
+			switch (event.type) {
+				case XWII_EVENT_ACCEL: return process::acc(Device::Wiimote, event, 0);
+				case XWII_EVENT_BALANCE_BOARD: return process::press(event);
+				case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return process_key(Device::Classic, event);
+				case XWII_EVENT_CLASSIC_CONTROLLER_MOVE: return process_stick(Device::Classic, event);
+				case XWII_EVENT_PRO_CONTROLLER_KEY: return process_key(Device::ProController, event);
+				case XWII_EVENT_PRO_CONTROLLER_MOVE: return process_stick(Device::ProController, event);
+				case XWII_EVENT_GONE: return process_gone();
+				case XWII_EVENT_IR: return process::ir(event);
+				case XWII_EVENT_KEY: return process_key(Device::Wiimote, event);
+				case XWII_EVENT_MOTION_PLUS: return element(std::make_unique<GyroscopeContainer>(event.v.abs[0].x, event.v.abs[0].y, event.v.abs[0].z));
+				case XWII_EVENT_NUNCHUK_KEY: return process_key(Device::Nunchuk, event);
+				case XWII_EVENT_NUNCHUK_MOVE: {
+					Results ret;
+					ret.emplace_back(std::move(process::acc(Device::Nunchuk, event, 1).front()));
+					ret.emplace_back(std::move(process_stick(Device::Nunchuk, event).front()));
+					return ret;
+				}
 
-		case XWII_EVENT_WATCH: return process_watch();
+				case XWII_EVENT_WATCH: return process_watch();
+			}
+
+			return {};
+		}();
+		std::move(x.begin(), x.end(), std::back_inserter(results));
 	}
 
-	return {};
+	if (i != 0)
+		spdlog::info("{}, readed times: {}", wiiremote, i);
+
+	return results;
 }
 
 bool XWiimoteController::isRumbleSupported() {
