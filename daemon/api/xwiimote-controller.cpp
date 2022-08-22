@@ -111,9 +111,14 @@ private:
 };
 }
 
+template <typename T, typename... args>
+void reconstruct(std::unique_ptr<T> &interface, args &&...values) {
+	interface = nullptr;
+	interface = std::make_unique<T>(std::forward<args>(values)...);
+}
+
 bool XWiimoteController::openXWiimoteInterface() {
-	instance = nullptr;
-	instance = std::make_unique<helper::xwii_iface_instance>(&m_interface, m_interfaceFilePath.c_str());
+	reconstruct(instance, &m_interface, m_interfaceFilePath.c_str());
 
 	if (!instance->valid()) {
 		spdlog::error("unable to create {} interface", m_interfaceFilePath);
@@ -293,9 +298,10 @@ std::vector<std::unique_ptr<dae::interface::IContainer>> XWiimoteController::pro
 	struct xwii_event event;
 	event.type = XWII_EVENT_NUM;
 
-	Results results;
+	Results ret;
+
 	while (xwii_iface_dispatch(m_interface, &event, sizeof(event)) == 0) {
-		auto x = [&]() -> Results {
+		auto events = [&]() -> Results {
 			switch (event.type) {
 				case XWII_EVENT_ACCEL: return process::acc(Device::Wiimote, event, 0);
 				case XWII_EVENT_BALANCE_BOARD: return process::press(event);
@@ -320,10 +326,10 @@ std::vector<std::unique_ptr<dae::interface::IContainer>> XWiimoteController::pro
 
 			return {};
 		}();
-		std::move(x.begin(), x.end(), std::back_inserter(results));
+		std::move(events.begin(), events.end(), std::back_inserter(ret));
 	}
 
-	return results;
+	return ret;
 }
 
 bool XWiimoteController::isRumbleSupported() {
@@ -383,8 +389,7 @@ std::string XWiimoteController::interfaceFilePath() const {
 
 bool XWiimoteController::reconfigureXWiimoteInterface() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
-	session = nullptr;
-	session = std::make_unique<helper::xwii_iface_session>(m_interface, flags);
+	reconstruct(session, m_interface, flags);
 
 	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
 	spdlog::debug("process flags");
