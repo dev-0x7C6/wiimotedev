@@ -112,6 +112,7 @@ private:
 }
 
 bool XWiimoteController::openXWiimoteInterface() {
+	instance = nullptr;
 	instance = std::make_unique<helper::xwii_iface_instance>(&m_interface, m_interfaceFilePath.c_str());
 
 	if (!instance->valid()) {
@@ -292,11 +293,8 @@ std::vector<std::unique_ptr<dae::interface::IContainer>> XWiimoteController::pro
 	struct xwii_event event;
 	event.type = XWII_EVENT_NUM;
 
-	u32 i = 0;
-
 	Results results;
 	while (xwii_iface_dispatch(m_interface, &event, sizeof(event)) == 0) {
-		i++;
 		auto x = [&]() -> Results {
 			switch (event.type) {
 				case XWII_EVENT_ACCEL: return process::acc(Device::Wiimote, event, 0);
@@ -324,9 +322,6 @@ std::vector<std::unique_ptr<dae::interface::IContainer>> XWiimoteController::pro
 		}();
 		std::move(x.begin(), x.end(), std::back_inserter(results));
 	}
-
-	if (i != 0)
-		spdlog::info("{}, readed times: {}", wiiremote, i);
 
 	return results;
 }
@@ -388,6 +383,7 @@ std::string XWiimoteController::interfaceFilePath() const {
 
 bool XWiimoteController::reconfigureXWiimoteInterface() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
+	session = nullptr;
 	session = std::make_unique<helper::xwii_iface_session>(m_interface, flags);
 
 	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
