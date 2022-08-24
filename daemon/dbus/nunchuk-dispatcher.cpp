@@ -1,11 +1,6 @@
 #include "nunchuk-dispatcher.h"
 #include "nunchukadaptor.h"
 
-#include "containers/accelerometer-container.h"
-#include "containers/button-container.h"
-#include "containers/status-container.h"
-#include "containers/stick-container.h"
-
 using namespace common::enums;
 using namespace dae::container;
 using namespace dae::dbus;

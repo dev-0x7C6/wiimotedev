@@ -12,13 +12,7 @@ set(sources
     api/xwiimote-manager.h
     api/xwiimote-monitor.cpp
     api/xwiimote-monitor.h
-    containers/accelerometer-container.h
-    containers/button-container.h
-    containers/gyroscope-container.h
-    containers/infrared-container.h
-    containers/pressure-container.h
-    containers/status-container.h
-    containers/stick-container.h
+    containers/structs.hpp
     controllers/wiimote-id-manager.cpp
     controllers/wiimote-id-manager.h
     containers/structs.hpp
@@ -51,7 +45,6 @@ set(sources
     functionals/virtual-cursor-processor.h
     interfaces/icontainer-processor.cpp
     interfaces/icontainer-processor.h
-    interfaces/icontainer.h
     interfaces/iid-manager.cpp
     interfaces/iid-manager.h
     interfaces/iwiimote-api.cpp

@@ -8,7 +8,6 @@
 #include "common/enums/command-type.hpp"
 #include "common/enums/device.h"
 #include "enums/adaptor.h"
-#include "interfaces/icontainer.h"
 #include "containers/structs.hpp"
 
 namespace dae::interface {

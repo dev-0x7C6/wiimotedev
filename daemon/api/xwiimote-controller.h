@@ -78,8 +78,8 @@ private:
 	std::unique_ptr<::helper::xwii_iface_instance> instance;
 	std::unique_ptr<::helper::xwii_iface_session> session;
 
-	std::array<std::optional<bool>, 6> currentExtensionTable;
-	std::array<std::optional<bool>, 6> lastExtensionTable;
+	std::array<bool, 6> currentExtensionTable{};
+	std::array<bool, 6> lastExtensionTable{};
 
 	std::optional<bool> m_balanceBoardConnected;
 	std::optional<bool> m_classicControllerConnected;

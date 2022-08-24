@@ -8,15 +8,7 @@
 #include <cstring>
 
 #include "include/wiimotedev/wiimotedev"
-#include "containers/accelerometer-container.h"
-#include "containers/infrared-container.h"
-#include "containers/gyroscope-container.h"
-#include "containers/pressure-container.h"
-#include "containers/button-container.h"
-#include "containers/status-container.h"
-#include "containers/stick-container.h"
 #include "containers/structs.hpp"
-#include "interfaces/icontainer.h"
 
 #include <spdlog/spdlog.h>
 
@@ -24,7 +16,6 @@ using namespace common::enums;
 using namespace dae::api;
 using namespace dae::container;
 using namespace dae::container::structs;
-using namespace dae::enums;
 using namespace dae::interface;
 using namespace wiimotedev;
 
@@ -112,6 +103,32 @@ private:
 };
 }
 
+constexpr auto to_xwii_interface(const extension value) noexcept -> u32 {
+	switch (value) {
+		case extension::wiiremote: return XWII_IFACE_CORE;
+		case extension::nunchuk: return XWII_IFACE_NUNCHUK;
+		case extension::classic_controller: return XWII_IFACE_CLASSIC_CONTROLLER;
+		case extension::pro_controller: return XWII_IFACE_PRO_CONTROLLER;
+		case extension::motion_plus: return XWII_IFACE_MOTION_PLUS;
+		case extension::balance_board: return XWII_IFACE_BALANCE_BOARD;
+	}
+
+	return XWII_IFACE_CORE;
+};
+
+constexpr auto to_string(const extension value) noexcept -> const char * {
+	switch (value) {
+		case extension::wiiremote: return "wiimote";
+		case extension::nunchuk: return "nunchuk";
+		case extension::classic_controller: return "classic controller";
+		case extension::pro_controller: return "pro controller";
+		case extension::motion_plus: return "motion+";
+		case extension::balance_board: return "balance board";
+	}
+
+	return "";
+};
+
 template <typename T, typename... args>
 void reconstruct(std::unique_ptr<T> &interface, args &&...values) {
 	interface = nullptr;
@@ -157,10 +174,6 @@ Device XWiimoteController::type() const {
 }
 
 bool XWiimoteController::isValid() const { return m_connected; }
-
-constexpr auto connection_state(const bool available) noexcept -> StatusContainer::State {
-	return available ? StatusContainer::State::Connected : StatusContainer::State::Disconnected;
-}
 
 namespace process {
 auto ir(const xwii_event &event) -> dae::container::structs::event {
@@ -220,40 +233,23 @@ events XWiimoteController::process() {
 	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
 
 	auto process_gone = [&]() -> dae::container::structs::events {
-		spdlog::debug("{} gone", wiiremote);
-
-		auto status = [](const common::enums::Device source, const bool connected) -> dae::container::structs::event {
-			dae::container::structs::status status;
-			status.is_connected = connected;
-			return std::make_pair(source, std::move(status));
-		};
-
 		dae::container::structs::events ret;
 
-		if (m_nunchukConnected.value_or(false)) {
-			ret.emplace_back(status(Device::Nunchuk, false));
-			spdlog::debug("{} report nunchuk: {}", wiiremote, "disconnected");
+		currentExtensionTable.fill(false);
+
+		for (auto &&extension : extensions) {
+			const auto idx = static_cast<std::size_t>(extension);
+			if (currentExtensionTable[idx] == lastExtensionTable[idx])
+				continue;
+
+			const auto available = currentExtensionTable[idx];
+			dae::container::structs::status status;
+			status.is_connected = available;
+			ret.emplace_back(std::make_pair(common::enums::Device::Wiimote, std::move(status)));
+			spdlog::debug("{} report {}: {}", wiiremote, to_string(extension), available ? "connected" : "disconnected");
 		}
 
-		if (m_classicControllerConnected.value_or(false)) {
-			ret.emplace_back(status(Device::Classic, false));
-			spdlog::debug("{} report classic controller: {}", wiiremote, "disconnected");
-		}
-
-		//		if (m_balanceBoardConnected.value_or(false)) {
-		//			ret.emplace_back(std::make_unique<StatusContainer>(Device::BalanceBoard, StatusContainer::State::Disconnected));
-		//			spdlog::debug("{} report balance board: {}", wiiremote, "disconnected");
-		//		}
-
-		//		if (m_proControllerConnected.value_or(false)) {
-		//			ret.emplace_back(std::make_unique<StatusContainer>(Device::ProController, StatusContainer::State::Disconnected));
-		//			spdlog::debug("{} report pro controller: {}", wiiremote, "disconnected");
-		//		}
-
-		//		if (m_wiimoteConnected.value_or(false)) {
-		//			ret.emplace_back(std::make_unique<StatusContainer>(Device::Wiimote, StatusContainer::State::Disconnected));
-		//			spdlog::debug("{} report wiiremote: {}", wiiremote, "disconnected");
-		//		}
+		lastExtensionTable = currentExtensionTable;
 
 		m_connected = false;
 		return ret;
@@ -390,19 +386,6 @@ std::string XWiimoteController::interfaceFilePath() const {
 	return m_interfaceFilePath;
 }
 
-constexpr auto to_xwii_interface(const extension value) noexcept -> u32 {
-	switch (value) {
-		case extension::wiiremote: return XWII_IFACE_CORE;
-		case extension::nunchuk: return XWII_IFACE_NUNCHUK;
-		case extension::classic_controller: return XWII_IFACE_CLASSIC_CONTROLLER;
-		case extension::pro_controller: return XWII_IFACE_PRO_CONTROLLER;
-		case extension::motion_plus: return XWII_IFACE_MOTION_PLUS;
-		case extension::balance_board: return XWII_IFACE_BALANCE_BOARD;
-	}
-
-	return XWII_IFACE_CORE;
-};
-
 bool XWiimoteController::reconfigureXWiimoteInterface() {
 	auto flags = xwii_iface_available(m_interface) | XWII_IFACE_WRITABLE;
 	reconstruct(session, m_interface, flags);
@@ -420,11 +403,11 @@ bool XWiimoteController::reconfigureXWiimoteInterface() {
 		if (currentExtensionTable[idx] == lastExtensionTable[idx])
 			continue;
 
-		const auto available = currentExtensionTable[idx].value_or(false);
+		const auto available = currentExtensionTable[idx];
 		dae::container::structs::status status;
 		status.is_connected = available;
 		ret.emplace_back(std::make_pair(common::enums::Device::Wiimote, std::move(status)));
-		spdlog::debug("{} report ?: {}", wiiremote, available ? "connected" : "disconnected");
+		spdlog::debug("{} report {}: {}", wiiremote, to_string(extension), available ? "connected" : "disconnected");
 	}
 
 	lastExtensionTable = currentExtensionTable;

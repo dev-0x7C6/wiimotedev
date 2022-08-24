@@ -1,9 +1,6 @@
 #include "classic-dispatcher.h"
 
 #include "classicadaptor.h"
-#include "containers/button-container.h"
-#include "containers/status-container.h"
-#include "containers/stick-container.h"
 
 using namespace common::enums;
 using namespace dae::container;
@@ -19,26 +16,9 @@ ClassicDispatcher::ClassicDispatcher(EventCallback &&eventCallback)
 Adaptor ClassicDispatcher::type() const { return Adaptor::Classic; }
 QList<uint> ClassicDispatcher::list() const { return m_ids.values(); }
 
-template <class... Ts>
-struct overloaded : Ts... { using Ts::operator()...; };
-template <class... Ts>
-overloaded(Ts...) -> overloaded<Ts...>;
-
 void ClassicDispatcher::process(const Device device, const u32 id, const dae::container::structs::event &ev) {
 	if (Device::Classic != device)
 		return;
-
-	//    std::visit(overloaded {
-	//      [&](dae::container::structs::status v) {
-	//        if (v.is_connected) {
-	//            m_ids.insert(id);
-	//            emit connected(id);
-	//        } else {
-	//            m_ids.remove(id);
-	//            emit disconnected(id);
-	//        }
-	//      }
-	//     }, ev.second);
 
 	//	auto process_key = [this, id, &container]() {
 	//		const auto state = static_cast<const ButtonContainer *>(container.get())->state();

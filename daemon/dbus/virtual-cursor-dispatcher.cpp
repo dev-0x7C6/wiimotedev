@@ -1,7 +1,6 @@
 #include "virtual-cursor-dispatcher.h"
 #include "virtualcursoradaptor.h"
 
-#include "containers/infrared-container.h"
 #include "functionals/virtual-cursor-processor.h"
 
 using namespace common::enums;

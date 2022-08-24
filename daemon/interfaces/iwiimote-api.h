@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 
-#include "interfaces/icontainer.h"
 #include "interfaces/iid-manager.h"
 #include <externals/common/types.hpp>
 

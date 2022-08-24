@@ -5,7 +5,6 @@
 
 #include "factories/controller-manager-factory.h"
 #include "factories/dispatcher-factory.h"
-#include "interfaces/icontainer.h"
 
 using namespace common::enums;
 using namespace dae::controller;
@@ -49,8 +48,6 @@ WiimotedevCore::WiimotedevCore()
 
 void WiimotedevCore::process() {
 	m_scanner.merge(m_devices);
-	std::unique_ptr<IContainer> container;
-
 	m_devices.remove_if([](auto &&device) { return !device->isValid(); });
 
 	for (const auto &device : m_devices)
