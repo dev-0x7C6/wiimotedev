@@ -29,8 +29,8 @@ struct overloaded : Ts... { using Ts::operator()...; };
 template <class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
 
-void WiimoteDispatcher::process(const Device device, const u32 id, const dae::container::structs::event &ev) {
-	if (Device::Wiimote != device)
+void WiimoteDispatcher::process(const u32 id, const dae::container::structs::event &ev) {
+	if (Device::Wiimote != ev.first)
 		return;
 
 	std::visit(overloaded{

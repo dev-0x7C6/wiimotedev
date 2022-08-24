@@ -15,8 +15,8 @@ BalanceBoardDispatcher::BalanceBoardDispatcher(EventCallback &&eventCallback)
 Adaptor BalanceBoardDispatcher::type() const { return Adaptor::BalanceBoard; }
 QList<uint> BalanceBoardDispatcher::list() { return m_ids.values(); }
 
-void BalanceBoardDispatcher::process(const Device device, const u32 id, const dae::container::structs::event &ev) {
-	if (Device::BalanceBoard != device)
+void BalanceBoardDispatcher::process(const u32 id, const dae::container::structs::event &ev) {
+	if (Device::BalanceBoard != ev.first)
 		return;
 
 	//	auto process_pressure = [this, id, &container]() {

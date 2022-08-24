@@ -53,7 +53,7 @@ void WiimotedevCore::process() {
 	for (const auto &device : m_devices)
 		for (auto &&event : device->process())
 			for (const auto &adaptor : m_adaptors)
-				adaptor->process(device->type(), device->id(), event);
+				adaptor->process(device->id(), event);
 }
 
 CommandResult WiimotedevCore::event(CommandEvent &&event) noexcept {

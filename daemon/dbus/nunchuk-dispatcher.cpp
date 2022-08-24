@@ -15,8 +15,8 @@ NunchukDispatcher::NunchukDispatcher(EventCallback &&eventCallback)
 Adaptor NunchukDispatcher::type() const { return Adaptor::Nunchuk; }
 QList<uint> NunchukDispatcher::list() const { return m_ids.values(); }
 
-void NunchukDispatcher::process(const Device device, const u32 id, const dae::container::structs::event &ev) {
-	if (Device::Nunchuk != device)
+void NunchukDispatcher::process(const u32 id, const dae::container::structs::event &ev) {
+	if (Device::Nunchuk != ev.first)
 		return;
 
 	//	auto process_acc = [this, id, &container]() -> void {

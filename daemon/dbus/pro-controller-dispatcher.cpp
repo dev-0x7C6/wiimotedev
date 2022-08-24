@@ -15,8 +15,8 @@ ProControllerDispatcher::ProControllerDispatcher(EventCallback &&eventCallback)
 Adaptor ProControllerDispatcher::type() const { return Adaptor::ProController; }
 QList<uint> ProControllerDispatcher::list() { return m_ids.values(); }
 
-void ProControllerDispatcher::process(const Device device, const u32 id, const dae::container::structs::event &ev) {
-	if (Device::ProController != device)
+void ProControllerDispatcher::process(const u32 id, const dae::container::structs::event &ev) {
+	if (Device::ProController != ev.first)
 		return;
 
 	//	auto process_key = [this, id, &container]() {

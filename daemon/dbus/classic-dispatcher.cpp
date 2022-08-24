@@ -16,8 +16,8 @@ ClassicDispatcher::ClassicDispatcher(EventCallback &&eventCallback)
 Adaptor ClassicDispatcher::type() const { return Adaptor::Classic; }
 QList<uint> ClassicDispatcher::list() const { return m_ids.values(); }
 
-void ClassicDispatcher::process(const Device device, const u32 id, const dae::container::structs::event &ev) {
-	if (Device::Classic != device)
+void ClassicDispatcher::process(const u32 id, const dae::container::structs::event &ev) {
+	if (Device::Classic != ev.first)
 		return;
 
 	//	auto process_key = [this, id, &container]() {

@@ -18,7 +18,7 @@ public:
 	~IContainerProcessor() override = default;
 
 	virtual enums::Adaptor type() const = 0;
-	virtual void process(common::enums::Device device, u32 id, const dae::container::structs::event &ev) = 0;
+	virtual void process(u32 id, const dae::container::structs::event &ev) = 0;
 
 protected:
 	CommandResult generateEvent(CommandEvent &&event) const noexcept;
