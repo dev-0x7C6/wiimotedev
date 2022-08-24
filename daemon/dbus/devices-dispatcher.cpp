@@ -15,5 +15,5 @@ Adaptor DevicesDispatcher::type() const {
 	return Adaptor::Devices;
 }
 
-void DevicesDispatcher::process(const Device device, const u32 id, const std::unique_ptr<IContainer> &container) {
+void DevicesDispatcher::process(const Device device, const u32 id, const dae::container::structs::event &ev) {
 }

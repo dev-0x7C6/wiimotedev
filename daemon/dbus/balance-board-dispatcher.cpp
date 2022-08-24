@@ -18,33 +18,33 @@ BalanceBoardDispatcher::BalanceBoardDispatcher(EventCallback &&eventCallback)
 Adaptor BalanceBoardDispatcher::type() const { return Adaptor::BalanceBoard; }
 QList<uint> BalanceBoardDispatcher::list() { return m_ids.values(); }
 
-void BalanceBoardDispatcher::process(const Device device, const u32 id, const std::unique_ptr<dae::interface::IContainer> &container) {
+void BalanceBoardDispatcher::process(const Device device, const u32 id, const dae::container::structs::event &ev) {
 	if (Device::BalanceBoard != device)
 		return;
 
-	auto process_pressure = [this, id, &container]() {
-		const auto data = static_cast<PressureContainer *>(container.get())->data();
-		emit dataChanged(id, data.tl, data.tr, data.bl, data.br);
-	};
+	//	auto process_pressure = [this, id, &container]() {
+	//		const auto data = static_cast<PressureContainer *>(container.get())->data();
+	//		emit dataChanged(id, data.tl, data.tr, data.bl, data.br);
+	//	};
 
-	auto process_status = [this, id, &container]() {
-		const auto state = static_cast<const StatusContainer *>(container.get())->state();
+	//	auto process_status = [this, id, &container]() {
+	//		const auto state = static_cast<const StatusContainer *>(container.get())->state();
 
-		if (state == StatusContainer::State::Connected) {
-			m_ids.insert(id);
-			emit connected(id);
-		}
+	//		if (state == StatusContainer::State::Connected) {
+	//			m_ids.insert(id);
+	//			emit connected(id);
+	//		}
 
-		if (state == StatusContainer::State::Disconnected) {
-			m_ids.remove(id);
-			emit disconnected(id);
-		}
-	};
+	//		if (state == StatusContainer::State::Disconnected) {
+	//			m_ids.remove(id);
+	//			emit disconnected(id);
+	//		}
+	//	};
 
-	const auto event = container->event();
+	//	const auto event = container->event();
 
-	if (event == Event::Pressure)
-		process_pressure();
-	else if (event == Event::Status)
-		process_status();
+	//	if (event == Event::Pressure)
+	//		process_pressure();
+	//	else if (event == Event::Status)
+	//		process_status();
 }

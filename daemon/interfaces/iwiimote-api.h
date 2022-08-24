@@ -9,6 +9,8 @@
 #include "interfaces/iid-manager.h"
 #include <externals/common/types.hpp>
 
+#include "containers/structs.hpp"
+
 namespace dae {
 namespace interface {
 
@@ -25,7 +27,7 @@ public:
 	virtual Api api() const = 0;
 
 	virtual bool isValid() const = 0;
-	virtual auto process() -> std::vector<std::unique_ptr<IContainer>> = 0;
+	virtual auto process() -> dae::container::structs::events = 0;
 
 	virtual bool isRumbleSupported() = 0;
 	virtual bool isLedSupported() = 0;

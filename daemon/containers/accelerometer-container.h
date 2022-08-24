@@ -3,17 +3,10 @@
 #include "interfaces/icontainer.h"
 #include "include/wiimotedev/wiimotedev"
 
+#include "structs.hpp"
+
 namespace dae {
 namespace container {
-namespace structs {
-struct accdata {
-	u8 x;
-	u8 y;
-	u8 z;
-	double pitch;
-	double roll;
-};
-}
 
 class AccelerometerContainer final : public interface::IContainer {
 public:

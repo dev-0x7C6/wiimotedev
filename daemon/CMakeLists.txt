@@ -21,6 +21,7 @@ set(sources
     containers/stick-container.h
     controllers/wiimote-id-manager.cpp
     controllers/wiimote-id-manager.h
+    containers/structs.hpp
     controllers/wiimote-scanner-thread.cpp
     controllers/wiimote-scanner-thread.h
     controllers/wiimote-scanner.cpp
