@@ -14,7 +14,7 @@ ClassicDispatcher::ClassicDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor ClassicDispatcher::type() const { return Adaptor::Classic; }
-QList<uint> ClassicDispatcher::list() const { return m_ids.values(); }
+QList<uint> ClassicDispatcher::list() const { return ids.values(); }
 
 void ClassicDispatcher::process(const u32 id, const dae::container::event &ev) {
 	if (!is::classic_controller(ev.first))
@@ -30,10 +30,7 @@ void ClassicDispatcher::process(const u32 id, const dae::container::event &ev) {
 				   },
 
 				   [&](const dae::container::status v) {
-					   if (v.is_connected)
-						   m_ids.insert(id);
-					   else
-						   m_ids.remove(id);
+					   ids.set(id, v.is_connected);
 					   emit connectionChanged(id, v.is_connected);
 				   }},
 		ev.second);

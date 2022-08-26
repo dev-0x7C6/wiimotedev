@@ -17,7 +17,7 @@ WiimoteDispatcher::WiimoteDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor WiimoteDispatcher::type() const { return Adaptor::Wiimote; }
-QList<uint> WiimoteDispatcher::list() { return m_ids.values(); }
+QList<uint> WiimoteDispatcher::list() { return ids.values(); }
 
 bool WiimoteDispatcher::ledStatus(uint id, uint led_id) { return std::get<bool>(generateEvent({CommandType::GetLedState, id, GetLedStateEvent{led_id}}).value_or(false)); }
 bool WiimoteDispatcher::rumbleStatus(uint id) { return std::get<bool>(generateEvent({CommandType::GetRumbleState, id, {}}).value_or(false)); }
@@ -43,10 +43,7 @@ void WiimoteDispatcher::process(const u32 id, const dae::container::event &ev) {
 					   emit gyroscopeDataChanged(id, v.x, v.y, v.z);
 				   },
 				   [&](const dae::container::status v) {
-					   if (v.is_connected)
-						   m_ids.insert(id);
-					   else
-						   m_ids.remove(id);
+					   ids.set(id, v.is_connected);
 					   emit connectionChanged(id, v.is_connected);
 				   }},
 

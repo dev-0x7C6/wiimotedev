@@ -15,7 +15,7 @@ NunchukDispatcher::NunchukDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor NunchukDispatcher::type() const { return Adaptor::Nunchuk; }
-QList<uint> NunchukDispatcher::list() const { return m_ids.values(); }
+QList<uint> NunchukDispatcher::list() const { return ids.values(); }
 
 void NunchukDispatcher::process(const u32 id, const dae::container::event &ev) {
 	if (!is::nunchuk(ev.first))
@@ -33,10 +33,7 @@ void NunchukDispatcher::process(const u32 id, const dae::container::event &ev) {
 					   emit buttonDataChanged(id, v.states);
 				   },
 				   [&](dae::container::status v) {
-					   if (v.is_connected)
-						   m_ids.insert(id);
-					   else
-						   m_ids.remove(id);
+					   ids.set(id, v.is_connected);
 					   emit connectionChanged(id, v.is_connected);
 				   }},
 

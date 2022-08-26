@@ -2,7 +2,6 @@
 
 #include <memory>
 #include <map>
-#include <QSet>
 
 #include "interfaces/icontainer-processor.h"
 
@@ -26,7 +25,6 @@ public:
 	QList<uint> list() const;
 
 private:
-	QSet<uint> m_ids;
 	std::map<uint, std::unique_ptr<functional::VirtualCursorProcessor>> m_processors;
 
 signals:

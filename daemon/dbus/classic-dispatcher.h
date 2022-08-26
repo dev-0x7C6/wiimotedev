@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QSet>
 #include "interfaces/icontainer-processor.h"
 #include "containers/structs.hpp"
 
@@ -17,9 +16,6 @@ public:
 
 public:
 	QList<uint> list() const;
-
-private:
-	QSet<uint> m_ids;
 
 signals:
 	void buttonDataChanged(uint id, qulonglong mask);

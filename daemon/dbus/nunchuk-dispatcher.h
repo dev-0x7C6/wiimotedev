@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QSet>
 #include "interfaces/icontainer-processor.h"
 
 namespace dae {
@@ -22,9 +21,6 @@ signals:
 	void buttonDataChanged(uint id, qulonglong mask);
 	void connectionChanged(uint id, bool connected);
 	void stickDataChanged(uint id, int x, int y);
-
-private:
-	QSet<uint> m_ids;
 };
 }
 }

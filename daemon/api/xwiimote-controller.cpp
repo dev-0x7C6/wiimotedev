@@ -4,9 +4,9 @@
 #include <xwiimote-ng.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cstdlib>
 #include <cstring>
-#include <chrono>
 #include <thread>
 
 #include "include/wiimotedev/wiimotedev"
@@ -54,14 +54,11 @@ constexpr auto is_available(type &&flags, input_type &&match_with) noexcept {
 XWiimoteController::XWiimoteController(IIdManager &manager, std::string &&path)
 		: IWiimote(manager)
 		, m_interfaceFilePath(std::move(path)) {
-	setId(m_idManager.reserve(type()));
-	m_buttons.fill(0);
-	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
-	spdlog::debug("{} interface: {}", wiiremote, m_interfaceFilePath);
-
 	if (openXWiimoteInterface() && watchXWiimoteEvents() && reconfigureXWiimoteInterface()) {
 		m_connected = true;
 	}
+
+	setId(m_idManager.reserve(type()));
 }
 
 namespace helper {

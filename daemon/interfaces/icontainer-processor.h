@@ -10,12 +10,36 @@
 #include "enums/adaptor.h"
 #include "containers/structs.hpp"
 
+#include <QSet>
+#include <QList>
+
 template <class... Ts>
 struct overloaded : Ts... { using Ts::operator()...; };
 template <class... Ts>
 overloaded(Ts...) -> overloaded<Ts...>;
 
 namespace dae::interface {
+
+namespace id {
+class manager {
+public:
+	void set(const u32 id, const bool state) {
+		if (state)
+			ids.insert(id);
+		else
+			ids.remove(id);
+	}
+
+	auto values() const {
+		auto ret = ids.values();
+		std::sort(ret.begin(), ret.end());
+		return ret;
+	}
+
+private:
+	QSet<u32> ids;
+};
+}
 
 class IContainerProcessor : public QObject {
 public:
@@ -27,6 +51,7 @@ public:
 
 protected:
 	CommandResult generateEvent(CommandEvent &&event) const noexcept;
+	id::manager ids;
 
 private:
 	EventCallback m_eventCallback;

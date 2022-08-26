@@ -13,7 +13,7 @@ ProControllerDispatcher::ProControllerDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor ProControllerDispatcher::type() const { return Adaptor::ProController; }
-QList<uint> ProControllerDispatcher::list() { return m_ids.values(); }
+QList<uint> ProControllerDispatcher::list() { return ids.values(); }
 
 void ProControllerDispatcher::process(const u32 id, const dae::container::event &ev) {
 	if (!is::pro_controller(ev.first))
@@ -29,10 +29,7 @@ void ProControllerDispatcher::process(const u32 id, const dae::container::event 
 				   },
 
 				   [&](const dae::container::status v) {
-					   if (v.is_connected)
-						   m_ids.insert(id);
-					   else
-						   m_ids.remove(id);
+					   ids.set(id, v.is_connected);
 					   emit connectionChanged(id, v.is_connected);
 				   }},
 		ev.second);

@@ -13,7 +13,7 @@ BalanceBoardDispatcher::BalanceBoardDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor BalanceBoardDispatcher::type() const { return Adaptor::BalanceBoard; }
-QList<uint> BalanceBoardDispatcher::list() { return m_ids.values(); }
+QList<uint> BalanceBoardDispatcher::list() { return ids.values(); }
 
 void BalanceBoardDispatcher::process(const u32 id, const dae::container::event &ev) {
 	if (!is::balance_board(ev.first))
@@ -25,10 +25,7 @@ void BalanceBoardDispatcher::process(const u32 id, const dae::container::event &
 					   emit dataChanged(id, v.top.first, v.top.second, v.bottom.first, v.bottom.second);
 				   },
 				   [&](const dae::container::status v) {
-					   if (v.is_connected)
-						   m_ids.insert(id);
-					   else
-						   m_ids.remove(id);
+					   ids.set(id, v.is_connected);
 					   emit connectionChanged(id, v.is_connected);
 				   }},
 		ev.second);
