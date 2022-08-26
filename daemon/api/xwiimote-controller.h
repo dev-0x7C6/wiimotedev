@@ -19,30 +19,12 @@ struct xwii_iface_session;
 namespace dae {
 namespace api {
 
-enum extension {
-	wiiremote,
-	nunchuk,
-	classic_controller,
-	pro_controller,
-	motion_plus,
-	balance_board,
-};
-
-constexpr std::initializer_list<extension> extensions{
-	wiiremote,
-	nunchuk,
-	classic_controller,
-	pro_controller,
-	motion_plus,
-	balance_board,
-};
-
 class XWiimoteController final : public interface::IWiimote {
 public:
 	explicit XWiimoteController(interface::IIdManager &manager, std::string &&path);
 	~XWiimoteController() final;
 
-	common::enums::Device type() const final;
+	common::enums::device type() const final;
 	Api api() const final { return Api::XWiimote; }
 
 	bool isValid() const final;
@@ -78,8 +60,8 @@ private:
 	std::unique_ptr<::helper::xwii_iface_instance> instance;
 	std::unique_ptr<::helper::xwii_iface_session> session;
 
-	std::array<bool, 6> currentExtensionTable{};
-	std::array<bool, 6> lastExtensionTable{};
+	std::array<bool, common::enums::devices.size()> currentExtensionTable{};
+	std::array<bool, common::enums::devices.size()> lastExtensionTable{};
 
 	std::optional<bool> m_balanceBoardConnected;
 	std::optional<bool> m_classicControllerConnected;

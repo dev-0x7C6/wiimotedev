@@ -13,9 +13,9 @@ class IGamepad : public emulation::InputDevice {
 public:
 	explicit IGamepad(std::string &&name, u32 id, container::ButtonMap &&buttons, container::AxisMap &&axises);
 
-	static common::enums::Device fromString(const std::string &type);
+	static common::enums::device fromString(const std::string &type);
 
-	virtual common::enums::Device type() const = 0;
+	virtual common::enums::device type() const = 0;
 	bool configure() override;
 
 	bool input(int tl, int tr, int bl, int br);

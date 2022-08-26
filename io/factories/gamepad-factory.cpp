@@ -10,14 +10,14 @@ using namespace io::emulation::gamepad;
 using namespace io::factory;
 using namespace io::interface;
 
-std::unique_ptr<IGamepad> GamepadFactory::create(const Device type, std::string &&name, const u32 id) {
+std::unique_ptr<IGamepad> GamepadFactory::create(const device type, std::string &&name, const u32 id) {
 	switch (type) {
-		case Device::Classic: return std::make_unique<ClassicGamepad>(std::move(name), id);
-		case Device::Nunchuk: return std::make_unique<NunchukGamepad>(std::move(name), id);
-		case Device::Wiimote: return std::make_unique<WiimoteGamepad>(std::move(name), id);
-		case Device::BalanceBoard: return std::make_unique<BalanceBoardGamepad>(std::move(name), id);
-		case Device::ProController: return std::make_unique<ProControllerGamepad>(std::move(name), id);
-		case Device::Last: return nullptr;
+		case device::classic_controller: return std::make_unique<ClassicGamepad>(std::move(name), id);
+		case device::nunchuk: return std::make_unique<NunchukGamepad>(std::move(name), id);
+		case device::wiimote: return std::make_unique<WiimoteGamepad>(std::move(name), id);
+		case device::balance_board: return std::make_unique<BalanceBoardGamepad>(std::move(name), id);
+		case device::pro_controller: return std::make_unique<ProControllerGamepad>(std::move(name), id);
+		case device::motion_plus: return nullptr;
 	}
 
 	return nullptr;

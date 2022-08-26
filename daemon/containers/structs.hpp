@@ -58,7 +58,7 @@ using ir_points = std::array<ir_point, 4>;
 using stick_pair = std::pair<stick, stick>;
 
 using data = std::variant<std::monostate, accdata, gyro, ir_points, stick, stick_pair, pressure, button, status>;
-using event = std::pair<common::enums::Device, data>;
+using event = std::pair<common::enums::device, data>;
 using events = std::vector<event>;
 
 }

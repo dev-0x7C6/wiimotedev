@@ -29,4 +29,4 @@ constexpr std::array<AxisPair, 2> AXISES{{AxisPair(Stick::Dpad, {{{ABS_HAT0X, 1,
 WiimoteGamepad::WiimoteGamepad(std::string &&name, const u32 id)
 		: IGamepad(std::move(name), id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
 
-Device WiimoteGamepad::type() const { return Device::Wiimote; }
+device WiimoteGamepad::type() const { return device::wiimote; }

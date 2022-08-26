@@ -16,7 +16,7 @@ Adaptor BalanceBoardDispatcher::type() const { return Adaptor::BalanceBoard; }
 QList<uint> BalanceBoardDispatcher::list() { return m_ids.values(); }
 
 void BalanceBoardDispatcher::process(const u32 id, const dae::container::event &ev) {
-	if (Device::BalanceBoard != ev.first)
+	if (!is::balance_board(ev.first))
 		return;
 
 	std::visit(overloaded{

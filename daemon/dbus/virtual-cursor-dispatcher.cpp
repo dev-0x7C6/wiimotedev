@@ -20,7 +20,7 @@ Adaptor VirtualCursorDispatcher::type() const { return Adaptor::VirtualCursor; }
 QList<uint> VirtualCursorDispatcher::list() const { return m_ids.values(); }
 
 void VirtualCursorDispatcher::process(const u32 id, const dae::container::event &ev) {
-	if (Device::Wiimote != ev.first)
+	if (!is::wiimote(ev.first))
 		return;
 
 	std::visit(overloaded{

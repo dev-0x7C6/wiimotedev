@@ -17,7 +17,7 @@ Adaptor ClassicDispatcher::type() const { return Adaptor::Classic; }
 QList<uint> ClassicDispatcher::list() const { return m_ids.values(); }
 
 void ClassicDispatcher::process(const u32 id, const dae::container::event &ev) {
-	if (Device::Classic != ev.first)
+	if (!is::classic_controller(ev.first))
 		return;
 
 	std::visit(overloaded{

@@ -17,6 +17,6 @@ constexpr std::array<AxisPair, 1> AXISES{{
 BalanceBoardGamepad::BalanceBoardGamepad(std::string &&name, const u32 id)
 		: IGamepad(std::move(name), id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
 
-Device BalanceBoardGamepad::type() const {
-	return Device::BalanceBoard;
+device BalanceBoardGamepad::type() const {
+	return device::balance_board;
 }

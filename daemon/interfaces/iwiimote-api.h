@@ -22,7 +22,7 @@ public:
 		XWiimote
 	};
 
-	virtual common::enums::Device type() const = 0;
+	virtual common::enums::device type() const = 0;
 	virtual Api api() const = 0;
 
 	virtual bool isValid() const = 0;

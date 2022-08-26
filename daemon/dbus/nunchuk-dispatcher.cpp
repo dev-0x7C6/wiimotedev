@@ -18,7 +18,7 @@ Adaptor NunchukDispatcher::type() const { return Adaptor::Nunchuk; }
 QList<uint> NunchukDispatcher::list() const { return m_ids.values(); }
 
 void NunchukDispatcher::process(const u32 id, const dae::container::event &ev) {
-	if (Device::Nunchuk != ev.first)
+	if (!is::nunchuk(ev.first))
 		return;
 
 	std::visit(overloaded{

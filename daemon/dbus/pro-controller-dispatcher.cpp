@@ -16,7 +16,7 @@ Adaptor ProControllerDispatcher::type() const { return Adaptor::ProController; }
 QList<uint> ProControllerDispatcher::list() { return m_ids.values(); }
 
 void ProControllerDispatcher::process(const u32 id, const dae::container::event &ev) {
-	if (Device::ProController != ev.first)
+	if (!is::pro_controller(ev.first))
 		return;
 
 	std::visit(overloaded{

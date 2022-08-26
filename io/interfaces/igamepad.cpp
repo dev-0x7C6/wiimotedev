@@ -13,12 +13,12 @@ IGamepad::IGamepad(std::string &&name, const u32 id, ButtonMap &&buttons, AxisMa
 {
 }
 
-Device IGamepad::fromString(const std::string &type) {
+device IGamepad::fromString(const std::string &type) {
 	const auto result = convert(type);
-	if (result == Device::Last)
+	if (!result)
 		throw std::out_of_range("unknown device type");
 
-	return result;
+	return result.value();
 }
 
 bool IGamepad::configure() {

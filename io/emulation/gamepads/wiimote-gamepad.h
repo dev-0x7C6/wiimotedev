@@ -10,7 +10,7 @@ class WiimoteGamepad final : public io::interface::IGamepad {
 public:
 	explicit WiimoteGamepad(std::string &&name, u32 id);
 
-	common::enums::Device type() const final;
+	common::enums::device type() const final;
 };
 }
 }

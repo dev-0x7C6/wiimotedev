@@ -44,43 +44,43 @@ Profile::Profile(const std::string &configurationFilePath)
 
 Profile::~Profile() = default;
 
-void Profile::connected(Device device, uint id) {
+void Profile::connected(device device, uint id) {
 }
 
-void Profile::disconnected(Device, uint id) {
+void Profile::disconnected(device, uint id) {
 }
 
-void Profile::found(Device, uint id) {
+void Profile::found(device, uint id) {
 }
 
-void Profile::lost(Device, uint id) {
+void Profile::lost(device, uint id) {
 }
 
 void Profile::virtualCursorDataChanged(uint id, double x, double y, double l, double a) {
 }
 
-void Profile::buttonDataChanged(Device source, uint id, qulonglong mask) {
+void Profile::buttonDataChanged(device source, uint id, qulonglong mask) {
 	gamepad_iterator(source, id, [&mask](const auto &gamepad) { gamepad->input(mask); });
 }
 
-void Profile::stickDataChanged(Device source, uint id, int lx, int ly, int rx, int ry) {
+void Profile::stickDataChanged(device source, uint id, int lx, int ly, int rx, int ry) {
 	gamepad_iterator(source, id, [source, lx, ly, rx, ry](const auto &gamepad) {
-		if (source == Device::Classic || source == Device::ProController) {
+		if (source == device::classic_controller || source == device::pro_controller) {
 			gamepad->input(Stick::LStick, lx, ly);
 			gamepad->input(Stick::RStick, rx, ry);
 		}
 
-		if (source == Device::Nunchuk) {
+		if (source == device::nunchuk) {
 			gamepad->input(Stick::Stick, lx, ly);
 		}
 	});
 }
 
-void Profile::accelerometerDataChanged(Device, uint id, int x, int y, int z) {
+void Profile::accelerometerDataChanged(device, uint id, int x, int y, int z) {
 }
 
 void Profile::gyroscopeDataChanged(uint id, int x, int y, int z) {
-	gamepad_iterator(Device::Wiimote, id, [x, y, z](const auto &gamepad) {
+	gamepad_iterator(device::wiimote, id, [x, y, z](const auto &gamepad) {
 		static int sx = 0;
 		static int sz = 0;
 
@@ -103,7 +103,7 @@ void Profile::infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x
 }
 
 void Profile::pressureDataChanged(uint id, int tl, int tr, int bl, int br) {
-	gamepad_iterator(Device::BalanceBoard, id, [tl, tr, bl, br](const std::unique_ptr<interface::IGamepad> &gamepad) {
+	gamepad_iterator(device::balance_board, id, [tl, tr, bl, br](const std::unique_ptr<interface::IGamepad> &gamepad) {
 		BalanceBoardProcessor processor({tl, tr, bl, br}, wiimotedev::WIIMOTEDEV_STICK_MIN, wiimotedev::WIIMOTEDEV_STICK_MAX);
 
 		if (!processor.isValid()) {
@@ -120,7 +120,7 @@ void Profile::pressureDataChanged(uint id, int tl, int tr, int bl, int br) {
 	});
 }
 
-void Profile::gamepad_iterator(const Device type, const quint32 id, std::function<void(const std::unique_ptr<IGamepad> &)> &&function) {
+void Profile::gamepad_iterator(const device type, const quint32 id, std::function<void(const std::unique_ptr<IGamepad> &)> &&function) {
 	for (const auto &gamepad : m_gamepads) {
 		if (gamepad->id() == id && gamepad->type() == type && gamepad->isCreated()) {
 			function(gamepad);
@@ -128,7 +128,7 @@ void Profile::gamepad_iterator(const Device type, const quint32 id, std::functio
 	}
 }
 
-bool Profile::setup(const Device type, std::string &&name, quint32 id, const QJsonObject &json) {
+bool Profile::setup(const device type, std::string &&name, quint32 id, const QJsonObject &json) {
 	auto device = GamepadFactory::create(type, std::move(name), id);
 	auto isValid = GamepadFactory::configure(device);
 

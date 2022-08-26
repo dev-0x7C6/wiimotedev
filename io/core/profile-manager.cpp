@@ -34,76 +34,76 @@ ProfileManager::ProfileManager(QObject *parent)
 	connect(balanceboard, &org::wiimotedev::balanceboard::connectionChanged, [this](uint id, bool status) {
 		for (auto &&profile : m_profiles)
 			if (status)
-				profile->connected(Device::BalanceBoard, id);
+				profile->connected(device::balance_board, id);
 			else
-				profile->disconnected(Device::BalanceBoard, id);
+				profile->disconnected(device::balance_board, id);
 	});
 
 	connect(classic, &org::wiimotedev::classic::connectionChanged, [this](uint id, bool status) {
 		for (auto &&profile : m_profiles)
 			if (status)
-				profile->connected(Device::Classic, id);
+				profile->connected(device::classic_controller, id);
 			else
-				profile->disconnected(Device::Classic, id);
+				profile->disconnected(device::classic_controller, id);
 	});
 
 	connect(nunchuk, &org::wiimotedev::nunchuk::connectionChanged, [this](uint id, bool status) {
 		for (auto &&profile : m_profiles)
 			if (status)
-				profile->connected(Device::Nunchuk, id);
+				profile->connected(device::nunchuk, id);
 			else
-				profile->disconnected(Device::Nunchuk, id);
+				profile->disconnected(device::nunchuk, id);
 	});
 
 	connect(procontroller, &org::wiimotedev::procontroller::connectionChanged, [this](uint id, bool status) {
 		for (const auto &profile : m_profiles)
 			if (status)
-				profile->connected(Device::ProController, id);
+				profile->connected(device::pro_controller, id);
 			else
-				profile->disconnected(Device::ProController, id);
+				profile->disconnected(device::pro_controller, id);
 	});
 
 	connect(wiimote, &org::wiimotedev::wiimote::connectionChanged, [this](uint id, bool status) {
 		for (const auto &profile : m_profiles)
 			if (status)
-				profile->connected(Device::Wiimote, id);
+				profile->connected(device::wiimote, id);
 			else
-				profile->disconnected(Device::Wiimote, id);
+				profile->disconnected(device::wiimote, id);
 	});
 
 	connect(classic, &org::wiimotedev::classic::buttonDataChanged, [this](uint id, qulonglong mask) {
 		for (const auto &profile : m_profiles)
-			profile->buttonDataChanged(Device::Classic, id, mask);
+			profile->buttonDataChanged(device::classic_controller, id, mask);
 	});
 
 	connect(nunchuk, &org::wiimotedev::nunchuk::buttonDataChanged, [this](uint id, qulonglong mask) {
 		for (const auto &profile : m_profiles)
-			profile->buttonDataChanged(Device::Nunchuk, id, mask);
+			profile->buttonDataChanged(device::nunchuk, id, mask);
 	});
 
 	connect(procontroller, &org::wiimotedev::procontroller::buttonDataChanged, [this](uint id, qulonglong mask) {
 		for (const auto &profile : m_profiles)
-			profile->buttonDataChanged(Device::ProController, id, mask);
+			profile->buttonDataChanged(device::pro_controller, id, mask);
 	});
 
 	connect(wiimote, &org::wiimotedev::wiimote::buttonDataChanged, [this](uint id, qulonglong mask) {
 		for (const auto &profile : m_profiles)
-			profile->buttonDataChanged(Device::Wiimote, id, mask);
+			profile->buttonDataChanged(device::wiimote, id, mask);
 	});
 
 	connect(classic, &org::wiimotedev::classic::stickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
 		for (const auto &profile : m_profiles)
-			profile->stickDataChanged(Device::Classic, id, lx, ly, rx, ry);
+			profile->stickDataChanged(device::classic_controller, id, lx, ly, rx, ry);
 	});
 
 	connect(nunchuk, &org::wiimotedev::nunchuk::stickDataChanged, [this](uint id, int x, int y) {
 		for (const auto &profile : m_profiles)
-			profile->stickDataChanged(Device::Nunchuk, id, x, y, 0, 0);
+			profile->stickDataChanged(device::nunchuk, id, x, y, 0, 0);
 	});
 
 	connect(procontroller, &org::wiimotedev::procontroller::stickDataChanged, [this](uint id, int lx, int ly, int rx, int ry) {
 		for (const auto &profile : m_profiles)
-			profile->stickDataChanged(Device::ProController, id, lx, ly, rx, ry);
+			profile->stickDataChanged(device::pro_controller, id, lx, ly, rx, ry);
 	});
 
 	connect(wiimote, &org::wiimotedev::wiimote::infraredDataChanged, [this](uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
@@ -113,12 +113,12 @@ ProfileManager::ProfileManager(QObject *parent)
 
 	connect(wiimote, &org::wiimotedev::wiimote::accelerometerDataChanged, [this](uint id, int x, int y, int z, int pitch, int roll) {
 		for (const auto &profile : m_profiles)
-			profile->accelerometerDataChanged(Device::Wiimote, id, x, y, z);
+			profile->accelerometerDataChanged(device::wiimote, id, x, y, z);
 	});
 
 	connect(nunchuk, &org::wiimotedev::nunchuk::accelerometerDataChanged, [this](uint id, int x, int y, int z, int pitch, int roll) {
 		for (const auto &profile : m_profiles)
-			profile->accelerometerDataChanged(Device::Nunchuk, id, x, y, z);
+			profile->accelerometerDataChanged(device::nunchuk, id, x, y, z);
 	});
 
 	connect(wiimote, &org::wiimotedev::wiimote::gyroscopeDataChanged, [this](uint id, int x, int y, int z) {

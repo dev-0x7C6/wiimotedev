@@ -109,30 +109,17 @@ private:
 };
 }
 
-constexpr auto to_xwii_interface(const extension value) noexcept -> u32 {
-	switch (value) {
-		case extension::wiiremote: return XWII_IFACE_CORE;
-		case extension::nunchuk: return XWII_IFACE_NUNCHUK;
-		case extension::classic_controller: return XWII_IFACE_CLASSIC_CONTROLLER;
-		case extension::pro_controller: return XWII_IFACE_PRO_CONTROLLER;
-		case extension::motion_plus: return XWII_IFACE_MOTION_PLUS;
-		case extension::balance_board: return XWII_IFACE_BALANCE_BOARD;
+constexpr auto to_xwii_interface(const device v) noexcept -> u32 {
+	switch (v) {
+		case device::wiimote: return XWII_IFACE_CORE;
+		case device::nunchuk: return XWII_IFACE_NUNCHUK;
+		case device::classic_controller: return XWII_IFACE_CLASSIC_CONTROLLER;
+		case device::pro_controller: return XWII_IFACE_PRO_CONTROLLER;
+		case device::motion_plus: return XWII_IFACE_MOTION_PLUS;
+		case device::balance_board: return XWII_IFACE_BALANCE_BOARD;
 	}
 
 	return XWII_IFACE_CORE;
-};
-
-constexpr auto to_string(const extension value) noexcept -> const char * {
-	switch (value) {
-		case extension::wiiremote: return "wiimote";
-		case extension::nunchuk: return "nunchuk";
-		case extension::classic_controller: return "classic controller";
-		case extension::pro_controller: return "pro controller";
-		case extension::motion_plus: return "motion+";
-		case extension::balance_board: return "balance board";
-	}
-
-	return "";
 };
 
 template <typename T, typename... args>
@@ -167,16 +154,16 @@ XWiimoteController::~XWiimoteController() {
 	m_idManager.release(type(), id());
 }
 
-Device XWiimoteController::type() const {
+device XWiimoteController::type() const {
 	const auto flags = xwii_iface_available(m_interface);
 
 	if (is_available(flags, XWII_IFACE_BALANCE_BOARD))
-		return Device::BalanceBoard;
+		return device::balance_board;
 
 	if (is_available(flags, XWII_IFACE_PRO_CONTROLLER))
-		return Device::ProController;
+		return device::pro_controller;
 
-	return Device::Wiimote;
+	return device::wiimote;
 }
 
 bool XWiimoteController::isValid() const { return m_connected; }
@@ -190,7 +177,7 @@ auto ir(const xwii_event &event) -> dae::container::event {
 		ret[i].size = xwii_event_ir_is_valid(&event.v.abs[i]) ? 1 : -1;
 	}
 
-	return {common::enums::Device::Wiimote, ret};
+	return {common::enums::device::wiimote, ret};
 }
 
 auto gyro(const xwii_event &event) -> dae::container::event {
@@ -198,10 +185,10 @@ auto gyro(const xwii_event &event) -> dae::container::event {
 	ret.x = event.v.abs[0].x;
 	ret.y = event.v.abs[0].y;
 	ret.z = event.v.abs[0].z;
-	return std::make_pair(common::enums::Device::Wiimote, std::move(ret));
+	return std::make_pair(common::enums::device::wiimote, std::move(ret));
 }
 
-auto acc(const Device source, const xwii_event &event, const int axis) -> dae::container::event {
+auto acc(const device source, const xwii_event &event, const int axis) -> dae::container::event {
 	dae::container::accdata ret;
 	ret.x = event.v.abs[axis].x;
 	ret.y = event.v.abs[axis].y;
@@ -215,12 +202,12 @@ auto press(const xwii_event &event) -> dae::container::event {
 	dae::container::pressure ret;
 	ret.top = {event.v.abs[2].x, event.v.abs[0].x};
 	ret.bottom = {event.v.abs[3].x, event.v.abs[1].x};
-	return std::make_pair(common::enums::Device::BalanceBoard, ret);
+	return std::make_pair(common::enums::device::balance_board, ret);
 };
 }
 
 events XWiimoteController::process() {
-	auto process_key = [this](const Device source, const xwii_event &event) {
+	auto process_key = [this](const device source, const xwii_event &event) {
 		auto mask = m_buttons.at(static_cast<std::size_t>(source));
 		auto code = 1ull << event.v.key.code;
 		static_assert(sizeof(code) == 8);
@@ -243,16 +230,16 @@ events XWiimoteController::process() {
 
 		currentExtensionTable.fill(false);
 
-		for (auto &&extension : extensions) {
-			const auto idx = static_cast<std::size_t>(extension);
+		for (auto &&dev : devices) {
+			const auto idx = static_cast<std::size_t>(dev);
 			if (currentExtensionTable[idx] == lastExtensionTable[idx])
 				continue;
 
 			const auto available = currentExtensionTable[idx];
 			dae::container::status status;
 			status.is_connected = available;
-			ret.emplace_back(std::make_pair(common::enums::Device::Wiimote, std::move(status)));
-			spdlog::debug("{} report {}: {}", wiiremote, to_string(extension), available ? "connected" : "disconnected");
+			ret.emplace_back(std::make_pair(common::enums::device::wiimote, std::move(status)));
+			spdlog::debug("{} report {}: {}", wiiremote, to_string(dev), available ? "connected" : "disconnected");
 		}
 
 		lastExtensionTable = currentExtensionTable;
@@ -261,7 +248,7 @@ events XWiimoteController::process() {
 		return ret;
 	};
 
-	auto process_stick = [](Device device, const xwii_event &event) -> dae::container::event {
+	auto process_stick = [](device device, const xwii_event &event) -> dae::container::event {
 		auto calculate = [](i32 &x, i32 &y, i32 step) {
 			constexpr i32 min = WIIMOTEDEV_STICK_MIN;
 			constexpr i32 max = WIIMOTEDEV_STICK_MAX;
@@ -276,18 +263,18 @@ events XWiimoteController::process() {
 		i32 rx = event.v.abs[1].x;
 		i32 ry = event.v.abs[1].y;
 
-		if (device == Device::Nunchuk) {
+		if (is::nunchuk(device)) {
 			calculate(lx, ly, 100);
 			return std::make_pair(device, dae::container::stick{lx, ly});
 		}
 
-		if (device == Device::Classic) {
+		if (is::classic_controller(device)) {
 			calculate(lx, ly, 24);
 			calculate(rx, ry, 24);
 			return std::make_pair(device, dae::container::stick_pair{{lx, ly}, {rx, ry}});
 		}
 
-		if (device == Device::ProController) {
+		if (is::pro_controller(device)) {
 			calculate(lx, ly, 1280);
 			calculate(rx, ry, 1280);
 			ly *= -1;
@@ -312,23 +299,23 @@ events XWiimoteController::process() {
 
 		auto events = [&]() -> dae::container::events {
 			switch (event.type) {
-				case XWII_EVENT_ACCEL: return {process::acc(Device::Wiimote, event, 0)};
+				case XWII_EVENT_ACCEL: return {process::acc(device::wiimote, event, 0)};
 				case XWII_EVENT_BALANCE_BOARD: return {process::press(event)};
-				case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return {process_key(Device::Classic, event)};
-				case XWII_EVENT_CLASSIC_CONTROLLER_MOVE: return {process_stick(Device::Classic, event)};
-				case XWII_EVENT_PRO_CONTROLLER_KEY: return {process_key(Device::ProController, event)};
-				case XWII_EVENT_PRO_CONTROLLER_MOVE: return {process_stick(Device::ProController, event)};
+				case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return {process_key(device::classic_controller, event)};
+				case XWII_EVENT_CLASSIC_CONTROLLER_MOVE: return {process_stick(device::classic_controller, event)};
+				case XWII_EVENT_PRO_CONTROLLER_KEY: return {process_key(device::pro_controller, event)};
+				case XWII_EVENT_PRO_CONTROLLER_MOVE: return {process_stick(device::pro_controller, event)};
 				case XWII_EVENT_GONE: process_gone(); break;
 				case XWII_EVENT_IR: return {process::ir(event)};
-				case XWII_EVENT_KEY: return {process_key(Device::Wiimote, event)};
+				case XWII_EVENT_KEY: return {process_key(device::wiimote, event)};
 				case XWII_EVENT_MOTION_PLUS: return {process::gyro(event)};
 				case XWII_EVENT_NUNCHUK_KEY:
-					return {process_key(Device::Nunchuk, event)};
+					return {process_key(device::nunchuk, event)};
 
 				case XWII_EVENT_NUNCHUK_MOVE:
 					return {
-						process::acc(Device::Nunchuk, event, 1),
-						process_stick(Device::Nunchuk, event)};
+						process::acc(device::nunchuk, event, 1),
+						process_stick(device::nunchuk, event)};
 
 				case XWII_EVENT_WATCH:
 					process_watch();
@@ -399,6 +386,7 @@ std::string XWiimoteController::interfaceFilePath() const {
 }
 
 bool XWiimoteController::reconfigureXWiimoteInterface() {
+	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
 	const auto flags = xwii_iface_available(m_interface);
 
 	auto is_reporting = [&](const u32 match) -> bool {
@@ -421,24 +409,21 @@ bool XWiimoteController::reconfigureXWiimoteInterface() {
 
 	reconstruct(session, m_interface, flags);
 
-	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
-	spdlog::debug("process flags, ok: {}", session->valid());
-
 	dae::container::events ret;
 
-	for (auto &&extension : extensions)
-		currentExtensionTable[extension] = is_available(flags, to_xwii_interface(extension));
+	for (auto &&dev : devices)
+		currentExtensionTable[static_cast<std::size_t>(dev)] = is_available(flags, to_xwii_interface(dev));
 
-	for (auto &&extension : extensions) {
-		const auto idx = static_cast<std::size_t>(extension);
+	for (auto &&dev : devices) {
+		const auto idx = static_cast<std::size_t>(dev);
 		if (currentExtensionTable[idx] == lastExtensionTable[idx])
 			continue;
 
 		const auto available = currentExtensionTable[idx];
 		dae::container::status status;
 		status.is_connected = available;
-		ret.emplace_back(std::make_pair(common::enums::Device::Wiimote, std::move(status)));
-		spdlog::debug("{} report {}: {}", wiiremote, to_string(extension), available ? "connected" : "disconnected");
+		ret.emplace_back(std::make_pair(common::enums::device::wiimote, std::move(status)));
+		spdlog::debug("{} report {}: {}", wiiremote, to_string(dev), available ? "connected" : "disconnected");
 	}
 
 	lastExtensionTable = currentExtensionTable;

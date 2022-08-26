@@ -36,4 +36,4 @@ constexpr std::array<AxisPair, 3> AXISES{{
 ClassicGamepad::ClassicGamepad(std::string &&name, const u32 id)
 		: IGamepad(std::move(name), id, {BUTTONS.begin(), BUTTONS.end()}, {AXISES.begin(), AXISES.end()}) {}
 
-Device ClassicGamepad::type() const { return Device::Classic; }
+device ClassicGamepad::type() const { return device::classic_controller; }
