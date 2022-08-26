@@ -15,7 +15,7 @@ using u64 = std::uint64_t;
 using s16 = std::int16_t;
 using s32 = std::int32_t;
 
-namespace dae::container::structs {
+namespace dae::container {
 struct accdata {
 	u8 x;
 	u8 y;

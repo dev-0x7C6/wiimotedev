@@ -31,54 +31,44 @@ ProfileManager::ProfileManager(QObject *parent)
 	auto wiimote = new org::wiimotedev::wiimote("org.wiimotedev.daemon", "/wiimote", QDBusConnection::systemBus(), this);
 	//auto virtualcursor = new org::wiimotedev::virtualcursor("org.wiimotedev.daemon", "/virtualcursor", QDBusConnection::systemBus(), this);
 
-	connect(balanceboard, &org::wiimotedev::balanceboard::connected, [this](uint id) {
-		for (const auto &profile : m_profiles)
-			profile->connected(Device::BalanceBoard, id);
+	connect(balanceboard, &org::wiimotedev::balanceboard::connectionChanged, [this](uint id, bool status) {
+		for (auto &&profile : m_profiles)
+			if (status)
+				profile->connected(Device::BalanceBoard, id);
+			else
+				profile->disconnected(Device::BalanceBoard, id);
 	});
 
-	connect(classic, &org::wiimotedev::classic::connected, [this](uint id) {
-		for (const auto &profile : m_profiles)
-			profile->connected(Device::Classic, id);
+	connect(classic, &org::wiimotedev::classic::connectionChanged, [this](uint id, bool status) {
+		for (auto &&profile : m_profiles)
+			if (status)
+				profile->connected(Device::Classic, id);
+			else
+				profile->disconnected(Device::Classic, id);
 	});
 
-	connect(nunchuk, &org::wiimotedev::nunchuk::connected, [this](uint id) {
-		for (const auto &profile : m_profiles)
-			profile->connected(Device::Nunchuk, id);
+	connect(nunchuk, &org::wiimotedev::nunchuk::connectionChanged, [this](uint id, bool status) {
+		for (auto &&profile : m_profiles)
+			if (status)
+				profile->connected(Device::Nunchuk, id);
+			else
+				profile->disconnected(Device::Nunchuk, id);
 	});
 
-	connect(procontroller, &org::wiimotedev::procontroller::connected, [this](uint id) {
+	connect(procontroller, &org::wiimotedev::procontroller::connectionChanged, [this](uint id, bool status) {
 		for (const auto &profile : m_profiles)
-			profile->connected(Device::ProController, id);
+			if (status)
+				profile->connected(Device::ProController, id);
+			else
+				profile->disconnected(Device::ProController, id);
 	});
 
-	connect(wiimote, &org::wiimotedev::wiimote::connected, [this](uint id) {
+	connect(wiimote, &org::wiimotedev::wiimote::connectionChanged, [this](uint id, bool status) {
 		for (const auto &profile : m_profiles)
-			profile->connected(Device::Wiimote, id);
-	});
-
-	connect(balanceboard, &org::wiimotedev::balanceboard::disconnected, [this](uint id) {
-		for (const auto &profile : m_profiles)
-			profile->disconnected(Device::BalanceBoard, id);
-	});
-
-	connect(classic, &org::wiimotedev::classic::disconnected, [this](uint id) {
-		for (const auto &profile : m_profiles)
-			profile->disconnected(Device::Classic, id);
-	});
-
-	connect(nunchuk, &org::wiimotedev::nunchuk::disconnected, [this](uint id) {
-		for (const auto &profile : m_profiles)
-			profile->disconnected(Device::Nunchuk, id);
-	});
-
-	connect(procontroller, &org::wiimotedev::procontroller::disconnected, [this](uint id) {
-		for (const auto &profile : m_profiles)
-			profile->disconnected(Device::ProController, id);
-	});
-
-	connect(wiimote, &org::wiimotedev::wiimote::disconnected, [this](uint id) {
-		for (const auto &profile : m_profiles)
-			profile->disconnected(Device::Wiimote, id);
+			if (status)
+				profile->connected(Device::Wiimote, id);
+			else
+				profile->disconnected(Device::Wiimote, id);
 	});
 
 	connect(classic, &org::wiimotedev::classic::buttonDataChanged, [this](uint id, qulonglong mask) {

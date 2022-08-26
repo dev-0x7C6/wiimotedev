@@ -12,15 +12,14 @@ public:
 	explicit ProControllerDispatcher(EventCallback &&eventCallback);
 
 	enums::Adaptor type() const final;
-	void process(u32 id, const dae::container::structs::event &ev) final;
+	void process(u32 id, const dae::container::event &ev) final;
 
 public:
 	QList<uint> list();
 
 signals:
 	void buttonDataChanged(uint id, qulonglong mask);
-	void connected(uint id);
-	void disconnected(uint id);
+	void connectionChanged(uint id, bool connected);
 	void stickDataChanged(uint id, int lx, int ly, int rx, int ry);
 
 private:

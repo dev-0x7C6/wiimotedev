@@ -12,7 +12,7 @@ public:
 	explicit WiimoteDispatcher(EventCallback &&eventCallback);
 
 	enums::Adaptor type() const final;
-	void process(u32 id, const dae::container::structs::event &ev) final;
+	void process(u32 id, const dae::container::event &ev) final;
 
 public Q_SLOTS:
 	QList<uint> list();
@@ -22,8 +22,7 @@ public Q_SLOTS:
 	bool setRumbleStatus(uint id, bool status);
 
 signals:
-	void connected(uint id);
-	void disconnected(uint id);
+	void connectionChanged(uint id, bool connected);
 
 	void accelerometerDataChanged(uint id, int x, int y, int z, int pitch, int roll);
 	void buttonDataChanged(uint id, qulonglong mask);

@@ -26,7 +26,7 @@ public:
 	virtual Api api() const = 0;
 
 	virtual bool isValid() const = 0;
-	virtual auto process() -> dae::container::structs::events = 0;
+	virtual auto process() -> dae::container::events = 0;
 
 	virtual bool isRumbleSupported() = 0;
 	virtual bool isLedSupported() = 0;

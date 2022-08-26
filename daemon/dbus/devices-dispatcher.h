@@ -15,7 +15,7 @@ public:
 
 protected:
 	enums::Adaptor type() const final;
-	void process(u32 id, const dae::container::structs::event &ev) final;
+	void process(u32 id, const dae::container::event &ev) final;
 };
 }
 }

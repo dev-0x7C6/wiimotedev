@@ -24,37 +24,30 @@ bool WiimoteDispatcher::rumbleStatus(uint id) { return std::get<bool>(generateEv
 bool WiimoteDispatcher::setLedStatus(uint id, uint led_id, bool status) { return std::get<bool>(generateEvent({CommandType::SetLedState, id, SetLedStateEvent{led_id, status}}).value_or(false)); }
 bool WiimoteDispatcher::setRumbleStatus(uint id, bool status) { return std::get<bool>(generateEvent({CommandType::SetRumbleState, id, SetRumbleStateEvent{status}}).value_or(false)); }
 
-template <class... Ts>
-struct overloaded : Ts... { using Ts::operator()...; };
-template <class... Ts>
-overloaded(Ts...) -> overloaded<Ts...>;
-
-void WiimoteDispatcher::process(const u32 id, const dae::container::structs::event &ev) {
+void WiimoteDispatcher::process(const u32 id, const dae::container::event &ev) {
 	if (Device::Wiimote != ev.first)
 		return;
 
 	std::visit(overloaded{
 				   [&](auto) {},
-				   [&](dae::container::structs::ir_points v) {
+				   [&](const dae::container::ir_points v) {
 					   emit infraredDataChanged(id, v[0].x, v[0].y, v[1].x, v[1].y, v[2].x, v[2].y, v[3].x, v[3].y);
 				   },
-				   [&](dae::container::structs::accdata v) {
+				   [&](const dae::container::accdata v) {
 					   emit accelerometerDataChanged(id, v.x, v.y, v.z, v.pitch, v.roll);
 				   },
-				   [&](dae::container::structs::button v) {
+				   [&](const dae::container::button v) {
 					   emit buttonDataChanged(id, v.states);
 				   },
-				   [&](dae::container::structs::gyro v) {
+				   [&](const dae::container::gyro v) {
 					   emit gyroscopeDataChanged(id, v.x, v.y, v.z);
 				   },
-				   [&](dae::container::structs::status v) {
-					   if (v.is_connected) {
+				   [&](const dae::container::status v) {
+					   if (v.is_connected)
 						   m_ids.insert(id);
-						   emit connected(id);
-					   } else {
+					   else
 						   m_ids.remove(id);
-						   emit disconnected(id);
-					   }
+					   emit connectionChanged(id, v.is_connected);
 				   }},
 
 		ev.second);

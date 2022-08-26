@@ -46,7 +46,7 @@ public:
 	Api api() const final { return Api::XWiimote; }
 
 	bool isValid() const final;
-	dae::container::structs::events process() final;
+	dae::container::events process() final;
 
 	bool isRumbleSupported() final;
 	bool isLedSupported() final;

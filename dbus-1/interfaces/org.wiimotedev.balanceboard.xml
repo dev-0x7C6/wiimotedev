@@ -5,11 +5,9 @@
 			<annotation value="QList&lt;uint>" name="org.qtproject.QtDBus.QtTypeName.Out0" />
 			<arg direction="out" type="au" name="list" />
 		</method>
-		<signal name="connected">
+		<signal name="connectionChanged">
 			<arg name="id" type="u" direction="out" />
-		</signal>
-		<signal name="disconnected">
-			<arg name="id" type="u" direction="out" />
+			<arg name="is_connected" type="b" direction="out"/>
 		</signal>
 		<signal name="dataChanged">
 			<arg name="id" type="u" direction="out" />

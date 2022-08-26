@@ -10,6 +10,11 @@
 #include "enums/adaptor.h"
 #include "containers/structs.hpp"
 
+template <class... Ts>
+struct overloaded : Ts... { using Ts::operator()...; };
+template <class... Ts>
+overloaded(Ts...) -> overloaded<Ts...>;
+
 namespace dae::interface {
 
 class IContainerProcessor : public QObject {
@@ -18,7 +23,7 @@ public:
 	~IContainerProcessor() override = default;
 
 	virtual enums::Adaptor type() const = 0;
-	virtual void process(u32 id, const dae::container::structs::event &ev) = 0;
+	virtual void process(u32 id, const dae::container::event &ev) = 0;
 
 protected:
 	CommandResult generateEvent(CommandEvent &&event) const noexcept;
