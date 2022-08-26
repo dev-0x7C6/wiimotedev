@@ -5,6 +5,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <queue>
 
 #include "interfaces/iwiimote-api.h"
 
@@ -55,11 +56,12 @@ private:
 private:
 	const std::string m_interfaceFilePath;
 	xwii_iface *m_interface{nullptr};
-	std::array<u64, 5> m_buttons{0, 0, 0, 0, 0};
 
 	std::unique_ptr<::helper::xwii_iface_instance> instance;
 	std::unique_ptr<::helper::xwii_iface_session> session;
 
+	std::queue<container::event> queue;
+	std::array<u64, common::enums::devices.size()> m_buttons{};
 	std::array<bool, common::enums::devices.size()> currentExtensionTable{};
 	std::array<bool, common::enums::devices.size()> lastExtensionTable{};
 

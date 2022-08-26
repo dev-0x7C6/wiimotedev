@@ -291,6 +291,11 @@ events XWiimoteController::process() {
 
 	dae::container::events ret;
 	for (;;) {
+		while (!queue.empty()) {
+			ret.emplace_back(queue.front());
+			queue.pop();
+		}
+
 		xwii_event event{};
 		event.type = XWII_EVENT_NUM;
 
@@ -319,11 +324,12 @@ events XWiimoteController::process() {
 
 				case XWII_EVENT_WATCH:
 					process_watch();
-					break;
+					return {};
 			}
 
 			return {};
 		}();
+
 		std::move(events.begin(), events.end(), std::back_inserter(ret));
 	}
 
@@ -409,8 +415,6 @@ bool XWiimoteController::reconfigureXWiimoteInterface() {
 
 	reconstruct(session, m_interface, flags);
 
-	dae::container::events ret;
-
 	for (auto &&dev : devices)
 		currentExtensionTable[static_cast<std::size_t>(dev)] = is_available(flags, to_xwii_interface(dev));
 
@@ -422,7 +426,7 @@ bool XWiimoteController::reconfigureXWiimoteInterface() {
 		const auto available = currentExtensionTable[idx];
 		dae::container::status status;
 		status.is_connected = available;
-		ret.emplace_back(std::make_pair(common::enums::device::wiimote, std::move(status)));
+		queue.emplace(std::make_pair(dev, std::move(status)));
 		spdlog::debug("{} report {}: {}", wiiremote, to_string(dev), available ? "connected" : "disconnected");
 	}
 
