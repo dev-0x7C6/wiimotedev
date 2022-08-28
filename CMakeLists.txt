@@ -11,7 +11,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall -Werror -Wpedantic")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -Werror -Wpedantic")
 
-find_package(Qt5 COMPONENTS Core DBus Widgets REQUIRED)
+find_package(
+  Qt5
+  COMPONENTS Core DBus Widgets Qml Quick QuickControls2
+  REQUIRED)
 find_package(spdlog)
 
 set(WIIMOTEDEV_VERSION_MAJOR 2)
@@ -26,3 +29,4 @@ add_subdirectory(dbus-1/interfaces)
 add_subdirectory(include)
 add_subdirectory(io)
 add_subdirectory(services)
+add_subdirectory(tools)

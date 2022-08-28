@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>PressArea.qml</file>
+        <file>balanceboard.png</file>
+    </qresource>
+</RCC>
