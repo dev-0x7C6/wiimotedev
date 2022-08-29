@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>Cursor.qml</file>
+        <file>IrPoint.qml</file>
+        <file>cursor.png</file>
+    </qresource>
+</RCC>
