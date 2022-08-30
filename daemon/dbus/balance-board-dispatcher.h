@@ -13,9 +13,6 @@ public:
 	enums::Adaptor type() const final;
 	void process(u32 id, const dae::container::event &ev) final;
 
-public:
-	QList<uint> list();
-
 signals:
 	void connectionChanged(uint id, bool connected);
 	void dataChanged(uint id, int top_left, int top_right, int bottom_left, int bottom_right);

@@ -17,7 +17,6 @@ VirtualCursorDispatcher::VirtualCursorDispatcher(EventCallback &&eventCallback)
 VirtualCursorDispatcher::~VirtualCursorDispatcher() = default;
 
 Adaptor VirtualCursorDispatcher::type() const { return Adaptor::VirtualCursor; }
-QList<uint> VirtualCursorDispatcher::list() const { return ids.values(); }
 
 void VirtualCursorDispatcher::process(const u32 id, const dae::container::event &ev) {
 	if (!is::wiimote(ev.first))

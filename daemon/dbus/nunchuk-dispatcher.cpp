@@ -15,7 +15,6 @@ NunchukDispatcher::NunchukDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor NunchukDispatcher::type() const { return Adaptor::Nunchuk; }
-QList<uint> NunchukDispatcher::list() const { return ids.values(); }
 
 void NunchukDispatcher::process(const u32 id, const dae::container::event &ev) {
 	if (!is::nunchuk(ev.first))

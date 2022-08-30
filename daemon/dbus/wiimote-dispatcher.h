@@ -13,8 +13,7 @@ public:
 	enums::Adaptor type() const final;
 	void process(u32 id, const dae::container::event &ev) final;
 
-public Q_SLOTS:
-	QList<uint> list();
+public:
 	bool ledStatus(uint id, uint led_id);
 	bool rumbleStatus(uint id);
 	bool setLedStatus(uint id, uint led_id, bool status);

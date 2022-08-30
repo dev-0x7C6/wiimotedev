@@ -49,6 +49,8 @@ public:
 	virtual enums::Adaptor type() const = 0;
 	virtual void process(u32 id, const dae::container::event &ev) = 0;
 
+	auto list() { return ids.values(); }
+
 protected:
 	CommandResult generateEvent(CommandEvent &&event) const noexcept;
 	id::manager ids;

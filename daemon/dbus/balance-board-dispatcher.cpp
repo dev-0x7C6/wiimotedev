@@ -13,7 +13,6 @@ BalanceBoardDispatcher::BalanceBoardDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor BalanceBoardDispatcher::type() const { return Adaptor::BalanceBoard; }
-QList<uint> BalanceBoardDispatcher::list() { return ids.values(); }
 
 void BalanceBoardDispatcher::process(const u32 id, const dae::container::event &ev) {
 	if (!is::balance_board(ev.first))

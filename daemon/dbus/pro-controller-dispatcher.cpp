@@ -13,7 +13,6 @@ ProControllerDispatcher::ProControllerDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor ProControllerDispatcher::type() const { return Adaptor::ProController; }
-QList<uint> ProControllerDispatcher::list() { return ids.values(); }
 
 void ProControllerDispatcher::process(const u32 id, const dae::container::event &ev) {
 	if (!is::pro_controller(ev.first))

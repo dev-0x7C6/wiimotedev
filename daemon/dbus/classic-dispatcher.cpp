@@ -14,7 +14,6 @@ ClassicDispatcher::ClassicDispatcher(EventCallback &&eventCallback)
 }
 
 Adaptor ClassicDispatcher::type() const { return Adaptor::Classic; }
-QList<uint> ClassicDispatcher::list() const { return ids.values(); }
 
 void ClassicDispatcher::process(const u32 id, const dae::container::event &ev) {
 	if (!is::classic_controller(ev.first))

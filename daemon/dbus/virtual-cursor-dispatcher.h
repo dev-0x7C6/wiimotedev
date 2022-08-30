@@ -21,9 +21,6 @@ public:
 	enums::Adaptor type() const final;
 	void process(u32 id, const dae::container::event &ev) final;
 
-public:
-	QList<uint> list() const;
-
 private:
 	std::map<uint, std::unique_ptr<functional::VirtualCursorProcessor>> m_processors;
 
