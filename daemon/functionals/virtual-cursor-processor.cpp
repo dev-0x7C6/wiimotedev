@@ -30,9 +30,6 @@ constexpr auto degree(const double radian) noexcept -> double {
 
 }
 
-static bool wait_for_2points{true};
-static bool was_abs_x_sorted{false};
-
 bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double roll) {
 	std::array<point, 2> p;
 
@@ -42,7 +39,7 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 		case 3:
 			return false;
 		case 2:
-			wait_for_2points = false;
+			m_wait_for_2points = false;
 			p[0].x = points.at(0).first;
 			p[0].y = points.at(0).second;
 			p[1].x = points.at(1).first;
@@ -51,7 +48,7 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 			m_visible = true;
 			break;
 		case 1:
-			if (wait_for_2points)
+			if (m_wait_for_2points)
 				return false;
 			{
 				p[0].x = points.at(0).first;
@@ -74,8 +71,8 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 				break;
 			}
 		case 0:
-			was_abs_x_sorted = false;
-			wait_for_2points = true;
+			m_was_abs_x_sorted = false;
+			m_wait_for_2points = true;
 			return false;
 	}
 
@@ -99,7 +96,5 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 	m_y = ir_cy - m_y;
 	m_angle = tools::degree(angle);
 
-	spdlog::debug("x: {}, y: {}", m_x, m_y);
-	spdlog::debug("angle: {}", angle);
 	return true;
 }
