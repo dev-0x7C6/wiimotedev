@@ -7,33 +7,32 @@
 namespace dae {
 namespace functional {
 
+struct point {
+	int x{};
+	int y{};
+};
+
 class VirtualCursorProcessor {
 public:
-	explicit VirtualCursorProcessor();
 	bool calculate(QList<QPair<int, int>> &points, double roll);
 
 	bool isVisible() const { return m_visible; }
 	double distance() const { return m_distance; }
-	double angle() const { return m_angle[m_index]; }
+	double angle() const { return m_angle; }
 	double x() const { return m_x; }
 	double y() const { return m_y; }
 
 private:
-	double angleDiff(double a, double b);
-	double _distance(i16 p[2], i16 q[2]);
+	double m_x{};
+	double m_y{};
+	double m_distance{};
+	double m_angle{};
 
 private:
-	double m_x = 0;
-	double m_y = 0;
-	double m_distance = 0;
-	double m_angle[2]{0, 0};
-
-private:
+	std::array<point, 2> last_points{};
 	bool m_visible = false;
-	int m_index = 0;
-	i16 m_ctable[2][2];
-	i16 m_ltable[2][2];
-	int m_calibrationPoint[2];
+	bool m_wait_for_2points{true};
+	bool m_was_abs_x_sorted{false};
 };
 }
 }
