@@ -39,7 +39,9 @@ void VirtualCursor::infraredDataChanged(uint id, int x1, int y1, int x2, int y2,
 void VirtualCursor::dataChanged(uint id, double x, double y, double l, double a) {
 	QPointF p(x, y);
 	m_cursor = p;
+	m_angle = a;
 	emit cursorChanged(p);
+	emit angleChanged(a);
 }
 
 QPointF VirtualCursor::cursor() const {

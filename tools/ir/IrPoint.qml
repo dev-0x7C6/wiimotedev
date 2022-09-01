@@ -6,7 +6,7 @@ Rectangle {
     property int num : 0
     property bool dv: false
     x: parent.width / 1024.0 * dx;
-    y: parent.height / 1024.0 * dy;
+    y: parent.height / 768.0 * dy;
     visible: dv
 
     Text {

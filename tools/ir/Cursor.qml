@@ -3,6 +3,7 @@ import QtQuick 2.15
 Item {
     property int dx : 0
     property int dy : 0
+    property double angle : 0
     x: -dx + parent.width / 2
     y: -dy + parent.height / 2
 
@@ -14,6 +15,7 @@ Item {
         fillMode: Image.PreserveAspectFit
         width: 50
         height: 50
+        rotation: angle
     }
 
     Text {
