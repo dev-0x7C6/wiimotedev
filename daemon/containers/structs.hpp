@@ -17,9 +17,9 @@ using s32 = std::int32_t;
 
 namespace dae::container {
 struct accdata {
-	u8 x;
-	u8 y;
-	u8 z;
+	s32 x;
+	s32 y;
+	s32 z;
 	double pitch;
 	double roll;
 };

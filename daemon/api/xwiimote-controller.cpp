@@ -187,11 +187,17 @@ auto gyro(const xwii_event &event) -> dae::container::event {
 
 auto acc(const device source, const xwii_event &event, const int axis) -> dae::container::event {
 	dae::container::accdata ret;
-	ret.x = event.v.abs[axis].x;
-	ret.y = event.v.abs[axis].y;
-	ret.z = event.v.abs[axis].z;
-	ret.roll = 0.0;
-	ret.pitch = 0.0;
+	ret.x = event.v.abs[axis].x + 26;
+	ret.y = event.v.abs[axis].y + 26;
+	ret.z = event.v.abs[axis].z + 26;
+
+	ret.roll = std::atan2(ret.x, ret.z);
+	ret.pitch = std::atan2(ret.y, std::sqrt(std::pow(ret.x, 2.0) + std::pow(ret.z, 2.0)));
+
+	spdlog::info("x: {}, y: {}, z: {}", ret.x, ret.y, ret.z);
+	spdlog::info("roll: {}", ret.roll * (180.0 / std::numbers::pi));
+	spdlog::info("pitch: {}", ret.pitch * (180.0 / std::numbers::pi));
+
 	return std::make_pair(source, std::move(ret));
 };
 
