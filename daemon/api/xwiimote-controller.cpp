@@ -4,9 +4,11 @@
 #include <xwiimote-ng.h>
 
 #include <algorithm>
+#include <numeric>
 #include <chrono>
 #include <cstdlib>
 #include <cstring>
+#include <limits>
 #include <thread>
 
 #include "include/wiimotedev/wiimotedev"
@@ -177,26 +179,111 @@ auto ir(const xwii_event &event) -> dae::container::event {
 	return {common::enums::device::wiimote, ret};
 }
 
-auto gyro(const xwii_event &event) -> dae::container::event {
-	dae::container::gyro ret;
-	ret.x = event.v.abs[0].x;
-	ret.y = event.v.abs[0].y;
-	ret.z = event.v.abs[0].z;
-	return std::make_pair(common::enums::device::wiimote, std::move(ret));
+namespace event {
+constexpr auto to_gyro(const xwii_event &event, const s32 axis = 0) noexcept -> dae::container::gyro {
+	return {
+		.x = static_cast<double>(event.v.abs[axis].x),
+		.y = static_cast<double>(event.v.abs[axis].y),
+		.z = static_cast<double>(event.v.abs[axis].z),
+	};
 }
 
-auto acc(const device source, const xwii_event &event, const int axis) -> dae::container::event {
+constexpr auto to_usecs(const xwii_event &event) noexcept -> std::chrono::microseconds {
+	std::chrono::microseconds ret(event.time.tv_usec);
+	if (event.time.tv_sec >= 0)
+		ret += std::chrono::seconds(event.time.tv_sec);
+	return ret;
+}
+
+constexpr auto time_delta_sec(const xwii_event &current, const std::chrono::microseconds last) noexcept -> double {
+	return (last - to_usecs(current)).count() / 1'000'000.0;
+}
+}
+
+namespace filter {
+constexpr auto high_pass(const dae::container::gyro &current, const dae::container::gyro &prev, const double alpha = 0.99) {
+	dae::container::gyro ret = current;
+	ret *= alpha;
+	ret += prev * (1.0 - alpha);
+	return ret;
+}
+}
+
+auto gyro(gyro_state_cache &cache, const xwii_event &event) -> dae::container::event {
+	if (!cache.last) {
+		cache.last = event::to_usecs(event);
+		return {};
+	}
+
+	const auto dt = event::time_delta_sec(event, cache.last.value());
+	auto current = event::to_gyro(event);
+	cache.last = event::to_usecs(event);
+
+	if (!cache.callibration.result) {
+		auto &&probes = cache.callibration.probes;
+		probes.emplace_back(current);
+		std::rotate(probes.rbegin(), probes.rbegin() + 1, probes.rend());
+		probes[0] = current;
+
+		if (cache.callibration.preffered_probe_count > probes.size())
+			return {};
+
+		cache.callibration.result = std::accumulate(probes.begin(), probes.end(), dae::container::gyro{}) / probes.size();
+		probes.clear();
+	}
+
+	// align values to zero
+	current -= cache.callibration.result.value();
+
+	// multiply by delta time and divide by xwii_gyro_linear_scale to get deg/s
+	constexpr auto degree_per_sec_constant = 8192.0 * 9.0 / 440.0; // 167.563~
+	current /= degree_per_sec_constant / dt;
+
+	// high pass filter
+	if (cache.prev)
+		current = filter::high_pass(current, cache.prev.value(), 0.99);
+
+	// accumulate with previous reading
+	cache.processed += current;
+
+	// save as prev sample
+	cache.prev = current;
+
+	spdlog::debug("gyroscope:");
+	spdlog::debug("   yaw:  [x]: {:+.3f}°", cache.processed.x);
+	spdlog::debug("  roll:  [y]: {:+.3f}°", cache.processed.y);
+	spdlog::debug(" pitch:  [z]: {:+.3f}°", cache.processed.z);
+	spdlog::debug("  time: [Δt]: {:+.3f}s", dt);
+
+	return std::make_pair(common::enums::device::wiimote, std::move(cache.processed));
+}
+
+auto acc(accel_state_cache &cache, const device source, const xwii_event &event, const int axis) -> dae::container::event {
 	dae::container::accdata ret;
 	ret.x = event.v.abs[axis].x + 26;
 	ret.y = event.v.abs[axis].y + 26;
 	ret.z = event.v.abs[axis].z + 26;
 
-	ret.roll = std::atan2(ret.x, ret.z);
-	ret.pitch = std::atan2(ret.y, std::sqrt(std::pow(ret.x, 2.0) + std::pow(ret.z, 2.0)));
+	auto &&probes = cache.probes;
 
-	spdlog::info("x: {}, y: {}, z: {}", ret.x, ret.y, ret.z);
-	spdlog::info("roll: {}", ret.roll * (180.0 / std::numbers::pi));
-	spdlog::info("pitch: {}", ret.pitch * (180.0 / std::numbers::pi));
+	if (probes.size() < 32)
+		probes.emplace_back(ret);
+
+	if (probes.size() >= 32) {
+		std::rotate(probes.rbegin(), probes.rbegin() + 1, probes.rend());
+		probes[0] = ret;
+	}
+
+	ret = std::accumulate(probes.begin(), probes.end(), ret) / probes.size();
+
+	ret.roll = std::atan2(ret.x, ret.z) + std::numbers::pi;
+	ret.pitch = std::atan2(ret.y, std::sqrt(std::pow(ret.x, 2.0) + std::pow(ret.z, 2.0))) + std::numbers::pi;
+	ret.roll *= 180.0 / std::numbers::pi;
+	ret.pitch *= 180.0 / std::numbers::pi;
+
+	spdlog::debug("accelerometer:");
+	spdlog::debug("  roll:  [y]: {:+.3f}°", ret.roll);
+	spdlog::debug(" pitch:  [z]: {:+.3f}°", ret.pitch);
 
 	return std::make_pair(source, std::move(ret));
 };
@@ -307,7 +394,7 @@ events XWiimoteController::process() {
 
 		auto events = [&]() -> dae::container::events {
 			switch (event.type) {
-				case XWII_EVENT_ACCEL: return {process::acc(device::wiimote, event, 0)};
+				case XWII_EVENT_ACCEL: return {process::acc(wiimote_acc_state, device::wiimote, event, 0)};
 				case XWII_EVENT_BALANCE_BOARD: return {process::press(event)};
 				case XWII_EVENT_CLASSIC_CONTROLLER_KEY: return {process_key(device::classic_controller, event)};
 				case XWII_EVENT_CLASSIC_CONTROLLER_MOVE: return {process_stick(device::classic_controller, event)};
@@ -316,13 +403,13 @@ events XWiimoteController::process() {
 				case XWII_EVENT_GONE: process_gone(); break;
 				case XWII_EVENT_IR: return {process::ir(event)};
 				case XWII_EVENT_KEY: return {process_key(device::wiimote, event)};
-				case XWII_EVENT_MOTION_PLUS: return {process::gyro(event)};
+				case XWII_EVENT_MOTION_PLUS: return {process::gyro(motionp_state, event)};
 				case XWII_EVENT_NUNCHUK_KEY:
 					return {process_key(device::nunchuk, event)};
 
 				case XWII_EVENT_NUNCHUK_MOVE:
 					return {
-						process::acc(device::nunchuk, event, 1),
+						process::acc(nunchuk_acc_state, device::nunchuk, event, 1),
 						process_stick(device::nunchuk, event)};
 
 				case XWII_EVENT_WATCH:

@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 #include <queue>
+#include <chrono>
 
 #include "interfaces/iwiimote-api.h"
 
@@ -19,6 +20,23 @@ struct xwii_iface_session;
 
 namespace dae {
 namespace api {
+
+struct gyro_callibration_stats {
+	s32 preffered_probe_count{64};
+	std::vector<dae::container::gyro> probes;
+	std::optional<dae::container::gyro> result;
+};
+
+struct gyro_state_cache {
+	gyro_callibration_stats callibration;
+	std::optional<std::chrono::microseconds> last;
+	std::optional<dae::container::gyro> prev{};
+	dae::container::gyro processed{};
+};
+
+struct accel_state_cache {
+	std::vector<dae::container::accdata> probes;
+};
 
 class XWiimoteController final : public interface::IWiimote {
 public:
@@ -64,6 +82,9 @@ private:
 	std::array<u64, common::enums::devices.size()> m_buttons{};
 	std::array<bool, common::enums::devices.size()> currentExtensionTable{};
 	std::array<bool, common::enums::devices.size()> lastExtensionTable{};
+	gyro_state_cache motionp_state;
+	accel_state_cache wiimote_acc_state;
+	accel_state_cache nunchuk_acc_state;
 
 	std::optional<bool> m_balanceBoardConnected;
 	std::optional<bool> m_classicControllerConnected;
