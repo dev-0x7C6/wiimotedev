@@ -23,19 +23,19 @@ namespace api {
 
 struct gyro_callibration_stats {
 	s32 preffered_probe_count{64};
-	std::vector<dae::container::gyro> probes;
-	std::optional<dae::container::gyro> result;
+	std::vector<dae::container::axis3d> probes;
+	std::optional<dae::container::axis3d> result;
 };
 
 struct gyro_state_cache {
 	gyro_callibration_stats callibration;
 	std::optional<std::chrono::microseconds> last;
-	std::optional<dae::container::gyro> prev{};
+	std::optional<dae::container::axis3d> prev{};
 	dae::container::gyro processed{};
 };
 
 struct accel_state_cache {
-	std::vector<dae::container::accdata> probes;
+	std::vector<dae::container::axis3d> probes;
 };
 
 class XWiimoteController final : public interface::IWiimote {

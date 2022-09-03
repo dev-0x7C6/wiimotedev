@@ -181,11 +181,14 @@ auto ir(const xwii_event &event) -> dae::container::event {
 
 namespace event {
 constexpr auto to_gyro(const xwii_event &event, const s32 axis = 0) noexcept -> dae::container::gyro {
-	return {
+	dae::container::gyro ret;
+	ret.axies = {
 		.x = static_cast<double>(event.v.abs[axis].x),
 		.y = static_cast<double>(event.v.abs[axis].y),
 		.z = static_cast<double>(event.v.abs[axis].z),
 	};
+
+	return ret;
 }
 
 constexpr auto to_usecs(const xwii_event &event) noexcept -> std::chrono::microseconds {
@@ -201,8 +204,8 @@ constexpr auto time_delta_sec(const xwii_event &current, const std::chrono::micr
 }
 
 namespace filter {
-constexpr auto high_pass(const dae::container::gyro &current, const dae::container::gyro &prev, const double alpha = 0.99) {
-	dae::container::gyro ret = current;
+constexpr auto high_pass(const dae::container::axis3d &current, const dae::container::axis3d &prev, const double alpha = 0.99) {
+	dae::container::axis3d ret = current;
 	ret *= alpha;
 	ret += prev * (1.0 - alpha);
 	return ret;
@@ -221,63 +224,68 @@ auto gyro(gyro_state_cache &cache, const xwii_event &event) -> dae::container::e
 
 	if (!cache.callibration.result) {
 		auto &&probes = cache.callibration.probes;
-		probes.emplace_back(current);
+		probes.emplace_back(current.axies);
 		std::rotate(probes.rbegin(), probes.rbegin() + 1, probes.rend());
-		probes[0] = current;
+		probes[0] = current.axies;
 
 		if (cache.callibration.preffered_probe_count > probes.size())
 			return {};
 
-		cache.callibration.result = std::accumulate(probes.begin(), probes.end(), dae::container::gyro{}) / probes.size();
+		cache.callibration.result = std::accumulate(probes.begin(), probes.end(), dae::container::axis3d{}) / probes.size();
 		probes.clear();
 	}
 
 	// align values to zero
-	current -= cache.callibration.result.value();
+	current.axies -= cache.callibration.result.value();
 
 	// multiply by delta time and divide by xwii_gyro_linear_scale to get deg/s
 	constexpr auto degree_per_sec_constant = 8192.0 * 9.0 / 440.0; // 167.563~
-	current /= degree_per_sec_constant / dt;
+	current.axies /= degree_per_sec_constant / dt;
 
 	// high pass filter
 	if (cache.prev)
-		current = filter::high_pass(current, cache.prev.value(), 0.99);
+		current.axies = filter::high_pass(current.axies, cache.prev.value(), 0.99);
 
 	// accumulate with previous reading
-	cache.processed += current;
+	cache.processed.axies += current.axies;
 
 	// save as prev sample
-	cache.prev = current;
+	cache.prev = current.axies;
 
 	spdlog::debug("gyroscope:");
-	spdlog::debug("   yaw:  [x]: {:+.3f}°", cache.processed.x);
-	spdlog::debug("  roll:  [y]: {:+.3f}°", cache.processed.y);
-	spdlog::debug(" pitch:  [z]: {:+.3f}°", cache.processed.z);
+	spdlog::debug("   yaw:  [x]: {:+.3f}°", cache.processed.axies.x);
+	spdlog::debug("  roll:  [y]: {:+.3f}°", cache.processed.axies.y);
+	spdlog::debug(" pitch:  [z]: {:+.3f}°", cache.processed.axies.z);
 	spdlog::debug("  time: [Δt]: {:+.3f}s", dt);
 
 	return std::make_pair(common::enums::device::wiimote, std::move(cache.processed));
 }
 
 auto acc(accel_state_cache &cache, const device source, const xwii_event &event, const int axis) -> dae::container::event {
-	dae::container::accdata ret;
-	ret.x = event.v.abs[axis].x + 26;
-	ret.y = event.v.abs[axis].y + 26;
-	ret.z = event.v.abs[axis].z + 26;
+	dae::container::accdata ret{};
+	auto &&x = ret.axies.x;
+	auto &&y = ret.axies.y;
+	auto &&z = ret.axies.z;
+	auto &&axies = ret.axies;
+
+	x = event.v.abs[axis].x + 26;
+	y = event.v.abs[axis].y + 26;
+	z = event.v.abs[axis].z + 26;
 
 	auto &&probes = cache.probes;
 
 	if (probes.size() < 32)
-		probes.emplace_back(ret);
+		probes.emplace_back(axies);
 
 	if (probes.size() >= 32) {
 		std::rotate(probes.rbegin(), probes.rbegin() + 1, probes.rend());
-		probes[0] = ret;
+		probes[0] = axies;
 	}
 
-	ret = std::accumulate(probes.begin(), probes.end(), ret) / probes.size();
+	axies = std::accumulate(probes.begin(), probes.end(), dae::container::axis3d{}) / probes.size();
 
-	ret.roll = std::atan2(ret.x, ret.z) + std::numbers::pi;
-	ret.pitch = std::atan2(ret.y, std::sqrt(std::pow(ret.x, 2.0) + std::pow(ret.z, 2.0))) + std::numbers::pi;
+	ret.roll = std::atan2(x, z) + std::numbers::pi;
+	ret.pitch = std::atan2(y, std::sqrt(std::pow(x, 2.0) + std::pow(z, 2.0))) + std::numbers::pi;
 	ret.roll *= 180.0 / std::numbers::pi;
 	ret.pitch *= 180.0 / std::numbers::pi;
 

@@ -26,7 +26,7 @@ void NunchukDispatcher::process(const u32 id, const dae::container::event &ev) {
 					   emit stickDataChanged(id, v.x, v.y);
 				   },
 				   [&](dae::container::accdata v) {
-					   emit accelerometerDataChanged(id, v.x, v.y, v.z, v.pitch, v.roll);
+					   emit accelerometerDataChanged(id, v.axies.x, v.axies.y, v.axies.z, v.pitch, v.roll);
 				   },
 				   [&](dae::container::button v) {
 					   emit buttonDataChanged(id, v.states);

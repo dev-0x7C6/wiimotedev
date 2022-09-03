@@ -16,91 +16,79 @@ using s16 = std::int16_t;
 using s32 = std::int32_t;
 
 namespace dae::container {
-struct accdata {
-	float x;
-	float y;
-	float z;
-	float pitch;
-	float roll;
-};
 
-constexpr accdata operator+(const accdata &lhs, const accdata &rhs) noexcept {
-	accdata ret;
-	ret.x = lhs.x + rhs.x;
-	ret.y = lhs.y + rhs.y;
-	ret.z = lhs.z + rhs.z;
-	ret.pitch = (lhs.pitch + rhs.pitch) / 2.0;
-	ret.roll = (lhs.roll + rhs.roll) / 2.0;
-	return ret;
-}
-
-constexpr accdata operator/(const accdata &lhs, const double v) noexcept {
-	accdata ret;
-	ret.x = lhs.x / v;
-	ret.y = lhs.y / v;
-	ret.z = lhs.z / v;
-	return ret;
-}
-
-struct gyro {
+struct axis3d {
 	double x{};
 	double y{};
 	double z{};
 
-	constexpr auto operator<=>(const gyro &lhs) const noexcept = default;
+	constexpr auto operator<=>(const axis3d &lhs) const noexcept = default;
 };
 
-constexpr gyro operator+=(gyro &lhs, const gyro &rhs) noexcept {
+constexpr axis3d operator+=(axis3d &lhs, const axis3d &rhs) noexcept {
 	lhs.x += rhs.x;
 	lhs.y += rhs.y;
 	lhs.z += rhs.z;
 	return lhs;
 }
 
-constexpr gyro operator-=(gyro &lhs, const gyro &rhs) noexcept {
+constexpr axis3d operator-=(axis3d &lhs, const axis3d &rhs) noexcept {
 	lhs.x -= rhs.x;
 	lhs.y -= rhs.y;
 	lhs.z -= rhs.z;
 	return lhs;
 }
 
-constexpr gyro operator*=(gyro &lhs, const double v) noexcept {
+constexpr axis3d operator*=(axis3d &lhs, const double v) noexcept {
 	lhs.x *= v;
 	lhs.y *= v;
 	lhs.z *= v;
 	return lhs;
 }
 
-constexpr gyro operator/=(gyro &lhs, const double v) noexcept {
+constexpr axis3d operator/=(axis3d &lhs, const double v) noexcept {
 	lhs.x /= v;
 	lhs.y /= v;
 	lhs.z /= v;
 	return lhs;
 }
 
-constexpr gyro operator+(const gyro &lhs, const gyro &rhs) noexcept {
-	gyro ret;
+constexpr axis3d operator+(const axis3d &lhs, const axis3d &rhs) noexcept {
+	axis3d ret;
 	ret.x = lhs.x + rhs.x;
 	ret.y = lhs.y + rhs.y;
 	ret.z = lhs.z + rhs.z;
 	return ret;
 }
 
-constexpr gyro operator*(const gyro &lhs, const double v) noexcept {
-	gyro ret;
+constexpr axis3d operator*(const axis3d &lhs, const double v) noexcept {
+	axis3d ret;
 	ret.x = lhs.x * v;
 	ret.y = lhs.y * v;
 	ret.z = lhs.z * v;
 	return ret;
 }
 
-constexpr gyro operator/(const gyro &lhs, const double v) noexcept {
-	gyro ret;
+constexpr axis3d operator/(const axis3d &lhs, const double v) noexcept {
+	axis3d ret;
 	ret.x = lhs.x / v;
 	ret.y = lhs.y / v;
 	ret.z = lhs.z / v;
 	return ret;
 }
+
+struct accdata {
+	axis3d axies{};
+	double pitch{};
+	double roll{};
+
+	constexpr auto operator<=>(const accdata &lhs) const noexcept = default;
+};
+
+struct gyro {
+	axis3d axies{};
+	constexpr auto operator<=>(const gyro &lhs) const noexcept = default;
+};
 
 struct ir_point {
 	s16 size;
