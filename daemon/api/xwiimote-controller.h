@@ -35,6 +35,7 @@ struct gyro_state_cache {
 };
 
 struct accel_state_cache {
+	std::optional<std::chrono::microseconds> last;
 	std::vector<dae::container::axis3d> probes;
 };
 

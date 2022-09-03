@@ -252,11 +252,17 @@ auto gyro(gyro_state_cache &cache, const xwii_event &event) -> dae::container::e
 	// save as prev sample
 	cache.prev = current.axies;
 
+	const auto raw = event::to_gyro(event);
 	spdlog::debug("gyroscope:");
-	spdlog::debug("   yaw:  [x]: {:+.3f}°", cache.processed.axies.x);
-	spdlog::debug("  roll:  [y]: {:+.3f}°", cache.processed.axies.y);
-	spdlog::debug(" pitch:  [z]: {:+.3f}°", cache.processed.axies.z);
-	spdlog::debug("  time: [Δt]: {:+.3f}s", dt);
+	spdlog::debug("  ----------------------");
+	spdlog::debug("     raw: [x]: {:+.0f}", raw.axies.x);
+	spdlog::debug("     raw: [y]: {:+.0f}", raw.axies.y);
+	spdlog::debug("     raw: [z]: {:+.0f}", raw.axies.z);
+	spdlog::debug("  ----------------------");
+	spdlog::debug("    yaw:  [x]: {:+.3f}°", cache.processed.axies.x);
+	spdlog::debug("   roll:  [y]: {:+.3f}°", cache.processed.axies.y);
+	spdlog::debug("  pitch:  [z]: {:+.3f}°", cache.processed.axies.z);
+	spdlog::debug("   time: [Δt]: {:+.3f}s", dt);
 
 	return std::make_pair(common::enums::device::wiimote, std::move(cache.processed));
 }
@@ -267,6 +273,14 @@ auto acc(accel_state_cache &cache, const device source, const xwii_event &event,
 	auto &&y = ret.axies.y;
 	auto &&z = ret.axies.z;
 	auto &&axies = ret.axies;
+
+	if (!cache.last) {
+		cache.last = event::to_usecs(event);
+		return {};
+	}
+
+	const auto dt = event::time_delta_sec(event, cache.last.value());
+	cache.last = event::to_usecs(event);
 
 	x = event.v.abs[axis].x + 26;
 	y = event.v.abs[axis].y + 26;
@@ -284,14 +298,20 @@ auto acc(accel_state_cache &cache, const device source, const xwii_event &event,
 
 	axies = std::accumulate(probes.begin(), probes.end(), dae::container::axis3d{}) / probes.size();
 
-	ret.roll = std::atan2(x, z) + std::numbers::pi;
-	ret.pitch = std::atan2(y, std::sqrt(std::pow(x, 2.0) + std::pow(z, 2.0))) + std::numbers::pi;
+	ret.roll = std::atan2(x, z);
+	ret.pitch = std::atan2(y, std::sqrt(std::pow(x, 2.0) + std::pow(z, 2.0)));
 	ret.roll *= 180.0 / std::numbers::pi;
 	ret.pitch *= 180.0 / std::numbers::pi;
 
 	spdlog::debug("accelerometer:");
-	spdlog::debug("  roll:  [y]: {:+.3f}°", ret.roll);
-	spdlog::debug(" pitch:  [z]: {:+.3f}°", ret.pitch);
+	spdlog::debug("  ----------------------");
+	spdlog::debug("     raw: [x]: {:+.0f}", static_cast<double>(event.v.abs[axis].x));
+	spdlog::debug("     raw: [y]: {:+.0f}", static_cast<double>(event.v.abs[axis].y));
+	spdlog::debug("     raw: [z]: {:+.0f}", static_cast<double>(event.v.abs[axis].z));
+	spdlog::debug("  ----------------------");
+	spdlog::debug("    yaw:  [y]: {:+.3f}°", ret.roll);
+	spdlog::debug("   roll:  [z]: {:+.3f}°", ret.pitch);
+	spdlog::debug("   time: [Δt]: {:+.3f}s", dt);
 
 	return std::make_pair(source, std::move(ret));
 };
