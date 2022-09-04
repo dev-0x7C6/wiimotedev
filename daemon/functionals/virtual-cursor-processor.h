@@ -8,9 +8,18 @@ namespace dae {
 namespace functional {
 
 struct point {
-	int x{};
-	int y{};
+	double x{};
+	double y{};
+
+	constexpr auto operator<=>(const point &v) const noexcept = default;
 };
+
+constexpr point operator-(const point &lhs, const point &rhs) {
+	point ret;
+	ret.x = lhs.x - rhs.x;
+	ret.y = lhs.y - rhs.y;
+	return ret;
+}
 
 class VirtualCursorProcessor {
 public:

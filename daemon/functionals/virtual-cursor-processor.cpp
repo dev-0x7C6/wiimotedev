@@ -2,18 +2,16 @@
 
 #include <numbers>
 
+#include <spdlog/spdlog.h>
+
 using namespace dae::functional;
 
 namespace tools {
 
 constexpr auto distance(const point &p1, const point &p2) noexcept -> double {
-	const auto dx = std::pow(p2.x - p1.x, 2);
-	const auto dy = std::pow(p2.y - p2.y, 2);
+	const auto dx = std::pow(std::abs(p2.x - p1.x), 2);
+	const auto dy = std::pow(std::abs(p2.y - p1.y), 2);
 	return std::sqrt(dx + dy);
-}
-
-constexpr auto distance_xy(const point &p1, const point &p2) noexcept -> point {
-	return {p1.x - p2.x, p1.y - p2.y};
 }
 
 constexpr auto abs(const point &p) noexcept -> point {
@@ -76,25 +74,46 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 			return false;
 	}
 
-	constexpr auto ir_mx = 1024.0; // max ir resolution x
-	constexpr auto ir_my = 768.0; // max ir resolution y
-	constexpr auto ir_cx = ir_mx / 2; // center x for ir
-	constexpr auto ir_cy = ir_my / 2; // center y for ir
+	constexpr auto ir_camera_max_px = point{
+		.x = 1024.0,
+		.y = 768.0,
+	};
+	constexpr auto ir_cx = ir_camera_max_px.x / 2; // center x for ir
+	constexpr auto ir_cy = ir_camera_max_px.y / 2; // center y for ir
 
-	const auto distance = tools::distance_xy(p[0], p[1]); // distances in x axis and y axis
+	const auto diff = p[0] - p[1]; // diffrence in x axis and y axis
 	const auto centered = tools::center(p[0], p[1]); // actual cordinates for virtual cursor
-	const auto angle = std::atan2(distance.y, distance.x);
+	const auto angle = std::atan2(diff.y, diff.x);
 	const auto sin_angle = std::sin(-angle);
 	const auto cos_angle = std::cos(angle);
 	const auto x = centered.x;
 	const auto y = centered.y;
 
-	m_x = (ir_mx - (x * cos_angle - y * sin_angle + ir_cx * (1 - cos_angle) + ir_cy * sin_angle));
-	m_y = (x * sin_angle + y * cos_angle - ir_cx * sin_angle + ir_cy * (1 - cos_angle));
+	m_x = x * cos_angle - y * sin_angle + ir_cx * (1.0 - cos_angle) + ir_cy * sin_angle;
+	m_y = x * sin_angle + y * cos_angle - ir_cx * sin_angle + ir_cy * (1.0 - cos_angle);
+
+	// x offseting
+	m_x = ir_camera_max_px.x - m_x;
 
 	m_x = ir_cx - m_x;
 	m_y = ir_cy - m_y;
 	m_angle = tools::degree(angle);
+
+	m_distance = tools::distance(p[0], p[1]);
+
+	constexpr auto sensorbar_width = 24.00; // cm
+	constexpr auto sensorbar_one_side_ir_width = 4.00; // cm
+	constexpr auto sensorbar_centered_ir_distance = sensorbar_width - sensorbar_one_side_ir_width;
+	constexpr auto sensorbar_delta_correction = 0.985; // correction from testing in field
+	const auto d = ir_camera_max_px.x / sensorbar_centered_ir_distance;
+	const auto real_distance = (ir_camera_max_px.x / m_distance) * d / (sensorbar_delta_correction * 2.0);
+
+	spdlog::info("distance");
+	spdlog::info("    point: {:+0.2f}px", tools::distance(p[0], p[1]));
+	spdlog::info("     real: {:+0.2f}cm", real_distance);
+	spdlog::info("         : {:+0.2f}m", real_distance / 100.0);
+
+	m_distance = real_distance;
 
 	return true;
 }
