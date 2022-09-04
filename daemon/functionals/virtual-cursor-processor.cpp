@@ -115,7 +115,7 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 	constexpr auto sensorbar_delta_correction = 0.985; // correction from testing in field
 	const auto d = ir_camera_max_px.x / sensorbar_centered_ir_distance;
 	const auto real_distance = (ir_camera_max_px.x / m_distance) * d / (sensorbar_delta_correction * 2.0);
-	const auto syntetic_x_distance = (m_x / ir_camera_max_px.x) * real_distance;
+	const auto syntetic_x_distance = (m_x / ir_camera_max_px.x) * real_distance * -1.0;
 	const auto syntetic_y_distance = (m_y / ir_camera_max_px.y) * real_distance;
 
 	m_yaw = tools::degree(std::atan2(syntetic_x_distance, real_distance));
