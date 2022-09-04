@@ -14,6 +14,13 @@ struct point {
 	constexpr auto operator<=>(const point &v) const noexcept = default;
 };
 
+constexpr point operator/(const point &lhs, const double v) {
+	point ret;
+	ret.x = lhs.x / v;
+	ret.y = lhs.y / v;
+	return ret;
+}
+
 constexpr point operator-(const point &lhs, const point &rhs) {
 	point ret;
 	ret.x = lhs.x - rhs.x;
@@ -36,6 +43,7 @@ private:
 	double m_y{};
 	double m_distance{};
 	double m_angle{};
+	double m_yaw{};
 
 private:
 	std::array<point, 2> last_points{};

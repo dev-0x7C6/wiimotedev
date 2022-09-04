@@ -2,6 +2,8 @@
 
 #include <numbers>
 
+#include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
 #include <spdlog/spdlog.h>
 
 using namespace dae::functional;
@@ -78,27 +80,34 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 		.x = 1024.0,
 		.y = 768.0,
 	};
-	constexpr auto ir_cx = ir_camera_max_px.x / 2; // center x for ir
-	constexpr auto ir_cy = ir_camera_max_px.y / 2; // center y for ir
 
-	const auto diff = p[0] - p[1]; // diffrence in x axis and y axis
+	constexpr auto ir_camera_center_px = ir_camera_max_px / 2.0;
+
+	const auto diff = p[1] - p[0]; // diffrence in x axis and y axis
 	const auto centered = tools::center(p[0], p[1]); // actual cordinates for virtual cursor
 	const auto angle = std::atan2(diff.y, diff.x);
-	const auto sin_angle = std::sin(-angle);
-	const auto cos_angle = std::cos(angle);
 	const auto x = centered.x;
 	const auto y = centered.y;
 
-	m_x = x * cos_angle - y * sin_angle + ir_cx * (1.0 - cos_angle) + ir_cy * sin_angle;
-	m_y = x * sin_angle + y * cos_angle - ir_cx * sin_angle + ir_cy * (1.0 - cos_angle);
+	Eigen::Matrix<double, 2, 1> coordinates{
+		{x},
+		{y},
+	};
 
-	// x offseting
-	m_x = ir_camera_max_px.x - m_x;
+	Eigen::Matrix<double, 2, 1> coordinates_center{
+		{-ir_camera_center_px.x},
+		{-ir_camera_center_px.y},
+	};
 
-	m_x = ir_cx - m_x;
-	m_y = ir_cy - m_y;
+	const auto rotation_matrix = Eigen::Rotation2D(-angle);
+	const auto rotate_coordinates = rotation_matrix * coordinates;
+	const auto rotate_from_center = rotation_matrix * coordinates_center;
+	const auto compute = rotate_coordinates + rotate_from_center;
+
+	m_x = compute.x();
+	m_y = compute.y() * -1.0;
+
 	m_angle = tools::degree(angle);
-
 	m_distance = tools::distance(p[0], p[1]);
 
 	constexpr auto sensorbar_width = 24.00; // cm
@@ -107,11 +116,26 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 	constexpr auto sensorbar_delta_correction = 0.985; // correction from testing in field
 	const auto d = ir_camera_max_px.x / sensorbar_centered_ir_distance;
 	const auto real_distance = (ir_camera_max_px.x / m_distance) * d / (sensorbar_delta_correction * 2.0);
+	const auto syntetic_x_distatance = (m_x / ir_camera_max_px.x) * real_distance;
 
-	spdlog::info("distance");
-	spdlog::info("    point: {:+0.2f}px", tools::distance(p[0], p[1]));
-	spdlog::info("     real: {:+0.2f}cm", real_distance);
-	spdlog::info("         : {:+0.2f}m", real_distance / 100.0);
+	m_yaw = tools::degree(std::atan2(syntetic_x_distatance, real_distance));
+
+	spdlog::debug("virtual cursor:");
+	spdlog::debug(" ---------------------------");
+	spdlog::debug("  coordinates:");
+	spdlog::debug("             [x]: {:+0.2f}px", m_x);
+	spdlog::debug("             [y]: {:+0.2f}px", m_y);
+	spdlog::debug("  angles:");
+	spdlog::debug("         yaw [x]: {:+0.2f}°", m_yaw);
+	spdlog::debug("        roll [y]: {:+0.2f}°", m_angle);
+	spdlog::debug(" ---------------------------");
+	spdlog::debug("  distance:");
+	spdlog::debug("           point: {:+0.2f}px", tools::distance(p[0], p[1]));
+	spdlog::debug("            real: {:+0.2f}cm", real_distance);
+	spdlog::debug("                : {:+0.2f}m", real_distance / 100.0);
+	spdlog::debug(" ---------------------------");
+	spdlog::debug("  syntetic:");
+	spdlog::debug("        pointing: {:+0.2f}cm", syntetic_x_distatance);
 
 	m_distance = real_distance;
 
