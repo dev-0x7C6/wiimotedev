@@ -8,6 +8,10 @@
 
 using namespace dae::functional;
 
+namespace debug::cursor {
+constexpr auto visible = false;
+}
+
 namespace tools {
 
 constexpr auto distance(const point &p1, const point &p2) noexcept -> double {
@@ -86,12 +90,10 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 	const auto diff = p[1] - p[0]; // diffrence in x axis and y axis
 	const auto centered = tools::center(p[0], p[1]); // actual cordinates for virtual cursor
 	const auto angle = std::atan2(diff.y, diff.x);
-	const auto x = centered.x;
-	const auto y = centered.y;
 
 	Eigen::Matrix<double, 2, 1> coordinates{
-		{x},
-		{y},
+		{centered.x},
+		{centered.y},
 	};
 
 	Eigen::Matrix<double, 2, 1> coordinates_center{
@@ -122,25 +124,27 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 	m_pitch = tools::degree(std::atan2(syntetic_y_distance, real_distance));
 	m_roll = tools::degree(angle);
 
-	spdlog::debug("virtual cursor:");
-	spdlog::debug(" ---------------------------");
-	spdlog::debug("  coordinates:");
-	spdlog::debug("             [x]: {:+0.2f}px", m_x);
-	spdlog::debug("             [y]: {:+0.2f}px", m_y);
-	spdlog::debug(" ---------------------------");
-	spdlog::debug("  angles:");
-	spdlog::debug("         yaw [x]: {:+0.2f}°", m_yaw);
-	spdlog::debug("        roll [y]: {:+0.2f}°", m_roll);
-	spdlog::debug("       pitch [z]: {:+0.2f}°", m_pitch);
-	spdlog::debug(" ---------------------------");
-	spdlog::debug("  distance:");
-	spdlog::debug("           point: {:+0.2f}px", tools::distance(p[0], p[1]));
-	spdlog::debug("            real: {:+0.2f}cm", real_distance);
-	spdlog::debug("                : {:+0.2f}m", real_distance / 100.0);
-	spdlog::debug(" ---------------------------");
-	spdlog::debug("  pointing from center:");
-	spdlog::debug("             [x]: {:+0.2f}cm", syntetic_x_distance);
-	spdlog::debug("             [y]: {:+0.2f}cm", syntetic_y_distance);
+	if constexpr (debug::cursor::visible) {
+		spdlog::debug("virtual cursor:");
+		spdlog::debug(" ---------------------------");
+		spdlog::debug("  coordinates:");
+		spdlog::debug("             [x]: {:+0.2f}px", m_x);
+		spdlog::debug("             [y]: {:+0.2f}px", m_y);
+		spdlog::debug(" ---------------------------");
+		spdlog::debug("  angles:");
+		spdlog::debug("         yaw [x]: {:+0.2f}°", m_yaw);
+		spdlog::debug("        roll [y]: {:+0.2f}°", m_roll);
+		spdlog::debug("       pitch [z]: {:+0.2f}°", m_pitch);
+		spdlog::debug(" ---------------------------");
+		spdlog::debug("  distance:");
+		spdlog::debug("           point: {:+0.2f}px", tools::distance(p[0], p[1]));
+		spdlog::debug("            real: {:+0.2f}cm", real_distance);
+		spdlog::debug("                : {:+0.2f}m", real_distance / 100.0);
+		spdlog::debug(" ---------------------------");
+		spdlog::debug("  pointing from center:");
+		spdlog::debug("             [x]: {:+0.2f}cm", syntetic_x_distance);
+		spdlog::debug("             [y]: {:+0.2f}cm", syntetic_y_distance);
+	}
 
 	m_distance = real_distance;
 
