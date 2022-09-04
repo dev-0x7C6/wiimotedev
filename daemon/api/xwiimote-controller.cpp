@@ -212,7 +212,7 @@ constexpr auto high_pass(const dae::container::axis3d &current, const dae::conta
 }
 }
 
-auto gyro(gyro_state_cache &cache, const xwii_event &event) -> dae::container::event {
+auto gyro(accel_state_cache &acc, gyro_state_cache &cache, const xwii_event &event) -> dae::container::event {
 	if (!cache.last) {
 		cache.last = event::to_usecs(event);
 		return {};
@@ -244,10 +244,15 @@ auto gyro(gyro_state_cache &cache, const xwii_event &event) -> dae::container::e
 
 	// high pass filter
 	if (cache.prev)
-		current.axies = filter::high_pass(current.axies, cache.prev.value(), 0.99);
+		current.axies = filter::high_pass(current.axies, cache.prev.value(), 0.98);
 
 	// accumulate with previous reading
 	cache.processed.axies += current.axies;
+
+	if (acc.stability_score < 1.01) {
+		cache.processed.axies.y = cache.processed.axies.y * 0.98 + acc.prev.roll * 0.02;
+		cache.processed.axies.z = cache.processed.axies.z * 0.98 + acc.prev.pitch * -0.02;
+	}
 
 	// save as prev sample
 	cache.prev = current.axies;
@@ -294,6 +299,22 @@ auto acc(accel_state_cache &cache, const device source, const xwii_event &event,
 	if (probes.size() >= 32) {
 		std::rotate(probes.rbegin(), probes.rbegin() + 1, probes.rend());
 		probes[0] = axies;
+		auto last = probes[1];
+
+		cache.stability_score = 1.0;
+		cache.stability_score *= std::max(1.0, std::abs(last.x) - std::abs(x));
+		cache.stability_score *= std::max(1.0, std::abs(last.y) - std::abs(y));
+		cache.stability_score *= std::max(1.0, std::abs(last.z) - std::abs(z));
+
+		if (cache.scores.size() < 16)
+			cache.scores.emplace_back(cache.stability_score);
+
+		if (cache.scores.size() >= 16) {
+			std::rotate(cache.scores.rbegin(), cache.scores.rbegin() + 1, cache.scores.rend());
+			cache.scores[0] = cache.stability_score;
+		}
+
+		cache.stability_score = std::accumulate(cache.scores.begin(), cache.scores.end(), 0.0) / cache.scores.size();
 	}
 
 	axies = std::accumulate(probes.begin(), probes.end(), dae::container::axis3d{}) / probes.size();
@@ -302,6 +323,8 @@ auto acc(accel_state_cache &cache, const device source, const xwii_event &event,
 	ret.pitch = std::atan2(y, std::sqrt(std::pow(x, 2.0) + std::pow(z, 2.0)));
 	ret.roll *= 180.0 / std::numbers::pi;
 	ret.pitch *= 180.0 / std::numbers::pi;
+
+	cache.prev = ret;
 
 	spdlog::debug("accelerometer:");
 	spdlog::debug("  ----------------------");
@@ -312,6 +335,8 @@ auto acc(accel_state_cache &cache, const device source, const xwii_event &event,
 	spdlog::debug("    yaw:  [y]: {:+.3f}°", ret.roll);
 	spdlog::debug("   roll:  [z]: {:+.3f}°", ret.pitch);
 	spdlog::debug("   time: [Δt]: {:+.3f}s", dt);
+	spdlog::debug("  ----------------------");
+	spdlog::debug(" stable score: {:+.2f}", cache.stability_score);
 
 	return std::make_pair(source, std::move(ret));
 };
@@ -431,7 +456,7 @@ events XWiimoteController::process() {
 				case XWII_EVENT_GONE: process_gone(); break;
 				case XWII_EVENT_IR: return {process::ir(event)};
 				case XWII_EVENT_KEY: return {process_key(device::wiimote, event)};
-				case XWII_EVENT_MOTION_PLUS: return {process::gyro(motionp_state, event)};
+				case XWII_EVENT_MOTION_PLUS: return {process::gyro(wiimote_acc_state, motionp_state, event)};
 				case XWII_EVENT_NUNCHUK_KEY:
 					return {process_key(device::nunchuk, event)};
 
