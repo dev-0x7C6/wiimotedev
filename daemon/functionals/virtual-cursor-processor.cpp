@@ -107,7 +107,6 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 	m_x = compute.x();
 	m_y = compute.y() * -1.0;
 
-	m_angle = tools::degree(angle);
 	m_distance = tools::distance(p[0], p[1]);
 
 	constexpr auto sensorbar_width = 24.00; // cm
@@ -116,26 +115,32 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 	constexpr auto sensorbar_delta_correction = 0.985; // correction from testing in field
 	const auto d = ir_camera_max_px.x / sensorbar_centered_ir_distance;
 	const auto real_distance = (ir_camera_max_px.x / m_distance) * d / (sensorbar_delta_correction * 2.0);
-	const auto syntetic_x_distatance = (m_x / ir_camera_max_px.x) * real_distance;
+	const auto syntetic_x_distance = (m_x / ir_camera_max_px.x) * real_distance;
+	const auto syntetic_y_distance = (m_y / ir_camera_max_px.y) * real_distance;
 
-	m_yaw = tools::degree(std::atan2(syntetic_x_distatance, real_distance));
+	m_yaw = tools::degree(std::atan2(syntetic_x_distance, real_distance));
+	m_pitch = tools::degree(std::atan2(syntetic_y_distance, real_distance));
+	m_roll = tools::degree(angle);
 
 	spdlog::debug("virtual cursor:");
 	spdlog::debug(" ---------------------------");
 	spdlog::debug("  coordinates:");
 	spdlog::debug("             [x]: {:+0.2f}px", m_x);
 	spdlog::debug("             [y]: {:+0.2f}px", m_y);
+	spdlog::debug(" ---------------------------");
 	spdlog::debug("  angles:");
 	spdlog::debug("         yaw [x]: {:+0.2f}°", m_yaw);
-	spdlog::debug("        roll [y]: {:+0.2f}°", m_angle);
+	spdlog::debug("        roll [y]: {:+0.2f}°", m_roll);
+	spdlog::debug("       pitch [z]: {:+0.2f}°", m_pitch);
 	spdlog::debug(" ---------------------------");
 	spdlog::debug("  distance:");
 	spdlog::debug("           point: {:+0.2f}px", tools::distance(p[0], p[1]));
 	spdlog::debug("            real: {:+0.2f}cm", real_distance);
 	spdlog::debug("                : {:+0.2f}m", real_distance / 100.0);
 	spdlog::debug(" ---------------------------");
-	spdlog::debug("  syntetic:");
-	spdlog::debug("        pointing: {:+0.2f}cm", syntetic_x_distatance);
+	spdlog::debug("  pointing from center:");
+	spdlog::debug("             [x]: {:+0.2f}cm", syntetic_x_distance);
+	spdlog::debug("             [y]: {:+0.2f}cm", syntetic_y_distance);
 
 	m_distance = real_distance;
 

@@ -34,7 +34,7 @@ public:
 
 	bool isVisible() const { return m_visible; }
 	double distance() const { return m_distance; }
-	double angle() const { return m_angle; }
+	double angle() const { return m_roll; }
 	double x() const { return m_x; }
 	double y() const { return m_y; }
 
@@ -42,8 +42,9 @@ private:
 	double m_x{};
 	double m_y{};
 	double m_distance{};
-	double m_angle{};
+	double m_roll{};
 	double m_yaw{};
+	double m_pitch{};
 
 private:
 	std::array<point, 2> last_points{};
