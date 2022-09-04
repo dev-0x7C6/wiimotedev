@@ -46,6 +46,14 @@ static_assert(1ull << XWII_KEY_THUMBR == WIIMOTEDEV_BTN_THUMBR);
 static_assert(1ull << XWII_KEY_C == WIIMOTEDEV_BTN_C);
 static_assert(1ull << XWII_KEY_Z == WIIMOTEDEV_BTN_Z);
 
+namespace debug::gyroscope {
+constexpr auto visible = false;
+}
+
+namespace debug::accelerometer {
+constexpr auto visible = false;
+}
+
 namespace {
 template <typename type, typename input_type>
 constexpr auto is_available(type &&flags, input_type &&match_with) noexcept {
@@ -257,17 +265,19 @@ auto gyro(accel_state_cache &acc, gyro_state_cache &cache, const xwii_event &eve
 	// save as prev sample
 	cache.prev = current.axies;
 
-	const auto raw = event::to_gyro(event);
-	spdlog::debug("gyroscope:");
-	spdlog::debug("  ----------------------");
-	spdlog::debug("     raw: [x]: {:+.0f}", raw.axies.x);
-	spdlog::debug("     raw: [y]: {:+.0f}", raw.axies.y);
-	spdlog::debug("     raw: [z]: {:+.0f}", raw.axies.z);
-	spdlog::debug("  ----------------------");
-	spdlog::debug("    yaw:  [x]: {:+.3f}°", cache.processed.axies.x);
-	spdlog::debug("   roll:  [y]: {:+.3f}°", cache.processed.axies.y);
-	spdlog::debug("  pitch:  [z]: {:+.3f}°", cache.processed.axies.z);
-	spdlog::debug("   time: [Δt]: {:+.3f}s", dt);
+	if constexpr (debug::gyroscope::visible) {
+		const auto raw = event::to_gyro(event);
+		spdlog::debug("gyroscope:");
+		spdlog::debug("  ----------------------");
+		spdlog::debug("     raw: [x]: {:+.0f}", raw.axies.x);
+		spdlog::debug("     raw: [y]: {:+.0f}", raw.axies.y);
+		spdlog::debug("     raw: [z]: {:+.0f}", raw.axies.z);
+		spdlog::debug("  ----------------------");
+		spdlog::debug("    yaw:  [x]: {:+.3f}°", cache.processed.axies.x);
+		spdlog::debug("   roll:  [y]: {:+.3f}°", cache.processed.axies.y);
+		spdlog::debug("  pitch:  [z]: {:+.3f}°", cache.processed.axies.z);
+		spdlog::debug("   time: [Δt]: {:+.3f}s", dt);
+	}
 
 	return std::make_pair(common::enums::device::wiimote, std::move(cache.processed));
 }
@@ -326,17 +336,19 @@ auto acc(accel_state_cache &cache, const device source, const xwii_event &event,
 
 	cache.prev = ret;
 
-	spdlog::debug("accelerometer:");
-	spdlog::debug("  ----------------------");
-	spdlog::debug("     raw: [x]: {:+.0f}", static_cast<double>(event.v.abs[axis].x));
-	spdlog::debug("     raw: [y]: {:+.0f}", static_cast<double>(event.v.abs[axis].y));
-	spdlog::debug("     raw: [z]: {:+.0f}", static_cast<double>(event.v.abs[axis].z));
-	spdlog::debug("  ----------------------");
-	spdlog::debug("    yaw:  [y]: {:+.3f}°", ret.roll);
-	spdlog::debug("   roll:  [z]: {:+.3f}°", ret.pitch);
-	spdlog::debug("   time: [Δt]: {:+.3f}s", dt);
-	spdlog::debug("  ----------------------");
-	spdlog::debug(" stable score: {:+.2f}", cache.stability_score);
+	if constexpr (debug::accelerometer::visible) {
+		spdlog::debug("accelerometer:");
+		spdlog::debug("  ----------------------");
+		spdlog::debug("     raw: [x]: {:+.0f}", static_cast<double>(event.v.abs[axis].x));
+		spdlog::debug("     raw: [y]: {:+.0f}", static_cast<double>(event.v.abs[axis].y));
+		spdlog::debug("     raw: [z]: {:+.0f}", static_cast<double>(event.v.abs[axis].z));
+		spdlog::debug("  ----------------------");
+		spdlog::debug("    yaw:  [y]: {:+.3f}°", ret.roll);
+		spdlog::debug("   roll:  [z]: {:+.3f}°", ret.pitch);
+		spdlog::debug("   time: [Δt]: {:+.3f}s", dt);
+		spdlog::debug("  ----------------------");
+		spdlog::debug(" stable score: {:+.2f}", cache.stability_score);
+	}
 
 	return std::make_pair(source, std::move(ret));
 };
