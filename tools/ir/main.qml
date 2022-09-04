@@ -17,7 +17,8 @@ ApplicationWindow {
     Cursor {
         dx: cursor.cursor.x
         dy: cursor.cursor.y
-        angle: cursor.angle;
+        angle: cursor.cursor.angle
+        distance: cursor.cursor.distance
     }
 
     IrPoint {

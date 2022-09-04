@@ -4,6 +4,7 @@ Item {
     property int dx : 0
     property int dy : 0
     property double angle : 0
+    property double distance : 1.0
     x: -dx + parent.width / 2
     y: -dy + parent.height / 2
 
@@ -13,16 +14,17 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.bottom
         fillMode: Image.PreserveAspectFit
-        width: 50
-        height: 50
+        width: 50 * distance / 75
+        height: 50 * distance / 75
         rotation: angle
     }
 
     Text {
+        property int d : distance
         anchors.left: image.left
         anchors.top: image.bottom
         color: "white"
-        text: dx + "x" + dy
-        font.pointSize: 8
+        text: "position: " + dx + "x" + dy + "\n" + "distance: " + d + "cm"
+        font.pointSize: 14 * (distance / 75)
     }
 }
