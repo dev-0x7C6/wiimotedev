@@ -7,8 +7,21 @@ Item {
     property double roll : 0
     property double pitch : 0
     property double distance : 1.0
+    property bool vc : false
     x: parent.width / 2 + dx
     y: parent.height / 2 + dy
+
+    NumberAnimation on opacity {
+        running: vc
+        to: 1.0
+        duration: 150
+    }
+
+    NumberAnimation on opacity {
+        running: !vc
+        to: 0.0
+        duration: 400
+    }
 
     Image {
         id: image

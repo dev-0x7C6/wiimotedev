@@ -37,14 +37,16 @@ struct vcursor {
 	double yaw{};
 	double roll{};
 	double pitch{};
+	bool visible{false};
 };
 
 class VirtualCursorProcessor {
 public:
-	auto calculate(QList<QPair<int, int>> &points) -> std::optional<vcursor>;
+	auto calculate(QList<QPair<int, int>> &points) -> vcursor;
 
 private:
 	std::array<point, 2> last_points{};
+	vcursor previous;
 	bool m_visible = false;
 	bool m_wait_for_2points{true};
 	bool m_was_abs_x_sorted{false};

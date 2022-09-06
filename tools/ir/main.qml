@@ -21,6 +21,7 @@ ApplicationWindow {
         roll: cursor.cursor.roll
         pitch: cursor.cursor.pitch
         distance: cursor.cursor.distance
+        vc: cursor.cursor.visible
     }
 
     IrPoint {

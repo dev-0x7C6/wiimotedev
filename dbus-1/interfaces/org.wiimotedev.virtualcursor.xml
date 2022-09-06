@@ -7,7 +7,7 @@
 		</method>
 		<signal name="visibilityChanged">
 			<arg name="id" type="u" direction="out" />
-			<arg name="visible" type="u" direction="out" />
+			<arg name="visible" type="b" direction="out" />
 		</signal>
 		<signal name="dataChanged">
 			<arg name="id" type="u" direction="out" />
@@ -17,6 +17,7 @@
 			<arg name="roll" type="d" direction="out" />
 			<arg name="pitch" type="d" direction="out" />
 			<arg name="distance_cm" type="d" direction="out" />
+			<arg name="visible" type="b" direction="out" />
 		</signal>
 	</interface>
 </node>

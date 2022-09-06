@@ -36,7 +36,7 @@ void VirtualCursorDispatcher::process(const u32 id, const dae::container::event 
 
 					   const auto vc = m_processors[id]->calculate(points);
 					   const auto wasVisible = visibility.contains(id);
-					   const auto isVisible = vc.has_value();
+					   const auto isVisible = vc.visible;
 
 					   if (wasVisible && !isVisible)
 						   emit visibilityChanged(id, false);
@@ -44,8 +44,7 @@ void VirtualCursorDispatcher::process(const u32 id, const dae::container::event 
 					   if (!wasVisible && isVisible)
 						   emit visibilityChanged(id, true);
 
-					   if (vc)
-						   emit dataChanged(id, vc->x, vc->y, vc->yaw, vc->roll, vc->pitch, vc->distance);
+					   emit dataChanged(id, vc.x, vc.y, vc.yaw, vc.roll, vc.pitch, vc.distance, vc.visible);
 				   }},
 		ev.second);
 }

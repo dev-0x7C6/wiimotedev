@@ -27,8 +27,8 @@ private:
 	std::set<std::uint32_t> visibility;
 
 signals:
-	void dataChanged(uint id, double x, double y, double yaw, double roll, double pitch, double distance_cm);
-	void visibilityChanged(uint id, uint visible);
+	void dataChanged(uint id, double x, double y, double yaw, double roll, double pitch, double distance_cm, bool visible);
+	void visibilityChanged(uint id, bool visible);
 };
 }
 }

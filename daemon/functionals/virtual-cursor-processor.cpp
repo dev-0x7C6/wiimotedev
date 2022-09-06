@@ -34,14 +34,19 @@ constexpr auto degree(const double radian) noexcept -> double {
 
 }
 
-auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> std::optional<vcursor> {
+auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcursor {
 	std::array<point, 2> p;
+
+	auto invalidate = [](vcursor v) -> vcursor {
+		v.visible = false;
+		return v;
+	};
 
 	switch (points.count()) {
 		case 4:
-			return {};
+			return invalidate(previous);
 		case 3:
-			return {};
+			return invalidate(previous);
 		case 2:
 			m_wait_for_2points = false;
 			p[0].x = points.at(0).first;
@@ -49,11 +54,10 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> std::o
 			p[1].x = points.at(1).first;
 			p[1].y = points.at(1).second;
 			last_points = p;
-			m_visible = true;
 			break;
 		case 1:
 			if (m_wait_for_2points)
-				return {};
+				return invalidate(previous);
 			{
 				p[0].x = points.at(0).first;
 				p[0].y = points.at(0).second;
@@ -70,14 +74,12 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> std::o
 					std::swap(p[0], p[1]);
 
 				last_points = p;
-
-				m_visible = true;
 				break;
 			}
 		case 0:
 			m_was_abs_x_sorted = false;
 			m_wait_for_2points = true;
-			return {};
+			return invalidate(previous);
 	}
 
 	constexpr auto ir_camera_max_px = point{
@@ -127,6 +129,7 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> std::o
 		.yaw = tools::degree(std::atan2(syntetic_x_distance, real_distance)),
 		.roll = tools::degree(angle),
 		.pitch = tools::degree(std::atan2(syntetic_y_distance, real_distance)),
+		.visible = true,
 	};
 
 	if constexpr (debug::cursor::visible) {
@@ -151,5 +154,6 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> std::o
 		spdlog::debug("             [y]: {:+0.2f}cm", syntetic_y_distance);
 	}
 
+	previous = vc;
 	return vc;
 }

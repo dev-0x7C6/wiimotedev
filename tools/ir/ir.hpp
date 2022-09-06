@@ -16,12 +16,12 @@ public:
 
 private:
 	void infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
-	void dataChanged(uint id, double x, double y, double yaw, double roll, double pitch, double distance_cm);
-	void visibilityChanged(uint id, uint visible);
+	void dataChanged(uint id, double x, double y, double yaw, double roll, double pitch, double distance_cm, bool visible);
+	void visibilityChanged(uint id, bool visible);
 
 private:
 	QJsonObject m_cursor;
-	QJsonObject m_ir{};
+	QJsonObject m_ir;
 
 signals:
 	void cursorChanged(QJsonObject);
