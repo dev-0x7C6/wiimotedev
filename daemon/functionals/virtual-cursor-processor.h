@@ -1,8 +1,10 @@
 #pragma once
 
 #include <QList>
-#include <cmath>
 #include <externals/common/types.hpp>
+
+#include <cmath>
+#include <optional>
 
 namespace dae {
 namespace functional {
@@ -28,23 +30,18 @@ constexpr point operator-(const point &lhs, const point &rhs) {
 	return ret;
 }
 
+struct vcursor {
+	double x{};
+	double y{};
+	double distance{};
+	double yaw{};
+	double roll{};
+	double pitch{};
+};
+
 class VirtualCursorProcessor {
 public:
-	bool calculate(QList<QPair<int, int>> &points, double roll);
-
-	bool isVisible() const { return m_visible; }
-	double distance() const { return m_distance; }
-	double angle() const { return m_roll; }
-	double x() const { return m_x; }
-	double y() const { return m_y; }
-
-private:
-	double m_x{};
-	double m_y{};
-	double m_distance{};
-	double m_roll{};
-	double m_yaw{};
-	double m_pitch{};
+	auto calculate(QList<QPair<int, int>> &points) -> std::optional<vcursor>;
 
 private:
 	std::array<point, 2> last_points{};

@@ -36,12 +36,14 @@ void VirtualCursor::infraredDataChanged(uint id, int x1, int y1, int x2, int y2,
 	emit irChanged(m_ir);
 }
 
-void VirtualCursor::dataChanged(uint id, double x, double y, double l, double a) {
+void VirtualCursor::dataChanged(uint id, double x, double y, double yaw, double roll, double pitch, double distance_cm) {
 	m_cursor = {
 		{"x", x},
 		{"y", y},
-		{"angle", a},
-		{"distance", l},
+		{"yaw", yaw},
+		{"roll", roll},
+		{"pitch", pitch},
+		{"distance", distance_cm},
 	};
 
 	emit cursorChanged(m_cursor);

@@ -9,7 +9,7 @@
 using namespace dae::functional;
 
 namespace debug::cursor {
-constexpr auto visible = false;
+constexpr auto visible = true;
 }
 
 namespace tools {
@@ -34,14 +34,14 @@ constexpr auto degree(const double radian) noexcept -> double {
 
 }
 
-bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double roll) {
+auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> std::optional<vcursor> {
 	std::array<point, 2> p;
 
 	switch (points.count()) {
 		case 4:
-			return false;
+			return {};
 		case 3:
-			return false;
+			return {};
 		case 2:
 			m_wait_for_2points = false;
 			p[0].x = points.at(0).first;
@@ -53,7 +53,7 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 			break;
 		case 1:
 			if (m_wait_for_2points)
-				return false;
+				return {};
 			{
 				p[0].x = points.at(0).first;
 				p[0].y = points.at(0).second;
@@ -77,7 +77,7 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 		case 0:
 			m_was_abs_x_sorted = false;
 			m_wait_for_2points = true;
-			return false;
+			return {};
 	}
 
 	constexpr auto ir_camera_max_px = point{
@@ -101,40 +101,45 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 		{-ir_camera_center_px.y},
 	};
 
+	constexpr auto sensorbar_width = 24.00; // cm
+	constexpr auto sensorbar_one_side_ir_width = 4.00; // cm
+	constexpr auto sensorbar_centered_ir_distance = sensorbar_width - sensorbar_one_side_ir_width;
+	constexpr auto sensorbar_delta_correction = 0.985; // correction from testing in field
+
 	const auto rotation_matrix = Eigen::Rotation2D(-angle);
 	const auto rotate_coordinates = rotation_matrix * coordinates;
 	const auto rotate_from_center = rotation_matrix * coordinates_center;
 	const auto compute = rotate_coordinates + rotate_from_center;
 
-	m_x = compute.x();
-	m_y = compute.y() * -1.0;
+	const auto x = compute.x() * -1.0;
+	const auto y = compute.y();
 
-	m_distance = tools::distance(p[0], p[1]);
-
-	constexpr auto sensorbar_width = 24.00; // cm
-	constexpr auto sensorbar_one_side_ir_width = 4.00; // cm
-	constexpr auto sensorbar_centered_ir_distance = sensorbar_width - sensorbar_one_side_ir_width;
-	constexpr auto sensorbar_delta_correction = 0.985; // correction from testing in field
 	const auto d = ir_camera_max_px.x / sensorbar_centered_ir_distance;
-	const auto real_distance = (ir_camera_max_px.x / m_distance) * d / (sensorbar_delta_correction * 2.0);
-	const auto syntetic_x_distance = (m_x / ir_camera_max_px.x) * real_distance * -1.0;
-	const auto syntetic_y_distance = (m_y / ir_camera_max_px.y) * real_distance;
+	const auto distance = tools::distance(p[0], p[1]);
+	const auto real_distance = (ir_camera_max_px.x / distance) * d / (sensorbar_delta_correction * 2.0);
+	const auto syntetic_x_distance = (x / ir_camera_max_px.x) * real_distance * -1.0;
+	const auto syntetic_y_distance = (y / ir_camera_max_px.y) * real_distance;
 
-	m_yaw = tools::degree(std::atan2(syntetic_x_distance, real_distance));
-	m_pitch = tools::degree(std::atan2(syntetic_y_distance, real_distance));
-	m_roll = tools::degree(angle);
+	vcursor vc{
+		.x = x,
+		.y = y,
+		.distance = real_distance,
+		.yaw = tools::degree(std::atan2(syntetic_x_distance, real_distance)),
+		.roll = tools::degree(angle),
+		.pitch = tools::degree(std::atan2(syntetic_y_distance, real_distance)),
+	};
 
 	if constexpr (debug::cursor::visible) {
 		spdlog::debug("virtual cursor:");
 		spdlog::debug(" ---------------------------");
 		spdlog::debug("  coordinates:");
-		spdlog::debug("             [x]: {:+0.2f}px", m_x);
-		spdlog::debug("             [y]: {:+0.2f}px", m_y);
+		spdlog::debug("             [x]: {:+0.2f}px", vc.x);
+		spdlog::debug("             [y]: {:+0.2f}px", vc.y);
 		spdlog::debug(" ---------------------------");
 		spdlog::debug("  angles:");
-		spdlog::debug("         yaw [x]: {:+0.2f}°", m_yaw);
-		spdlog::debug("        roll [y]: {:+0.2f}°", m_roll);
-		spdlog::debug("       pitch [z]: {:+0.2f}°", m_pitch);
+		spdlog::debug("         yaw [x]: {:+0.2f}°", vc.yaw);
+		spdlog::debug("        roll [y]: {:+0.2f}°", vc.roll);
+		spdlog::debug("       pitch [z]: {:+0.2f}°", vc.pitch);
 		spdlog::debug(" ---------------------------");
 		spdlog::debug("  distance:");
 		spdlog::debug("           point: {:+0.2f}px", tools::distance(p[0], p[1]));
@@ -146,7 +151,5 @@ bool VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points, double ro
 		spdlog::debug("             [y]: {:+0.2f}cm", syntetic_y_distance);
 	}
 
-	m_distance = real_distance;
-
-	return true;
+	return vc;
 }

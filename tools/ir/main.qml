@@ -5,8 +5,8 @@ import QtGraphicalEffects 1.15
 
 ApplicationWindow {
 	visible: true
-	width: 640
-	height: 480
+    width: 1024
+    height: 768
     title: qsTr("wiimotedev: ir monitor")
 
     Rectangle {
@@ -17,7 +17,9 @@ ApplicationWindow {
     Cursor {
         dx: cursor.cursor.x
         dy: cursor.cursor.y
-        angle: cursor.cursor.angle
+        yaw: cursor.cursor.yaw
+        roll: cursor.cursor.roll
+        pitch: cursor.cursor.pitch
         distance: cursor.cursor.distance
     }
 

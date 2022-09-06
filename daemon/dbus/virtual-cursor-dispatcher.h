@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <map>
+#include <set>
 
 #include "interfaces/icontainer-processor.h"
 
@@ -23,11 +24,11 @@ public:
 
 private:
 	std::map<uint, std::unique_ptr<functional::VirtualCursorProcessor>> m_processors;
+	std::set<std::uint32_t> visibility;
 
 signals:
-	void dataChanged(uint id, double x, double y, double l, double a);
-	void found(uint id);
-	void lost(uint id);
+	void dataChanged(uint id, double x, double y, double yaw, double roll, double pitch, double distance_cm);
+	void visibilityChanged(uint id, uint visible);
 };
 }
 }

@@ -34,19 +34,18 @@ void VirtualCursorDispatcher::process(const u32 id, const dae::container::event 
 						   if (point.x != 1023 && point.y != 1023)
 							   points.append({point.x, point.y});
 
-					   auto &cursor = m_processors.at(id);
+					   const auto vc = m_processors[id]->calculate(points);
+					   const auto wasVisible = visibility.contains(id);
+					   const auto isVisible = vc.has_value();
 
-					   auto visibleAfter = cursor->isVisible();
-					   bool isValid = cursor->calculate(points, 0);
+					   if (wasVisible && !isVisible)
+						   emit visibilityChanged(id, false);
 
-					   if (visibleAfter && !cursor->isVisible())
-						   emit lost(id);
+					   if (!wasVisible && isVisible)
+						   emit visibilityChanged(id, true);
 
-					   if (!visibleAfter && cursor->isVisible())
-						   emit found(id);
-
-					   if (isValid)
-						   emit dataChanged(id, cursor->x(), cursor->y(), cursor->distance(), cursor->angle());
+					   if (vc)
+						   emit dataChanged(id, vc->x, vc->y, vc->yaw, vc->roll, vc->pitch, vc->distance);
 				   }},
 		ev.second);
 }

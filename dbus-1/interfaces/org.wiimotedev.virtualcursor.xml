@@ -5,18 +5,18 @@
 				<annotation value="QList&lt;uint>" name="org.qtproject.QtDBus.QtTypeName.Out0" />
 				<arg direction="out" type="au" name="list" />
 		</method>
-		<signal name="found">
+		<signal name="visibilityChanged">
 			<arg name="id" type="u" direction="out" />
-		</signal>
-		<signal name="lost">
-			<arg name="id" type="u" direction="out" />
+			<arg name="visible" type="u" direction="out" />
 		</signal>
 		<signal name="dataChanged">
 			<arg name="id" type="u" direction="out" />
 			<arg name="x" type="d" direction="out" />
 			<arg name="y" type="d" direction="out" />
-			<arg name="l" type="d" direction="out" />
-			<arg name="a" type="d" direction="out" />
+			<arg name="yaw" type="d" direction="out" />
+			<arg name="roll" type="d" direction="out" />
+			<arg name="pitch" type="d" direction="out" />
+			<arg name="distance_cm" type="d" direction="out" />
 		</signal>
 	</interface>
 </node>
