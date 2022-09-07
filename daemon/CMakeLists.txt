@@ -88,6 +88,7 @@ target_link_libraries(
   Qt5::Core
   Qt5::DBus
   spdlog::spdlog
+  fmt::fmt
   Eigen3::Eigen
   xwiimote-ng
   pthread)

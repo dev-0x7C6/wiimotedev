@@ -14,6 +14,7 @@
 #include "include/wiimotedev/wiimotedev"
 #include "containers/structs.hpp"
 
+#include <fmt/format.h>
 #include <spdlog/spdlog.h>
 
 using namespace std::chrono_literals;
@@ -378,7 +379,7 @@ events XWiimoteController::process() {
 		return std::make_pair(source, std::move(ret));
 	};
 
-	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
+	const auto wiiremote = fmt::format("wiiremote::{}", id());
 
 	auto process_gone = [&]() -> dae::container::events {
 		dae::container::events ret;
@@ -547,7 +548,7 @@ std::string XWiimoteController::interfaceFilePath() const {
 }
 
 bool XWiimoteController::reconfigureXWiimoteInterface() {
-	const auto wiiremote = spdlog::fmt_lib::format("wiiremote::{}", id());
+	const auto wiiremote = fmt::format("wiiremote::{}", id());
 	const auto flags = xwii_iface_available(m_interface);
 
 	auto is_reporting = [&](const u32 match) -> bool {
