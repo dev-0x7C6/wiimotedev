@@ -5,6 +5,7 @@
 #include <utility>
 #include <variant>
 #include <vector>
+#include <cmath>
 
 #include "common/enums/device.h"
 
@@ -22,7 +23,60 @@ struct axis3d {
 	double y{};
 	double z{};
 
+	constexpr auto yaw() const noexcept { return x; }
+	constexpr auto roll() const noexcept { return y; }
+	constexpr auto pitch() const noexcept { return z; }
+
 	constexpr auto operator<=>(const axis3d &lhs) const noexcept = default;
+};
+
+struct point {
+	double x{};
+	double y{};
+
+	constexpr auto operator<=>(const point &v) const noexcept = default;
+};
+
+constexpr point operator/(const point &lhs, const double v) {
+	point ret;
+	ret.x = lhs.x / v;
+	ret.y = lhs.y / v;
+	return ret;
+}
+
+constexpr point operator-(const point &lhs, const point &rhs) {
+	point ret;
+	ret.x = lhs.x - rhs.x;
+	ret.y = lhs.y - rhs.y;
+	return ret;
+}
+
+constexpr auto distance(const point &p1, const point &p2) noexcept -> double {
+	const auto dx = std::pow(std::abs(p2.x - p1.x), 2);
+	const auto dy = std::pow(std::abs(p2.y - p1.y), 2);
+	return std::sqrt(dx + dy);
+}
+
+constexpr auto abs(const point &p) noexcept -> point {
+	return {std::abs(p.x), std::abs(p.y)};
+}
+
+constexpr auto center(const point &p1, const point &p2) noexcept -> point {
+	return {(p1.x + p2.x) / 2, (p1.y + p2.y) / 2};
+}
+
+constexpr auto degree(const double radian) noexcept -> double {
+	return radian * (180.0 / std::numbers::pi);
+}
+
+struct vcursor {
+	double x{};
+	double y{};
+	double distance{};
+	double yaw{};
+	double roll{};
+	double pitch{};
+	bool visible{false};
 };
 
 constexpr axis3d operator+=(axis3d &lhs, const axis3d &rhs) noexcept {
@@ -78,15 +132,16 @@ constexpr axis3d operator/(const axis3d &lhs, const double v) noexcept {
 }
 
 struct accdata {
-	axis3d axies{};
-	double pitch{};
-	double roll{};
+	axis3d raw{};
+	axis3d angles{};
 
 	constexpr auto operator<=>(const accdata &lhs) const noexcept = default;
 };
 
 struct gyro {
 	axis3d axies{};
+	axis3d angles{};
+
 	constexpr auto operator<=>(const gyro &lhs) const noexcept = default;
 };
 

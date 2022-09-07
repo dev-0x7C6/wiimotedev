@@ -7,31 +7,10 @@
 #include <spdlog/spdlog.h>
 
 using namespace dae::functional;
+using namespace dae::container;
 
 namespace debug::cursor {
 constexpr auto visible = true;
-}
-
-namespace tools {
-
-constexpr auto distance(const point &p1, const point &p2) noexcept -> double {
-	const auto dx = std::pow(std::abs(p2.x - p1.x), 2);
-	const auto dy = std::pow(std::abs(p2.y - p1.y), 2);
-	return std::sqrt(dx + dy);
-}
-
-constexpr auto abs(const point &p) noexcept -> point {
-	return {std::abs(p.x), std::abs(p.y)};
-}
-
-constexpr auto center(const point &p1, const point &p2) noexcept -> point {
-	return {(p1.x + p2.x) / 2, (p1.y + p2.y) / 2};
-}
-
-constexpr auto degree(const double radian) noexcept -> double {
-	return radian * (180.0 / std::numbers::pi);
-}
-
 }
 
 auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcursor {
@@ -62,8 +41,8 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcurso
 				p[0].x = points.at(0).first;
 				p[0].y = points.at(0).second;
 
-				const auto d1 = tools::distance(p[0], last_points[0]);
-				const auto d2 = tools::distance(p[0], last_points[1]);
+				const auto d1 = distance(p[0], last_points[0]);
+				const auto d2 = distance(p[0], last_points[1]);
 
 				p[1] = last_points[d1 < d2 ? 1 : 0];
 				p[1] = last_points[d1 < d2 ? 1 : 0];
@@ -90,7 +69,7 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcurso
 	constexpr auto ir_camera_center_px = ir_camera_max_px / 2.0;
 
 	const auto diff = p[1] - p[0]; // diffrence in x axis and y axis
-	const auto centered = tools::center(p[0], p[1]); // actual cordinates for virtual cursor
+	const auto centered = center(p[0], p[1]); // actual cordinates for virtual cursor
 	const auto angle = std::atan2(diff.y, diff.x);
 
 	Eigen::Matrix<double, 2, 1> coordinates{
@@ -117,8 +96,8 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcurso
 	const auto y = compute.y();
 
 	const auto d = ir_camera_max_px.x / sensorbar_centered_ir_distance;
-	const auto distance = tools::distance(p[0], p[1]);
-	const auto real_distance = (ir_camera_max_px.x / distance) * d / (sensorbar_delta_correction * 2.0);
+	const auto distance_ = distance(p[0], p[1]);
+	const auto real_distance = (ir_camera_max_px.x / distance_) * d / (sensorbar_delta_correction * 2.0);
 	const auto syntetic_x_distance = (x / ir_camera_max_px.x) * real_distance * -1.0;
 	const auto syntetic_y_distance = (y / ir_camera_max_px.y) * real_distance;
 
@@ -126,9 +105,9 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcurso
 		.x = x,
 		.y = y,
 		.distance = real_distance,
-		.yaw = tools::degree(std::atan2(syntetic_x_distance, real_distance)),
-		.roll = tools::degree(angle),
-		.pitch = tools::degree(std::atan2(syntetic_y_distance, real_distance)),
+		.yaw = degree(std::atan2(syntetic_x_distance, real_distance)),
+		.roll = degree(angle),
+		.pitch = degree(std::atan2(syntetic_y_distance, real_distance)),
 		.visible = true,
 	};
 
@@ -145,7 +124,7 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcurso
 		spdlog::debug("       pitch [z]: {:+0.2f}°", vc.pitch);
 		spdlog::debug(" ---------------------------");
 		spdlog::debug("  distance:");
-		spdlog::debug("           point: {:+0.2f}px", tools::distance(p[0], p[1]));
+		spdlog::debug("           point: {:+0.2f}px", distance_);
 		spdlog::debug("            real: {:+0.2f}cm", real_distance);
 		spdlog::debug("                : {:+0.2f}m", real_distance / 100.0);
 		spdlog::debug(" ---------------------------");

@@ -33,7 +33,7 @@ void WiimoteDispatcher::process(const u32 id, const dae::container::event &ev) {
 					   emit infraredDataChanged(id, v[0].x, v[0].y, v[1].x, v[1].y, v[2].x, v[2].y, v[3].x, v[3].y);
 				   },
 				   [&](const dae::container::accdata v) {
-					   emit accelerometerDataChanged(id, v.axies.x, v.axies.y, v.axies.z, v.pitch, v.roll);
+					   emit accelerometerDataChanged(id, v.raw.x, v.raw.y, v.raw.z, v.angles.pitch(), v.angles.roll());
 				   },
 				   [&](const dae::container::button v) {
 					   emit buttonDataChanged(id, v.states);

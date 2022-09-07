@@ -5,48 +5,18 @@
 
 #include <cmath>
 #include <optional>
+#include <containers/structs.hpp>
 
 namespace dae {
 namespace functional {
 
-struct point {
-	double x{};
-	double y{};
-
-	constexpr auto operator<=>(const point &v) const noexcept = default;
-};
-
-constexpr point operator/(const point &lhs, const double v) {
-	point ret;
-	ret.x = lhs.x / v;
-	ret.y = lhs.y / v;
-	return ret;
-}
-
-constexpr point operator-(const point &lhs, const point &rhs) {
-	point ret;
-	ret.x = lhs.x - rhs.x;
-	ret.y = lhs.y - rhs.y;
-	return ret;
-}
-
-struct vcursor {
-	double x{};
-	double y{};
-	double distance{};
-	double yaw{};
-	double roll{};
-	double pitch{};
-	bool visible{false};
-};
-
 class VirtualCursorProcessor {
 public:
-	auto calculate(QList<QPair<int, int>> &points) -> vcursor;
+	auto calculate(QList<QPair<int, int>> &points) -> dae::container::vcursor;
 
 private:
-	std::array<point, 2> last_points{};
-	vcursor previous;
+	std::array<dae::container::point, 2> last_points{};
+	dae::container::vcursor previous;
 	bool m_visible = false;
 	bool m_wait_for_2points{true};
 	bool m_was_abs_x_sorted{false};

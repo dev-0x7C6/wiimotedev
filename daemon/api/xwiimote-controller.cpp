@@ -259,8 +259,8 @@ auto gyro(accel_state_cache &acc, gyro_state_cache &cache, const xwii_event &eve
 	cache.processed.axies += current.axies;
 
 	if (acc.stability_score < 1.01) {
-		cache.processed.axies.y = cache.processed.axies.y * 0.98 + acc.prev.roll * 0.02;
-		cache.processed.axies.z = cache.processed.axies.z * 0.98 + acc.prev.pitch * -0.02;
+		cache.processed.axies.y = cache.processed.axies.y * 0.98 + acc.prev.raw.y * 0.02;
+		cache.processed.axies.z = cache.processed.axies.z * 0.98 + acc.prev.raw.z * -0.02;
 	}
 
 	// save as prev sample
@@ -285,10 +285,9 @@ auto gyro(accel_state_cache &acc, gyro_state_cache &cache, const xwii_event &eve
 
 auto acc(accel_state_cache &cache, const device source, const xwii_event &event, const int axis) -> dae::container::event {
 	dae::container::accdata ret{};
-	auto &&x = ret.axies.x;
-	auto &&y = ret.axies.y;
-	auto &&z = ret.axies.z;
-	auto &&axies = ret.axies;
+	ret.raw.x = event.v.abs[axis].x + 26;
+	ret.raw.y = event.v.abs[axis].y + 26;
+	ret.raw.z = event.v.abs[axis].z + 26;
 
 	if (!cache.last) {
 		cache.last = event::to_usecs(event);
@@ -298,24 +297,20 @@ auto acc(accel_state_cache &cache, const device source, const xwii_event &event,
 	const auto dt = event::time_delta_sec(event, cache.last.value());
 	cache.last = event::to_usecs(event);
 
-	x = event.v.abs[axis].x + 26;
-	y = event.v.abs[axis].y + 26;
-	z = event.v.abs[axis].z + 26;
-
 	auto &&probes = cache.probes;
 
 	if (probes.size() < 32)
-		probes.emplace_back(axies);
+		probes.emplace_back(ret.raw);
 
 	if (probes.size() >= 32) {
 		std::rotate(probes.rbegin(), probes.rbegin() + 1, probes.rend());
-		probes[0] = axies;
+		probes[0] = ret.raw;
 		auto last = probes[1];
 
 		cache.stability_score = 1.0;
-		cache.stability_score *= std::max(1.0, std::abs(last.x) - std::abs(x));
-		cache.stability_score *= std::max(1.0, std::abs(last.y) - std::abs(y));
-		cache.stability_score *= std::max(1.0, std::abs(last.z) - std::abs(z));
+		cache.stability_score *= std::max(1.0, std::abs(last.x) - std::abs(ret.raw.x));
+		cache.stability_score *= std::max(1.0, std::abs(last.y) - std::abs(ret.raw.y));
+		cache.stability_score *= std::max(1.0, std::abs(last.z) - std::abs(ret.raw.z));
 
 		if (cache.scores.size() < 16)
 			cache.scores.emplace_back(cache.stability_score);
@@ -328,25 +323,29 @@ auto acc(accel_state_cache &cache, const device source, const xwii_event &event,
 		cache.stability_score = std::accumulate(cache.scores.begin(), cache.scores.end(), 0.0) / cache.scores.size();
 	}
 
-	axies = std::accumulate(probes.begin(), probes.end(), dae::container::axis3d{}) / probes.size();
+	ret.raw = std::accumulate(probes.begin(), probes.end(), dae::container::axis3d{}) / probes.size();
 
-	ret.roll = std::atan2(x, z);
-	ret.pitch = std::atan2(y, std::sqrt(std::pow(x, 2.0) + std::pow(z, 2.0)));
-	ret.roll *= 180.0 / std::numbers::pi;
-	ret.pitch *= 180.0 / std::numbers::pi;
+	constexpr auto degree = 180.0 / std::numbers::pi;
+	const auto x = ret.raw.x;
+	const auto y = ret.raw.y;
+	const auto z = ret.raw.z;
+
+	ret.angles.x = std::numeric_limits<double>::quiet_NaN();
+	ret.angles.y = std::atan2(x, z) * degree;
+	ret.angles.z = std::atan2(y, std::sqrt(std::pow(x, 2.0) + std::pow(z, 2.0))) * degree;
 
 	cache.prev = ret;
 
 	if constexpr (debug::accelerometer::visible) {
 		spdlog::debug("accelerometer:");
 		spdlog::debug("  ----------------------");
-		spdlog::debug("     raw: [x]: {:+.0f}", static_cast<double>(event.v.abs[axis].x));
-		spdlog::debug("     raw: [y]: {:+.0f}", static_cast<double>(event.v.abs[axis].y));
-		spdlog::debug("     raw: [z]: {:+.0f}", static_cast<double>(event.v.abs[axis].z));
+		spdlog::debug("     raw:  [x]: {:+.0f}", x);
+		spdlog::debug("     raw:  [y]: {:+.0f}", y);
+		spdlog::debug("     raw:  [z]: {:+.0f}", z);
 		spdlog::debug("  ----------------------");
-		spdlog::debug("    yaw:  [y]: {:+.3f}°", ret.roll);
-		spdlog::debug("   roll:  [z]: {:+.3f}°", ret.pitch);
-		spdlog::debug("   time: [Δt]: {:+.3f}s", dt);
+		spdlog::debug("    roll:  [y]: {:+.3f}°", ret.angles.roll());
+		spdlog::debug("   pitch:  [z]: {:+.3f}°", ret.angles.pitch());
+		spdlog::debug("    time: [Δt]: {:+.3f}s", dt);
 		spdlog::debug("  ----------------------");
 		spdlog::debug(" stable score: {:+.2f}", cache.stability_score);
 	}
