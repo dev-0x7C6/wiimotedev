@@ -4,5 +4,6 @@
         <file>Cursor.qml</file>
         <file>IrPoint.qml</file>
         <file>cursor.png</file>
+        <file>bg.png</file>
     </qresource>
 </RCC>

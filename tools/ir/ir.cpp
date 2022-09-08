@@ -12,6 +12,16 @@ VirtualCursor::VirtualCursor(QObject *parent)
 		connect(wiimote, &org::wiimotedev::wiimote::infraredDataChanged, this, &VirtualCursor::infraredDataChanged);
 		connect(cursor, &org::wiimotedev::virtualcursor::dataChanged, this, &VirtualCursor::dataChanged);
 	}
+
+	m_cursor = {
+		{"x", 0},
+		{"y", 0},
+		{"yaw", 0},
+		{"roll", 0},
+		{"pitch", 0},
+		{"distance", 0},
+		{"visible", false},
+	};
 }
 
 void VirtualCursor::infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {

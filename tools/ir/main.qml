@@ -14,6 +14,31 @@ ApplicationWindow {
         color: "black"
     }
 
+    Image {
+        id: image
+        source: "qrc:/bg.png"
+        anchors.fill: parent
+        anchors.margins: parent.width * 0.05
+        smooth: true
+        antialiasing: true
+        fillMode: Image.PreserveAspectFit
+        opacity: 1
+
+        NumberAnimation on opacity {
+            running: cursor.cursor.visible
+            to: 0.2
+            duration: 400
+        }
+
+        NumberAnimation on opacity {
+            running: !cursor.cursor.visible
+            to: 1
+            duration: 400
+        }
+
+        rotation: -cursor.cursor.roll
+    }
+
     Cursor {
         dx: cursor.cursor.x
         dy: cursor.cursor.y
@@ -55,4 +80,5 @@ ApplicationWindow {
         dv: cursor.ir.v4
         color: "yellow"
     }
+
 }
