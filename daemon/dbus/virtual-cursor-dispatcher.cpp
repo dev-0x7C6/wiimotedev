@@ -24,27 +24,34 @@ void VirtualCursorDispatcher::process(const u32 id, const dae::container::event 
 
 	std::visit(overloaded{
 				   [&](auto) {},
+				   [&](const dae::container::status v) {
+					   if (!v.is_connected)
+						   m_processors.erase(id);
+				   },
 				   [&](const dae::container::ir_points v) {
-					   if (!m_processors.count(id)) {
+					   if (!m_processors.contains(id))
 						   m_processors.emplace(id, std::make_unique<VirtualCursorProcessor>());
-					   }
 
-					   QList<QPair<int, int>> points;
-					   for (const auto &point : v)
-						   if (point.x != 1023 && point.y != 1023)
-							   points.append({point.x, point.y});
+					   auto &&processor = m_processors[id];
 
-					   const auto vc = m_processors[id]->calculate(points);
-					   const auto wasVisible = visibility.contains(id);
-					   const auto isVisible = vc.visible;
+					   const auto last = processor->previous();
+					   const auto current = processor->calculate(v);
 
-					   if (wasVisible && !isVisible)
+					   if (last.visible && !current.visible)
 						   emit visibilityChanged(id, false);
 
-					   if (!wasVisible && isVisible)
+					   if (!last.visible && current.visible)
 						   emit visibilityChanged(id, true);
 
-					   emit dataChanged(id, vc.x, vc.y, vc.yaw, vc.roll, vc.pitch, vc.distance, vc.visible);
+					   auto &&x = current.x;
+					   auto &&y = current.y;
+					   auto &&yaw = current.yaw;
+					   auto &&roll = current.roll;
+					   auto &&pitch = current.pitch;
+					   auto &&distance = current.distance;
+					   auto &&visible = current.visible;
+
+					   emit dataChanged(id, x, y, yaw, roll, pitch, distance, visible);
 				   }},
 		ev.second);
 }

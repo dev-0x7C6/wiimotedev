@@ -12,12 +12,15 @@ namespace functional {
 
 class VirtualCursorProcessor {
 public:
-	auto calculate(QList<QPair<int, int>> &points) -> dae::container::vcursor;
+	auto calculate(const dae::container::ir_points &ir_points) -> dae::container::vcursor;
+
+	constexpr auto previous() const noexcept -> dae::container::vcursor {
+		return m_previous;
+	}
 
 private:
 	std::array<dae::container::point, 2> last_points{};
-	dae::container::vcursor previous;
-	bool m_visible = false;
+	dae::container::vcursor m_previous{};
 	bool m_wait_for_2points{true};
 	bool m_was_abs_x_sorted{false};
 };

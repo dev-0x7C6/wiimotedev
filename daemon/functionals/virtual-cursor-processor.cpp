@@ -13,7 +13,12 @@ namespace debug::cursor {
 constexpr auto visible = true;
 }
 
-auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcursor {
+auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_points) -> vcursor {
+	QList<QPair<int, int>> points;
+	for (const auto &point : ir_points)
+		if (point.x != 1023 && point.y != 1023)
+			points.append({point.x, point.y});
+
 	std::array<point, 2> p;
 
 	auto invalidate = [](vcursor v) -> vcursor {
@@ -23,9 +28,11 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcurso
 
 	switch (points.count()) {
 		case 4:
-			return invalidate(previous);
+			m_previous = invalidate(m_previous);
+			return m_previous;
 		case 3:
-			return invalidate(previous);
+			m_previous = invalidate(m_previous);
+			return m_previous;
 		case 2:
 			m_wait_for_2points = false;
 			p[0].x = points.at(0).first;
@@ -35,8 +42,10 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcurso
 			last_points = p;
 			break;
 		case 1:
-			if (m_wait_for_2points)
-				return invalidate(previous);
+			if (m_wait_for_2points) {
+				m_previous = invalidate(m_previous);
+				return m_previous;
+			}
 			{
 				p[0].x = points.at(0).first;
 				p[0].y = points.at(0).second;
@@ -58,7 +67,8 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcurso
 		case 0:
 			m_was_abs_x_sorted = false;
 			m_wait_for_2points = true;
-			return invalidate(previous);
+			m_previous = invalidate(m_previous);
+			return m_previous;
 	}
 
 	constexpr auto ir_camera_max_px = point{
@@ -133,6 +143,6 @@ auto VirtualCursorProcessor::calculate(QList<QPair<int, int>> &points) -> vcurso
 		spdlog::debug("             [y]: {:+0.2f}cm", syntetic_y_distance);
 	}
 
-	previous = vc;
+	m_previous = vc;
 	return vc;
 }
