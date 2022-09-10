@@ -12,13 +12,16 @@ namespace functional {
 
 class VirtualCursorProcessor {
 public:
+	auto input(const dae::container::gyro &gyro) noexcept -> void;
+	auto input(const dae::container::accdata &acc) noexcept -> void;
+	constexpr auto previous() const noexcept { return m_previous; }
+
 	auto calculate(const dae::container::ir_points &ir_points) -> dae::container::vcursor;
 
-	constexpr auto previous() const noexcept -> dae::container::vcursor {
-		return m_previous;
-	}
-
 private:
+	std::optional<dae::container::gyro> m_gyro;
+	std::optional<dae::container::accdata> m_acc;
+
 	std::array<dae::container::point, 2> last_points{};
 	dae::container::vcursor m_previous{};
 	bool m_wait_for_2points{true};

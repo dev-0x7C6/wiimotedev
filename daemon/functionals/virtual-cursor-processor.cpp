@@ -13,6 +13,14 @@ namespace debug::cursor {
 constexpr auto visible = true;
 }
 
+auto VirtualCursorProcessor::input(const dae::container::gyro &gyro) noexcept -> void {
+	m_gyro = gyro;
+}
+
+auto VirtualCursorProcessor::input(const dae::container::accdata &acc) noexcept -> void {
+	m_acc = acc;
+}
+
 auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_points) -> vcursor {
 	QList<QPair<int, int>> points;
 	for (const auto &point : ir_points)

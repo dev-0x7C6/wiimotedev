@@ -22,20 +22,29 @@ void VirtualCursorDispatcher::process(const u32 id, const dae::container::event 
 	if (!is::wiimote(ev.first))
 		return;
 
+	auto getVirtualCursor = [&](const u32 id) -> std::unique_ptr<VirtualCursorProcessor> & {
+		if (!m_processors.contains(id))
+			m_processors.emplace(id, std::make_unique<VirtualCursorProcessor>());
+		return m_processors[id];
+	};
+
 	std::visit(overloaded{
 				   [&](auto) {},
+				   [&](const dae::container::accdata v) {
+					   getVirtualCursor(id)->input(v);
+				   },
+				   [&](const dae::container::gyro v) {
+					   getVirtualCursor(id)->input(v);
+				   },
 				   [&](const dae::container::status v) {
 					   if (!v.is_connected)
 						   m_processors.erase(id);
 				   },
 				   [&](const dae::container::ir_points v) {
-					   if (!m_processors.contains(id))
-						   m_processors.emplace(id, std::make_unique<VirtualCursorProcessor>());
+					   auto &&vc = getVirtualCursor(id);
 
-					   auto &&processor = m_processors[id];
-
-					   const auto last = processor->previous();
-					   const auto current = processor->calculate(v);
+					   const auto last = vc->previous();
+					   const auto current = vc->calculate(v);
 
 					   if (last.visible && !current.visible)
 						   emit visibilityChanged(id, false);
