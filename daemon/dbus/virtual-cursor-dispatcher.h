@@ -1,8 +1,7 @@
 #pragma once
 
 #include <memory>
-#include <map>
-#include <set>
+#include <unordered_map>
 
 #include "interfaces/icontainer-processor.h"
 
@@ -23,8 +22,7 @@ public:
 	void process(u32 id, const dae::container::event &ev) final;
 
 private:
-	std::map<uint, std::unique_ptr<functional::VirtualCursorProcessor>> m_processors;
-	std::set<std::uint32_t> visibility;
+	std::unordered_map<uint, std::unique_ptr<functional::VirtualCursorProcessor>> m_processors;
 
 signals:
 	void dataChanged(uint id, double x, double y, double yaw, double roll, double pitch, double distance_cm, bool visible);

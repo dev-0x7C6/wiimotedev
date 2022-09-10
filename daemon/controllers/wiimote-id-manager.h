@@ -30,6 +30,10 @@ public:
 			if (place)
 				return unique_id_locker(raii_atomic_assigment(place), i);
 		}
+
+		// TODO: id managment to be improved
+		const auto idx = m_reserved.size() - 1;
+		return unique_id_locker(raii_atomic_assigment(m_reserved[idx]), idx);
 	}
 
 private:

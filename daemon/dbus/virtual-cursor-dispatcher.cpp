@@ -30,17 +30,17 @@ void VirtualCursorDispatcher::process(const u32 id, const dae::container::event 
 
 	std::visit(overloaded{
 				   [&](auto) {},
-				   [&](const dae::container::accdata v) {
-					   getVirtualCursor(id)->input(v);
-				   },
-				   [&](const dae::container::gyro v) {
-					   getVirtualCursor(id)->input(v);
-				   },
-				   [&](const dae::container::status v) {
+				   [&](const dae::container::status &v) {
 					   if (!v.is_connected)
 						   m_processors.erase(id);
 				   },
-				   [&](const dae::container::ir_points v) {
+				   [&](const dae::container::accdata &v) {
+					   getVirtualCursor(id)->input(v);
+				   },
+				   [&](const dae::container::gyro &v) {
+					   getVirtualCursor(id)->input(v);
+				   },
+				   [&](const dae::container::ir_points &v) {
 					   auto &&vc = getVirtualCursor(id);
 
 					   const auto last = vc->previous();
