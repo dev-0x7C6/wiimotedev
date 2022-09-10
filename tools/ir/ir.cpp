@@ -12,16 +12,6 @@ VirtualCursor::VirtualCursor(QObject *parent)
 		connect(wiimote, &org::wiimotedev::wiimote::infraredDataChanged, this, &VirtualCursor::infraredDataChanged);
 		connect(cursor, &org::wiimotedev::virtualcursor::dataChanged, this, &VirtualCursor::dataChanged);
 	}
-
-	m_cursor = {
-		{"x", 0},
-		{"y", 0},
-		{"yaw", 0},
-		{"roll", 0},
-		{"pitch", 0},
-		{"distance", 0},
-		{"visible", false},
-	};
 }
 
 void VirtualCursor::infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4) {
@@ -29,41 +19,46 @@ void VirtualCursor::infraredDataChanged(uint id, int x1, int y1, int x2, int y2,
 		return x != 1023 && y != 1023;
 	};
 
-	m_ir = {
-		{"x1", x1},
-		{"y1", y1},
-		{"x2", x2},
-		{"y2", y2},
-		{"x3", x3},
-		{"y3", y3},
-		{"x4", x4},
-		{"y4", y4},
-		{"v1", is_visible(x1, y1)},
-		{"v2", is_visible(x2, y2)},
-		{"v3", is_visible(x3, y3)},
-		{"v4", is_visible(x4, y4)},
-	};
-	emit irChanged(m_ir);
+	if (!m_model.contains(id))
+		m_model[id] = {};
+
+	auto &&vc = m_model[id];
+	vc.insert("x1", x1);
+	vc.insert("y1", y1);
+	vc.insert("x2", x2);
+	vc.insert("y2", y2);
+	vc.insert("x3", x3);
+	vc.insert("y3", y3);
+	vc.insert("x4", x4);
+	vc.insert("y4", y4);
+	vc.insert("v1", is_visible(x1, y1));
+	vc.insert("v2", is_visible(x2, y2));
+	vc.insert("v3", is_visible(x3, y3));
+	vc.insert("v4", is_visible(x4, y4));
+
+	emit modelChanged(model());
 }
 
 void VirtualCursor::dataChanged(uint id, double x, double y, double yaw, double roll, double pitch, double distance_cm, bool visible) {
-	m_cursor = {
-		{"x", x},
-		{"y", y},
-		{"yaw", yaw},
-		{"roll", roll},
-		{"pitch", pitch},
-		{"distance", distance_cm},
-		{"visible", visible},
-	};
+	if (!m_model.contains(id))
+		m_model[id] = {};
 
-	emit cursorChanged(m_cursor);
+	auto &&vc = m_model[id];
+	vc.insert("x", x);
+	vc.insert("y", y);
+	vc.insert("yaw", yaw);
+	vc.insert("roll", roll);
+	vc.insert("pitch", pitch);
+	vc.insert("distance", distance_cm);
+	vc.insert("visible", visible);
+
+	emit modelChanged(model());
 }
 
-auto VirtualCursor::cursor() const -> QJsonObject {
-	return m_cursor;
-}
+auto VirtualCursor::model() const -> QJsonArray {
+	QJsonArray arr;
+	for (auto &&ir : m_model)
+		arr.append(ir);
 
-auto VirtualCursor::ir() const -> QJsonObject {
-	return m_ir;
+	return arr;
 }

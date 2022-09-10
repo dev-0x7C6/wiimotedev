@@ -1,18 +1,18 @@
 #pragma once
 
+#include <QMap>
+#include <QJsonArray>
+#include <QJsonObject>
 #include <QObject>
 #include <QPoint>
-#include <QJsonObject>
 
 class VirtualCursor final : public QObject {
 	Q_OBJECT
-	Q_PROPERTY(QJsonObject ir READ ir NOTIFY irChanged)
-	Q_PROPERTY(QJsonObject cursor READ cursor NOTIFY cursorChanged)
+	Q_PROPERTY(QJsonArray model READ model NOTIFY modelChanged)
 public:
 	explicit VirtualCursor(QObject *parent = nullptr);
 
-	auto cursor() const -> QJsonObject;
-	auto ir() const -> QJsonObject;
+	auto model() const -> QJsonArray;
 
 private:
 	void infraredDataChanged(uint id, int x1, int y1, int x2, int y2, int x3, int y3, int x4, int y4);
@@ -20,10 +20,8 @@ private:
 	void visibilityChanged(uint id, bool visible);
 
 private:
-	QJsonObject m_cursor;
-	QJsonObject m_ir;
+	QMap<std::uint32_t, QJsonObject> m_model;
 
 signals:
-	void cursorChanged(QJsonObject);
-	void irChanged(QJsonObject);
+	void modelChanged(QJsonArray);
 };
