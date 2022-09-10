@@ -146,9 +146,11 @@ struct gyro {
 };
 
 struct ir_point {
-	s16 size;
-	u16 x;
-	u16 y;
+	u16 x{};
+	u16 y{};
+	bool valid{false};
+
+	constexpr auto operator<=>(const ir_point &lhs) const noexcept = default;
 };
 
 struct stick {

@@ -24,7 +24,7 @@ auto VirtualCursorProcessor::input(const dae::container::accdata &acc) noexcept 
 auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_points) -> vcursor {
 	QList<QPair<int, int>> points;
 	for (const auto &point : ir_points)
-		if (point.x != 1023 && point.y != 1023)
+		if (point.valid)
 			points.append({point.x, point.y});
 
 	std::array<point, 2> p;

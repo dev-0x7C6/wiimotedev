@@ -182,7 +182,7 @@ auto ir(const xwii_event &event) -> dae::container::event {
 	for (auto i = 0u; i < ret.size(); ++i) {
 		ret[i].x = event.v.abs[i].x;
 		ret[i].y = event.v.abs[i].y;
-		ret[i].size = xwii_event_ir_is_valid(&event.v.abs[i]) ? 1 : -1;
+		ret[i].valid = xwii_event_ir_is_valid(&event.v.abs[i]);
 	}
 
 	return {common::enums::device::wiimote, ret};
