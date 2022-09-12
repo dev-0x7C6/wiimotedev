@@ -22,7 +22,7 @@ namespace dae {
 namespace api {
 
 struct gyro_callibration_stats {
-	s32 preffered_probe_count{64};
+	std::size_t preffered_probe_count{64};
 	std::vector<dae::container::axis3d> probes;
 	std::optional<dae::container::axis3d> result;
 };

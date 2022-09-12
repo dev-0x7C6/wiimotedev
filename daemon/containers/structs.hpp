@@ -69,6 +69,15 @@ constexpr auto degree(const double radian) noexcept -> double {
 	return radian * (180.0 / std::numbers::pi);
 }
 
+constexpr auto angle_degree_distance(double lhs, double rhs) noexcept -> double {
+	auto angle = std::fmod(rhs - lhs, 360.0);
+	if (angle < -180.0) {
+		angle += 360.0;
+	} else if (angle > 179.0)
+		angle -= 360.0;
+	return angle;
+}
+
 struct vcursor {
 	double x{};
 	double y{};

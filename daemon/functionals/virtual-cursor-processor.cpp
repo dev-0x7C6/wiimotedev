@@ -74,7 +74,6 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 			}
 		case 0:
 			m_was_abs_x_sorted = false;
-			m_wait_for_2points = true;
 			m_previous = invalidate(m_previous);
 			return m_previous;
 	}
@@ -86,9 +85,16 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 
 	constexpr auto ir_camera_center_px = ir_camera_max_px / 2.0;
 
-	const auto diff = p[1] - p[0]; // diffrence in x axis and y axis
-	const auto centered = center(p[0], p[1]); // actual cordinates for virtual cursor
-	const auto angle = std::atan2(diff.y, diff.x);
+	auto diff = p[1] - p[0]; // diffrence in x axis and y axis
+	auto centered = center(p[0], p[1]); // actual cordinates for virtual cursor
+	auto angle = std::atan2(diff.y, diff.x);
+	auto acc_angle = m_acc ? m_acc.value().angles.roll() : angle;
+	const auto angle_difference = std::abs(angle_degree_distance(degree(angle), acc_angle));
+
+	if (angle_difference > 90.0) {
+		diff = p[0] - p[1];
+		angle = std::atan2(diff.y, diff.x);
+	}
 
 	Eigen::Matrix<double, 2, 1> coordinates{
 		{centered.x},
@@ -149,6 +155,9 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 		spdlog::debug("  pointing from center:");
 		spdlog::debug("             [x]: {:+0.2f}cm", syntetic_x_distance);
 		spdlog::debug("             [y]: {:+0.2f}cm", syntetic_y_distance);
+		spdlog::debug(" ---------------------------");
+		spdlog::debug("  angle difference:");
+		spdlog::debug("          [roll]: {:+0.2f}°", angle_difference);
 	}
 
 	m_previous = vc;
