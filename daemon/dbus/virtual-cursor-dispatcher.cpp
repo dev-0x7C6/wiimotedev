@@ -28,11 +28,36 @@ void VirtualCursorDispatcher::process(const u32 id, const dae::container::event 
 		return m_processors[id];
 	};
 
+	auto updateStatus = [&](const u32 id, const dae::container::ir_points &v) {
+		auto &&vc = getVirtualCursor(id);
+
+		const auto last = vc->previous();
+		const auto current = vc->calculate(v);
+
+		if (last.visible && !current.visible)
+			emit visibilityChanged(id, false);
+
+		if (!last.visible && current.visible)
+			emit visibilityChanged(id, true);
+
+		auto &&x = current.x;
+		auto &&y = current.y;
+		auto &&yaw = current.yaw;
+		auto &&roll = current.roll;
+		auto &&pitch = current.pitch;
+		auto &&distance = current.distance;
+		auto &&visible = current.visible;
+
+		emit dataChanged(id, x, y, yaw, roll, pitch, distance, visible);
+	};
+
 	std::visit(overloaded{
 				   [&](auto) {},
 				   [&](const dae::container::status &v) {
-					   if (!v.is_connected)
+					   if (!v.is_connected) {
+						   updateStatus(id, {});
 						   m_processors.erase(id);
+					   }
 				   },
 				   [&](const dae::container::accdata &v) {
 					   getVirtualCursor(id)->input(v);
@@ -41,26 +66,7 @@ void VirtualCursorDispatcher::process(const u32 id, const dae::container::event 
 					   getVirtualCursor(id)->input(v);
 				   },
 				   [&](const dae::container::ir_points &v) {
-					   auto &&vc = getVirtualCursor(id);
-
-					   const auto last = vc->previous();
-					   const auto current = vc->calculate(v);
-
-					   if (last.visible && !current.visible)
-						   emit visibilityChanged(id, false);
-
-					   if (!last.visible && current.visible)
-						   emit visibilityChanged(id, true);
-
-					   auto &&x = current.x;
-					   auto &&y = current.y;
-					   auto &&yaw = current.yaw;
-					   auto &&roll = current.roll;
-					   auto &&pitch = current.pitch;
-					   auto &&distance = current.distance;
-					   auto &&visible = current.visible;
-
-					   emit dataChanged(id, x, y, yaw, roll, pitch, distance, visible);
+					   updateStatus(id, v);
 				   }},
 		ev.second);
 }
