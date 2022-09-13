@@ -4,79 +4,59 @@ import QtQuick.Controls 2.15
 ApplicationWindow {
     id: root
 	visible: true
-    width: 1024
+    width: 1366
     height: 768
     title: qsTr("wiimotedev: ir monitor")
 
     Rectangle {
         anchors.fill: parent
         color: "black"
+
+        Image {
+            source: "qrc:/assets/background.png"
+            anchors.fill: parent
+            anchors.margins: parent.width * 0.05
+            smooth: true
+            antialiasing: true
+            fillMode: Image.PreserveAspectFit
+            opacity: 0.2
+        }
     }
 
     property var model: cursor.model
+    property var cursor1
+    property var cursor2
+    property var cursor3
+    property var cursor4
 
-    Image {
-        id: image
-        source: "qrc:/bg.png"
-        anchors.fill: parent
-        anchors.margins: parent.width * 0.05
-        smooth: true
-        antialiasing: true
-        fillMode: Image.PreserveAspectFit
-        opacity: 0.3
+    onModelChanged: {
+        if (cursor1 !== model[0])
+            cursor1 = model[0]
+        if (cursor2 !== model[1])
+            cursor2 = model[1]
+        if (cursor3 !== model[2])
+            cursor3 = model[2]
+        if (cursor4 !== model[3])
+            cursor4 = model[3]
     }
 
-    Repeater {
-        anchors.fill: root
+    CursorScene {
+        anchors.fill: parent
+        model: cursor4
+    }
 
-        model: root.model
-        delegate: Item {
-            x: 0
-            y: 0
-            width: root.width
-            height: root.height
+    CursorScene {
+        anchors.fill: parent
+        model: cursor3
+    }
 
-            Cursor {
-                dx: model.modelData.x
-                dy: model.modelData.y
-                yaw: model.modelData.yaw
-                roll: model.modelData.roll
-                pitch: model.modelData.pitch
-                distance: model.modelData.distance
-                vc: model.modelData.visible
-            }
+    CursorScene {
+        anchors.fill: parent
+        model: cursor2
+    }
 
-            IrPoint {
-                num: 1
-                dx: model.modelData.x1
-                dy: model.modelData.y1
-                dv: model.modelData.v1
-                color: "yellow"
-            }
-
-            IrPoint {
-                num: 2
-                dx: model.modelData.x2
-                dy: model.modelData.y2
-                dv: model.modelData.v2
-                color: "yellow"
-            }
-
-            IrPoint {
-                num: 3
-                dx: model.modelData.x3
-                dy: model.modelData.y3
-                dv: model.modelData.v3
-                color: "yellow"
-            }
-
-            IrPoint {
-                num: 4
-                dx: model.modelData.x4
-                dy: model.modelData.y4
-                dv: model.modelData.v4
-                color: "yellow"
-            }
-        }
+    CursorScene {
+        anchors.fill: parent
+        model: cursor1
     }
 }

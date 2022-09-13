@@ -23,6 +23,7 @@ void VirtualCursor::infraredDataChanged(uint id, int x1, int y1, int x2, int y2,
 		m_model[id] = {};
 
 	auto &&vc = m_model[id];
+	vc.insert("id", static_cast<int>(id));
 	vc.insert("x1", x1);
 	vc.insert("y1", y1);
 	vc.insert("x2", x2);
@@ -44,6 +45,7 @@ void VirtualCursor::dataChanged(uint id, double x, double y, double yaw, double 
 		m_model[id] = {};
 
 	auto &&vc = m_model[id];
+	vc.insert("id", static_cast<int>(id));
 	vc.insert("x", x);
 	vc.insert("y", y);
 	vc.insert("yaw", yaw);
