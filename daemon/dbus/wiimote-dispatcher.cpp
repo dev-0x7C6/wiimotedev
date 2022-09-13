@@ -43,6 +43,8 @@ void WiimoteDispatcher::process(const u32 id, const dae::container::event &ev) {
 				   },
 				   [&](const dae::container::status v) {
 					   ids.set(id, v.is_connected);
+					   emit infraredDataChanged(id, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023);
+					   emit buttonDataChanged(id, 0);
 					   emit connectionChanged(id, v.is_connected);
 				   }},
 
