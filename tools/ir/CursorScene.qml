@@ -39,6 +39,7 @@ Item {
         pitch: model.pitch
         distance: model.distance
         vc: model.visible
+        press: model.press
         cid: model.id
     }
 }

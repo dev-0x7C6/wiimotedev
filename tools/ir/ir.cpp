@@ -4,12 +4,15 @@
 
 #include <QDBusConnection>
 
+#include <include/wiimotedev/wiimotedev>
+
 VirtualCursor::VirtualCursor(QObject *parent)
 		: QObject(parent) {
 	for (auto &&bus : {QDBusConnection::systemBus(), QDBusConnection::sessionBus()}) {
 		auto wiimote = new org::wiimotedev::wiimote("org.wiimotedev.daemon", "/wiimote", bus, this);
 		auto cursor = new org::wiimotedev::virtualcursor("org.wiimotedev.daemon", "/virtualcursor", bus, this);
 		connect(wiimote, &org::wiimotedev::wiimote::infraredDataChanged, this, &VirtualCursor::infraredDataChanged);
+		connect(wiimote, &org::wiimotedev::wiimote::buttonDataChanged, this, &VirtualCursor::buttonDataChanged);
 		connect(cursor, &org::wiimotedev::virtualcursor::dataChanged, this, &VirtualCursor::dataChanged);
 	}
 }
@@ -53,6 +56,18 @@ void VirtualCursor::dataChanged(uint id, double x, double y, double yaw, double 
 	vc.insert("pitch", pitch);
 	vc.insert("distance", distance_cm);
 	vc.insert("visible", visible);
+
+	emit modelChanged(model());
+}
+
+void VirtualCursor::buttonDataChanged(uint id, qulonglong mask) {
+	if (!m_model.contains(id))
+		m_model[id] = {};
+
+	using namespace wiimotedev;
+
+	auto &&vc = m_model[id];
+	vc.insert("press", (mask & WIIMOTEDEV_BTN_A) == WIIMOTEDEV_BTN_A && (mask & WIIMOTEDEV_BTN_B) == WIIMOTEDEV_BTN_B);
 
 	emit modelChanged(model());
 }

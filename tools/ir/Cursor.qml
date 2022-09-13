@@ -9,6 +9,7 @@ Item {
     property double pitch : 0
     property double distance : 1.0
     property bool vc : false
+    property bool press : false
     property int cid : 0.0
     x: parent.width / 2 + dx
     y: parent.height / 2 + dy
@@ -26,12 +27,12 @@ Item {
         duration: 400
     }
 
-    function get_cursor_asset(is_pointing, id) {
+    function get_cursor_asset(is_grabbing, id) {
         if (id < 1 || id > 4)
             id = 0;
 
-        if (is_pointing)
-            return "qrc:/assets/cursor/pointing/0" + id + ".png"
+        var catalog = is_grabbing ? "grabbing" : "pointing";
+        return "qrc:/assets/cursor/" + catalog + "/0" + id + ".png"
     }
 
     function get_cursor_color(id) {
@@ -48,13 +49,13 @@ Item {
         return "#008cff"
     }
 
-    function get_cursor_asset_bg(is_pointing) {
-        var catalog = is_pointing ? "pointing" : "grabbing";
+    function get_cursor_asset_bg(is_grabbing) {
+        var catalog = is_grabbing ? "grabbing" : "pointing";
         return "qrc:/assets/cursor/" + catalog + "/background.png"
     }
 
     function get_cursor_asset_shadow(is_pointing) {
-        var catalog = is_pointing ? "pointing" : "grabbing";
+        var catalog = is_grabbing ? "grabbing" : "pointing";
         return "qrc:/assets/cursor/" + catalog + "/shadow.png"
     }
 
@@ -77,14 +78,14 @@ Item {
         Image {
             id: shadow
             anchors.fill: layers
-            source: get_cursor_asset_shadow(true, cid)
+            source: get_cursor_asset_shadow(press, cid)
             fillMode: Image.PreserveAspectFit
         }
 
         Image {
             id: background
             anchors.fill: layers
-            source: get_cursor_asset_bg(true, cid)
+            source: get_cursor_asset_bg(press, cid)
             fillMode: Image.PreserveAspectFit
             opacity: 0.2
         }
@@ -92,7 +93,7 @@ Item {
         Image {
             id: cursor
             anchors.fill: layers
-            source: get_cursor_asset(true, cid)
+            source: get_cursor_asset(press, cid)
             fillMode: Image.PreserveAspectFit
             visible: false
         }
