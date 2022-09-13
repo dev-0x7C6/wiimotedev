@@ -465,7 +465,7 @@ events XWiimoteController::process() {
 				case XWII_EVENT_CLASSIC_CONTROLLER_MOVE: return {process_stick(device::classic_controller, event)};
 				case XWII_EVENT_PRO_CONTROLLER_KEY: return {process_key(device::pro_controller, event)};
 				case XWII_EVENT_PRO_CONTROLLER_MOVE: return {process_stick(device::pro_controller, event)};
-				case XWII_EVENT_GONE: process_gone(); break;
+				case XWII_EVENT_GONE: return {process_gone()};
 				case XWII_EVENT_IR: return {process::ir(event)};
 				case XWII_EVENT_KEY: return {process_key(device::wiimote, event)};
 				case XWII_EVENT_MOTION_PLUS: return {process::gyro(wiimote_acc_state, motionp_state, event)};
