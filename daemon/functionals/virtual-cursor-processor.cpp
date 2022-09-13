@@ -34,6 +34,11 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 		return v;
 	};
 
+	if (!m_last_point_count) {
+		m_last_point_count = points.size();
+		m_tracking_score = 0;
+	}
+
 	switch (points.count()) {
 		case 4:
 			m_previous = invalidate(m_previous);
@@ -83,6 +88,13 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 		.y = 768.0,
 	};
 
+	if (points.size()) {
+		if (m_last_point_count == static_cast<std::size_t>(points.size()))
+			m_tracking_score++;
+		else
+			m_tracking_score = 0;
+	}
+
 	constexpr auto ir_camera_center_px = ir_camera_max_px / 2.0;
 
 	auto diff = p[1] - p[0]; // diffrence in x axis and y axis
@@ -91,9 +103,16 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 	auto acc_angle = m_acc ? m_acc.value().angles.roll() : angle;
 	const auto angle_difference = std::abs(angle_degree_distance(degree(angle), acc_angle));
 
-	if (angle_difference > 90.0) {
+	if (m_last_inverted && m_tracking_score > 100) {
 		diff = p[0] - p[1];
 		angle = std::atan2(diff.y, diff.x);
+	} else {
+		m_last_inverted = angle_difference > 90.0;
+
+		if (angle_difference > 90.0) {
+			diff = p[0] - p[1];
+			angle = std::atan2(diff.y, diff.x);
+		}
 	}
 
 	Eigen::Matrix<double, 2, 1> coordinates{
@@ -158,8 +177,11 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 		spdlog::debug(" ---------------------------");
 		spdlog::debug("  angle difference:");
 		spdlog::debug("          [roll]: {:+0.2f}°", angle_difference);
+		spdlog::debug("  tracking score:");
+		spdlog::debug("        [points]: {}", m_tracking_score);
 	}
 
+	m_last_point_count = points.size();
 	m_previous = vc;
 	return vc;
 }

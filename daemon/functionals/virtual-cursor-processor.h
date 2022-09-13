@@ -19,6 +19,9 @@ public:
 	auto calculate(const dae::container::ir_points &ir_points) -> dae::container::vcursor;
 
 private:
+	bool m_last_inverted{false};
+	std::size_t m_last_point_count{};
+	std::uint64_t m_tracking_score{};
 	std::optional<dae::container::gyro> m_gyro;
 	std::optional<dae::container::accdata> m_acc;
 
