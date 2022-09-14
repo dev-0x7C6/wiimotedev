@@ -24,8 +24,6 @@ set(sources
     dbus/balance-board-dispatcher.h
     dbus/classic-dispatcher.cpp
     dbus/classic-dispatcher.h
-    dbus/devices-dispatcher.cpp
-    dbus/devices-dispatcher.h
     dbus/nunchuk-dispatcher.cpp
     dbus/nunchuk-dispatcher.h
     dbus/pro-controller-dispatcher.cpp
@@ -64,9 +62,6 @@ qt5_add_dbus_adaptor(
 qt5_add_dbus_adaptor(
   sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.nunchuk.xml
   dbus/nunchuk-dispatcher.h dae::dbus::NunchukDispatcher)
-qt5_add_dbus_adaptor(
-  sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.devices.xml
-  dbus/devices-dispatcher.h dae::dbus::DevicesDispatcher)
 qt5_add_dbus_adaptor(
   sources
   ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.procontroller.xml

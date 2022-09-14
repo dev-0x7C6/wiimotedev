@@ -1,7 +1,6 @@
 #include "dispatcher-factory.h"
 #include "dbus/balance-board-dispatcher.h"
 #include "dbus/classic-dispatcher.h"
-#include "dbus/devices-dispatcher.h"
 #include "dbus/nunchuk-dispatcher.h"
 #include "dbus/pro-controller-dispatcher.h"
 #include "dbus/virtual-cursor-dispatcher.h"
@@ -17,7 +16,6 @@ std::unique_ptr<IContainerProcessor> dae::factory::make_dispatcher(EventCallback
 	switch (type) {
 		case Adaptor::BalanceBoard: return std::make_unique<BalanceBoardDispatcher>(std::move(eventCallback));
 		case Adaptor::Classic: return std::make_unique<ClassicDispatcher>(std::move(eventCallback));
-		case Adaptor::Devices: return std::make_unique<DevicesDispatcher>(std::move(eventCallback));
 		case Adaptor::Nunchuk: return std::make_unique<NunchukDispatcher>(std::move(eventCallback));
 		case Adaptor::ProController: return std::make_unique<ProControllerDispatcher>(std::move(eventCallback));
 		case Adaptor::VirtualCursor: return std::make_unique<VirtualCursorDispatcher>(std::move(eventCallback));
