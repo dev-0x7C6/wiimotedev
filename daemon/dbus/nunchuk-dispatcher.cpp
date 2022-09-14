@@ -22,17 +22,23 @@ void NunchukDispatcher::process(const u32 id, const dae::container::event &ev) {
 
 	std::visit(overloaded{
 				   [&](auto) {},
-				   [&](dae::container::stick v) {
+				   [&](dae::container::stick &v) {
 					   emit stickDataChanged(id, v.x, v.y);
 				   },
-				   [&](dae::container::accdata v) {
+				   [&](dae::container::accdata &v) {
 					   emit accelerometerDataChanged(id, v.raw.x, v.raw.y, v.raw.z, v.angles.pitch(), v.angles.roll());
 				   },
-				   [&](dae::container::button v) {
+				   [&](dae::container::button &v) {
 					   emit buttonDataChanged(id, v.states);
 				   },
-				   [&](dae::container::status v) {
+				   [&](dae::container::status &v) {
 					   ids.set(id, v.is_connected);
+
+					   if (!v.is_connected) {
+						   emit stickDataChanged(id, 0, 0);
+						   emit buttonDataChanged(id, 0);
+					   }
+
 					   emit connectionChanged(id, v.is_connected);
 				   }},
 

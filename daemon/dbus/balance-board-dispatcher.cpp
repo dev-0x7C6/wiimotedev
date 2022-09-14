@@ -20,11 +20,13 @@ void BalanceBoardDispatcher::process(const u32 id, const dae::container::event &
 
 	std::visit(overloaded{
 				   [&](auto) {},
-				   [&](const dae::container::pressure v) {
+				   [&](const dae::container::pressure &v) {
 					   emit dataChanged(id, v.top.first, v.top.second, v.bottom.first, v.bottom.second);
 				   },
-				   [&](const dae::container::status v) {
+				   [&](const dae::container::status &v) {
 					   ids.set(id, v.is_connected);
+					   if (!v.is_connected)
+						   emit dataChanged(id, 0, 0, 0, 0);
 					   emit connectionChanged(id, v.is_connected);
 				   }},
 		ev.second);

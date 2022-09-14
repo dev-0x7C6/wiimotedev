@@ -29,22 +29,26 @@ void WiimoteDispatcher::process(const u32 id, const dae::container::event &ev) {
 
 	std::visit(overloaded{
 				   [&](auto) {},
-				   [&](const dae::container::ir_points v) {
+				   [&](const dae::container::ir_points &v) {
 					   emit infraredDataChanged(id, v[0].x, v[0].y, v[1].x, v[1].y, v[2].x, v[2].y, v[3].x, v[3].y);
 				   },
-				   [&](const dae::container::accdata v) {
+				   [&](const dae::container::accdata &v) {
 					   emit accelerometerDataChanged(id, v.raw.x, v.raw.y, v.raw.z, v.angles.pitch(), v.angles.roll());
 				   },
-				   [&](const dae::container::button v) {
+				   [&](const dae::container::button &v) {
 					   emit buttonDataChanged(id, v.states);
 				   },
-				   [&](const dae::container::gyro v) {
+				   [&](const dae::container::gyro &v) {
 					   emit gyroscopeDataChanged(id, v.axies.x, v.axies.y, v.axies.z);
 				   },
-				   [&](const dae::container::status v) {
+				   [&](const dae::container::status &v) {
 					   ids.set(id, v.is_connected);
-					   emit infraredDataChanged(id, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023);
-					   emit buttonDataChanged(id, 0);
+
+					   if (!v.is_connected) {
+						   emit infraredDataChanged(id, 1023, 1023, 1023, 1023, 1023, 1023, 1023, 1023);
+						   emit buttonDataChanged(id, 0);
+					   }
+
 					   emit connectionChanged(id, v.is_connected);
 				   }},
 
