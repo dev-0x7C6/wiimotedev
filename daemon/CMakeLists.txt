@@ -33,7 +33,6 @@ set(sources
     dbus/wiimote-dispatcher.cpp
     dbus/wiimote-dispatcher.h
     enums/adaptor.h
-    enums/event.h
     factories/controller-manager-factory.cpp
     factories/controller-manager-factory.h
     factories/dispatcher-factory.cpp
