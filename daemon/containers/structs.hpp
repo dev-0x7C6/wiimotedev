@@ -1,11 +1,12 @@
 #pragma once
 
+#include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <utility>
 #include <variant>
 #include <vector>
-#include <cmath>
 
 #include "common/enums/device.h"
 
@@ -185,6 +186,12 @@ struct reconfigure {
 
 using ir_points = std::array<ir_point, 4>;
 using stick_pair = std::pair<stick, stick>;
+
+constexpr auto count(const ir_points &ir_points) noexcept -> std::size_t {
+	return std::count_if(ir_points.begin(), ir_points.end(), [](auto &&point) {
+		return point.valid;
+	});
+}
 
 using data = std::variant<std::monostate, reconfigure, accdata, gyro, ir_points, stick, stick_pair, pressure, button, status>;
 using event = std::pair<common::enums::device, data>;

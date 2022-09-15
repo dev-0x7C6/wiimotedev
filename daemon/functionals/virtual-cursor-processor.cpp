@@ -13,6 +13,16 @@ namespace debug::cursor {
 constexpr auto visible = true;
 }
 
+constexpr auto hide(vcursor v) -> vcursor {
+	v.visible = false;
+	return v;
+};
+
+constexpr auto swap(std::array<dae::container::point, 2> p) {
+	std::swap(p.front(), p.back());
+	return p;
+}
+
 auto VirtualCursorProcessor::input(const dae::container::gyro &gyro) noexcept -> void {
 	m_gyro = gyro;
 }
@@ -21,7 +31,7 @@ auto VirtualCursorProcessor::input(const dae::container::accdata &acc) noexcept 
 	m_acc = acc;
 }
 
-auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_points) -> vcursor {
+auto VirtualCursorProcessor::stage1_heuristic_prefferable_points(const dae::container::ir_points &ir_points) -> std::optional<std::array<point, 2>> {
 	QList<QPair<int, int>> points;
 	for (const auto &point : ir_points)
 		if (point.valid)
@@ -29,23 +39,14 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 
 	std::array<point, 2> p;
 
-	auto invalidate = [](vcursor v) -> vcursor {
-		v.visible = false;
-		return v;
-	};
-
 	if (!m_last_point_count) {
 		m_last_point_count = points.size();
 		m_tracking_score = 0;
 	}
 
 	switch (points.count()) {
-		case 4:
-			m_previous = invalidate(m_previous);
-			return m_previous;
-		case 3:
-			m_previous = invalidate(m_previous);
-			return m_previous;
+		case 4: return {};
+		case 3: return {};
 		case 2:
 			m_wait_for_2points = false;
 			p[0].x = points.at(0).first;
@@ -55,10 +56,8 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 			last_points = p;
 			break;
 		case 1:
-			if (m_wait_for_2points) {
-				m_previous = invalidate(m_previous);
-				return m_previous;
-			}
+			if (m_wait_for_2points)
+				return {};
 			{
 				p[0].x = points.at(0).first;
 				p[0].y = points.at(0).second;
@@ -79,41 +78,58 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 			}
 		case 0:
 			m_was_abs_x_sorted = false;
-			m_previous = invalidate(m_previous);
-			return m_previous;
+			return {};
 	}
+
+	return p;
+}
+
+auto VirtualCursorProcessor::stage2_accelerometer_correction(std::array<container::point, 2> p) -> std::array<container::point, 2> {
+	const auto diff = p[1] - p[0];
+	const auto ir_roll = std::atan2(diff.y, diff.x);
+	const auto acc_roll = m_acc ? m_acc.value().angles.roll() : ir_roll;
+	const auto angle_difference = std::abs(angle_degree_distance(degree(ir_roll), acc_roll));
+
+	if (m_last_inverted && m_tracking_score > 200)
+		return swap(p);
+
+	m_last_inverted = angle_difference > 90.0;
+
+	if (angle_difference > 90.0)
+		return swap(p);
+
+	return p;
+}
+
+auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_points) -> vcursor {
+	const auto probe = stage1_heuristic_prefferable_points(ir_points);
+
+	if (!probe) {
+		m_tracking_score = 0;
+		return hide(m_previous);
+	}
+
+	const auto cnt = count(ir_points);
+
+	if (cnt) {
+		if (m_last_point_count == cnt)
+			m_tracking_score++;
+		else
+			m_tracking_score = 0;
+	}
+
+	const auto p = stage2_accelerometer_correction(probe.value());
+
+	const auto diff = p[1] - p[0]; // diffrence in x axis and y axis
+	const auto centered = center(p[0], p[1]); // actual cordinates for virtual cursor
+	const auto roll = std::atan2(diff.y, diff.x);
 
 	constexpr auto ir_camera_max_px = point{
 		.x = 1024.0,
 		.y = 768.0,
 	};
 
-	if (points.size()) {
-		if (m_last_point_count == static_cast<std::size_t>(points.size()))
-			m_tracking_score++;
-		else
-			m_tracking_score = 0;
-	}
-
 	constexpr auto ir_camera_center_px = ir_camera_max_px / 2.0;
-
-	auto diff = p[1] - p[0]; // diffrence in x axis and y axis
-	auto centered = center(p[0], p[1]); // actual cordinates for virtual cursor
-	auto angle = std::atan2(diff.y, diff.x);
-	auto acc_angle = m_acc ? m_acc.value().angles.roll() : angle;
-	const auto angle_difference = std::abs(angle_degree_distance(degree(angle), acc_angle));
-
-	if (m_last_inverted && m_tracking_score > 100) {
-		diff = p[0] - p[1];
-		angle = std::atan2(diff.y, diff.x);
-	} else {
-		m_last_inverted = angle_difference > 90.0;
-
-		if (angle_difference > 90.0) {
-			diff = p[0] - p[1];
-			angle = std::atan2(diff.y, diff.x);
-		}
-	}
 
 	Eigen::Matrix<double, 2, 1> coordinates{
 		{centered.x},
@@ -130,7 +146,7 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 	constexpr auto sensorbar_centered_ir_distance = sensorbar_width - sensorbar_one_side_ir_width;
 	constexpr auto sensorbar_delta_correction = 0.985; // correction from testing in field
 
-	const auto rotation_matrix = Eigen::Rotation2D(-angle);
+	const auto rotation_matrix = Eigen::Rotation2D(-roll);
 	const auto rotate_coordinates = rotation_matrix * coordinates;
 	const auto rotate_from_center = rotation_matrix * coordinates_center;
 	const auto compute = rotate_coordinates + rotate_from_center;
@@ -149,7 +165,7 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 		.y = y,
 		.distance = real_distance,
 		.yaw = degree(std::atan2(syntetic_x_distance, real_distance)),
-		.roll = degree(angle),
+		.roll = degree(roll),
 		.pitch = degree(std::atan2(syntetic_y_distance, real_distance)),
 		.visible = true,
 	};
@@ -175,13 +191,13 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 		spdlog::debug("             [x]: {:+0.2f}cm", syntetic_x_distance);
 		spdlog::debug("             [y]: {:+0.2f}cm", syntetic_y_distance);
 		spdlog::debug(" ---------------------------");
-		spdlog::debug("  angle difference:");
-		spdlog::debug("          [roll]: {:+0.2f}°", angle_difference);
+		//		spdlog::debug("  angle difference:");
+		//		spdlog::debug("          [roll]: {:+0.2f}°", angle_difference);
 		spdlog::debug("  tracking score:");
 		spdlog::debug("        [points]: {}", m_tracking_score);
 	}
 
-	m_last_point_count = points.size();
+	m_last_point_count = count(ir_points);
 	m_previous = vc;
 	return vc;
 }

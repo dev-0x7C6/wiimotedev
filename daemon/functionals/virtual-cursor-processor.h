@@ -20,6 +20,10 @@ public:
 	auto calculate(const dae::container::ir_points &ir_points) -> dae::container::vcursor;
 
 private:
+	auto stage1_heuristic_prefferable_points(const dae::container::ir_points &ir_points) -> std::optional<std::array<container::point, 2>>;
+	auto stage2_accelerometer_correction(std::array<container::point, 2> p) -> std::array<container::point, 2>;
+
+private:
 	bool m_last_inverted{false};
 	std::size_t m_last_point_count{};
 	std::uint64_t m_tracking_score{};
