@@ -440,8 +440,9 @@ events XWiimoteController::process() {
 		return std::make_pair(device, dae::container::stick_pair{{lx, ly}, {rx, ry}});
 	};
 
-	auto process_watch = [this]() {
+	auto process_watch = [this]() -> dae::container::event {
 		reconfigureXWiimoteInterface();
+		return {device::wiimote, dae::container::reconfigure{}};
 	};
 
 	dae::container::events ret;
@@ -478,8 +479,7 @@ events XWiimoteController::process() {
 						process_stick(device::nunchuk, event)};
 
 				case XWII_EVENT_WATCH:
-					process_watch();
-					return {};
+					return {process_watch()};
 			}
 
 			return {};

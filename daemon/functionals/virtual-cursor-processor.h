@@ -14,6 +14,7 @@ class VirtualCursorProcessor {
 public:
 	auto input(const dae::container::gyro &gyro) noexcept -> void;
 	auto input(const dae::container::accdata &acc) noexcept -> void;
+
 	constexpr auto previous() const noexcept { return m_previous; }
 
 	auto calculate(const dae::container::ir_points &ir_points) -> dae::container::vcursor;

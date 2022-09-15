@@ -59,6 +59,9 @@ void VirtualCursorDispatcher::process(const u32 id, const dae::container::event 
 						   m_processors.erase(id);
 					   }
 				   },
+				   [&](const dae::container::reconfigure &) {
+					   m_processors.erase(id);
+				   },
 				   [&](const dae::container::accdata &v) {
 					   getVirtualCursor(id)->input(v);
 				   },
