@@ -3,22 +3,12 @@
 #include <chrono>
 #include <thread>
 
-#include "factories/controller-manager-factory.h"
-#include "interfaces/iwiimote-manager.h"
-
 using namespace dae::controller;
-using namespace dae::factory;
 using namespace dae::interface;
 using namespace std::literals;
 
-WiimoteScanner::WiimoteScanner(const IWiimote::Api api)
-		: m_manager(make_controller_manager(api)) {
-}
-
-WiimoteScanner::~WiimoteScanner() = default;
-
 std::unique_ptr<IWiimote> WiimoteScanner::process() {
-	auto controller = m_manager->connect();
+	auto controller = manager.connect();
 
 	if (controller) {
 		const auto id = controller->id();

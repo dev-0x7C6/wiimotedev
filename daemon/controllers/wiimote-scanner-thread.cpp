@@ -16,7 +16,7 @@ WiimoteScannerThread::WiimoteScannerThread(const IWiimote::Api api)
 }
 
 void WiimoteScannerThread::scan(const std::atomic_bool &interrupted) {
-	WiimoteScanner scan(m_api);
+	WiimoteScanner scan;
 
 	while (!interrupted) {
 		auto device = scan.process();

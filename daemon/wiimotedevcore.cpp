@@ -3,7 +3,6 @@
 #include <iostream>
 #include <QDBusConnection>
 
-#include "factories/controller-manager-factory.h"
 #include "factories/dispatcher-factory.h"
 
 using namespace common::enums;

@@ -33,8 +33,6 @@ set(sources
     dbus/wiimote-dispatcher.cpp
     dbus/wiimote-dispatcher.h
     enums/adaptor.h
-    factories/controller-manager-factory.cpp
-    factories/controller-manager-factory.h
     factories/dispatcher-factory.cpp
     factories/dispatcher-factory.h
     functionals/unique-id.h
@@ -46,8 +44,6 @@ set(sources
     interfaces/iid-manager.h
     interfaces/iwiimote-api.cpp
     interfaces/iwiimote-api.h
-    interfaces/iwiimote-manager.cpp
-    interfaces/iwiimote-manager.h
     main.cpp
     wiimotedevcore.cpp
     wiimotedevcore.h)

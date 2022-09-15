@@ -1,8 +1,8 @@
 #pragma once
 
 #include <memory>
-#include "interfaces/iwiimote-manager.h"
 #include "controllers/wiimote-id-manager.h"
+#include "interfaces/iwiimote-api.h"
 
 namespace dae {
 namespace api {
@@ -11,14 +11,12 @@ namespace helper {
 class XWiimoteMonitor;
 }
 
-class XWiimoteManager final : public interface::IWiimoteManager {
+class XWiimoteManager {
 public:
 	explicit XWiimoteManager();
+	~XWiimoteManager();
 
-	interface::IWiimote::Api api() const final {
-		return interface::IWiimote::Api::XWiimote;
-	}
-	std::unique_ptr<interface::IWiimote> connect() final;
+	auto connect() -> std::unique_ptr<interface::IWiimote>;
 
 private:
 	std::unique_ptr<helper::XWiimoteMonitor> m_monitor;

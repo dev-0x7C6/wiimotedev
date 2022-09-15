@@ -10,6 +10,8 @@ XWiimoteManager::XWiimoteManager()
 		: m_monitor(std::make_unique<XWiimoteMonitor>()) {
 }
 
+XWiimoteManager::~XWiimoteManager() = default;
+
 std::unique_ptr<IWiimote> XWiimoteManager::connect() {
 	if (!m_monitor->isValid())
 		return nullptr;
