@@ -10,7 +10,7 @@ using namespace dae::functional;
 using namespace dae::container;
 
 namespace debug::cursor {
-constexpr auto visible = true;
+constexpr auto visible = false;
 }
 
 constexpr auto hide(vcursor v) -> vcursor {

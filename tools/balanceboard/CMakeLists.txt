@@ -8,13 +8,13 @@ set(CMAKE_AUTORCC ON)
 
 set(sources balanceboard.cpp balanceboard.hpp main.cpp qml.qrc)
 
-qt5_add_dbus_interface(
+qt6_add_dbus_interface(
   sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.balanceboard.xml
   dbus/interfaces/balanceboard)
 
 add_executable(wiimotedev-balanceboard-demo ${sources})
 
-target_link_libraries(wiimotedev-balanceboard-demo Qt5::Core Qt5::Gui Qt5::DBus
-                      Qt5::Qml Qt5::Quick)
+target_link_libraries(wiimotedev-balanceboard-demo Qt6::Core Qt6::Gui Qt6::DBus
+                      Qt6::Qml Qt6::Quick)
 
 install(TARGETS wiimotedev-balanceboard-demo)

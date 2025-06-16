@@ -1,5 +1,4 @@
-import QtQuick 2.15
-import QtGraphicalEffects 1.15
+import QtQuick
 
 Item {
     property double dx : 0
@@ -98,10 +97,10 @@ Item {
             visible: false
         }
 
-        ColorOverlay {
-            anchors.fill: layers
-            source: cursor
-            color: get_cursor_color(cid)
-        }
+        // ColorOverlay {
+        //     anchors.fill: layers
+        //     source: cursor
+        //     color: get_cursor_color(cid)
+        // }
     }
 }

@@ -8,13 +8,13 @@ set(CMAKE_AUTORCC ON)
 
 set(sources accelerometer.cpp accelerometer.hpp main.cpp qml.qrc)
 
-qt5_add_dbus_interface(
+qt6_add_dbus_interface(
   sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.wiimote.xml
   dbus/interfaces/wiimote)
 
 add_executable(wiimotedev-accelerometer-monitor ${sources})
 
-target_link_libraries(wiimotedev-accelerometer-monitor Qt5::Core Qt5::Gui Qt5::DBus
-                      Qt5::Qml Qt5::Quick)
+target_link_libraries(wiimotedev-accelerometer-monitor Qt6::Core Qt6::Gui Qt6::DBus
+                      Qt6::Qml Qt6::Quick)
 
 install(TARGETS wiimotedev-accelerometer-monitor)

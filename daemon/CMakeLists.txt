@@ -48,24 +48,24 @@ set(sources
     wiimotedevcore.cpp
     wiimotedevcore.h)
 
-qt5_add_dbus_adaptor(
+qt6_add_dbus_adaptor(
   sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.balanceboard.xml
   dbus/balance-board-dispatcher.h dae::dbus::BalanceBoardDispatcher)
-qt5_add_dbus_adaptor(
+qt6_add_dbus_adaptor(
   sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.classic.xml
   dbus/classic-dispatcher.h dae::dbus::ClassicDispatcher)
-qt5_add_dbus_adaptor(
+qt6_add_dbus_adaptor(
   sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.nunchuk.xml
   dbus/nunchuk-dispatcher.h dae::dbus::NunchukDispatcher)
-qt5_add_dbus_adaptor(
+qt6_add_dbus_adaptor(
   sources
   ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.procontroller.xml
   dbus/pro-controller-dispatcher.h dae::dbus::ProControllerDispatcher)
-qt5_add_dbus_adaptor(
+qt6_add_dbus_adaptor(
   sources
   ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.virtualcursor.xml
   dbus/virtual-cursor-dispatcher.h dae::dbus::VirtualCursorDispatcher)
-qt5_add_dbus_adaptor(
+qt6_add_dbus_adaptor(
   sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.wiimote.xml
   dbus/wiimote-dispatcher.h dae::dbus::WiimoteDispatcher)
 
@@ -75,8 +75,8 @@ add_executable(wiimotedev-daemon ${sources} ${headers}
 target_link_libraries(
   wiimotedev-daemon
   ${BLUETOOTH_LIBRARIES}
-  Qt5::Core
-  Qt5::DBus
+  Qt6::Core
+  Qt6::DBus
   spdlog::spdlog
   fmt::fmt
   Eigen3::Eigen

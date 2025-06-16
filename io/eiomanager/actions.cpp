@@ -1,7 +1,9 @@
 #include "eiomanager/manager.h"
 #include <io/functionals/hash-compare.h>
 
-const QRegExp deviceEventRegExp(".*(\\(.*(\\d+)\\))");
+#include <QRegularExpression>
+
+const QRegularExpression deviceEventRegExp(".*(\\(.*(\\d+)\\))");
 
 void UInputProfileManager::loadCommandEvents(QSettings &settings) {
 	unloadCommandEvents();

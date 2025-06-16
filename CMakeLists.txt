@@ -2,7 +2,7 @@ project(wiimotedev)
 
 cmake_minimum_required(VERSION 3.20)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -16,14 +16,14 @@ find_package(spdlog)
 find_package(fmt)
 
 find_package(
-  Qt5
+  Qt6
   COMPONENTS Core DBus Widgets Qml Quick QuickControls2
   REQUIRED)
 find_package(spdlog)
 
 set(WIIMOTEDEV_VERSION_MAJOR 2)
 set(WIIMOTEDEV_VERSION_MINOR 9)
-set(WIIMOTEDEV_VERSION_PATCH 0)
+set(WIIMOTEDEV_VERSION_PATCH 2)
 
 configure_file(config.h.in config.h)
 

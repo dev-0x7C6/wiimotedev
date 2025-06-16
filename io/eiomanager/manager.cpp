@@ -1,9 +1,8 @@
 #include <QFile>
 #include <QSettings>
+#include <qregularexpression.h>
 
-#include "eioinfrared/eioinfraredmouse.h"
 #include "eiomanager/manager.h"
-#include "io/functionals/hash-compare.h"
 
 using namespace io::interface;
 using namespace io::functional;
@@ -11,7 +10,7 @@ using namespace io::functional;
 extern QMap<QString, u64> devicebuttons;
 extern QMap<QString, uint> scancodes;
 
-const QRegExp deviceEventRegExp(".*(\\[.*(\\d+)\\])");
+const QRegularExpression deviceEventRegExp(".*(\\[.*(\\d+)\\])");
 
 UInputProfileManager::UInputProfileManager(QObject *parent)
 		: QObject(parent)
@@ -29,15 +28,17 @@ UInputProfileManager::UInputProfileManager(QObject *parent)
 }
 
 QHash<u32, u64> UInputProfileManager::extractDeviceEvent(QString input) {
-	QStringList list = input.remove(QRegExp("[ ]")).toLower().split('+');
+	QStringList list = input.remove(QRegularExpression("[ ]")).toLower().split('+');
 	QHash<u32, u64> values;
 	bool result = false;
 	u32 index;
 	u64 value;
 	for (const auto &item : list) {
-		deviceEventRegExp.exactMatch(item);
-		index = deviceEventRegExp.cap(2).toUInt();
-		value = devicebuttons.value(deviceEventRegExp.cap(0).remove(deviceEventRegExp.cap(1)), 0);
+		auto match = deviceEventRegExp.match(item);
+		if (!match.hasMatch())
+			continue;
+		index = match.captured(2).toUInt();
+		value = devicebuttons.value(match.captured(0).remove(match.captured(1)), 0);
 		values.insert(index, values.value(index, 0) | value);
 		result = result || (value);
 	}

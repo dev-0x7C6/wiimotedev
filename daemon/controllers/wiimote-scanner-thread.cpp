@@ -10,9 +10,7 @@ using namespace std::literals;
 
 WiimoteScannerThread::WiimoteScannerThread(const IWiimote::Api api)
 		: m_api(api)
-		, m_thread([this](auto &&v) { scan(std::forward<decltype(v)>(v)); })
-
-{
+		, m_thread([this](auto &&v) { scan(std::forward<decltype(v)>(v)); }) {
 }
 
 void WiimoteScannerThread::scan(const std::atomic_bool &interrupted) {

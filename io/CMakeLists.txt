@@ -63,21 +63,21 @@ set(sources
 	main.cpp
 )
 
-qt5_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.profilemanager.xml core/profile-manager.h io::core::ProfileManager)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.balanceboard.xml dbus/interfaces/balanceboard)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.classic.xml dbus/interfaces/nunchuk)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.nunchuk.xml dbus/interfaces/classic)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.procontroller.xml dbus/interfaces/procontroller)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.wiimote.xml dbus/interfaces/wiimote)
-qt5_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.virtualcursor.xml dbus/interfaces/virtualcursor)
+qt6_add_dbus_adaptor(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.profilemanager.xml core/profile-manager.h io::core::ProfileManager)
+qt6_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.balanceboard.xml dbus/interfaces/balanceboard)
+qt6_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.classic.xml dbus/interfaces/nunchuk)
+qt6_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.nunchuk.xml dbus/interfaces/classic)
+qt6_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.procontroller.xml dbus/interfaces/procontroller)
+qt6_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.wiimote.xml dbus/interfaces/wiimote)
+qt6_add_dbus_interface(sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.virtualcursor.xml dbus/interfaces/virtualcursor)
 
 add_executable(wiimotedev-io ${sources})
 
 target_link_libraries(
 	wiimotedev-io
-	Qt5::Core
-	Qt5::DBus
-	Qt5::Widgets
+	Qt6::Core
+	Qt6::DBus
+	Qt6::Widgets
 	stdc++fs
 )
 
