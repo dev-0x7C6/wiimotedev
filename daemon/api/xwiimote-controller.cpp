@@ -65,9 +65,10 @@ constexpr auto is_available(type &&flags, input_type &&match_with) noexcept {
 XWiimoteController::XWiimoteController(IIdManager &manager, std::string &&path)
 		: IWiimote(manager)
 		, m_interfaceFilePath(std::move(path)) {
-	if (openXWiimoteInterface() && watchXWiimoteEvents() && reconfigureXWiimoteInterface()) {
-		m_connected = true;
-	}
+	m_connected =
+		openXWiimoteInterface() &&
+		watchXWiimoteEvents() &&
+		reconfigureXWiimoteInterface();
 
 	setId(m_idManager.reserve(type()));
 }

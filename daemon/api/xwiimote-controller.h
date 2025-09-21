@@ -1,7 +1,6 @@
 #pragma once
 
 #include <array>
-#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -28,7 +27,7 @@ struct gyro_callibration_stats {
 };
 
 struct gyro_state_cache {
-	gyro_callibration_stats callibration;
+	gyro_callibration_stats callibration{};
 	std::optional<std::chrono::microseconds> last;
 	std::optional<dae::container::axis3d> prev{};
 	dae::container::gyro processed{};
@@ -39,7 +38,7 @@ struct accel_state_cache {
 	std::vector<dae::container::axis3d> probes;
 	std::vector<double> scores;
 	double stability_score{1.0};
-	dae::container::accdata prev;
+	dae::container::accdata prev{};
 };
 
 class XWiimoteController final : public interface::IWiimote {
@@ -86,16 +85,10 @@ private:
 	std::array<u64, common::enums::devices.size()> m_buttons{};
 	std::array<bool, common::enums::devices.size()> currentExtensionTable{};
 	std::array<bool, common::enums::devices.size()> lastExtensionTable{};
-	gyro_state_cache motionp_state;
-	accel_state_cache wiimote_acc_state;
-	accel_state_cache nunchuk_acc_state;
 
-	std::optional<bool> m_balanceBoardConnected;
-	std::optional<bool> m_classicControllerConnected;
-	std::optional<bool> m_motionPlusConnected;
-	std::optional<bool> m_nunchukConnected;
-	std::optional<bool> m_proControllerConnected;
-	std::optional<bool> m_wiimoteConnected;
+	gyro_state_cache motionp_state{};
+	accel_state_cache wiimote_acc_state{};
+	accel_state_cache nunchuk_acc_state{};
 
 	bool m_connected{false};
 	bool m_rumbleStatus{false};

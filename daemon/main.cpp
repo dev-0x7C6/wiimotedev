@@ -1,5 +1,5 @@
 #include "../config.h"
-#include <iostream>
+
 #include <csignal>
 #include <unistd.h>
 
