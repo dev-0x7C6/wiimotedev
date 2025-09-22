@@ -74,7 +74,6 @@ add_executable(wiimotedev-daemon ${sources} ${headers}
 
 target_link_libraries(
   wiimotedev-daemon
-  ${BLUETOOTH_LIBRARIES}
   Qt6::Core
   Qt6::DBus
   spdlog::spdlog
@@ -85,7 +84,7 @@ target_link_libraries(
 
 install(
   TARGETS wiimotedev-daemon
-  DESTINATION "${CMAKE_INSTALL_PREFIX}/sbin/"
+  DESTINATION sbin
   PERMISSIONS
     OWNER_READ
     OWNER_WRITE

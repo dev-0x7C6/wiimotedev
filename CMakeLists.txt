@@ -23,7 +23,7 @@ find_package(spdlog)
 
 set(WIIMOTEDEV_VERSION_MAJOR 2)
 set(WIIMOTEDEV_VERSION_MINOR 9)
-set(WIIMOTEDEV_VERSION_PATCH 2)
+set(WIIMOTEDEV_VERSION_PATCH 3)
 
 configure_file(config.h.in config.h)
 
