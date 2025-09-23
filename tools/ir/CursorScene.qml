@@ -1,45 +1,15 @@
 import QtQuick
 
 Item {
-    property var model;
-
-    IrPoint {
-        num: 1
-        dx: model.x1
-        dy: model.y1
-        dv: model.v1
-    }
-
-    IrPoint {
-        num: 2
-        dx: model.x2
-        dy: model.y2
-        dv: model.v2
-    }
-
-    IrPoint {
-        num: 3
-        dx: model.x3
-        dy: model.y3
-        dv: model.v3
-    }
-
-    IrPoint {
-        num: 4
-        dx: model.x4
-        dy: model.y4
-        dv: model.v4
-    }
-
+    property var provider: model
     Cursor {
-        dx: model.x
-        dy: model.y
-        yaw: model.yaw
-        roll: model.roll
-        pitch: model.pitch
-        distance: model.distance
-        vc: model.visible
-        press: model.press
-        cid: model.id
+        cid: provider.cursor["id"]
+        dx: provider.cursor["x"]
+        dy: provider.cursor["y"]
+        vc: provider.cursor["visible"]
+        yaw: provider.cursor["yaw"]
+        roll: provider.cursor["roll"]
+        pitch: provider.cursor["pitch"]
+        distance: provider.cursor["distance"]
     }
 }

@@ -1,6 +1,9 @@
 import QtQuick
+import Qt5Compat.GraphicalEffects
 
 Item {
+    id: root
+
     property double dx : 0
     property double dy : 0
     property double yaw : 0
@@ -9,6 +12,7 @@ Item {
     property double distance : 1.0
     property bool vc : false
     property bool press : false
+    property color color: "white"
     property int cid : 0.0
     x: parent.width / 2 + dx
     y: parent.height / 2 + dy
@@ -34,33 +38,19 @@ Item {
         return "qrc:/assets/cursor/" + catalog + "/0" + id + ".png"
     }
 
-    function get_cursor_color(id) {
-        if (id < 1 || id > 4)
-            id = 0;
-
-        switch (id) {
-            case 1: return "#008cff"
-            case 2: return "#ff4033"
-            case 3: return "#00a65f"
-            case 4: return "#ffb300"
-        }
-
-        return "#008cff"
-    }
-
     function get_cursor_asset_bg(is_grabbing) {
         var catalog = is_grabbing ? "grabbing" : "pointing";
         return "qrc:/assets/cursor/" + catalog + "/background.png"
     }
 
-    function get_cursor_asset_shadow(is_pointing) {
+    function get_cursor_asset_shadow(is_grabbing) {
         var catalog = is_grabbing ? "grabbing" : "pointing";
         return "qrc:/assets/cursor/" + catalog + "/shadow.png"
     }
 
 
     Item {
-        readonly property double ratio: distance / 75.0
+        readonly property double ratio: parent.distance / 75.0
         id: layers
 
         anchors.left: parent.left
@@ -69,8 +59,8 @@ Item {
         height: 75 * ratio
 
         transform: Rotation {
-            origin.x: 49 * ratio;
-            origin.y: 5 * ratio;
+            origin.x: 49 * layers.ratio;
+            origin.y: 5 * layers.ratio;
             angle: roll
         }
 
@@ -97,10 +87,10 @@ Item {
             visible: false
         }
 
-        // ColorOverlay {
-        //     anchors.fill: layers
-        //     source: cursor
-        //     color: get_cursor_color(cid)
-        // }
+        ColorOverlay {
+            anchors.fill: layers
+            source: cursor
+            color: root.color
+        }
     }
 }

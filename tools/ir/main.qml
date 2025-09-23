@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import Wiimotedev
 
 ApplicationWindow {
     id: root
@@ -9,6 +10,7 @@ ApplicationWindow {
     title: qsTr("wiimotedev: ir monitor")
 
     Rectangle {
+        id: area
         anchors.fill: parent
         color: "black"
 
@@ -23,40 +25,51 @@ ApplicationWindow {
         }
     }
 
-    property var model: cursor.model
-    property var cursor1
-    property var cursor2
-    property var cursor3
-    property var cursor4
+    VirtualCursorModel { id: vcModel; }
+    InfraredModel { id: irModel; }
 
-    onModelChanged: {
-        if (cursor1 !== model[0])
-            cursor1 = model[0]
-        if (cursor2 !== model[1])
-            cursor2 = model[1]
-        if (cursor3 !== model[2])
-            cursor3 = model[2]
-        if (cursor4 !== model[3])
-            cursor4 = model[3]
+    function get_cursor_color(id) {
+        switch (id % 5) {
+            case 0: return "#ffffff"
+            case 1: return "#ffb300"
+            case 2: return "#00a65f"
+            case 3: return "#ff4033"
+            case 4: return "#008cff"
+        }
+
+        return "#ffb300"
     }
 
-    CursorScene {
-        anchors.fill: parent
-        model: cursor4
+    Repeater {
+        anchors.fill: area
+        model: irModel
+
+        IrPoint {
+            num: model.infrared["num"]
+            dx: model.infrared["x"]
+            dy: model.infrared["y"]
+            visible: model.infrared["visible"]
+            color: get_cursor_color(model.infrared["id"])
+        }
     }
 
-    CursorScene {
-        anchors.fill: parent
-        model: cursor3
-    }
+    Repeater {
+        anchors.fill: area
+        model: vcModel
 
-    CursorScene {
-        anchors.fill: parent
-        model: cursor2
-    }
+        Cursor {
+            cid: model.cursor["id"]
+            dx: model.cursor["x"]
+            dy: model.cursor["y"]
+            vc: model.cursor["visible"]
+            yaw: model.cursor["yaw"]
+            roll: model.cursor["roll"]
+            pitch: model.cursor["pitch"]
+            distance: model.cursor["distance"]
+            press: model.cursor["press"]
 
-    CursorScene {
-        anchors.fill: parent
-        model: cursor1
+            z: distance
+            color: get_cursor_color(model.cursor["id"])
+        }
     }
 }

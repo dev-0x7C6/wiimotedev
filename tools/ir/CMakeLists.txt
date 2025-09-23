@@ -6,7 +6,14 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-set(sources ir.cpp ir.hpp main.cpp qml.qrc)
+set(sources
+  virtual-cursor-model.cpp
+  virtual-cursor-model.hpp
+  infrared-model.cpp
+  infrared-model.hpp
+  main.cpp
+  qml.qrc
+)
 
 qt6_add_dbus_interface(
   sources ${CMAKE_SOURCE_DIR}/dbus-1/interfaces/org.wiimotedev.wiimote.xml

@@ -4,28 +4,30 @@ Item {
     property int dx : 0
     property int dy : 0
     property int num : 0
-    property bool dv: false
-    property string color: "yellow"
+    property color color: "yellow"
 
     x: parent.width / 1024.0 * dx;
     y: parent.height / 768.0 * dy;
-    visible: dv
+    width: 0
+    height: 0
 
     Rectangle {
-        radius: 8
-        width: 8
-        height: 8
-        x: -(width / 2)
-        y: -(height / 2)
+        id: dot
+        anchors.centerIn: parent
+        radius: 10
+        width: 10
+        height: 10
+        border.width: 1
+        border.color: "yellow"
         color: parent.color
     }
 
     Text {
-        anchors.left: parent.left
-        anchors.topMargin: 6
-        anchors.leftMargin: 6
+        anchors.top: dot.top
+        anchors.left: dot.right
+        leftPadding: 8
         color: "white"
-        text: "ir: " + num + ": " + dx + "x" + dy
+        text: num + ": " + dx + "x" + dy
         font.pointSize: 8
     }
 }

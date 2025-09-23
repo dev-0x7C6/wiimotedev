@@ -2,18 +2,16 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 
-#include <memory>
-
-#include "ir.hpp"
+#include "infrared-model.hpp"
+#include "virtual-cursor-model.hpp"
 
 int main(int argc, char *argv[]) {
-	QGuiApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
+    QQmlApplicationEngine engine;
 
-	auto cursor = std::make_unique<VirtualCursor>();
+    qmlRegisterType<VirtualCursorModel>("Wiimotedev", 2, 9, "VirtualCursorModel");
+    qmlRegisterType<InfraredModel>("Wiimotedev", 2, 9, "InfraredModel");
+    engine.load(QUrl(QLatin1String("qrc:/main.qml")));
 
-	QQmlApplicationEngine engine;
-	engine.rootContext()->setContextProperty("cursor", cursor.get());
-	engine.load(QUrl(QLatin1String("qrc:/main.qml")));
-
-	return app.exec();
+    return app.exec();
 }

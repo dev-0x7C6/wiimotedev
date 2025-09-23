@@ -18,6 +18,5 @@
         <file>assets/cursor/pointing/04.png</file>
         <file>assets/cursor/pointing/background.png</file>
         <file>assets/cursor/pointing/shadow.png</file>
-        <file>CursorScene.qml</file>
     </qresource>
 </RCC>
