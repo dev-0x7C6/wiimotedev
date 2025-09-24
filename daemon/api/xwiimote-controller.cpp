@@ -63,14 +63,13 @@ constexpr auto is_available(type &&flags, input_type &&match_with) noexcept {
 }
 
 XWiimoteController::XWiimoteController(IIdManager &manager, std::string &&path)
-		: IWiimote(manager)
-		, m_interfaceFilePath(std::move(path)) {
-	m_connected =
-		openXWiimoteInterface() &&
-		watchXWiimoteEvents() &&
-		reconfigureXWiimoteInterface();
-
-	setId(m_idManager.reserve(type()));
+        : IWiimote(manager)
+        , m_interfaceFilePath(std::move(path)) {
+    m_id = m_idManager.reserve(type());
+    m_connected =
+        openXWiimoteInterface() &&
+        watchXWiimoteEvents() &&
+        reconfigureXWiimoteInterface();
 }
 
 namespace helper {
@@ -96,22 +95,27 @@ private:
 struct xwii_iface_session {
 	xwii_iface_session(xwii_iface *iface, const u32 flags)
 			: iface(iface) {
-		std::this_thread::sleep_for(300ms);
+        for (int retry = 0; retry < 10; ++retry) {
+            if (const auto ret = xwii_iface_open(iface, flags | XWII_IFACE_WRITABLE); ret) {
+                spdlog::error("xwii_iface_open: unable to open inteface: ret: {}", ret);
+                iface = nullptr;
 
-		if (const auto ret = xwii_iface_open(iface, flags | XWII_IFACE_WRITABLE); ret) {
-			spdlog::error("xwii_iface_open: unable to open inteface: ret: {}", ret);
-			iface = nullptr;
-		}
-	}
+                std::this_thread::sleep_for(30ms);
+                continue;
+            }
 
-	constexpr auto valid() const noexcept -> bool {
-		return iface != nullptr;
-	}
+            break;
+        }
+    }
 
-	~xwii_iface_session() {
-		if (iface)
-			xwii_iface_close(iface, XWII_IFACE_ALL);
-	}
+    constexpr auto valid() const noexcept -> bool {
+        return iface != nullptr;
+    }
+
+    ~xwii_iface_session() {
+        if (iface)
+            xwii_iface_close(iface, XWII_IFACE_ALL);
+    }
 
 private:
 	xwii_iface *iface{nullptr};

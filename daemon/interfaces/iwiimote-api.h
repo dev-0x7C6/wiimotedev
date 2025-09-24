@@ -1,14 +1,9 @@
 #pragma once
 
-#include <cstdint>
-#include <array>
-#include <memory>
-#include <vector>
-
-#include "interfaces/iid-manager.h"
 #include <externals/common/types.hpp>
 
 #include "containers/structs.hpp"
+#include "interfaces/iid-manager.h"
 
 namespace dae {
 namespace interface {
@@ -43,14 +38,11 @@ public:
 	virtual bool hasMotionPlusExtension() = 0;
 	virtual bool hasNunchukExtension() = 0;
 
-	auto id() const noexcept { return m_id; };
-	void setId(u32 id) noexcept { m_id = id; }
+    auto id() const noexcept { return m_id; };
 
 protected:
 	IIdManager &m_idManager;
-
-private:
-	u32 m_id{0u};
+    u32 m_id{0u};
 };
 }
 }
