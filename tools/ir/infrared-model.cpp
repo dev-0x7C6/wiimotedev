@@ -74,16 +74,11 @@ auto InfraredModel::infraredDataChanged(uint id, int x1, int y1, int x2, int y2,
 
     update();
 
-    for (int i{}; auto &&idx : {
-                      index(getStateIndex(id, 0).value_or(0)),
-                      index(getStateIndex(id, 1).value_or(0)),
-                      index(getStateIndex(id, 2).value_or(0)),
-                      index(getStateIndex(id, 3).value_or(0)),
-                  }) {
-        if (last_points[i] != *points[i])
+    for (auto i = 0; i < points.size(); ++i)
+        if (last_points[i] != *points[i]) {
+            const auto idx = index(getStateIndex(id, i).value_or(0));
             dataChanged(idx, idx, {ir_role});
-        i++;
-    }
+        }
 }
 
 auto InfraredModel::rowCount(const QModelIndex &) const -> int {
