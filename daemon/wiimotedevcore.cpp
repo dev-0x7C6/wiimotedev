@@ -1,7 +1,7 @@
 #include "wiimotedevcore.h"
 
-#include <iostream>
 #include <QDBusConnection>
+#include <unistd.h>
 
 #include "factories/dispatcher-factory.h"
 
@@ -33,7 +33,7 @@ WiimotedevCore::WiimotedevCore()
 			processor));
 
 	auto connection = []() {
-		if (getuid() == 0)
+		if (::getuid() == 0)
 			return QDBusConnection::systemBus();
 
 		return QDBusConnection::sessionBus();

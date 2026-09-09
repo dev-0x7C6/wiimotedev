@@ -31,38 +31,45 @@ struct axis3d {
 	constexpr auto operator<=>(const axis3d &lhs) const noexcept = default;
 };
 
-struct point {
+struct vc_point {
 	double x{};
 	double y{};
 
-	constexpr auto operator<=>(const point &v) const noexcept = default;
+	constexpr auto operator<=>(const vc_point &v) const noexcept = default;
 };
 
-constexpr point operator/(const point &lhs, const double v) {
-	point ret;
-	ret.x = lhs.x / v;
-	ret.y = lhs.y / v;
-	return ret;
+constexpr vc_point operator/(const vc_point &p, const double v) {
+	return {
+		.x = p.x / v,
+		.y = p.y / v,
+	};
 }
 
-constexpr point operator-(const point &lhs, const point &rhs) {
-	point ret;
-	ret.x = lhs.x - rhs.x;
-	ret.y = lhs.y - rhs.y;
-	return ret;
+constexpr vc_point operator-(const vc_point &p0, const vc_point &p1) {
+	return {
+		.x = p0.x - p1.x,
+		.y = p0.y - p1.y,
+	};
 }
 
-constexpr auto distance(const point &p1, const point &p2) noexcept -> double {
+constexpr vc_point operator+(const vc_point &p0, const vc_point &p1) {
+	return {
+		.x = p0.x + p1.x,
+		.y = p0.y + p1.y,
+	};
+}
+
+constexpr auto distance(const vc_point &p1, const vc_point &p2) noexcept -> double {
 	const auto dx = std::pow(std::abs(p2.x - p1.x), 2);
 	const auto dy = std::pow(std::abs(p2.y - p1.y), 2);
 	return std::sqrt(dx + dy);
 }
 
-constexpr auto abs(const point &p) noexcept -> point {
+constexpr auto abs(const vc_point &p) noexcept -> vc_point {
 	return {std::abs(p.x), std::abs(p.y)};
 }
 
-constexpr auto center(const point &p1, const point &p2) noexcept -> point {
+constexpr auto center(const vc_point &p1, const vc_point &p2) noexcept -> vc_point {
 	return {(p1.x + p2.x) / 2, (p1.y + p2.y) / 2};
 }
 
@@ -187,10 +194,27 @@ struct reconfigure {
 using ir_points = std::array<ir_point, 4>;
 using stick_pair = std::pair<stick, stick>;
 
+constexpr auto is_valid(const ir_point &point) noexcept -> bool {
+	return point.valid;
+}
+
+constexpr auto to_point(const ir_point &ir) -> vc_point {
+	return {
+		.x = static_cast<double>(ir.x),
+		.y = static_cast<double>(ir.y),
+	};
+}
+
 constexpr auto count(const ir_points &ir_points) noexcept -> std::size_t {
 	return std::count_if(ir_points.begin(), ir_points.end(), [](auto &&point) {
 		return point.valid;
 	});
+}
+
+constexpr auto reorder(const ir_points &points) -> ir_points {
+	ir_points ret{};
+	std::ranges::copy_if(points, ret.begin(), is_valid);
+	return ret;
 }
 
 using data = std::variant<std::monostate, reconfigure, accdata, gyro, ir_points, stick, stick_pair, pressure, button, status>;

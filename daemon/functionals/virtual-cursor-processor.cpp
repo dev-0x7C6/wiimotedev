@@ -1,6 +1,8 @@
 #include "virtual-cursor-processor.h"
+#include "containers/structs.hpp"
 
-#include <numbers>
+#include <algorithm>
+#include <ranges>
 
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
@@ -18,7 +20,7 @@ constexpr auto hide(vcursor v) -> vcursor {
 	return v;
 };
 
-constexpr auto swap(std::array<dae::container::point, 2> p) {
+constexpr auto swap(std::array<dae::container::vc_point, 2> p) {
 	std::swap(p.front(), p.back());
 	return p;
 }
@@ -31,60 +33,52 @@ auto VirtualCursorProcessor::input(const dae::container::accdata &acc) noexcept 
 	m_acc = acc;
 }
 
-auto VirtualCursorProcessor::stage1_heuristic_prefferable_points(const dae::container::ir_points &ir_points) -> std::optional<std::array<point, 2>> {
-	QList<QPair<int, int>> points;
-	for (const auto &point : ir_points)
-		if (point.valid)
-			points.append({point.x, point.y});
+auto VirtualCursorProcessor::stage1_heuristic_prefferable_points(const ir_points &raw_ir_points) -> std::optional<std::array<vc_point, 2>> {
+	const auto ir = reorder(raw_ir_points);
+	const auto cnt = count(ir);
 
-	std::array<point, 2> p;
+	std::array<vc_point, 2> p{};
 
-	if (!m_last_point_count) {
-		m_last_point_count = points.size();
-		m_tracking_score = 0;
-	}
+	auto process_2points = [&] {
+		for (auto index : {0, 1})
+			p[index] = to_point(ir[index]);
 
-	switch (points.count()) {
-		case 4: return {};
-		case 3: return {};
-		case 2:
-			m_wait_for_2points = false;
-			p[0].x = points.at(0).first;
-			p[0].y = points.at(0).second;
-			p[1].x = points.at(1).first;
-			p[1].y = points.at(1).second;
-			last_points = p;
-			break;
+		return last_points = p;
+	};
+
+	auto process_1point = [&] {
+		p[0] = to_point(ir[0]);
+
+		const auto d1 = distance(p[0], last_points->at(0));
+		const auto d2 = distance(p[0], last_points->at(1));
+
+		const auto p0 = d1 < d2 ? 0 : 1;
+		const auto p1 = d1 < d2 ? 1 : 0;
+
+		const vc_point approximation{
+			.x = p[0].x - last_points->at(p0).x,
+			.y = p[0].y - last_points->at(p0).y,
+		};
+
+		p[1] = last_points->at(p1) + approximation;
+
+		if (d1 > d2)
+			std::swap(p[0], p[1]);
+
+		return last_points = p;
+	};
+
+	switch (m_last_point_count = cnt) {
+		case 2: return process_2points();
 		case 1:
-			if (m_wait_for_2points)
-				return {};
-			{
-				p[0].x = points.at(0).first;
-				p[0].y = points.at(0).second;
-
-				const auto d1 = distance(p[0], last_points[0]);
-				const auto d2 = distance(p[0], last_points[1]);
-
-				p[1] = last_points[d1 < d2 ? 1 : 0];
-				p[1] = last_points[d1 < d2 ? 1 : 0];
-				p[1].x += p[0].x - last_points[d1 > d2 ? 1 : 0].x;
-				p[1].y += p[0].y - last_points[d1 > d2 ? 1 : 0].y;
-
-				if (d1 > d2)
-					std::swap(p[0], p[1]);
-
-				last_points = p;
-				break;
-			}
-		case 0:
-			m_was_abs_x_sorted = false;
-			return {};
+			if (last_points)
+				return process_1point();
 	}
 
-	return p;
+	return {};
 }
 
-auto VirtualCursorProcessor::stage2_accelerometer_correction(std::array<container::point, 2> p) -> std::array<container::point, 2> {
+auto VirtualCursorProcessor::stage2_accelerometer_correction(std::array<container::vc_point, 2> p) -> std::array<container::vc_point, 2> {
 	const auto diff = p[1] - p[0];
 	const auto ir_roll = std::atan2(diff.y, diff.x);
 	const auto acc_roll = m_acc ? m_acc.value().angles.roll() : ir_roll;
@@ -121,10 +115,10 @@ auto VirtualCursorProcessor::calculate(const dae::container::ir_points &ir_point
 	const auto p = stage2_accelerometer_correction(probe.value());
 
 	const auto diff = p[1] - p[0]; // diffrence in x axis and y axis
-	const auto centered = center(p[0], p[1]); // actual cordinates for virtual cursor
+	const auto centered = center(p[0], p[1]); // actual coordinates for virtual cursor
 	const auto roll = std::atan2(diff.y, diff.x);
 
-	constexpr auto ir_camera_max_px = point{
+	constexpr auto ir_camera_max_px = vc_point{
 		.x = 1024.0,
 		.y = 768.0,
 	};
