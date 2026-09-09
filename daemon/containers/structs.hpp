@@ -96,7 +96,7 @@ struct vcursor {
 	bool visible{false};
 };
 
-constexpr axis3d operator+=(axis3d &lhs, const axis3d &rhs) noexcept {
+constexpr auto operator+=(axis3d &lhs, const axis3d &rhs) noexcept -> axis3d {
 	lhs.x += rhs.x;
 	lhs.y += rhs.y;
 	lhs.z += rhs.z;
@@ -125,27 +125,27 @@ constexpr axis3d operator/=(axis3d &lhs, const double v) noexcept {
 }
 
 constexpr axis3d operator+(const axis3d &lhs, const axis3d &rhs) noexcept {
-	axis3d ret;
-	ret.x = lhs.x + rhs.x;
-	ret.y = lhs.y + rhs.y;
-	ret.z = lhs.z + rhs.z;
-	return ret;
+	return {
+		.x = lhs.x + rhs.x,
+		.y = lhs.y + rhs.y,
+		.z = lhs.z + rhs.z,
+	};
 }
 
 constexpr axis3d operator*(const axis3d &lhs, const double v) noexcept {
-	axis3d ret;
-	ret.x = lhs.x * v;
-	ret.y = lhs.y * v;
-	ret.z = lhs.z * v;
-	return ret;
+	return {
+		.x = lhs.x * v,
+		.y = lhs.y * v,
+		.z = lhs.z * v,
+	};
 }
 
 constexpr axis3d operator/(const axis3d &lhs, const double v) noexcept {
-	axis3d ret;
-	ret.x = lhs.x / v;
-	ret.y = lhs.y / v;
-	ret.z = lhs.z / v;
-	return ret;
+	return {
+		.x = lhs.x / v,
+		.y = lhs.y / v,
+		.z = lhs.z / v,
+	};
 }
 
 struct accdata {
@@ -198,7 +198,7 @@ constexpr auto is_valid(const ir_point &point) noexcept -> bool {
 	return point.valid;
 }
 
-constexpr auto to_point(const ir_point &ir) -> vc_point {
+constexpr auto to_point(const ir_point &ir) noexcept -> vc_point {
 	return {
 		.x = static_cast<double>(ir.x),
 		.y = static_cast<double>(ir.y),
@@ -206,12 +206,10 @@ constexpr auto to_point(const ir_point &ir) -> vc_point {
 }
 
 constexpr auto count(const ir_points &ir_points) noexcept -> std::size_t {
-	return std::count_if(ir_points.begin(), ir_points.end(), [](auto &&point) {
-		return point.valid;
-	});
+	return std::ranges::count_if(ir_points, is_valid);
 }
 
-constexpr auto reorder(const ir_points &points) -> ir_points {
+constexpr auto reorder(const ir_points &points) noexcept -> ir_points {
 	ir_points ret{};
 	std::ranges::copy_if(points, ret.begin(), is_valid);
 	return ret;
